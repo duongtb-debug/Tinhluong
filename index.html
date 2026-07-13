@@ -96,10 +96,9 @@
     </div>
 
     <script>
-        // --- 1. BIẾN TOÀN CỤC KHỞI TẠO (Nơi duy nhất trong file được viết từ khóa let cho biến này) ---
-        let supabase = null; 
+        // Giải pháp dứt điểm: Đổi tên biến toàn cục thành 'supabaseClient' để tránh đụng hàng thư viện
+        let supabaseClient = null; 
 
-        // --- 2. THÔNG TIN API SUPABASE CỐ ĐỊNH CHUẨN XÁC ---
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG"; 
 
@@ -131,15 +130,14 @@
         const dongGiaLCV = 2087970;
         let activeTab = 'lcb';
 
-        // --- 3. HÀM KHỞI TẠO KẾT NỐI (Đã gán trơn thẳng vào biến toàn cục) ---
         async function initSupabase() {
             const statusBadge = document.getElementById('supabase-status');
             const statusText = document.getElementById('status-text');
             try {
-                // ĐÚNG: Không dùng từ khóa let/const trước tên biến ở đây để loại bỏ lỗi SyntaxError
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                // Khởi tạo thông qua tên biến mới, không bao giờ bị đụng độ cú pháp nữa
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 
-                const { error } = await supabase.from('master_staff').select('count', { count: 'exact', head: true });
+                const { error } = await supabaseClient.from('master_staff').select('count', { count: 'exact', head: true });
                 if (error) throw error;
                 
                 statusBadge.className = "db-status-badge connected";
@@ -299,13 +297,13 @@
                         });
                     }
 
-                    if (supabase && recordsToUpload.length > 0) {
-                        const { error } = await supabase.from('monthly_salaries').upsert(recordsToUpload, { onConflict: 'month_year,name' });
+                    if (supabaseClient && recordsToUpload.length > 0) {
+                        const { error } = await supabaseClient.from('monthly_salaries').upsert(recordsToUpload, { onConflict: 'month_year,name' });
                         if (error) console.error("Lỗi đồng bộ dữ liệu lên Cloud:", error.message);
                     }
 
                     document.getElementById('debug-status').style.display = "block";
-                    document.getElementById('debug-status').innerHTML = `✅ Hệ thống bảng tính thông minh sẵn sàng. Toàn bộ công thức tính toán đã kích hoạt.`;
+                    document.getElementById('debug-status').innerHTML = `✅ Hệ thống tính toán lương thông minh sẵn sàng.`;
                     document.getElementById('upload-status').innerText = "Đã nạp dữ liệu thành công!";
                     renderTable();
                 } catch(err) {
