@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VINAPACO KẾ TOÁN v35.0 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN ĐỒNG BỘ CLOUD</title>
+    <title>VINAPACO v35.0 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN KẾ TOÁN</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -11,17 +11,13 @@
         .navbar { background: #0f172a; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
         .navbar h1 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
         .right-nav { display: flex; align-items: center; gap: 15px; }
-        
-        /* CSS Thanh trạng thái Supabase */
         .db-status-badge { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 10px; background: #334155; border: 1px solid #475569; color: #94a3b8; }
         .db-status-badge.connected { background: #064e3b; border-color: #059669; color: #34d399; }
         .db-status-badge.error { background: #7f1d1d; border-color: #dc2626; color: #fca5a5; }
         .dot { width: 6px; height: 6px; border-radius: 50%; background: #94a3b8; display: inline-block; }
         .connected .dot { background: #10b981; box-shadow: 0 0 8px #10b981; animation: pulse 1.5s infinite; }
         .error .dot { background: #ef4444; }
-        
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
-
         .btn-export { background: #10b981; color: white; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-size: 11px; }
         .btn-export:hover { background: #059669; }
         .container { max-width: 100%; margin: 15px auto; padding: 0 15px; box-sizing: border-box; }
@@ -34,7 +30,6 @@
         .tab-btn.active-lcv { background: #ea580c; color: white; border-color: #ea580c; }
         .tab-btn.active-anca { background: #059669; color: white; border-color: #059669; }
         .tab-btn.active-nganhang { background: #7c3aed; color: white; border-color: #7c3aed; }
-        
         .table-responsive { background: white; border: 1px solid #e2e8f0; border-radius: 0 6px 6px 6px; padding: 12px; overflow-x: auto; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
         table { width: 100%; border-collapse: collapse; text-align: right; table-layout: auto; }
         th, td { padding: 8px 12px; border: 1px solid #cbd5e1; white-space: nowrap; vertical-align: middle; }
@@ -44,19 +39,15 @@
         .text-left { text-align: left; }
         .text-center { text-align: center; }
         .font-bold { font-weight: bold; }
-        
         .color-lcb { color: #1d4ed8; font-weight: bold; }
         .color-lcv { color: #c2410c; font-weight: bold; }
         .color-giamtru { color: #dc2626; font-weight: bold; background: #fef2f2; }
         .color-tongcuoi { color: #166534; font-weight: bold; background: #f0fdf4; border: 1px solid #bbf7d0 !important; }
-        
         .input-table { width: 70px; text-align: center; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 4px; padding: 5px; font-size: 11px; box-sizing: border-box; }
         .input-cong { border: 1px solid #3b82f6; background: #fffdfa; color: #1d4ed8; width: 60px; }
         .input-cong:focus { background: #fffae6; border-color: #ea580c; outline: none; }
-        
         .input-tamung { border: 1px solid #dc2626; color: #b91c1c; background: #fef2f2; width: 100px; text-align: right; font-weight: bold; }
         .input-tamung:focus { border-color: #b91c1c; outline: none; background: #fee2e2; color: #000; text-align: left; }
-        
         .badge-report { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; padding: 10px 15px; border-radius: 4px; margin-top: 10px; font-weight: 500; display: none; }
         .hidden { display: none; }
     </style>
@@ -105,10 +96,10 @@
     </div>
 
     <script>
-        // --- 1. BIẾN TOÀN CỤC KHỞI TẠO (Nơi duy nhất dùng từ khóa let cho biến này) ---
+        // --- 1. BIẾN TOÀN CỤC KHỞI TẠO (Nơi duy nhất trong file được viết từ khóa let cho biến này) ---
         let supabase = null; 
 
-        // --- 2. THÔNG TIN API SUPABASE (Cấu hình chính xác dự án của bạn) ---
+        // --- 2. THÔNG TIN API SUPABASE CỐ ĐỊNH CHUẨN XÁC ---
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG"; 
 
@@ -140,15 +131,14 @@
         const dongGiaLCV = 2087970;
         let activeTab = 'lcb';
 
-        // --- 3. HÀM KHỞI TẠO KẾT NỐI (ĐÃ SỬA: Không còn chữ let/const tại dòng chèn client) ---
+        // --- 3. HÀM KHỞI TẠO KẾT NỐI (Đã gán trơn thẳng vào biến toàn cục) ---
         async function initSupabase() {
             const statusBadge = document.getElementById('supabase-status');
             const statusText = document.getElementById('status-text');
             try {
-                // CHUẨN XÁC: Gán giá trị thẳng vào biến toàn cục, không khai báo lại
+                // ĐÚNG: Không dùng từ khóa let/const trước tên biến ở đây để loại bỏ lỗi SyntaxError
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 
-                // Gửi lệnh kiểm tra kết nối hệ thống dữ liệu
                 const { error } = await supabase.from('master_staff').select('count', { count: 'exact', head: true });
                 if (error) throw error;
                 
@@ -193,13 +183,11 @@
 
             let bhtn = staff.heSoCB > 0 ? Math.round(staff.luongKyHD * 0.01) : 0;
             let bhxh_yt = staff.heSoCB > 0 ? Math.round(staff.luongKyHD * 0.095) : 0;
-            
             let thucLinhLCB = tongTienLCB - bhtn - bhxh_yt;
 
             let luongCongViecThang = (staff.heSoCV + staff.phuCapCV) * dongGiaLCV;
             let luongCV_ThucTe = Math.round((luongCongViecThang / 22) * nCong);
             let thucLinhLCV = luongCV_ThucTe - staff.tamUng - staff.pctt - staff.truUngT4;
-
             let thucLinhTongCuoiCung = thucLinhLCV + thucLinhLCB;
 
             let anCa = staff.name.toUpperCase().includes("HOÀNG MẠNH HÙNG") ? 600000 : Math.round(nCong * 5000);
@@ -311,14 +299,13 @@
                         });
                     }
 
-                    // Tự động đẩy đồng bộ dữ liệu lên Supabase Cloud nếu trạng thái connected
                     if (supabase && recordsToUpload.length > 0) {
                         const { error } = await supabase.from('monthly_salaries').upsert(recordsToUpload, { onConflict: 'month_year,name' });
                         if (error) console.error("Lỗi đồng bộ dữ liệu lên Cloud:", error.message);
                     }
 
                     document.getElementById('debug-status').style.display = "block";
-                    document.getElementById('debug-status').innerHTML = `✅ Hệ thống bảng tính thông minh sẵn sàng. Toàn bộ logic công thức và giảm trừ trích đóng bảo hiểm đã áp dụng đồng bộ.`;
+                    document.getElementById('debug-status').innerHTML = `✅ Hệ thống bảng tính thông minh sẵn sàng. Toàn bộ công thức tính toán đã kích hoạt.`;
                     document.getElementById('upload-status').innerText = "Đã nạp dữ liệu thành công!";
                     renderTable();
                 } catch(err) {
@@ -334,7 +321,6 @@
             if (isNaN(parsedVal) || parsedVal < 0) parsedVal = 0;
             
             dynamicStaffDatabase[index]['tamUng'] = parsedVal;
-            
             input.type = "text";
             input.value = parsedVal > 0 ? "-" + parsedVal.toLocaleString() : "0";
 
@@ -428,7 +414,7 @@
 
                 let rowHtml = `<tr id="row-${index}">`;
                 if (activeTab === 'lcb') {
-                    rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td>${(staff.heSoCB+staff.phuCapCB).toFixed(2)}</td><td>${res.luongCoBanThang.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongtg">${res.luongThoiGian.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oPhep}</td><td class="text-center" style="padding:1px;">${oLe}</td><td class="td-luonglephat" style="font-weight:600;">${res.luongLePhepThucTe.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oHT}</td><td class="font-bold td-tonglcb" style="color:#b45309; background:#fffbeb;">${res.tongTienLCB.toLocaleString()}</td><td class="color-giamtru">-%${res.bhtn.toLocaleString()}</td><td class="color-giamtru">-%${res.bhxh_yt.toLocaleString()}</td><td class="color-lcb td-thuckinhlcb">${res.thucLinhLCB.toLocaleString()}</td>`;
+                    rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td>${(staff.heSoCB+staff.phuCapCB).toFixed(2)}</td><td>${res.luongCoBanThang.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongtg">${res.luongThoiGian.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oPhep}</td><td class="text-center" style="padding:1px;">${oLe}</td><td class="td-luonglephat" style="font-weight:600;">${res.luongLePhepThucTe.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oHT}</td><td class="font-bold td-tonglcb" style="color:#b45309; background:#fffbeb;">${res.tongTienLCB.toLocaleString()}</td><td class="color-giamtru">-${res.bhtn.toLocaleString()}</td><td class="color-giamtru">-${res.bhxh_yt.toLocaleString()}</td><td class="color-lcb td-thuckinhlcb">${res.thucLinhLCB.toLocaleString()}</td>`;
                 } else if (activeTab === 'lcv') {
                     rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td class="text-center font-bold">${(staff.heSoCV+staff.phuCapCV).toFixed(2)}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongcvtt">${res.luongCV_ThucTe.toLocaleString()}</td><td style="padding:1px; text-align:center;">${oTamUng}</td><td class="color-giamtru">${staff.pctt > 0 ? '-' + staff.pctt.toLocaleString() : '-'}</td><td class="color-giamtru">${staff.truUngT4 > 0 ? '-' + staff.truUngT4.toLocaleString() : '-'}</td><td class="color-lcv td-thuckinhlcv">${res.thucLinhLCV.toLocaleString()}</td><td class="color-tongcuoi td-thuckinhcbcv">${res.thucLinhTongCuoiCung.toLocaleString()}</td>`;
                 } else if (activeTab === 'anca') {
