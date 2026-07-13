@@ -96,37 +96,37 @@
     </div>
 
     <script>
-        // Giải pháp dứt điểm: Đổi tên biến toàn cục thành 'supabaseClient' để tránh đụng hàng thư viện
         let supabaseClient = null; 
 
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG"; 
 
+        // Khai báo Danh mục cấu hình nhân sự mặc định
         const MASTER_STAFF_DIRECTORY = {
-            "NGUYỄN MINH NGỌC":       { heSoCB: 1.94, phuCapCB: 0.25, luongKyHD: 9066600, hsHoanThanh: 1.0, heSoCV: 5.20, phuCapCV: 0.60, luongK3CV: 11009296, docHai: 0, tamUng: 5000000, pctt: 0, truUngT4: 0 },
-            "NGUYỄN VĂN NAM":         { heSoCB: 1.48, phuCapCB: 0.00, luongKyHD: 6127200, hsHoanThanh: 1.0, heSoCV: 2.24, phuCapCV: 0.00, luongK3CV: 4220718, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
-            "NGUYỄN THỊ TUYẾT NHUNG": { heSoCB: 1.79, phuCapCB: 0.00, luongKyHD: 7410600, hsHoanThanh: 1.0, heSoCV: 1.74, phuCapCV: 0.00, luongK3CV: 3277717, docHai: 10, tamUng: 3000000, pctt: 0, truUngT4: 0 },
-            "VŨ THỊ THU":             { heSoCB: 1.94, phuCapCB: 0.00, luongKyHD: 8031600, hsHoanThanh: 1.0, heSoCV: 1.86, phuCapCV: 0.00, luongK3CV: 3504021, docHai: 10, tamUng: 3000000, pctt: 0, truUngT4: 0 },
-            "ĐÀO THỊ LIÊN":           { heSoCB: 1.79, phuCapCB: 0.00, luongKyHD: 7410600, hsHoanThanh: 1.0, heSoCV: 1.74, phuCapCV: 0.00, luongK3CV: 3277717, docHai: 10, tamUng: 4000000, pctt: 0, truUngT4: 0 },
-            "VÕ THỊ THANH TUYỀN":     { heSoCB: 1.71, phuCapCB: 0.00, luongKyHD: 7079400, hsHoanThanh: 1.0, heSoCV: 1.74, phuCapCV: 0.00, luongK3CV: 3277717, docHai: 10, tamUng: 3000000, pctt: 0, truUngT4: 0 },
-            "TRẦN THỊ THANH":         { heSoCB: 1.67, phuCapCB: 0.00, luongKyHD: 6913800, hsHoanThanh: 1.0, heSoCV: 1.48, phuCapCV: 0.00, luongK3CV: 2787848, docHai: 10, tamUng: 4000000, pctt: 0, truUngT4: 0 },
-            "TRẦN ĐỨC CHIẾN":         { heSoCB: 1.83, phuCapCB: 0.00, luongKyHD: 7576200, hsHoanThanh: 1.0, heSoCV: 1.66, phuCapCV: 0.00, luongK3CV: 3127027, docHai: 0, tamUng: 3000000, pctt: 0, truUngT4: 0 },
-            "PHẠM TIẾN LONG":         { heSoCB: 1.80, phuCapCB: 0.00, luongKyHD: 7452000, hsHoanThanh: 1.0, heSoCV: 1.62, phuCapCV: 0.00, luongK3CV: 3051700, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
-            "ĐINH HỮU VINH":          { heSoCB: 1.83, phuCapCB: 0.00, luongKyHD: 7576200, hsHoanThanh: 1.0, heSoCV: 1.66, phuCapCV: 0.00, luongK3CV: 3127027, docHai: 0, tamUng: 3000000, pctt: 0, truUngT4: 0 },
-            "BÙI ĐÌNH ĐIỆP":          { heSoCB: 1.53, phuCapCB: 0.00, luongKyHD: 6334200, hsHoanThanh: 1.0, heSoCV: 1.62, phuCapCV: 0.00, luongK3CV: 3051700, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
-            "HOÀNG MẠNH HÙNG":        { heSoCB: 1.53, phuCapCB: 0.00, luongKyHD: 6334200, hsHoanThanh: 1.0, heSoCV: 1.62, phuCapCV: 0.00, luongK3CV: 3051700, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
-            "MA TRỌNG LUẬN":          { heSoCB: 1.35, phuCapCB: 0.00, luongKyHD: 5589000, hsHoanThanh: 1.1, heSoCV: 1.63, phuCapCV: 0.00, luongK3CV: 3070532, docHai: 18, tamUng: 3000000, pctt: 0, truUngT4: 0 },
-            "TRẦN BÌNH DƯƠNG":        { heSoCB: 1.79, phuCapCB: 0.00, luongKyHD: 7410600, hsHoanThanh: 1.0, heSoCV: 2.40, phuCapCV: 0.00, luongK3CV: 4521037, docHai: 18, tamUng: 3000000, pctt: 0, truUngT4: 0 },
-            "ĐẶNG TRẦN TRUNG":        { heSoCB: 1.53, phuCapCB: 0.00, luongKyHD: 6334200, hsHoanThanh: 1.0, heSoCV: 1.62, phuCapCV: 0.00, luongK3CV: 3051700, docHai: 0, tamUng: 3000000, pctt: 0, truUngT4: 0 },
-            "PHẠM HUY CHIẾN":         { heSoCB: 2.26, phuCapCB: 0.00, luongKyHD: 9356400, hsHoanThanh: 1.0, heSoCV: 2.40, phuCapCV: 0.00, luongK3CV: 4521037, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
-            "NGUYỄN ĐỨC CHÍ":         { heSoCB: 1.53, phuCapCB: 0.00, luongKyHD: 6334200, hsHoanThanh: 1.0, heSoCV: 1.85, phuCapCV: 0.00, luongK3CV: 3485184, docHai: 0, tamUng: 0,       pctt: 0, truUngT4: 0 },
-            "TRẦN THẠCH DƯƠNG":       { heSoCB: 1.53, phuCapCB: 0.00, luongKyHD: 6334200, hsHoanThanh: 1.0, heSoCV: 1.85, phuCapCV: 0.00, luongK3CV: 3485184, docHai: 0, tamUng: 0,       pctt: 0, truUngT4: 0 },
-            "LÊ HỒNG PHƯƠNG":         { heSoCB: 1.53, phuCapCB: 0.00, luongKyHD: 6334200, hsHoanThanh: 1.0, heSoCV: 1.85, phuCapCV: 0.00, luongK3CV: 3485184, docHai: 0, tamUng: 0,       pctt: 0, truUngT4: 0 },
-            "KHỔNG VĂN CHƯƠNG":       { heSoCB: 1.53, phuCapCB: 0.00, luongKyHD: 6334200, hsHoanThanh: 1.0, heSoCV: 1.85, phuCapCV: 0.00, luongK3CV: 3485184, docHai: 0, tamUng: 0,       pctt: 0, truUngT4: 0 }
+            "NGUYỄN MINH NGỌC":       { heSoCB: 1.94, phuCapCB: 0.25, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 5.20, phuCapCV: 0.60, luongK3CV: 11009296, docHai: 0, tamUng: 5000000, pctt: 0, truUngT4: 0 },
+            "NGUYỄN VĂN NAM":         { heSoCB: 1.48, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 2.24, phuCapCV: 0.00, luongK3CV: 4220718, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
+            "NGUYỄN THỊ TUYẾT NHUNG": { heSoCB: 1.79, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.74, phuCapCV: 0.00, luongK3CV: 3277717, docHai: 10, tamUng: 3000000, pctt: 0, truUngT4: 0 },
+            "VŨ THỊ THU":             { heSoCB: 1.94, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.86, phuCapCV: 0.00, luongK3CV: 3504021, docHai: 10, tamUng: 3000000, pctt: 0, truUngT4: 0 },
+            "ĐÀO THỊ LIÊN":           { heSoCB: 1.79, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.74, phuCapCV: 0.00, luongK3CV: 3277717, docHai: 10, tamUng: 4000000, pctt: 0, truUngT4: 0 },
+            "VÕ THỊ THANH TUYỀN":     { heSoCB: 1.71, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.74, phuCapCV: 0.00, luongK3CV: 3277717, docHai: 10, tamUng: 3000000, pctt: 0, truUngT4: 0 },
+            "TRẦN THỊ THANH":         { heSoCB: 1.67, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.48, phuCapCV: 0.00, luongK3CV: 2787848, docHai: 10, tamUng: 4000000, pctt: 0, truUngT4: 0 },
+            "TRẦN ĐỨC CHIẾN":         { heSoCB: 1.83, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.66, phuCapCV: 0.00, luongK3CV: 3127027, docHai: 0, tamUng: 3000000, pctt: 0, truUngT4: 0 },
+            "PHẠM TIẾN LONG":         { heSoCB: 1.80, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.62, phuCapCV: 0.00, luongK3CV: 3051700, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
+            "ĐINH HỮU VINH":          { heSoCB: 1.83, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.66, phuCapCV: 0.00, luongK3CV: 3127027, docHai: 0, tamUng: 3000000, pctt: 0, truUngT4: 0 },
+            "BÙI ĐÌNH ĐIỆP":          { heSoCB: 1.53, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.62, phuCapCV: 0.00, luongK3CV: 3051700, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
+            "HOÀNG MẠNH HÙNG":        { heSoCB: 1.53, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.62, phuCapCV: 0.00, luongK3CV: 3051700, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
+            "MA TRỌNG LUẬN":          { heSoCB: 1.35, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.1, heSoCV: 1.63, phuCapCV: 0.00, luongK3CV: 3070532, docHai: 18, tamUng: 3000000, pctt: 0, truUngT4: 0 },
+            "TRẦN BÌNH DƯƠNG":        { heSoCB: 1.79, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 2.40, phuCapCV: 0.00, luongK3CV: 4521037, docHai: 18, tamUng: 3000000, pctt: 0, truUngT4: 0 },
+            "ĐẶNG TRẦN TRUNG":        { heSoCB: 1.53, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.62, phuCapCV: 0.00, luongK3CV: 3051700, docHai: 0, tamUng: 3000000, pctt: 0, truUngT4: 0 },
+            "PHẠM HUY CHIẾN":         { heSoCB: 2.26, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 2.40, phuCapCV: 0.00, luongK3CV: 4521037, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
+            "NGUYỄN ĐỨC CHÍ":         { heSoCB: 1.53, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.85, phuCapCV: 0.00, luongK3CV: 3485184, docHai: 0, tamUng: 0,       pctt: 0, truUngT4: 0 },
+            "TRẦN THẠCH DƯƠNG":       { heSoCB: 1.53, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.85, phuCapCV: 0.00, luongK3CV: 3485184, docHai: 0, tamUng: 0,       pctt: 0, truUngT4: 0 },
+            "LÊ HỒNG PHƯƠNG":         { heSoCB: 1.53, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.85, phuCapCV: 0.00, luongK3CV: 3485184, docHai: 0, tamUng: 0,       pctt: 0, truUngT4: 0 },
+            "KHỔNG VĂN CHƯƠNG":       { heSoCB: 1.53, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 1.85, phuCapCV: 0.00, luongK3CV: 3485184, docHai: 0, tamUng: 0,       pctt: 0, truUngT4: 0 }
         };
 
         let dynamicStaffDatabase = [];
-        const baseLCB = 2530000;
+        const baseLCB = 2530000; // Lương tối thiểu vùng cấu hình mới
         const dongGiaLCV = 2087970;
         let activeTab = 'lcb';
 
@@ -134,12 +134,9 @@
             const statusBadge = document.getElementById('supabase-status');
             const statusText = document.getElementById('status-text');
             try {
-                // Khởi tạo thông qua tên biến mới, không bao giờ bị đụng độ cú pháp nữa
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                
                 const { error } = await supabaseClient.from('master_staff').select('count', { count: 'exact', head: true });
                 if (error) throw error;
-                
                 statusBadge.className = "db-status-badge connected";
                 statusText.innerText = "Supabase Connected";
             } catch (err) {
@@ -168,32 +165,52 @@
             renderTable();
         }
 
+        // HÀM TÍNH TOÁN THEO CÔNG THỨC MỚI CỦA BẠN
         function tinhToanToanBoLuong(staff) {
             let nCong = staff.cong;
             let nPhep = staff.phep;
             let nLe = staff.le;
             let hstt = staff.hsHoanThanh;
 
-            let luongCoBanThang = baseLCB * (staff.heSoCB + staff.phuCapCB);
-            let luongThoiGian = Math.round((luongCoBanThang / 22) * nCong);
-            let luongLePhepThucTe = Math.round(staff.luongKyHD / 22) * (nPhep + nLe);
-            let tongTienLCB = Math.round(luongThoiGian * hstt) + luongLePhepThucTe;
+            // 1. Sửa Lương ký HĐLĐ = hệ số LCB nhân với tối thiểu vùng
+            let luongKyHD = baseLCB * staff.heSoCB; 
 
-            let bhtn = staff.heSoCB > 0 ? Math.round(staff.luongKyHD * 0.01) : 0;
-            let bhxh_yt = staff.heSoCB > 0 ? Math.round(staff.luongKyHD * 0.095) : 0;
+            // 2. Lương thời gian
+            let luongThoiGian = Math.round((luongKyHD / 22) * nCong);
+
+            // 3. Lương lễ phép thực tế
+            let luongLePhepThucTe = Math.round(luongKyHD / 22) * (nPhep + nLe);
+
+            // 4. Lương K3 theo cơ bản (mặc định cấu hình ở Object danh mục, thường bằng 0)
+            let luongK3CV_TheoCB = staff.luongK3CV_TheoCB || 0;
+
+            // 5. Tổng tiền LCB = lương thời gian cộng với lương K3 theo cơ bản nhân với hệ số hoàn thành công việc rồi cộng với lương lễ, phép thực tế
+            let tongTienLCB = Math.round(luongThoiGian + (luongK3CV_TheoCB * hstt)) + luongLePhepThucTe;
+
+            // Tính toán giảm trừ bảo hiểm trích theo lương ký HĐLĐ
+            let bhtn = staff.heSoCB > 0 ? Math.round(luongKyHD * 0.01) : 0;
+            let bhxh_yt = staff.heSoCB > 0 ? Math.round(luongKyHD * 0.095) : 0;
+
+            // 6. Thực lĩnh LCB = tổng tiền trừ đi BHTN trừ đi BHXH và BHYT
             let thucLinhLCB = tongTienLCB - bhtn - bhxh_yt;
 
+            // 7. Lương CV thực tế = hàm làm tròn lương công việc chia 22 nhân với thời gian (ngày công)
             let luongCongViecThang = (staff.heSoCV + staff.phuCapCV) * dongGiaLCV;
             let luongCV_ThucTe = Math.round((luongCongViecThang / 22) * nCong);
+
+            // 8. Thực lĩnh CV = lương CV thực tế trừ đi tạm ứng trừ đi quỹ phòng chống thiên tai trừ đi trừ ứng lương
             let thucLinhLCV = luongCV_ThucTe - staff.tamUng - staff.pctt - staff.truUngT4;
+
+            // 9. Thực lĩnh CB+CV cuối cùng = thực lĩnh cv + thực lĩnh (CB)
             let thucLinhTongCuoiCung = thucLinhLCV + thucLinhLCB;
 
+            // Phụ cấp ăn ca và độc hại
             let anCa = staff.name.toUpperCase().includes("HOÀNG MẠNH HÙNG") ? 600000 : Math.round(nCong * 5000);
             let boiDuongDocHai = Math.round(staff.docHai * 13000);
             let tongThucNhanNganHang = thucLinhLCB + thucLinhLCV + anCa + boiDuongDocHai;
 
             return { 
-                luongCoBanThang, luongThoiGian, luongLePhepThucTe, tongTienLCB, bhtn, bhxh_yt, thucLinhLCB, 
+                luongKyHD, luongThoiGian, luongLePhepThucTe, tongTienLCB, bhtn, bhxh_yt, thucLinhLCB, 
                 luongCV_ThucTe, thucLinhLCV, thucLinhTongCuoiCung, anCa, boiDuongDocHai, tongThucNhanNganHang 
             };
         }
@@ -280,7 +297,7 @@
 
                         let staffObj = {
                             name: upperName, cong: parsedCong, phep: nPhep, le: nLe,
-                            heSoCB: masterData.heSoCB, phuCapCB: masterData.phuCapCB, luongKyHD: masterData.luongKyHD,
+                            heSoCB: masterData.heSoCB, phuCapCB: masterData.phuCapCB, luongK3CV_TheoCB: masterData.luongK3CV_TheoCB,
                             hsHoanThanh: masterData.hsHoanThanh, heSoCV: masterData.heSoCV, phuCapCV: masterData.phuCapCV, docHai: masterData.docHai,
                             tamUng: masterData.tamUng, pctt: masterData.pctt, truUngT4: masterData.truUngT4
                         };
@@ -390,7 +407,7 @@
             body.innerHTML = "";
             
             if (activeTab === 'lcb') {
-                head.innerHTML = `<tr><th>STT</th><th class="text-left" style="min-width:140px;">Họ và Tên Nhân Sự</th><th>Hệ Số LCB</th><th>Mức Lương CB</th><th style="background:#2563eb;">Công NT</th><th>Lương Thời Gian</th><th style="background:#2563eb;">Phép</th><th style="background:#2563eb;">Lễ</th><th>Lương Lễ Phép</th><th>Hệ Số HT</th><th>Tổng Tiền LCB</th><th>BHTN (1%)</th><th>BHXH+BHYT</th><th style="background:#1e40af;">Thực Lĩnh LCB</th></tr>`;
+                head.innerHTML = `<tr><th>STT</th><th class="text-left" style="min-width:140px;">Họ và Tên Nhân Sự</th><th>Hệ Số LCB</th><th>Mức Lương HĐLĐ mới</th><th style="background:#2563eb;">Công NT</th><th>Lương Thời Gian</th><th style="background:#2563eb;">Phép</th><th style="background:#2563eb;">Lễ</th><th>Lương Lễ Phép</th><th>Hệ Số HT</th><th>Tổng Tiền LCB</th><th>BHTN (1%)</th><th>BHXH+BHYT</th><th style="background:#1e40af;">Thực Lĩnh LCB</th></tr>`;
             } else if (activeTab === 'lcv') {
                 head.innerHTML = `<tr><th>STT</th><th class="text-left" style="min-width:140px;">Họ và Tên Nhân Sự</th><th>Hệ Số LCV</th><th style="background:#ea580c;">Ngày Công NT</th><th>Lương CV Thực Tế</th><th style="background:#dc2626; min-width:110px;">Tạm Ứng Trừ (-)</th><th style="background:#dc2626;">Quỹ PCTT (-)</th><th style="background:#dc2626;">Trừ Ứng T4 (-)</th><th style="background:#ca8a04;">Thực Lĩnh LCV</th><th style="background:#166534; font-size:11.5px;">Thực Lĩnh CB+CV Cuối Cùng</th></tr>`;
             } else if (activeTab === 'anca') {
@@ -412,7 +429,7 @@
 
                 let rowHtml = `<tr id="row-${index}">`;
                 if (activeTab === 'lcb') {
-                    rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td>${(staff.heSoCB+staff.phuCapCB).toFixed(2)}</td><td>${res.luongCoBanThang.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongtg">${res.luongThoiGian.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oPhep}</td><td class="text-center" style="padding:1px;">${oLe}</td><td class="td-luonglephat" style="font-weight:600;">${res.luongLePhepThucTe.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oHT}</td><td class="font-bold td-tonglcb" style="color:#b45309; background:#fffbeb;">${res.tongTienLCB.toLocaleString()}</td><td class="color-giamtru">-${res.bhtn.toLocaleString()}</td><td class="color-giamtru">-${res.bhxh_yt.toLocaleString()}</td><td class="color-lcb td-thuckinhlcb">${res.thucLinhLCB.toLocaleString()}</td>`;
+                    rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td>${staff.heSoCB.toFixed(2)}</td><td>${res.luongKyHD.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongtg">${res.luongThoiGian.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oPhep}</td><td class="text-center" style="padding:1px;">${oLe}</td><td class="td-luonglephat" style="font-weight:600;">${res.luongLePhepThucTe.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oHT}</td><td class="font-bold td-tonglcb" style="color:#b45309; background:#fffbeb;">${res.tongTienLCB.toLocaleString()}</td><td class="color-giamtru">-{res.bhtn.toLocaleString()}</td><td class="color-giamtru">-${res.bhxh_yt.toLocaleString()}</td><td class="color-lcb td-thuckinhlcb">${res.thucLinhLCB.toLocaleString()}</td>`;
                 } else if (activeTab === 'lcv') {
                     rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td class="text-center font-bold">${(staff.heSoCV+staff.phuCapCV).toFixed(2)}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongcvtt">${res.luongCV_ThucTe.toLocaleString()}</td><td style="padding:1px; text-align:center;">${oTamUng}</td><td class="color-giamtru">${staff.pctt > 0 ? '-' + staff.pctt.toLocaleString() : '-'}</td><td class="color-giamtru">${staff.truUngT4 > 0 ? '-' + staff.truUngT4.toLocaleString() : '-'}</td><td class="color-lcv td-thuckinhlcv">${res.thucLinhLCV.toLocaleString()}</td><td class="color-tongcuoi td-thuckinhcbcv">${res.thucLinhTongCuoiCung.toLocaleString()}</td>`;
                 } else if (activeTab === 'anca') {
