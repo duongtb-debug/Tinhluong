@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VINAPACO KẾ TOÁN v35.0 - ĐẦY ĐỦ VÀ CHUẨN XÁC</title>
+    <title>VINAPACO KẾ TOÁN v35.0 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN ĐỒNG BỘ CLOUD</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -94,7 +94,7 @@
         <div class="table-responsive">
             <table id="main-table">
                 <thead id="table-head">
-                    <tr style="background:#475569;">
+                    <tr>
                         <th style="padding: 25px; font-weight: 500; color: #cbd5e1; text-align: center;">Hệ thống đã sẵn sàng. Hãy nạp file ở Bước 1...</th>
                     </tr>
                 </thead>
@@ -105,10 +105,12 @@
     </div>
 
     <script>
-        // Khởi tạo thông tin kết nối Supabase từ thông tin của bạn
-        const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
-        let supabase = null;
+        // --- 1. BIẾN TOÀN CỤC KHỞI TẠO (Nơi duy nhất dùng từ khóa let cho biến này) ---
+        let supabase = null; 
+
+        // --- 2. THÔNG TIN API SUPABASE (Cấu hình chính xác dự án của bạn) ---
+        const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG"; 
 
         const MASTER_STAFF_DIRECTORY = {
             "NGUYỄN MINH NGỌC":       { heSoCB: 1.94, phuCapCB: 0.25, luongKyHD: 9066600, hsHoanThanh: 1.0, heSoCV: 5.20, phuCapCV: 0.60, luongK3CV: 11009296, docHai: 0, tamUng: 5000000, pctt: 0, truUngT4: 0 },
@@ -138,14 +140,16 @@
         const dongGiaLCV = 2087970;
         let activeTab = 'lcb';
 
-        // Khởi tạo kết nối Supabase và cập nhật giao diện thanh trạng thái
+        // --- 3. HÀM KHỞI TẠO KẾT NỐI (ĐÃ SỬA: Không còn chữ let/const tại dòng chèn client) ---
         async function initSupabase() {
             const statusBadge = document.getElementById('supabase-status');
             const statusText = document.getElementById('status-text');
             try {
-                supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                // Kiểm tra bằng cách thử đọc bảng master_staff
-                const { data, error } = await supabase.from('master_staff').select('count', { count: 'exact', head: true });
+                // CHUẨN XÁC: Gán giá trị thẳng vào biến toàn cục, không khai báo lại
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                
+                // Gửi lệnh kiểm tra kết nối hệ thống dữ liệu
+                const { error } = await supabase.from('master_staff').select('count', { count: 'exact', head: true });
                 if (error) throw error;
                 
                 statusBadge.className = "db-status-badge connected";
@@ -307,7 +311,7 @@
                         });
                     }
 
-                    // Tự động đẩy lưu trữ lên Supabase Cloud nếu trạng thái đang Connected
+                    // Tự động đẩy đồng bộ dữ liệu lên Supabase Cloud nếu trạng thái connected
                     if (supabase && recordsToUpload.length > 0) {
                         const { error } = await supabase.from('monthly_salaries').upsert(recordsToUpload, { onConflict: 'month_year,name' });
                         if (error) console.error("Lỗi đồng bộ dữ liệu lên Cloud:", error.message);
@@ -424,7 +428,7 @@
 
                 let rowHtml = `<tr id="row-${index}">`;
                 if (activeTab === 'lcb') {
-                    rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td>${(staff.heSoCB+staff.phuCapCB).toFixed(2)}</td><td>${res.luongCoBanThang.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongtg">${res.luongThoiGian.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oPhep}</td><td class="text-center" style="padding:1px;">${oLe}</td><td class="td-luonglephat" style="font-weight:600;">${res.luongLePhepThucTe.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oHT}</td><td class="font-bold td-tonglcb" style="color:#b45309; background:#fffbeb;">${res.tongTienLCB.toLocaleString()}</td><td class="color-giamtru">-${res.bhtn.toLocaleString()}</td><td class="color-giamtru">-${res.bhxh_yt.toLocaleString()}</td><td class="color-lcb td-thuckinhlcb">${res.thucLinhLCB.toLocaleString()}</td>`;
+                    rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td>${(staff.heSoCB+staff.phuCapCB).toFixed(2)}</td><td>${res.luongCoBanThang.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongtg">${res.luongThoiGian.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oPhep}</td><td class="text-center" style="padding:1px;">${oLe}</td><td class="td-luonglephat" style="font-weight:600;">${res.luongLePhepThucTe.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oHT}</td><td class="font-bold td-tonglcb" style="color:#b45309; background:#fffbeb;">${res.tongTienLCB.toLocaleString()}</td><td class="color-giamtru">-%${res.bhtn.toLocaleString()}</td><td class="color-giamtru">-%${res.bhxh_yt.toLocaleString()}</td><td class="color-lcb td-thuckinhlcb">${res.thucLinhLCB.toLocaleString()}</td>`;
                 } else if (activeTab === 'lcv') {
                     rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td class="text-center font-bold">${(staff.heSoCV+staff.phuCapCV).toFixed(2)}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongcvtt">${res.luongCV_ThucTe.toLocaleString()}</td><td style="padding:1px; text-align:center;">${oTamUng}</td><td class="color-giamtru">${staff.pctt > 0 ? '-' + staff.pctt.toLocaleString() : '-'}</td><td class="color-giamtru">${staff.truUngT4 > 0 ? '-' + staff.truUngT4.toLocaleString() : '-'}</td><td class="color-lcv td-thuckinhlcv">${res.thucLinhLCV.toLocaleString()}</td><td class="color-tongcuoi td-thuckinhcbcv">${res.thucLinhTongCuoiCung.toLocaleString()}</td>`;
                 } else if (activeTab === 'anca') {
