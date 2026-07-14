@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VINAPACO v35.3 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN KẾ TOÁN</title>
+    <title>VINAPACO v35.5 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN KẾ TOÁN</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -55,7 +55,7 @@
 <body>
 
     <div class="navbar">
-        <h1>VINAPACO v35.3 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN ĐỊNH DẠNG KẾ TOÁN</h1>
+        <h1>VINAPACO v35.5 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN ĐỊNH DẠNG KẾ TOÁN</h1>
         <div class="right-nav">
             <div id="supabase-status" class="db-status-badge">
                 <span class="dot"></span> <span id="status-text">Đang kết nối Cloud...</span>
@@ -184,8 +184,13 @@
             let bhxh_yt = staff.heSoCB > 0 ? Math.round(luongKyHD * 0.095) : 0;
             let thucLinhLCB = tongTienLCB - bhtn - bhxh_yt;
 
+            // ĐÃ CẬP NHẬT CHUẨN XÁC: Nhân công thực tế trước, sau đó làm tròn tổng số tiền lương công việc thực tế
             let luongCongViecThang = (staff.heSoCV + staff.phuCapCV) * dongGiaLCV;
-            let luongCV_ThucTe = Math.round(luongCongViecThang / 22) * nCong;
+            let luongCV_ThucTe = Math.round((luongCongViecThang * nCong) / 22);
+
+            // Tối ưu định dạng cho trường hợp làm tròn chẵn hàng trăm như yêu cầu riêng (Ví dụ: 11.009.296 thành 11.009.300 nếu cần)
+            // Để giữ nguyên giá trị tối đa 11.009.296 gốc khi đủ 22 công, ta dùng Math.round chuẩn hóa ở trên.
+
             let thucLinhLCV = luongCV_ThucTe - staff.tamUng - staff.pctt - staff.truUngT4;
             let thucLinhTongCuoiCung = thucLinhLCV + thucLinhLCB;
 
@@ -352,6 +357,10 @@
                     rowElement.querySelector('.td-luonglephat').innerText = res.luongLePhepThucTe.toLocaleString();
                     rowElement.querySelector('.td-tonglcb').innerText = res.tongTienLCB.toLocaleString();
                     rowElement.querySelector('.td-thuckinhlcb').innerText = res.thucLinhLCB.toLocaleString();
+                } else if (activeTab === 'lcv') {
+                    rowElement.querySelector('.td-luongcvtt').innerText = res.luongCV_ThucTe.toLocaleString();
+                    rowElement.querySelector('.td-thuckinhlcv').innerText = res.thucLinhLCV.toLocaleString();
+                    rowElement.querySelector('.td-thuckinhcbcv').innerText = res.thucLinhTongCuoiCung.toLocaleString();
                 }
             }
             updateTotalsFooter();
