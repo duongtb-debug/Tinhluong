@@ -150,7 +150,7 @@
 
         /* BẢO MẬT & SECURITY BANNER */
         .security-banner { background: #fef2f2; border: 1px dashed #fca5a5; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .security-pwd-input { width: 150px; padding: 6px 10px; border: 1px solid #fca5a5; border-radius: 4px; font-family: monospace; font-size: 13px; font-weight: bold; letter-spacing: 2px; text-align: center; background: #fff5h5; }
+        .security-pwd-input { width: 170px; padding: 6px 10px; border: 1px solid #fca5a5; border-radius: 4px; font-family: monospace; font-size: 13px; font-weight: bold; letter-spacing: 1px; text-align: center; background: #fffaf0; }
         .security-pwd-input::placeholder { font-family: 'Times New Roman', serif; font-size: 11px; letter-spacing: 0; font-weight: normal; }
 
         /* MODAL */
@@ -212,10 +212,10 @@
             
             <div class="security-banner">
                 <div style="color: var(--red); font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 6px;">
-                    🛡️ <span><strong>HỆ THỐNG ĐANG KHÓA BẢO MẬT:</strong> Nhập mật khẩu để thực hiện chỉnh sửa hoặc xóa dữ liệu.</span>
+                    🛡️ <span><strong>HỆ THỐNG BẢO MẬT:</strong> Nhập mã PIN rồi nhấn <strong>Enter</strong> để mở khoá chỉnh sửa / xóa dữ liệu.</span>
                 </div>
                 <div>
-                    <input type="password" id="sys-pwd" class="security-pwd-input" placeholder="Nhập mã PIN..." value="">
+                    <input type="password" id="sys-pwd" class="security-pwd-input" placeholder="Nhập mật khẩu + Enter..." onkeyup="checkEnterKeySecurity(event)">
                 </div>
             </div>
 
@@ -512,7 +512,7 @@
     <script>
         let activeTab = 'lcb';
         let supabaseClient = null;
-        const DEFAULT_SECURITY_PASSWORD = "VINAPACO2026"; // MẬT KHẨU KHÓA BẢO MẬT MẶC ĐỊNH
+        const DEFAULT_SECURITY_PASSWORD = "VINAPACO2026"; // MẬT KHẨU MẶC ĐỊNH
 
         let MASTER_STAFF_DIRECTORY = [
             { name: "NGUYỄN MINH NGỌC", heSoCB: 2.19, heSoCV: 5.80, heSoHT: 1, cong: 22, phep: 0, le: 0, tamUng: 5000000, pctt: 0, truUngT4: 0, docHai: 0 },
@@ -590,6 +590,15 @@
             document.getElementById('subtab-' + subtabId).style.display = 'block';
             document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('subtab-btn-' + subtabId).classList.add('active');
+        }
+
+        /* LẮNG NGHE PHÍM ENTER TẠI Ô NHẬP MẬT KHẨU */
+        function checkEnterKeySecurity(event) {
+            if (event.key === "Enter") {
+                if (verifySecurityPassword()) {
+                    alert("🔓 XÁC THỰC THÀNH CÔNG: Quyền chỉnh sửa/xóa đã được kích hoạt!");
+                }
+            }
         }
 
         /* KIỂM TRA MẬT KHẨU BẢO MẬT CHUNG */
@@ -742,7 +751,6 @@
             const container = document.getElementById('todo-list-box');
             container.innerHTML = "";
             
-            // Lọc theo lịch tuần được chọn
             let filteredTasks = todoTasks;
             if(activeWeeklyDayFilter !== "all") {
                 filteredTasks = todoTasks.filter(t => t.day === activeWeeklyDayFilter);
@@ -799,7 +807,7 @@
         }
 
         function deleteTodoTask(id) {
-            if(!verifySecurityPassword()) return; // Yêu cầu bảo mật mật khẩu
+            if(!verifySecurityPassword()) return; 
             todoTasks = todoTasks.filter(t => t.id !== id);
             renderTodoList();
         }
@@ -811,7 +819,6 @@
         ];
         let loadedRecordFiles = []; 
 
-        // Tính Thành tiền trước thuế = SL * Đơn giá
         function calculateAmountBeforeTax() {
             const qty = parseFloat(document.getElementById('pay-quantity').value) || 0;
             const price = parseFloat(document.getElementById('pay-unit-price').value) || 0;
@@ -862,8 +869,7 @@
                     fileThumbs = `<span style="color:#94a3b8; font-style:italic; font-size:12px;">Không có tệp</span>`; 
                 }
 
-                // Thiết lập nút QR Code
-                let qrMarkup = `<button type="button" class="qr-small-btn" onclick="openQRViewer('${p.id}')" title="Click để xem mã QR quét chuyển khoản nhanh">🖼️ QR</button>`;
+                let qrMarkup = `<button type="button" class="qr-small-btn" onclick="openQRViewer('${p.id}')" title="Xem mã QR">🖼️ QR</button>`;
 
                 body.innerHTML += `
                     <tr>
@@ -990,7 +996,6 @@
                 status: document.getElementById('pay-status').value
             };
 
-            // Nếu chỉnh sửa hồ sơ cũ, kiểm tra xác thực mật khẩu bảo mật
             if (id !== "") {
                 if(!verifySecurityPassword()) return;
             }
@@ -1003,7 +1008,7 @@
         }
 
         function editPaymentRecord(id) {
-            if(!verifySecurityPassword()) return; // Kiểm tra bảo mật khi nhấn Sửa
+            if(!verifySecurityPassword()) return; 
             let p = paymentRecords.find(item => item.id === id);
             if (p) {
                 document.getElementById('pay-id').value = p.id;
@@ -1030,7 +1035,7 @@
         }
 
         function deletePaymentRecord(id) {
-            if(!verifySecurityPassword()) return; // Kiểm tra bảo mật khi nhấn Xóa
+            if(!verifySecurityPassword()) return; 
             if (confirm("Chắc chắn xóa hồ sơ chứng từ thanh toán này?")) {
                 paymentRecords = paymentRecords.filter(p => p.id !== id);
                 renderPaymentRecordsTable();
@@ -1073,7 +1078,7 @@
 
         function closeFileViewer() { document.getElementById('file-viewer-modal').style.display = 'none'; }
 
-        /* --- XỬ LÝ QR CODE CỦA HỒ SƠ --- */
+        /* --- XỬ LÝ QR CODE --- */
         let qrcodeInstance = null;
         function openQRViewer(pId) {
             let p = paymentRecords.find(item => item.id === pId);
@@ -1086,10 +1091,8 @@
                 document.getElementById('modal-qr-account').innerText = p.account;
                 document.getElementById('modal-qr-amount').innerText = totalPayAmount.toLocaleString('vi-VN') + " VND";
 
-                // Đường dẫn QR ngân hàng mẫu VietQR hoặc thô
                 let qrDataString = `Ngân Hàng: ${p.bank} | STK: ${p.account} | Người Nhận: ${p.recipient} | Số Tiền: ${totalPayAmount}`;
 
-                // Tạo QR
                 document.getElementById('modal-qr-code-area').innerHTML = "";
                 qrcodeInstance = new QRCode(document.getElementById('modal-qr-code-area'), {
                     text: qrDataString,
@@ -1152,7 +1155,6 @@
             e.preventDefault();
             let id = document.getElementById('tel-id').value;
             
-            // Xác thực bảo mật khi chỉnh sửa danh mục cũ
             if(id !== "") {
                 if(!verifySecurityPassword()) return;
             }
@@ -1172,7 +1174,7 @@
         }
 
         function editTelecom(id) {
-            if(!verifySecurityPassword()) return; // Kiểm tra khi nhấn sửa cước
+            if(!verifySecurityPassword()) return; 
             let t = telecomList.find(item => item.id === id);
             if (t) {
                 document.getElementById('tel-id').value = t.id;
@@ -1185,7 +1187,7 @@
         }
 
         function deleteTelecom(id) {
-            if(!verifySecurityPassword()) return; // Kiểm tra bảo mật khi xóa cước
+            if(!verifySecurityPassword()) return; 
             if (confirm("Xóa danh mục quản lý cước viễn thông này?")) {
                 telecomList = telecomList.filter(t => t.id !== id);
                 renderTelecomTable();
