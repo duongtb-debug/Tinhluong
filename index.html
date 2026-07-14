@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VINAPACO ERM v37.5 - ENTERPRISE MANAGEMENT SYSTEM</title>
-    <!-- Thư viện Excel, QR Code và SDK Supabase -->
+    <title>VINAPACO ERM v38.0 - ENTERPRISE MANAGEMENT SYSTEM</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -77,8 +76,8 @@
         .btn-export { background: #10b981; color: white; border: none; padding: 8px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-size: 13px; font-family: 'Times New Roman', Times, serif; }
         .btn-export:hover { background: #059669; }
 
-        .grid-layout { display: grid; grid-template-columns: 300px 1fr; gap: 15px; }
-        .sub-tabs { display: flex; flex-direction: column; gap: 4px; background: #e2e8f0; padding: 8px; border-radius: 6px; height: fit-content; }
+        .grid-layout { display: grid; grid-template-columns: 310px 1fr; gap: 15px; }
+        .sub-tabs { display: flex; flex-direction: column; gap: 4px; background: #e2e8f0; padding: 8px; border-radius: 6px; height: fit-content; margin-top: 10px;}
         .sub-tab-btn { padding: 10px; border: none; text-align: left; background: transparent; border-radius: 4px; font-weight: bold; cursor: pointer; color: #475569; font-size: 13px; display: flex; align-items: center; justify-content: space-between; font-family: 'Times New Roman', Times, serif; }
         .sub-tab-btn.active { background: #2563eb; color: white; }
 
@@ -93,7 +92,7 @@
         .btn-delete { background: var(--red); }
         .btn-add { background: var(--blue); padding: 8px 14px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; color: white; font-weight: bold; font-family: 'Times New Roman', Times, serif; }
 
-        /* XEM TRƯỚC TÀI LIỆU CHUẨN */
+        /* DANH SÁCH FILE THUMBNAILS */
         .preview-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
         .file-card { width: 85px; height: 95px; border: 1px solid #cbd5e1; border-radius: 6px; position: relative; overflow: hidden; background: #ffffff; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.15s; }
         .file-card:hover { transform: translateY(-2px); border-color: var(--blue); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -103,16 +102,44 @@
         .file-card-name { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; padding: 4px 2px; box-sizing: border-box; font-weight: bold; color: #334155; }
         .file-card-delete { position: absolute; top: 2px; right: 2px; background: rgba(220, 38, 38, 0.9); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; }
 
+        /* KHUNG XEM TRƯỚC NỘI DUNG TÀI LIỆU TRỰC TIẾP TRÊN FORM */
+        .live-preview-panel {
+            margin-top: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: #f8fafc;
+            padding: 12px;
+            display: none;
+        }
+        .live-preview-title { font-weight: bold; color: #1e293b; margin-bottom: 8px; font-size: 13px; display: flex; justify-content: space-between; align-items: center;}
+        .live-preview-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            min-height: 150px;
+            max-height: 300px;
+            overflow: auto;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .live-preview-text-box { font-family: monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; color: #334155; margin: 0; }
+
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 15px; }
         .stats-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 15px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
         .stats-card-title { color: #64748b; font-weight: bold; margin-bottom: 4px; font-size: 12px; }
         .stats-card-value { font-size: 16px; font-weight: 800; color: #1e293b; }
 
-        .calendar-fixed-box { background: #0f172a; color: #f1f5f9; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .calendar-fixed-box { background: #0f172a; color: #f1f5f9; padding: 15px; border-radius: 6px; }
         .calendar-time { font-size: 24px; font-weight: 800; color: #3b82f6; text-align: center; font-family: monospace; }
         .calendar-date-solar { font-size: 15px; font-weight: bold; text-align: center; margin-top: 5px; color: #ffffff; }
         .calendar-date-lunar { font-size: 12px; text-align: center; color: #a8a29e; margin-top: 3px; background: #1e293b; padding: 4px; border-radius: 4px; }
         
+        /* BOX LỊCH TUẦN */
+        .weekly-calendar-box { background: #1e293b; color: white; padding: 10px; border-radius: 6px; margin-top: 10px; }
+        .weekly-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; }
+        .day-btn { background: #334155; border: none; color: white; padding: 6px 2px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; text-align: center; font-family: 'Times New Roman', serif; }
+        .day-btn.active { background: var(--blue); box-shadow: 0 0 6px var(--blue); }
+
         .todo-item { display: flex; flex-direction: column; gap: 5px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 10px; border-radius: 4px; margin-bottom: 6px; }
         .todo-item.done { opacity: 0.6; background: #f1f5f9; }
         .todo-header { display: flex; justify-content: space-between; align-items: center; }
@@ -121,15 +148,26 @@
         .badge-doing { background: #ea580c; }
         .badge-completed { background: #059669; }
 
+        /* BẢO MẬT & SECURITY BANNER */
+        .security-banner { background: #fef2f2; border: 1px dashed #fca5a5; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .security-pwd-input { width: 150px; padding: 6px 10px; border: 1px solid #fca5a5; border-radius: 4px; font-family: monospace; font-size: 13px; font-weight: bold; letter-spacing: 2px; text-align: center; background: #fff5h5; }
+        .security-pwd-input::placeholder { font-family: 'Times New Roman', serif; font-size: 11px; letter-spacing: 0; font-weight: normal; }
+
+        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 20px; border-radius: 6px; width: 650px; max-width: 95%; max-height: 90vh; overflow-y: auto; position: relative; }
         .modal-close { position: absolute; top: 10px; right: 10px; border: none; background: transparent; font-size: 20px; cursor: pointer; font-weight: bold; }
+        
+        /* QR ICON & DISPLAY */
+        .qr-small-btn { font-size: 18px; cursor: pointer; background: none; border: none; padding: 0; vertical-align: middle; transition: transform 0.1s; }
+        .qr-small-btn:hover { transform: scale(1.2); }
+        .qr-container-box { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px; background: #ffffff; border-radius: 6px; }
     </style>
 </head>
 <body>
 
     <div class="navbar">
-        <h1>VINAPACO ERM v37.5 - CHUYÊN PHÂN HỆ QUẢN LÝ</h1>
+        <h1>VINAPACO ERM v38.0 - CHUYÊN PHÂN HỆ QUẢN LÝ</h1>
         <div class="api-status-container">
             <span class="status-dot" id="supabase-status-dot"></span>
             <span id="supabase-status-text">Đang kiểm tra kết nối...</span>
@@ -142,7 +180,6 @@
             <button class="module-btn" id="btn-mod-tools" onclick="switchModule('tools')">📂 2. PHÂN HỆ QUẢN LÝ HỒ SƠ & TIỆN ÍCH MỞ RỘNG</button>
         </div>
 
-        <!-- ======================= MODULE 1: BẢNG LƯƠNG GỐC ======================= -->
         <div id="module-luong-container">
             <div class="card">
                 <h3 style="margin-top:0;">ĐỒNG BỘ CHẤM CÔNG VÂN TAY HOẶC CHỈNH SỬA TRỰC TIẾP</h3>
@@ -171,8 +208,17 @@
             </div>
         </div>
 
-        <!-- ======================= MODULE 2: HỆ THỐNG TIỆN ÍCH ======================= -->
         <div id="module-tools-container" style="display: none;">
+            
+            <div class="security-banner">
+                <div style="color: var(--red); font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                    🛡️ <span><strong>HỆ THỐNG ĐANG KHÓA BẢO MẬT:</strong> Nhập mật khẩu để thực hiện chỉnh sửa hoặc xóa dữ liệu.</span>
+                </div>
+                <div>
+                    <input type="password" id="sys-pwd" class="security-pwd-input" placeholder="Nhập mã PIN..." value="">
+                </div>
+            </div>
+
             <div class="grid-layout">
                 <div>
                     <div class="calendar-fixed-box">
@@ -185,10 +231,38 @@
                         </div>
                     </div>
 
-                    <div class="card" style="padding: 12px;">
+                    <div class="weekly-calendar-box">
+                        <div style="font-weight: bold; font-size: 11px; text-transform: uppercase; color: #cbd5e1; text-align: center;">📅 Lọc Nhắc Việc Hàng Tuần</div>
+                        <div class="weekly-days-grid">
+                            <button class="day-btn active" id="day-all" onclick="selectWeeklyDay('all')">Tất cả</button>
+                            <button class="day-btn" id="day-2" onclick="selectWeeklyDay('T2')">T2</button>
+                            <button class="day-btn" id="day-3" onclick="selectWeeklyDay('T3')">T3</button>
+                            <button class="day-btn" id="day-4" onclick="selectWeeklyDay('T4')">T4</button>
+                            <button class="day-btn" id="day-5" onclick="selectWeeklyDay('T5')">T5</button>
+                            <button class="day-btn" id="day-6" onclick="selectWeeklyDay('T6')">T6</button>
+                            <button class="day-btn" id="day-7" onclick="selectWeeklyDay('T7')">T7</button>
+                            <button class="day-btn" id="day-cn" onclick="selectWeeklyDay('CN')">CN</button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding: 12px; margin-top: 10px;">
                         <h4 style="margin: 0 0 8px 0; color: var(--primary);">📝 Nhắc Việc & Tiến Độ</h4>
                         <form id="todo-form" onsubmit="addTodoTask(event)" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px;">
                             <input type="text" id="todo-text" class="form-control" placeholder="Nội dung công việc..." required>
+                            
+                            <div class="form-group" style="gap: 4px;">
+                                <label style="font-size: 11px; font-weight: bold; color: #475569;">Chọn Ngày Thực Hiện Nhắc Nhở:</label>
+                                <select id="todo-day" class="form-control">
+                                    <option value="T2">Thứ Hai hàng tuần</option>
+                                    <option value="T3">Thứ Ba hàng tuần</option>
+                                    <option value="T4">Thứ Tư hàng tuần</option>
+                                    <option value="T5">Thứ Năm hàng tuần</option>
+                                    <option value="T6">Thứ Sáu hàng tuần</option>
+                                    <option value="T7">Thứ Bảy hàng tuần</option>
+                                    <option value="CN">Chủ Nhật hàng tuần</option>
+                                </select>
+                            </div>
+
                             <div style="display: flex; gap: 4px;">
                                 <select id="todo-status-select" class="form-control" style="flex: 1;">
                                     <option value="Chưa làm">⚪ Chưa làm</option>
@@ -210,7 +284,6 @@
 
                 <div style="min-width: 0;">
                     
-                    <!-- 1. PHÂN HỆ HỒ SƠ THANH TOÁN -->
                     <div id="subtab-payments" class="subtab-content">
                         <div class="card">
                             <h3 style="margin-top:0; color: var(--primary);">🧾 Quản Lý Hồ Sơ Thanh Toán, Thuế Linh Hoạt & Đính Kèm File Chuyên Nghiệp</h3>
@@ -253,9 +326,37 @@
                                         <label>Số Tài Khoản (STK)</label>
                                         <input type="text" id="pay-account" class="form-control" placeholder="001100482931" required>
                                     </div>
+                                    
                                     <div class="form-group">
-                                        <label>Số Tiền Trước Thuế (VND)</label>
-                                        <input type="number" id="pay-amount-before" class="form-control" placeholder="0" required>
+                                        <label>Số Lượng</label>
+                                        <input type="number" id="pay-quantity" class="form-control" placeholder="1" value="1" step="any" oninput="calculateAmountBeforeTax()" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Đơn Vị Tính</label>
+                                        <select id="pay-unit" class="form-control">
+                                            <option value="Cái">Cái</option>
+                                            <option value="Bộ">Bộ</option>
+                                            <option value="Chiếc">Chiếc</option>
+                                            <option value="Ram">Ram</option>
+                                            <option value="Thùng">Thùng</option>
+                                            <option value="Hộp">Hộp</option>
+                                            <option value="Mét">Mét</option>
+                                            <option value="Kg">Kg (Kilogam)</option>
+                                            <option value="Lít">Lít</option>
+                                            <option value="Gói">Gói</option>
+                                            <option value="Ngày công">Ngày công</option>
+                                            <option value="Chuyến">Chuyến</option>
+                                            <option value="Hợp đồng">Hợp đồng / Gói thầu</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Đơn Giá (VND / ĐVT)</label>
+                                        <input type="number" id="pay-unit-price" class="form-control" placeholder="0" oninput="calculateAmountBeforeTax()" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Thành Tiền Trước Thuế (VND)</label>
+                                        <input type="number" id="pay-amount-before" class="form-control" placeholder="Tự động tính..." readonly style="background:#f1f5f9; font-weight:bold;">
                                     </div>
                                     <div class="form-group">
                                         <label>Cơ Chế Thuế & Thuế Suất</label>
@@ -278,7 +379,16 @@
                                     <div class="form-group" style="grid-column: span 2;">
                                         <label>Chọn Nhiều File Tài Liệu Đính Kèm</label>
                                         <input type="file" id="pay-files" class="form-control" multiple onchange="handlePaymentMultipleFiles(event)">
+                                        
                                         <div class="preview-list" id="pay-files-previews-box"></div>
+                                        
+                                        <div class="live-preview-panel" id="form-live-preview-panel">
+                                            <div class="live-preview-title">
+                                                <span>🔍 Xem trước nhanh nội dung file vừa chọn:</span>
+                                                <button type="button" style="font-size:11px; padding:2px 6px; cursor:pointer;" onclick="hideLivePreviewPanel()">Ẩn xem trước</button>
+                                            </div>
+                                            <div class="live-preview-content" id="form-live-preview-content"></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-add" style="background:var(--purple);">💾 Lưu & Đồng Bộ Chứng Từ (Supabase)</button>
@@ -290,11 +400,13 @@
                                     <thead>
                                         <tr>
                                             <th class="text-left">Tên Hồ Sơ / Đơn Vị Thụ Hưởng</th>
+                                            <th>DVT / SL</th>
                                             <th>Ngân Hàng / STK</th>
                                             <th>Trước Thuế (VND)</th>
-                                            <th>Tiền Thuế (VND)</th>
+                                            <th>Thuế (%)</th>
                                             <th>Sau Thuế (VND)</th>
-                                            <th>Tài Liệu Xem Trước</th>
+                                            <th>Tài Liệu Đính Kèm</th>
+                                            <th>QR Code</th>
                                             <th>Trạng Thái</th>
                                             <th>Hành Động</th>
                                         </tr>
@@ -305,7 +417,6 @@
                         </div>
                     </div>
 
-                    <!-- 2. PHÂN HỆ QUẢN LÝ CƯỚC VIỄN THÔNG -->
                     <div id="subtab-telecom" class="subtab-content" style="display: none;">
                         <div class="card">
                             <h3 style="margin-top:0; color: var(--primary);">🌐 Quản Lý Chi Phí Cước Viễn Thông & Internet Doanh Nghiệp</h3>
@@ -367,7 +478,6 @@
 
     </div>
 
-    <!-- MODAL XEM TRƯỚC TÀI LIỆU -->
     <div id="file-viewer-modal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFileViewer()">×</button>
@@ -380,9 +490,29 @@
         </div>
     </div>
 
+    <div id="qr-viewer-modal" class="modal">
+        <div class="modal-content" style="width: 350px;">
+            <button class="modal-close" onclick="closeQRViewer()">×</button>
+            <h3 style="margin-top:0; text-align:center;">Mã QR Thanh Toán</h3>
+            <div class="qr-container-box">
+                <div id="modal-qr-code-area"></div>
+                <div style="text-align: center; font-size: 13px; line-height: 1.4; color: #475569;">
+                    <strong id="modal-qr-recipient" style="color: var(--blue);"></strong><br>
+                    Ngân hàng: <span id="modal-qr-bank"></span><br>
+                    STK: <strong id="modal-qr-account"></strong><br>
+                    Số tiền: <strong id="modal-qr-amount" style="color: var(--red);"></strong>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 10px;">
+                <button class="btn btn-add" style="background:#64748b; width:100%;" onclick="closeQRViewer()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let activeTab = 'lcb';
         let supabaseClient = null;
+        const DEFAULT_SECURITY_PASSWORD = "VINAPACO2026"; // MẬT KHẨU KHÓA BẢO MẬT MẶC ĐỊNH
 
         let MASTER_STAFF_DIRECTORY = [
             { name: "NGUYỄN MINH NGỌC", heSoCB: 2.19, heSoCV: 5.80, heSoHT: 1, cong: 22, phep: 0, le: 0, tamUng: 5000000, pctt: 0, truUngT4: 0, docHai: 0 },
@@ -460,6 +590,16 @@
             document.getElementById('subtab-' + subtabId).style.display = 'block';
             document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('subtab-btn-' + subtabId).classList.add('active');
+        }
+
+        /* KIỂM TRA MẬT KHẨU BẢO MẬT CHUNG */
+        function verifySecurityPassword() {
+            const enteredPwd = document.getElementById('sys-pwd').value;
+            if (enteredPwd !== DEFAULT_SECURITY_PASSWORD) {
+                alert("🚫 LỖI XÁC THỰC: Mật khẩu bảo mật không chính xác hoặc đang để trống!");
+                return false;
+            }
+            return true;
         }
 
         function formatInputCurrency(input, index, field) {
@@ -567,7 +707,7 @@
                 const res = tinhToanToanBoLuong(s);
                 dataForExcel.push([idx + 1, s.name, s.heSoCB, s.heSoCV, s.cong, s.phep, s.le, res.luongThoiGian, res.luongLePhepThucTe, res.tongTienLCB, res.thucLinhLCB, s.tamUng, res.thucLinhLCV, res.tongThucNhanNganHang]);
             });
-            const ws = XLSX.utils.aoa_to_sheet(dataForExcel); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Bang_Luong"); XLSX.writeFile(wb, "Bang_Luong_Vinapaco_v37.5.xlsx");
+            const ws = XLSX.utils.aoa_to_sheet(dataForExcel); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Bang_Luong"); XLSX.writeFile(wb, "Bang_Luong_Vinapaco_v38.0.xlsx");
         }
 
         function startLiveClock() {
@@ -577,15 +717,43 @@
             }, 1000);
         }
 
+        /* --- PHÂN HỆ LỊCH TUẦN & NHẮC VIỆC --- */
+        let activeWeeklyDayFilter = "all";
         let todoTasks = [
-            { id: 1, text: "Duyệt hồ sơ cước internet VNPT tháng này", status: "Đang làm", progress: 50 },
-            { id: 2, text: "Kiểm tra chứng từ quyết toán Công ty Vật tư", status: "Đã xong", progress: 100 }
+            { id: 1, text: "Duyệt hồ sơ cước internet VNPT tháng này", status: "Đang làm", progress: 50, day: "T2" },
+            { id: 2, text: "Kiểm tra chứng từ quyết toán Công ty Vật tư", status: "Đã xong", progress: 100, day: "T3" }
         ];
+
+        function selectWeeklyDay(dayVal) {
+            activeWeeklyDayFilter = dayVal;
+            document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
+            if(dayVal === "all") document.getElementById('day-all').classList.add('active');
+            else if(dayVal === "T2") document.getElementById('day-2').classList.add('active');
+            else if(dayVal === "T3") document.getElementById('day-3').classList.add('active');
+            else if(dayVal === "T4") document.getElementById('day-4').classList.add('active');
+            else if(dayVal === "T5") document.getElementById('day-5').classList.add('active');
+            else if(dayVal === "T6") document.getElementById('day-6').classList.add('active');
+            else if(dayVal === "T7") document.getElementById('day-7').classList.add('active');
+            else if(dayVal === "CN") document.getElementById('day-cn').classList.add('active');
+            renderTodoList();
+        }
 
         function renderTodoList() {
             const container = document.getElementById('todo-list-box');
             container.innerHTML = "";
-            todoTasks.forEach(t => {
+            
+            // Lọc theo lịch tuần được chọn
+            let filteredTasks = todoTasks;
+            if(activeWeeklyDayFilter !== "all") {
+                filteredTasks = todoTasks.filter(t => t.day === activeWeeklyDayFilter);
+            }
+
+            if(filteredTasks.length === 0) {
+                container.innerHTML = `<p style="color:#94a3b8; font-style:italic; text-align:center; font-size:12px; padding:10px 0;">Hôm nay không có nhắc việc.</p>`;
+                return;
+            }
+
+            filteredTasks.forEach(t => {
                 let badgeClass = "badge-pending";
                 if(t.status === "Đang làm") badgeClass = "badge-doing";
                 if(t.status === "Đã xong") badgeClass = "badge-completed";
@@ -593,7 +761,7 @@
                 container.innerHTML += `
                     <div class="todo-item ${t.status === 'Đã xong' ? 'done' : ''}">
                         <div class="todo-header">
-                            <strong style="font-size:13px;">${t.text}</strong>
+                            <strong style="font-size:13px;">[${t.day}] ${t.text}</strong>
                             <button class="btn-action btn-delete" style="padding: 1px 4px;" onclick="deleteTodoTask(${t.id})">×</button>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px; color:#475569;">
@@ -608,11 +776,12 @@
         function addTodoTask(e) {
             e.preventDefault();
             let text = document.getElementById('todo-text').value;
+            let day = document.getElementById('todo-day').value;
             let status = document.getElementById('todo-status-select').value;
             let progress = parseInt(document.getElementById('todo-progress-input').value) || 0;
             if (status === "Đã xong") progress = 100;
 
-            todoTasks.push({ id: Date.now(), text, status, progress });
+            todoTasks.push({ id: Date.now(), text, status, progress, day });
             document.getElementById('todo-text').value = "";
             document.getElementById('todo-progress-input').value = "0";
             document.getElementById('todo-status-select').value = "Chưa làm";
@@ -630,15 +799,24 @@
         }
 
         function deleteTodoTask(id) {
+            if(!verifySecurityPassword()) return; // Yêu cầu bảo mật mật khẩu
             todoTasks = todoTasks.filter(t => t.id !== id);
             renderTodoList();
         }
 
-        /* --- XỬ LÝ HỒ SƠ & FILE --- */
+
+        /* --- PHÂN HỆ HỒ SƠ THANH TOÁN --- */
         let paymentRecords = [
-            { id: "P1", name: "Thanh toán mua VPP đợt 1", recipient: "Công ty CP Cung Ứng Vật Tư", bank: "Vietcombank", account: "001100482931", amountBefore: 32000000, taxRate: 10, files: [], status: "Chờ duyệt hồ sơ" }
+            { id: "P1", name: "Thanh toán mua văn phòng phẩm Quý 2", recipient: "Công ty CP Cung Ứng Vật Tư", bank: "Vietcombank", account: "001100482931", quantity: 10, unit: "Ram", unitPrice: 120000, amountBefore: 1200000, taxRate: 10, files: [], status: "Chờ duyệt hồ sơ" }
         ];
         let loadedRecordFiles = []; 
+
+        // Tính Thành tiền trước thuế = SL * Đơn giá
+        function calculateAmountBeforeTax() {
+            const qty = parseFloat(document.getElementById('pay-quantity').value) || 0;
+            const price = parseFloat(document.getElementById('pay-unit-price').value) || 0;
+            document.getElementById('pay-amount-before').value = Math.round(qty * price);
+        }
 
         function generateFileCardMarkup(file, onClickAction, allowDelete = false, deleteIndex = null) {
             let innerContent = "";
@@ -656,8 +834,10 @@
                 innerContent = `<span class="file-card-icon" style="color:${iconColor};">${extension || '📄'}</span>`;
             }
 
+            let actionStr = onClickAction || `showLiveFilePreviewOnForm(${deleteIndex})`;
+
             return `
-                <div class="file-card" ${onClickAction ? `onclick="${onClickAction}"` : ''}>
+                <div class="file-card" onclick="${actionStr}">
                     ${allowDelete ? `<button type="button" class="file-card-delete" onclick="event.stopPropagation(); removeTempLoadedFile(${deleteIndex})">×</button>` : ''}
                     <div class="file-card-preview-area">
                         ${innerContent}
@@ -679,8 +859,11 @@
                         fileThumbs += generateFileCardMarkup(file, `viewDocumentFile('${p.id}', ${fIdx})`, false);
                     });
                 } else { 
-                    fileThumbs = `<span style="color:#94a3b8; font-style:italic; font-size:12px;">Không có tệp đính kèm</span>`; 
+                    fileThumbs = `<span style="color:#94a3b8; font-style:italic; font-size:12px;">Không có tệp</span>`; 
                 }
+
+                // Thiết lập nút QR Code
+                let qrMarkup = `<button type="button" class="qr-small-btn" onclick="openQRViewer('${p.id}')" title="Click để xem mã QR quét chuyển khoản nhanh">🖼️ QR</button>`;
 
                 body.innerHTML += `
                     <tr>
@@ -688,11 +871,13 @@
                             <span style="color:var(--blue); font-size: 14px;">${p.name || 'Hồ sơ chưa đặt tên'}</span><br>
                             <small style="color:#475569;">ĐV: ${p.recipient}</small>
                         </td>
+                        <td class="text-center"><b>${p.quantity}</b> ${p.unit}</td>
                         <td class="text-left">${p.bank}<br><small style="color:#64748b;">${p.account}</small></td>
                         <td class="font-bold">${p.amountBefore.toLocaleString('vi-VN')}</td>
-                        <td class="color-giamtru">${taxAmount.toLocaleString('vi-VN')}</td>
+                        <td class="color-giamtru">${p.taxRate}%</td>
                         <td class="color-tongcuoi font-bold">${amountAfter.toLocaleString('vi-VN')}</td>
                         <td><div class="preview-list">${fileThumbs}</div></td>
+                        <td>${qrMarkup}</td>
                         <td><span style="font-weight:bold; color:${p.status.includes('thanh toán')?'#15803d':'#b45309'}">${p.status}</span></td>
                         <td>
                             <button class="btn-action btn-edit" onclick="editPaymentRecord('${p.id}')">Sửa</button>
@@ -706,16 +891,65 @@
 
         function handlePaymentMultipleFiles(e) {
             const files = e.target.files;
+            if(files.length === 0) return;
+            
             Array.from(files).forEach(file => {
                 let currentFile = { name: file.name, type: file.type };
                 const reader = new FileReader();
+                
+                if (file.type.startsWith('text/') || file.name.endsWith('.csv') || file.name.endsWith('.txt')) {
+                    const textReader = new FileReader();
+                    textReader.onload = function(tEvt) {
+                        currentFile.textContent = tEvt.target.result;
+                    };
+                    textReader.readAsText(file);
+                }
+
                 reader.onload = function(evt) {
                     currentFile.src = evt.target.result;
                     loadedRecordFiles.push(currentFile);
                     renderCurrentLoadedPreviews();
+                    showLiveFilePreviewOnForm(loadedRecordFiles.length - 1);
                 };
                 reader.readAsDataURL(file);
             });
+        }
+
+        function showLiveFilePreviewOnForm(idx) {
+            const panel = document.getElementById('form-live-preview-panel');
+            const contentBox = document.getElementById('form-live-preview-content');
+            
+            let file = loadedRecordFiles[idx];
+            if (!file) {
+                hideLivePreviewPanel();
+                return;
+            }
+
+            panel.style.display = "block";
+            
+            if (file.type && file.type.startsWith('image/')) {
+                contentBox.innerHTML = `<div style="text-align:center;"><img src="${file.src}" style="max-width:100%; max-height:260px; object-fit:contain; border:1px solid #e2e8f0; border-radius:4px;"></div>`;
+            } else if (file.textContent) {
+                contentBox.innerHTML = `<pre class="live-preview-text-box">${escapeHtml(file.textContent)}</pre>`;
+            } else {
+                let ext = file.name.split('.').pop().toUpperCase();
+                contentBox.innerHTML = `
+                    <div style="padding: 30px 10px; text-align: center; color: #475569;">
+                        <span style="font-size: 40px;">📄</span>
+                        <div style="font-weight: bold; margin-top: 5px; font-size:13px; color:#1e293b;">${file.name}</div>
+                        <p style="font-size: 12px; margin: 5px 0 10px 0; color: #64748b;">Định dạng file (.${ext}) được bảo mật hệ thống.</p>
+                        <a href="${file.src}" download="${file.name}" style="font-family:'Times New Roman'; font-size:12px; background:var(--blue); color:white; padding:4px 10px; border-radius:3px; text-decoration:none; font-weight:bold;">📥 Tải nhanh file gốc</a>
+                    </div>
+                `;
+            }
+        }
+
+        function hideLivePreviewPanel() {
+            document.getElementById('form-live-preview-panel').style.display = "none";
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
         function renderCurrentLoadedPreviews() {
@@ -728,6 +962,11 @@
         function removeTempLoadedFile(idx) {
             loadedRecordFiles.splice(idx, 1);
             renderCurrentLoadedPreviews();
+            if(loadedRecordFiles.length === 0) {
+                hideLivePreviewPanel();
+            } else {
+                showLiveFilePreviewOnForm(loadedRecordFiles.length - 1);
+            }
         }
 
         async function savePaymentRecord(e) {
@@ -742,11 +981,19 @@
                 recipient: document.getElementById('pay-recipient').value,
                 bank: document.getElementById('pay-bank').value,
                 account: document.getElementById('pay-account').value,
+                quantity: parseFloat(document.getElementById('pay-quantity').value) || 1,
+                unit: document.getElementById('pay-unit').value,
+                unitPrice: parseFloat(document.getElementById('pay-unit-price').value) || 0,
                 amountBefore: parseFloat(document.getElementById('pay-amount-before').value) || 0,
                 taxRate: taxRateValue,
                 files: [...loadedRecordFiles],
                 status: document.getElementById('pay-status').value
             };
+
+            // Nếu chỉnh sửa hồ sơ cũ, kiểm tra xác thực mật khẩu bảo mật
+            if (id !== "") {
+                if(!verifySecurityPassword()) return;
+            }
 
             if (id === "") { paymentRecords.push(data); } 
             else { let idx = paymentRecords.findIndex(p => p.id === id); if (idx !== -1) paymentRecords[idx] = data; }
@@ -756,6 +1003,7 @@
         }
 
         function editPaymentRecord(id) {
+            if(!verifySecurityPassword()) return; // Kiểm tra bảo mật khi nhấn Sửa
             let p = paymentRecords.find(item => item.id === id);
             if (p) {
                 document.getElementById('pay-id').value = p.id;
@@ -763,15 +1011,26 @@
                 document.getElementById('pay-recipient').value = p.recipient;
                 document.getElementById('pay-bank').value = p.bank;
                 document.getElementById('pay-account').value = p.account;
+                
+                document.getElementById('pay-quantity').value = p.quantity || 1;
+                document.getElementById('pay-unit').value = p.unit || "Cái";
+                document.getElementById('pay-unit-price').value = p.unitPrice || 0;
                 document.getElementById('pay-amount-before').value = p.amountBefore;
+
                 document.getElementById('pay-status').value = p.status;
                 document.getElementById('pay-tax-type').value = p.taxRate.toString();
                 loadedRecordFiles = [...p.files];
                 renderCurrentLoadedPreviews();
+                if(loadedRecordFiles.length > 0) {
+                    showLiveFilePreviewOnForm(0);
+                } else {
+                    hideLivePreviewPanel();
+                }
             }
         }
 
         function deletePaymentRecord(id) {
+            if(!verifySecurityPassword()) return; // Kiểm tra bảo mật khi nhấn Xóa
             if (confirm("Chắc chắn xóa hồ sơ chứng từ thanh toán này?")) {
                 paymentRecords = paymentRecords.filter(p => p.id !== id);
                 renderPaymentRecordsTable();
@@ -781,8 +1040,11 @@
         function resetPaymentForm() {
             document.getElementById('pay-id').value = "";
             document.getElementById('payment-form').reset();
+            document.getElementById('pay-quantity').value = 1;
+            document.getElementById('pay-amount-before').value = "";
             loadedRecordFiles = [];
             document.getElementById('pay-files-previews-box').innerHTML = "";
+            hideLivePreviewPanel();
         }
 
         function viewDocumentFile(pId, fIdx) {
@@ -794,6 +1056,8 @@
                 
                 if (file.type && file.type.startsWith('image/')) { 
                     body.innerHTML = `<img src="${file.src}" style="max-width:100%; height:auto; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">`; 
+                } else if (file.textContent) {
+                    body.innerHTML = `<pre style="text-align:left; font-family:monospace; background:white; padding:15px; border-radius:4px; overflow:auto; font-size:12px; white-space:pre-wrap;">${escapeHtml(file.textContent)}</pre>`;
                 } else { 
                     body.innerHTML = `
                         <div style="padding:50px 20px; text-align:center;">
@@ -809,6 +1073,41 @@
 
         function closeFileViewer() { document.getElementById('file-viewer-modal').style.display = 'none'; }
 
+        /* --- XỬ LÝ QR CODE CỦA HỒ SƠ --- */
+        let qrcodeInstance = null;
+        function openQRViewer(pId) {
+            let p = paymentRecords.find(item => item.id === pId);
+            if(p) {
+                let taxAmount = Math.round(p.amountBefore * (p.taxRate / 100));
+                let totalPayAmount = p.amountBefore + taxAmount;
+
+                document.getElementById('modal-qr-recipient').innerText = p.recipient;
+                document.getElementById('modal-qr-bank').innerText = p.bank;
+                document.getElementById('modal-qr-account').innerText = p.account;
+                document.getElementById('modal-qr-amount').innerText = totalPayAmount.toLocaleString('vi-VN') + " VND";
+
+                // Đường dẫn QR ngân hàng mẫu VietQR hoặc thô
+                let qrDataString = `Ngân Hàng: ${p.bank} | STK: ${p.account} | Người Nhận: ${p.recipient} | Số Tiền: ${totalPayAmount}`;
+
+                // Tạo QR
+                document.getElementById('modal-qr-code-area').innerHTML = "";
+                qrcodeInstance = new QRCode(document.getElementById('modal-qr-code-area'), {
+                    text: qrDataString,
+                    width: 180,
+                    height: 180,
+                    colorDark : "#0f172a",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+
+                document.getElementById('qr-viewer-modal').style.display = 'flex';
+            }
+        }
+
+        function closeQRViewer() {
+            document.getElementById('qr-viewer-modal').style.display = 'none';
+        }
+
         function recalculateFinancialStats() {
             let totalRecords = paymentRecords.length;
             let sumBefore = 0, sumTax = 0, sumAfter = 0;
@@ -822,6 +1121,8 @@
             document.querySelectorAll('#stat-after-tax').forEach(el => el.innerText = sumAfter.toLocaleString('vi-VN') + " VND");
         }
 
+
+        /* --- PHÂN HỆ QUẢN LÝ CƯỚC VIỄN THÔNG --- */
         let telecomList = [
             { id: "T1", line: "FIBER-VINAPACO-02", provider: "VNPT", baseCost: 450000, extraCost: 0, dueDate: "2026-07-25" }
         ];
@@ -850,6 +1151,12 @@
         function saveTelecom(e) {
             e.preventDefault();
             let id = document.getElementById('tel-id').value;
+            
+            // Xác thực bảo mật khi chỉnh sửa danh mục cũ
+            if(id !== "") {
+                if(!verifySecurityPassword()) return;
+            }
+
             let data = {
                 id: id || "TEL-" + Date.now(),
                 line: document.getElementById('tel-line').value,
@@ -865,6 +1172,7 @@
         }
 
         function editTelecom(id) {
+            if(!verifySecurityPassword()) return; // Kiểm tra khi nhấn sửa cước
             let t = telecomList.find(item => item.id === id);
             if (t) {
                 document.getElementById('tel-id').value = t.id;
@@ -877,6 +1185,7 @@
         }
 
         function deleteTelecom(id) {
+            if(!verifySecurityPassword()) return; // Kiểm tra bảo mật khi xóa cước
             if (confirm("Xóa danh mục quản lý cước viễn thông này?")) {
                 telecomList = telecomList.filter(t => t.id !== id);
                 renderTelecomTable();
