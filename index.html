@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VINAPACO v35.0 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN KẾ TOÁN</title>
+    <title>VINAPACO v35.3 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN KẾ TOÁN</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -55,7 +55,7 @@
 <body>
 
     <div class="navbar">
-        <h1>VINAPACO v35.0 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN ĐỊNH DẠNG KẾ TOÁN</h1>
+        <h1>VINAPACO v35.3 - HỆ THỐNG QUẢN LÝ LƯƠNG CHUẨN ĐỊNH DẠNG KẾ TOÁN</h1>
         <div class="right-nav">
             <div id="supabase-status" class="db-status-badge">
                 <span class="dot"></span> <span id="status-text">Đang kết nối Cloud...</span>
@@ -125,8 +125,9 @@
         };
 
         let dynamicStaffDatabase = [];
-        const baseLCB = 2530000; 
-        const dongGiaLCV = 2087970;
+        const mốc_lương_gốc = 2530000;      
+        const mốc_tối_thiểu_vùng = 4140000; 
+        const dongGiaLCV = 2087970; 
         let activeTab = 'lcb';
 
         async function initSupabase() {
@@ -164,54 +165,36 @@
             renderTable();
         }
 
-        // HÀM TÍNH TOÁN THEO YÊU CẦU ĐIỀU CHỈNH MỚI CỦA BẠN
         function tinhToanToanBoLuong(staff) {
             let nCong = staff.cong;
             let nPhep = staff.phep;
             let nLe = staff.le;
             let hstt = staff.hsHoanThanh;
 
-            // 1. Lương ký HĐLĐ bằng hệ số lương cơ bản cộng phụ cấp nhân tối thiểu vùng
-            let luongKyHD = Math.round((staff.heSoCB + staff.phuCapCB) * baseLCB); 
-
-            // 2. Lương thời gian
-            let luongThoiGian = Math.round((luongKyHD / 22) * nCong);
-
-            // 3. Lương lễ phép thực tế
+            let luongKyHD = Math.round((staff.heSoCB + staff.phuCapCB) * mốc_tối_thiểu_vùng);
+            let luongCoBan = Math.round((staff.heSoCB + staff.phuCapCB) * mốc_lương_gốc); 
+            let luongThoiGian = Math.round(luongCoBan / 22) * nCong;
             let luongLePhepThucTe = Math.round(luongKyHD / 22) * (nPhep + nLe);
 
-            // 4. Lương K3 theo cơ bản (mặc định = 0)
             let luongK3CV_TheoCB = staff.luongK3CV_TheoCB || 0;
+            let tienK3TheoCB = luongK3CV_TheoCB > 0 ? Math.round(luongK3CV_TheoCB * hstt) : 0;
+            let tongTienLCB = luongThoiGian + tienK3TheoCB + luongLePhepThucTe;
 
-            // 5. Tổng tiền bằng lương thời gian cộng với lương K3 theo cơ bản nhân với hệ số hoàn thành công việc rồi cộng với lương lễ, phép thực tế
-            let tongTienLCB = Math.round(luongThoiGian + (luongK3CV_TheoCB * hstt)) + luongLePhepThucTe;
-
-            // Các khoản giảm trừ tính theo lương ký HĐLĐ mới
             let bhtn = staff.heSoCB > 0 ? Math.round(luongKyHD * 0.01) : 0;
             let bhxh_yt = staff.heSoCB > 0 ? Math.round(luongKyHD * 0.095) : 0;
-
-            // 6. Thực lĩnh bằng tổng tiền trừ đi BHTN trừ đi BHXH và BHYT
             let thucLinhLCB = tongTienLCB - bhtn - bhxh_yt;
 
-            // 7. Lương công việc tháng bằng hệ số lương công việc cộng phụ cấp lương công việc nhân với công việc (đơn giá ngày công việc)
             let luongCongViecThang = (staff.heSoCV + staff.phuCapCV) * dongGiaLCV;
-            
-            // Lương CV thực tế bằng hàm làm tròn lương công việc chia 22 nhân với thời gian
-            let luongCV_ThucTe = Math.round((luongCongViecThang / 22) * nCong);
-
-            // 8. Thực lĩnh CV bằng lương CV thực tế trừ đi tạm ứng trừ đi quỹ phòng chống thiên tai trừ đi trừ ứng lương
+            let luongCV_ThucTe = Math.round(luongCongViecThang / 22) * nCong;
             let thucLinhLCV = luongCV_ThucTe - staff.tamUng - staff.pctt - staff.truUngT4;
-
-            // 9. Thực lĩnh CB+CV cuối cùng bằng thực lĩnh cv + thực lĩnh
             let thucLinhTongCuoiCung = thucLinhLCV + thucLinhLCB;
 
-            // Phụ cấp ăn ca và độc hại giữ nguyên
             let anCa = staff.name.toUpperCase().includes("HOÀNG MẠNH HÙNG") ? 600000 : Math.round(nCong * 5000);
             let boiDuongDocHai = Math.round(staff.docHai * 13000);
             let tongThucNhanNganHang = thucLinhLCB + thucLinhLCV + anCa + boiDuongDocHai;
 
             return { 
-                luongKyHD, luongThoiGian, luongLePhepThucTe, tongTienLCB, bhtn, bhxh_yt, thucLinhLCB, 
+                luongKyHD, luongCoBan, luongThoiGian, luongLePhepThucTe, luongK3CV_TheoCB, tienK3TheoCB, tongTienLCB, bhtn, bhxh_yt, thucLinhLCB, 
                 luongCV_ThucTe, thucLinhLCV, thucLinhTongCuoiCung, anCa, boiDuongDocHai, tongThucNhanNganHang 
             };
         }
@@ -378,6 +361,7 @@
             let tCong = 0, tPhep = 0, tLe = 0, tLuongTG = 0, tLePhepTien = 0, tTongTienLCB = 0, tThucLinhLCB = 0;
             let tLuongCVThuc = 0, tTamUng = 0, tPCTT = 0, tTruT4 = 0, tThucLinhLCV = 0, tThucLinhTongCBCV = 0;
             let tAnCa = 0, tDocHai = 0, tNganHang = 0;
+            let tBHTN = 0, tBHXH = 0;
 
             dynamicStaffDatabase.forEach(s => {
                 const res = tinhToanToanBoLuong(s);
@@ -386,11 +370,12 @@
                 tLuongCVThuc += res.luongCV_ThucTe; tTamUng += s.tamUng; tPCTT += s.pctt; tTruT4 += s.truUngT4;
                 tThucLinhLCV += res.thucLinhLCV; tThucLinhTongCBCV += res.thucLinhTongCuoiCung;
                 tAnCa += res.anCa; tDocHai += res.boiDuongDocHai; tNganHang += res.tongThucNhanNganHang;
+                tBHTN += res.bhtn; tBHXH += res.bhxh_yt;
             });
 
             const foot = document.getElementById('table-foot');
             if (activeTab === 'lcb') {
-                foot.innerHTML = `<tr style="background:#f1f5f9; font-weight:bold;"><td colspan="4" class="text-center">TỔNG CỘNG HỆ THỐNG</td><td class="text-center" style="color:#2563eb;">${tCong.toFixed(2)}</td><td>${tLuongTG.toLocaleString()}</td><td class="text-center">${tPhep.toFixed(1)}</td><td class="text-center">${tLe.toFixed(1)}</td><td>${tLePhepTien.toLocaleString()}</td><td colspan="1"></td><td>${tTongTienLCB.toLocaleString()}</td><td class="color-giamtru">-${tThucLinhLCB > 0 ? Math.round(tTongTienLCB*0.01).toLocaleString() : 0}</td><td class="color-giamtru">-${tThucLinhLCB > 0 ? Math.round(tTongTienLCB*0.095).toLocaleString() : 0}</td><td class="color-lcb">${tThucLinhLCB.toLocaleString()}</td></tr>`;
+                foot.innerHTML = `<tr style="background:#f1f5f9; font-weight:bold;"><td colspan="5" class="text-center">TỔNG CỘNG HỆ THỐNG</td><td class="text-center" style="color:#2563eb;">${tCong.toFixed(2)}</td><td>${tLuongTG.toLocaleString()}</td><td class="text-center">${tPhep.toFixed(1)}</td><td class="text-center">${tLe.toFixed(1)}</td><td>${tLePhepTien.toLocaleString()}</td><td colspan="1"></td><td>${tTongTienLCB.toLocaleString()}</td><td class="color-giamtru">-${tBHTN.toLocaleString()}</td><td class="color-giamtru">-${tBHXH.toLocaleString()}</td><td class="color-lcb">${tThucLinhLCB.toLocaleString()}</td></tr>`;
             } else if (activeTab === 'lcv') {
                 foot.innerHTML = `<tr style="background:#f1f5f9; font-weight:bold;"><td colspan="3" class="text-center">TỔNG CỘNG HỆ THỐNG</td><td class="text-center">${tCong.toFixed(2)}</td><td>${tLuongCVThuc.toLocaleString()}</td><td class="color-giamtru">-${tTamUng.toLocaleString()}</td><td class="color-giamtru">-${tPCTT.toLocaleString()}</td><td class="color-giamtru">-${tTruT4.toLocaleString()}</td><td class="color-lcv">${tThucLinhLCV.toLocaleString()}</td><td class="color-tongcuoi" style="font-size:12px;">${tThucLinhTongCBCV.toLocaleString()}</td></tr>`;
             } else if (activeTab === 'anca') {
@@ -408,7 +393,7 @@
             body.innerHTML = "";
             
             if (activeTab === 'lcb') {
-                head.innerHTML = `<tr><th>STT</th><th class="text-left" style="min-width:140px;">Họ và Tên Nhân Sự</th><th>Hệ Số LCB</th><th>Mức Lương HĐLĐ mới</th><th style="background:#2563eb;">Công NT</th><th>Lương Thời Gian</th><th style="background:#2563eb;">Phép</th><th style="background:#2563eb;">Lễ</th><th>Lương Lễ Phép</th><th>Hệ Số HT</th><th>Tổng Tiền LCB</th><th>BHTN (1%)</th><th>BHXH+BHYT</th><th style="background:#1e40af;">Thực Lĩnh LCB</th></tr>`;
+                head.innerHTML = `<tr><th>STT</th><th class="text-left" style="min-width:140px;">Họ và Tên Nhân Sự</th><th>Hệ Số LCB</th><th>Lương ký HĐLĐ (vùng)</th><th>Lương Cơ Bản (gốc)</th><th style="background:#2563eb;">Công NT</th><th>Lương Thời Gian</th><th style="background:#2563eb;">Phép</th><th style="background:#2563eb;">Lễ</th><th>Lương Lễ Phép</th><th>Hệ Số HT</th><th>Tổng Tiền LCB</th><th>BHTN (1%)</th><th>BHXH+BHYT</th><th style="background:#1e40af;">Thực Lĩnh LCB</th></tr>`;
             } else if (activeTab === 'lcv') {
                 head.innerHTML = `<tr><th>STT</th><th class="text-left" style="min-width:140px;">Họ và Tên Nhân Sự</th><th>Hệ Số LCV</th><th style="background:#ea580c;">Ngày Công NT</th><th>Lương CV Thực Tế</th><th style="background:#dc2626; min-width:110px;">Tạm Ứng Trừ (-)</th><th style="background:#dc2626;">Quỹ PCTT (-)</th><th style="background:#dc2626;">Trừ Ứng T4 (-)</th><th style="background:#ca8a04;">Thực Lĩnh LCV</th><th style="background:#166534; font-size:11.5px;">Thực Lĩnh CB+CV Cuối Cùng</th></tr>`;
             } else if (activeTab === 'anca') {
@@ -430,8 +415,7 @@
 
                 let rowHtml = `<tr id="row-${index}">`;
                 if (activeTab === 'lcb') {
-                    // ĐÃ FIX: Sửa lỗi hiển thị cột BHTN từ -{res.bhtn.toLocaleString()} thành -${res.bhtn.toLocaleString()}
-                    rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td>${(staff.heSoCB + staff.phuCapCB).toFixed(2)}</td><td>${res.luongKyHD.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongtg">${res.luongThoiGian.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oPhep}</td><td class="text-center" style="padding:1px;">${oLe}</td><td class="td-luonglephat" style="font-weight:600;">${res.luongLePhepThucTe.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oHT}</td><td class="font-bold td-tonglcb" style="color:#b45309; background:#fffbeb;">${res.tongTienLCB.toLocaleString()}</td><td class="color-giamtru">-${res.bhtn.toLocaleString()}</td><td class="color-giamtru">-${res.bhxh_yt.toLocaleString()}</td><td class="color-lcb td-thuckinhlcb">${res.thucLinhLCB.toLocaleString()}</td>`;
+                    rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td>${(staff.heSoCB + staff.phuCapCB).toFixed(2)}</td><td>${res.luongKyHD.toLocaleString()}</td><td style="color:#475569; font-weight:600;">${res.luongCoBan.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongtg">${res.luongThoiGian.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oPhep}</td><td class="text-center" style="padding:1px;">${oLe}</td><td class="td-luonglephat" style="font-weight:600;">${res.luongLePhepThucTe.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oHT}</td><td class="font-bold td-tonglcb" style="color:#b45309; background:#fffbeb;">${res.tongTienLCB.toLocaleString()}</td><td class="color-giamtru">-${res.bhtn.toLocaleString()}</td><td class="color-giamtru">-${res.bhxh_yt.toLocaleString()}</td><td class="color-lcb td-thuckinhlcb">${res.thucLinhLCB.toLocaleString()}</td>`;
                 } else if (activeTab === 'lcv') {
                     rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td class="text-center font-bold">${(staff.heSoCV+staff.phuCapCV).toFixed(2)}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongcvtt">${res.luongCV_ThucTe.toLocaleString()}</td><td style="padding:1px; text-align:center;">${oTamUng}</td><td class="color-giamtru">${staff.pctt > 0 ? '-' + staff.pctt.toLocaleString() : '-'}</td><td class="color-giamtru">${staff.truUngT4 > 0 ? '-' + staff.truUngT4.toLocaleString() : '-'}</td><td class="color-lcv td-thuckinhlcv">${res.thucLinhLCV.toLocaleString()}</td><td class="color-tongcuoi td-thuckinhcbcv">${res.thucLinhTongCuoiCung.toLocaleString()}</td>`;
                 } else if (activeTab === 'anca') {
