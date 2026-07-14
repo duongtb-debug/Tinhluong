@@ -101,7 +101,6 @@
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG"; 
 
-        // Khai báo Danh mục cấu hình nhân sự mặc định
         const MASTER_STAFF_DIRECTORY = {
             "NGUYỄN MINH NGỌC":       { heSoCB: 1.94, phuCapCB: 0.25, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 5.20, phuCapCV: 0.60, luongK3CV: 11009296, docHai: 0, tamUng: 5000000, pctt: 0, truUngT4: 0 },
             "NGUYỄN VĂN NAM":         { heSoCB: 1.48, phuCapCB: 0.00, luongK3CV_TheoCB: 0, hsHoanThanh: 1.0, heSoCV: 2.24, phuCapCV: 0.00, luongK3CV: 4220718, docHai: 0, tamUng: 4000000, pctt: 0, truUngT4: 0 },
@@ -126,7 +125,7 @@
         };
 
         let dynamicStaffDatabase = [];
-        const baseLCB = 2530000; // Lương tối thiểu vùng cấu hình mới
+        const baseLCB = 2530000; 
         const dongGiaLCV = 2087970;
         let activeTab = 'lcb';
 
@@ -165,15 +164,15 @@
             renderTable();
         }
 
-        // HÀM TÍNH TOÁN THEO CÔNG THỨC MỚI CỦA BẠN
+        // HÀM TÍNH TOÁN THEO YÊU CẦU ĐIỀU CHỈNH MỚI CỦA BẠN
         function tinhToanToanBoLuong(staff) {
             let nCong = staff.cong;
             let nPhep = staff.phep;
             let nLe = staff.le;
             let hstt = staff.hsHoanThanh;
 
-            // 1. Sửa Lương ký HĐLĐ = hệ số LCB nhân với tối thiểu vùng
-            let luongKyHD = baseLCB * staff.heSoCB; 
+            // 1. Lương ký HĐLĐ bằng hệ số lương cơ bản cộng phụ cấp nhân tối thiểu vùng
+            let luongKyHD = Math.round((staff.heSoCB + staff.phuCapCB) * baseLCB); 
 
             // 2. Lương thời gian
             let luongThoiGian = Math.round((luongKyHD / 22) * nCong);
@@ -181,30 +180,32 @@
             // 3. Lương lễ phép thực tế
             let luongLePhepThucTe = Math.round(luongKyHD / 22) * (nPhep + nLe);
 
-            // 4. Lương K3 theo cơ bản (mặc định cấu hình ở Object danh mục, thường bằng 0)
+            // 4. Lương K3 theo cơ bản (mặc định = 0)
             let luongK3CV_TheoCB = staff.luongK3CV_TheoCB || 0;
 
-            // 5. Tổng tiền LCB = lương thời gian cộng với lương K3 theo cơ bản nhân với hệ số hoàn thành công việc rồi cộng với lương lễ, phép thực tế
+            // 5. Tổng tiền bằng lương thời gian cộng với lương K3 theo cơ bản nhân với hệ số hoàn thành công việc rồi cộng với lương lễ, phép thực tế
             let tongTienLCB = Math.round(luongThoiGian + (luongK3CV_TheoCB * hstt)) + luongLePhepThucTe;
 
-            // Tính toán giảm trừ bảo hiểm trích theo lương ký HĐLĐ
+            // Các khoản giảm trừ tính theo lương ký HĐLĐ mới
             let bhtn = staff.heSoCB > 0 ? Math.round(luongKyHD * 0.01) : 0;
             let bhxh_yt = staff.heSoCB > 0 ? Math.round(luongKyHD * 0.095) : 0;
 
-            // 6. Thực lĩnh LCB = tổng tiền trừ đi BHTN trừ đi BHXH và BHYT
+            // 6. Thực lĩnh bằng tổng tiền trừ đi BHTN trừ đi BHXH và BHYT
             let thucLinhLCB = tongTienLCB - bhtn - bhxh_yt;
 
-            // 7. Lương CV thực tế = hàm làm tròn lương công việc chia 22 nhân với thời gian (ngày công)
+            // 7. Lương công việc tháng bằng hệ số lương công việc cộng phụ cấp lương công việc nhân với công việc (đơn giá ngày công việc)
             let luongCongViecThang = (staff.heSoCV + staff.phuCapCV) * dongGiaLCV;
+            
+            // Lương CV thực tế bằng hàm làm tròn lương công việc chia 22 nhân với thời gian
             let luongCV_ThucTe = Math.round((luongCongViecThang / 22) * nCong);
 
-            // 8. Thực lĩnh CV = lương CV thực tế trừ đi tạm ứng trừ đi quỹ phòng chống thiên tai trừ đi trừ ứng lương
+            // 8. Thực lĩnh CV bằng lương CV thực tế trừ đi tạm ứng trừ đi quỹ phòng chống thiên tai trừ đi trừ ứng lương
             let thucLinhLCV = luongCV_ThucTe - staff.tamUng - staff.pctt - staff.truUngT4;
 
-            // 9. Thực lĩnh CB+CV cuối cùng = thực lĩnh cv + thực lĩnh (CB)
+            // 9. Thực lĩnh CB+CV cuối cùng bằng thực lĩnh cv + thực lĩnh
             let thucLinhTongCuoiCung = thucLinhLCV + thucLinhLCB;
 
-            // Phụ cấp ăn ca và độc hại
+            // Phụ cấp ăn ca và độc hại giữ nguyên
             let anCa = staff.name.toUpperCase().includes("HOÀNG MẠNH HÙNG") ? 600000 : Math.round(nCong * 5000);
             let boiDuongDocHai = Math.round(staff.docHai * 13000);
             let tongThucNhanNganHang = thucLinhLCB + thucLinhLCV + anCa + boiDuongDocHai;
@@ -429,7 +430,8 @@
 
                 let rowHtml = `<tr id="row-${index}">`;
                 if (activeTab === 'lcb') {
-                    rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td>${staff.heSoCB.toFixed(2)}</td><td>${res.luongKyHD.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongtg">${res.luongThoiGian.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oPhep}</td><td class="text-center" style="padding:1px;">${oLe}</td><td class="td-luonglephat" style="font-weight:600;">${res.luongLePhepThucTe.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oHT}</td><td class="font-bold td-tonglcb" style="color:#b45309; background:#fffbeb;">${res.tongTienLCB.toLocaleString()}</td><td class="color-giamtru">-{res.bhtn.toLocaleString()}</td><td class="color-giamtru">-${res.bhxh_yt.toLocaleString()}</td><td class="color-lcb td-thuckinhlcb">${res.thucLinhLCB.toLocaleString()}</td>`;
+                    // ĐÃ FIX: Sửa lỗi hiển thị cột BHTN từ -{res.bhtn.toLocaleString()} thành -${res.bhtn.toLocaleString()}
+                    rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td>${(staff.heSoCB + staff.phuCapCB).toFixed(2)}</td><td>${res.luongKyHD.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongtg">${res.luongThoiGian.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oPhep}</td><td class="text-center" style="padding:1px;">${oLe}</td><td class="td-luonglephat" style="font-weight:600;">${res.luongLePhepThucTe.toLocaleString()}</td><td class="text-center" style="padding:1px;">${oHT}</td><td class="font-bold td-tonglcb" style="color:#b45309; background:#fffbeb;">${res.tongTienLCB.toLocaleString()}</td><td class="color-giamtru">-${res.bhtn.toLocaleString()}</td><td class="color-giamtru">-${res.bhxh_yt.toLocaleString()}</td><td class="color-lcb td-thuckinhlcb">${res.thucLinhLCB.toLocaleString()}</td>`;
                 } else if (activeTab === 'lcv') {
                     rowHtml += `<td class="text-center">${index + 1}</td><td class="text-left font-bold" style="color:#0f172a;">${staff.name}</td><td class="text-center font-bold">${(staff.heSoCV+staff.phuCapCV).toFixed(2)}</td><td class="text-center" style="padding:1px;">${oCong}</td><td class="td-luongcvtt">${res.luongCV_ThucTe.toLocaleString()}</td><td style="padding:1px; text-align:center;">${oTamUng}</td><td class="color-giamtru">${staff.pctt > 0 ? '-' + staff.pctt.toLocaleString() : '-'}</td><td class="color-giamtru">${staff.truUngT4 > 0 ? '-' + staff.truUngT4.toLocaleString() : '-'}</td><td class="color-lcv td-thuckinhlcv">${res.thucLinhLCV.toLocaleString()}</td><td class="color-tongcuoi td-thuckinhcbcv">${res.thucLinhTongCuoiCung.toLocaleString()}</td>`;
                 } else if (activeTab === 'anca') {
