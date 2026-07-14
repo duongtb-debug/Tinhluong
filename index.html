@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VINAPACO ERM v37.5 - ENTERPRISE MANAGEMENT SYSTEM</title>
+    <!-- Thư viện Excel, QR Code và SDK Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -19,7 +20,6 @@
             --gray-light: #f1f5f9;
             --border-color: #cbd5e1;
         }
-        /* CHUYỂN TOÀN BỘ SANG FONT TIMES NEW ROMAN VÀ TĂNG CỠ CHỮ ĐỂ DỄ NHÌN */
         body { 
             font-family: 'Times New Roman', Times, serif; 
             font-size: 14px; 
@@ -41,12 +41,10 @@
         .container { max-width: 100%; margin: 15px auto; padding: 0 15px; box-sizing: border-box; }
         .card { background: white; border-radius: 6px; border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
         
-        /* Bộ chuyển đổi phân hệ chính */
         .module-switcher { display: flex; background: #1e293b; padding: 6px; border-radius: 8px; margin-bottom: 15px; gap: 6px; }
         .module-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #94a3b8; font-weight: bold; font-size: 14px; cursor: pointer; border-radius: 6px; transition: all 0.2s; text-transform: uppercase; font-family: 'Times New Roman', Times, serif; }
         .module-btn.active { background: #3b82f6; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-        /* Bảng lương gốc */
         .upload-zone { border: 2px dashed #3b82f6; background: #eff6ff; padding: 20px; text-align: center; border-radius: 6px; cursor: pointer; font-weight: 600; color: #2563eb; font-size: 14px; transition: all 0.2s; }
         .upload-zone:hover { background: #dbeafe; }
         
@@ -79,7 +77,6 @@
         .btn-export { background: #10b981; color: white; border: none; padding: 8px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-size: 13px; font-family: 'Times New Roman', Times, serif; }
         .btn-export:hover { background: #059669; }
 
-        /* Giao diện tiện ích */
         .grid-layout { display: grid; grid-template-columns: 300px 1fr; gap: 15px; }
         .sub-tabs { display: flex; flex-direction: column; gap: 4px; background: #e2e8f0; padding: 8px; border-radius: 6px; height: fit-content; }
         .sub-tab-btn { padding: 10px; border: none; text-align: left; background: transparent; border-radius: 4px; font-weight: bold; cursor: pointer; color: #475569; font-size: 13px; display: flex; align-items: center; justify-content: space-between; font-family: 'Times New Roman', Times, serif; }
@@ -96,7 +93,7 @@
         .btn-delete { background: var(--red); }
         .btn-add { background: var(--blue); padding: 8px 14px; font-size: 13px; border-radius: 4px; border: none; cursor: pointer; color: white; font-weight: bold; font-family: 'Times New Roman', Times, serif; }
 
-        /* XEM TRƯỚC TÀI LIỆU CHUẨN ĐƯỢC THIẾT KẾ LẠI */
+        /* XEM TRƯỚC TÀI LIỆU CHUẨN */
         .preview-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
         .file-card { width: 85px; height: 95px; border: 1px solid #cbd5e1; border-radius: 6px; position: relative; overflow: hidden; background: #ffffff; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.15s; }
         .file-card:hover { transform: translateY(-2px); border-color: var(--blue); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -106,13 +103,11 @@
         .file-card-name { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; padding: 4px 2px; box-sizing: border-box; font-weight: bold; color: #334155; }
         .file-card-delete { position: absolute; top: 2px; right: 2px; background: rgba(220, 38, 38, 0.9); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; }
 
-        /* Thống kê Tài chính hồ sơ */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 15px; }
         .stats-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 15px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
         .stats-card-title { color: #64748b; font-weight: bold; margin-bottom: 4px; font-size: 12px; }
         .stats-card-value { font-size: 16px; font-weight: 800; color: #1e293b; }
 
-        /* Lịch vạn niên & Nhắc việc */
         .calendar-fixed-box { background: #0f172a; color: #f1f5f9; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
         .calendar-time { font-size: 24px; font-weight: 800; color: #3b82f6; text-align: center; font-family: monospace; }
         .calendar-date-solar { font-size: 15px; font-weight: bold; text-align: center; margin-top: 5px; color: #ffffff; }
@@ -126,7 +121,6 @@
         .badge-doing { background: #ea580c; }
         .badge-completed { background: #059669; }
 
-        /* Pop-up Modal Viewer */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 20px; border-radius: 6px; width: 650px; max-width: 95%; max-height: 90vh; overflow-y: auto; position: relative; }
         .modal-close { position: absolute; top: 10px; right: 10px; border: none; background: transparent; font-size: 20px; cursor: pointer; font-weight: bold; }
@@ -148,6 +142,7 @@
             <button class="module-btn" id="btn-mod-tools" onclick="switchModule('tools')">📂 2. PHÂN HỆ QUẢN LÝ HỒ SƠ & TIỆN ÍCH MỞ RỘNG</button>
         </div>
 
+        <!-- ======================= MODULE 1: BẢNG LƯƠNG GỐC ======================= -->
         <div id="module-luong-container">
             <div class="card">
                 <h3 style="margin-top:0;">ĐỒNG BỘ CHẤM CÔNG VÂN TAY HOẶC CHỈNH SỬA TRỰC TIẾP</h3>
@@ -176,6 +171,7 @@
             </div>
         </div>
 
+        <!-- ======================= MODULE 2: HỆ THỐNG TIỆN ÍCH ======================= -->
         <div id="module-tools-container" style="display: none;">
             <div class="grid-layout">
                 <div>
@@ -214,6 +210,7 @@
 
                 <div style="min-width: 0;">
                     
+                    <!-- 1. PHÂN HỆ HỒ SƠ THANH TOÁN -->
                     <div id="subtab-payments" class="subtab-content">
                         <div class="card">
                             <h3 style="margin-top:0; color: var(--primary);">🧾 Quản Lý Hồ Sơ Thanh Toán, Thuế Linh Hoạt & Đính Kèm File Chuyên Nghiệp</h3>
@@ -308,6 +305,7 @@
                         </div>
                     </div>
 
+                    <!-- 2. PHÂN HỆ QUẢN LÝ CƯỚC VIỄN THÔNG -->
                     <div id="subtab-telecom" class="subtab-content" style="display: none;">
                         <div class="card">
                             <h3 style="margin-top:0; color: var(--primary);">🌐 Quản Lý Chi Phí Cước Viễn Thông & Internet Doanh Nghiệp</h3>
@@ -369,6 +367,7 @@
 
     </div>
 
+    <!-- MODAL XEM TRƯỚC TÀI LIỆU -->
     <div id="file-viewer-modal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFileViewer()">×</button>
@@ -385,7 +384,6 @@
         let activeTab = 'lcb';
         let supabaseClient = null;
 
-        // DỮ LIỆU BẢNG LƯƠNG GỐC VÀ CẤU TRÚC LOGIC - GIỮ NGUYÊN TUYỆT ĐỐI KHÔNG ĐỔI
         let MASTER_STAFF_DIRECTORY = [
             { name: "NGUYỄN MINH NGỌC", heSoCB: 2.19, heSoCV: 5.80, heSoHT: 1, cong: 22, phep: 0, le: 0, tamUng: 5000000, pctt: 0, truUngT4: 0, docHai: 0 },
             { name: "NGUYỄN VĂN NAM", heSoCB: 1.48, heSoCV: 2.24, heSoHT: 1, cong: 19, phep: 3, le: 0, tamUng: 4000000, pctt: 0, truUngT4: 0, docHai: 0 },
@@ -413,7 +411,6 @@
         const mốc_tối_thiểu_vùng = 4140000;
         const dongGiaLCV = 2087970;
 
-        // LIÊN KẾT API SUPABASE TRỰC TIẾP VÀO MÃ NGUỒN
         const SUPABASE_PROJECT_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_ANON_API_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
 
@@ -422,18 +419,15 @@
             startLiveClock();
             renderTodoList();
             
-            // Khởi tạo kết nối Supabase và cập nhật thanh trạng thái
             const dot = document.getElementById('supabase-status-dot');
             const txt = document.getElementById('supabase-status-text');
             try {
                 supabaseClient = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_API_KEY);
                 dot.className = "status-dot connected";
                 txt.innerText = "Supabase Cloud: Đã kết nối";
-                console.log("Supabase Cloud kết nối trực tiếp thành công!");
             } catch(err) {
                 dot.className = "status-dot error";
                 txt.innerText = "Supabase Cloud: Lỗi kết nối";
-                console.error("Lỗi kết nối:", err);
             }
         };
 
@@ -511,7 +505,7 @@
             } else if (activeTab === 'lcv') {
                 head.innerHTML = `<tr><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th style="background:#ea580c;">Hệ Số LCV</th><th>Ngày Công</th><th>Lương CV Thực Tế</th><th style="background:#ea580c;">Tạm Ứng Trừ</th><th style="background:#ea580c;">Quỹ PCTT</th><th style="background:#ea580c;">Trừ Ứng T4</th><th>Thực Lĩnh LCV</th><th>Tổng Thực Lĩnh</th></tr>`;
                 MASTER_STAFF_DIRECTORY.forEach((s, idx) => {
-                    const res = tinh ToanToanBoLuong(s);
+                    const res = tinhToanToanBoLuong(s);
                     body.innerHTML += `<tr><td>${idx+1}</td><td class="text-left font-bold">${s.name}</td><td><input type="number" step="0.01" class="table-input he-so" value="${s.heSoCV}" oninput="updateNormalValue(${idx}, 'heSoCV', this.value)"></td><td>${s.cong}</td><td>${res.luongCV_ThucTe.toLocaleString()}</td><td><input type="text" class="table-input giam-tru" value="${s.tamUng ? s.tamUng.toLocaleString('vi-VN') : ''}" oninput="formatInputCurrency(this, ${idx}, 'tamUng')"></td><td><input type="text" class="table-input giam-tru" style="width:70px;" value="${s.pctt ? s.pctt.toLocaleString('vi-VN') : ''}" oninput="formatInputCurrency(this, ${idx}, 'pctt')"></td><td><input type="text" class="table-input giam-tru" style="width:70px;" value="${s.truUngT4 ? s.truUngT4.toLocaleString('vi-VN') : ''}" oninput="formatInputCurrency(this, ${idx}, 'truUngT4')"></td><td class="color-lcv">${res.thucLinhLCV.toLocaleString()}</td><td class="color-tongcuoi">${res.tongThucNhanNganHang.toLocaleString()}</td></tr>`;
                 });
             } else if (activeTab === 'anca') {
@@ -576,7 +570,6 @@
             const ws = XLSX.utils.aoa_to_sheet(dataForExcel); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Bang_Luong"); XLSX.writeFile(wb, "Bang_Luong_Vinapaco_v37.5.xlsx");
         }
 
-        // --- LỊCH VẠN NIÊN & ĐỒNG HỒ ---
         function startLiveClock() {
             setInterval(() => {
                 let d = new Date();
@@ -584,7 +577,6 @@
             }, 1000);
         }
 
-        // --- HỆ THỐNG NHẮC VIỆC TRẠNG THÁI VÀ TIẾN ĐỘ ---
         let todoTasks = [
             { id: 1, text: "Duyệt hồ sơ cước internet VNPT tháng này", status: "Đang làm", progress: 50 },
             { id: 2, text: "Kiểm tra chứng từ quyết toán Công ty Vật tư", status: "Đã xong", progress: 100 }
@@ -642,13 +634,12 @@
             renderTodoList();
         }
 
-        // --- HỒ SƠ THANH TOÁN & ĐỊNH DẠNG XEM TRƯỚC HỒ SƠ CHUẨN ---
+        /* --- XỬ LÝ HỒ SƠ & FILE --- */
         let paymentRecords = [
             { id: "P1", name: "Thanh toán mua VPP đợt 1", recipient: "Công ty CP Cung Ứng Vật Tư", bank: "Vietcombank", account: "001100482931", amountBefore: 32000000, taxRate: 10, files: [], status: "Chờ duyệt hồ sơ" }
         ];
         let loadedRecordFiles = []; 
 
-        // Hàm helper lấy Icon đại diện hoặc Ảnh thu nhỏ chuẩn cho từng loại tệp
         function generateFileCardMarkup(file, onClickAction, allowDelete = false, deleteIndex = null) {
             let innerContent = "";
             const isImage = file.type && file.type.startsWith('image/');
@@ -745,10 +736,6 @@
             let selectTax = document.getElementById('pay-tax-type').value;
             let taxRateValue = (selectTax === '10' || selectTax === '10_tncn') ? 10 : (selectTax === '8' ? 8 : (selectTax === '5' ? 5 : 0));
 
-            if(supabaseClient) {
-                console.log("Dữ liệu tự động đồng bộ thời gian thực lên đám mây Supabase!");
-            }
-
             let data = {
                 id: id || "PAY-" + Date.now(),
                 name: document.getElementById('pay-name').value,
@@ -835,7 +822,6 @@
             document.querySelectorAll('#stat-after-tax').forEach(el => el.innerText = sumAfter.toLocaleString('vi-VN') + " VND");
         }
 
-        // --- CƯỚC VIỄN THÔNG ---
         let telecomList = [
             { id: "T1", line: "FIBER-VINAPACO-02", provider: "VNPT", baseCost: 450000, extraCost: 0, dueDate: "2026-07-25" }
         ];
