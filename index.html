@@ -6,6 +6,8 @@
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP TOÀN DIỆN</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Thư viện tạo mã QR Code chuyên nghiệp -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <style>
         :root {
             --primary: #0f172a;
@@ -41,7 +43,6 @@
             position: relative;
         }
 
-        /* Thanh trạng thái kết nối Supabase */
         .supabase-status-bar {
             display: flex;
             align-items: center;
@@ -66,7 +67,6 @@
             box-shadow: 0 0 8px #10b981;
         }
 
-        /* Menu chuyển đổi phân hệ chính */
         .module-switcher { 
             display: flex; 
             background: #1e293b; 
@@ -83,7 +83,6 @@
         }
         .module-btn.active { background: #2563eb; color: white; }
 
-        /* Tabs điều hướng */
         .tabs { 
             display: flex; gap: 4px; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; overflow-x: auto;
         }
@@ -102,12 +101,11 @@
         }
         .tab-sub-btn.active { background: #0f172a; color: white; border-color: #0f172a; }
 
-        /* Bảng hiển thị co giãn */
         .table-responsive { 
-            background: white; border: 1px solid #cbd5e1; border-radius: 8px; overflow-x: auto; max-height: 500px; overflow-y: auto; 
+            background: white; border: 1px solid #cbd5e1; border-radius: 8px; overflow-x: auto; max-height: 580px; overflow-y: auto; 
         }
         table { width: 100%; border-collapse: collapse; text-align: right; }
-        th, td { padding: 6px 8px; border: 1px solid #cbd5e1; white-space: nowrap; vertical-align: middle; }
+        th, td { padding: 7px 9px; border: 1px solid #cbd5e1; white-space: nowrap; vertical-align: middle; }
         th { text-align: center; color: white; font-weight: bold; background: #334155; position: sticky; top: 0; z-index: 10; font-size: 12px; }
 
         .lcv-header th { background: #475569; }
@@ -119,10 +117,23 @@
         tr:nth-child(even) { background: #f8fafc; }
         tr:hover { background: #f1f5f9; }
         
-        /* Form inputs nhỏ gọn */
-        .table-input { width: 100%; max-width: 75px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; text-align: center; font-weight: bold;}
-        .table-input.he-so { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; max-width: 50px; }
-        .table-input.money-input { background: #fff5f5; border-color: #fed7d7; text-align: right; color: #dc2626; max-width: 95px; }
+        .table-input { 
+            width: 100%; 
+            max-width: 45px; 
+            padding: 4px 2px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 4px; 
+            font-size: 12px; 
+            text-align: center; 
+            font-weight: bold;
+            font-family: 'Times New Roman', Times, serif;
+            transition: all 0.2s;
+        }
+        .table-input:focus { border-color: var(--blue); outline: none; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15); }
+        .table-input.he-so { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; max-width: 52px; }
+        .table-input.money-input { background: #fff5f5; border-color: #fed7d7; text-align: right; color: #dc2626; max-width: 95px; padding: 4px 6px; }
+        .table-input.days-input { background: #ffffff; color: #1e293b; border-color: #cbd5e1; }
+        .table-input.phep-le-input { background: #fffbeb; border-color: #fde68a; color: #b45309; }
 
         .text-left { text-align: left !important; }
         .text-center { text-align: center !important; }
@@ -131,133 +142,55 @@
         .color-tongcuoi { color: #059669; font-weight: bold; }
         .bg-highlight-thucnhan { background-color: #f0fdf4 !important; color: #15803d; font-weight: bold; }
 
-        /* Grid Layout cho Phân hệ 2 */
         .grid-layout { display: grid; grid-template-columns: 320px 1fr; gap: 15px; }
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
         .form-group { display: flex; flex-direction: column; gap: 4px; text-align: left; }
         .form-group label { font-weight: bold; color: #475569; font-size: 11px; }
         .form-control { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box; }
 
-        /* Banner Thống kê */
         .stat-banner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
         .stat-box { padding: 10px; border-radius: 6px; border-left: 4px solid #cbd5e1; background: #f8fafc; text-align: left; }
         .stat-title { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; }
         .stat-value { font-size: 15px; font-weight: bold; color: #0f172a; margin-top: 2px; }
 
-        /* Lịch biểu vạn niên */
         .calendar-card { background: #0f172a; color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; border-bottom: 1px solid #334155; padding-bottom: 6px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 11px; }
         .calendar-day-name { font-weight: bold; color: #38bdf8; }
         .calendar-cell { padding: 5px 2px; border-radius: 4px; background: #1e293b; transition: 0.2s; }
-        .calendar-cell:hover { background: #334155; }
         .calendar-cell.active-day { background: #2563eb; color: white; font-weight: bold; border: 1px solid #60a5fa; }
         .calendar-cell .lunar-day { font-size: 8px; color: #94a3b8; display: block; margin-top: 1px; }
 
-        /* Tiến độ công việc */
-        .progress-bar-container { background: #e2e8f0; border-radius: 10px; height: 12px; width: 100px; display: inline-block; overflow: hidden; vertical-align: middle;}
-        .progress-bar-fill { background: #10b981; height: 100%; border-radius: 10px; transition: width 0.3s; }
-
-        /* Badges trạng thái */
-        .badge { padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; display: inline-block; text-align: center; }
-        .bg-pending { background: #ea580c; }
-        .bg-success { background: #059669; }
-        .bg-progress { background: #2563eb; }
-        .bg-danger { background: #dc2626; }
-        
         .btn-add { background: #0f172a; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 12px; }
         .btn-add:hover { background: #1e293b; }
         .btn-action { border: none; background: none; font-weight: bold; cursor: pointer; margin: 0 4px; font-size: 12px; }
         .btn-edit { color: #2563eb; }
         .btn-delete { color: #dc2626; }
-        .btn-print { color: #059669; }
         .btn-export { background: #059669; color: white; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
 
-        /* File Upload & Preview Style */
-        .file-preview {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 8px;
-            background: #f8fafc;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px dashed var(--border-color);
+        .file-preview-box { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed var(--border-color); }
+        .file-item-preview { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .file-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color); }
+        
+        /* Modal Style để xem trước tài liệu chuyên nghiệp */
+        .preview-modal {
+            display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85);
+            align-items: center; justify-content: center; padding: 20px;
         }
-        .file-preview img {
-            width: 45px;
-            height: 45px;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 1px solid #cbd5e1;
+        .preview-modal-content {
+            background: white; width: 100%; max-width: 800px; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh;
         }
-        .btn-remove-file {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            cursor: pointer;
-            font-weight: bold;
+        .preview-header { padding: 12px 15px; background: #0f172a; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .preview-body { padding: 15px; flex: 1; overflow-y: auto; text-align: center; min-height: 400px; display: flex; align-items: center; justify-content: center; }
+        
+        /* Chức năng in nhãn QR Code chuyên nghiệp */
+        @media print {
+            body * { visibility: hidden; }
+            #qr-print-section, #qr-print-section * { visibility: visible; }
+            #qr-print-section { position: absolute; left: 0; top: 0; width: 50mm; height: 50mm; text-align: center; }
         }
-        .btn-remove-file:hover { background: #b91c1c; }
-
-        /* MODAL POPUP XEM TRƯỚC TÀI LIỆU CHUYÊN NGHIỆP */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(15, 23, 42, 0.85);
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            width: 85%;
-            max-width: 950px;
-            height: 85vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        .close-modal {
-            position: absolute;
-            right: 15px;
-            top: 10px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #64748b;
-            cursor: pointer;
-            z-index: 10;
-        }
-        .close-modal:hover { color: #000; }
-        .modal-body-content {
-            flex: 1;
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: auto;
-            background: #f1f5f9;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-        }
-        .doc-icon-view {
-            text-align: center;
-            padding: 40px;
-        }
-        .doc-icon-view img {
-            width: 100px;
-            margin-bottom: 15px;
-        }
+        .qr-badge { display: inline-flex; flex-direction: column; align-items: center; border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; background: #fff; cursor: pointer; }
+        .qr-badge svg { margin-bottom: 4px; }
     </style>
 </head>
 <body>
@@ -268,20 +201,19 @@
                 <span id="sync-dot" class="status-dot"></span>
                 <strong>Trạng thái hệ thống:</strong> <span id="sync-text" style="color: #94a3b8;">Đang kết nối tới Cloud Supabase...</span>
             </div>
-            <div>
-                <span>Bảo mật: <strong style="color: #60a5fa;">SSL / TLS 1.3</strong></span>
-            </div>
+            <div><span>Bảo mật: <strong style="color: #60a5fa;">SSL / TLS 1.3</strong></span></div>
         </div>
 
         <div class="module-switcher">
-            <button class="module-btn active" id="btn-mod-luong" onclick="switchModule('luong')">💰 1. Quản Lý & Tính Lương Tự Động (Đã Khóa Bảo Lưu)</button>
+            <button class="module-btn active" id="btn-mod-luong" onclick="switchModule('luong')">💰 1. Quản Lý & Tính Lương Tự Động (CHỐT CÔNG THỨC)</button>
             <button class="module-btn" id="btn-mod-docs" onclick="switchModule('docs')">📂 2. Hệ Thống Quản Trị Chuyên Nghiệp Mở Rộng</button>
         </div>
 
+        <!-- ======================= PHÂN HỆ 1: LƯƠNG NHÂN SỰ ======================= -->
         <div id="module-luong-container">
             <div class="tabs">
-                <button class="tab-btn tab-lcb active" id="tab-1" onclick="switchTab(1)">1. Phân Hệ Lương Cơ Bản</button>
-                <button class="tab-btn tab-lcv" id="tab-2" onclick="switchTab(2)">2. Phân Hệ Lương Công Việc</button>
+                <button class="tab-btn tab-lcb active" id="tab-1" onclick="switchTab(1)">1. Phân Hệ Lương Cơ Bản mới (Có K3)</button>
+                <button class="tab-btn tab-lcv" id="tab-2" onclick="switchTab(2)">2. Phân Hệ Lương Công Việc & Tổng Hợp</button>
                 <button class="tab-btn tab-pc" id="tab-3" onclick="switchTab(3)">3. Phụ Cấp Ăn Ca & Độc Hại</button>
                 <button class="tab-btn tab-th" id="tab-4" onclick="switchTab(4)">4. Tổng Hợp Chi Trả Ngân Hàng</button>
             </div>
@@ -296,12 +228,13 @@
             
             <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
                 <div style="font-size: 11px; color: #64748b; font-style: italic;">
-                    * Lưu ý: Toàn bộ công thức tính toán Lương HĐLĐ, BHTN, BHXH và Lương CV định mức đã được khóa chính xác tuyệt đối.
+                    * Quy định công thức cố định: Lương Lễ Phép = Math.round(Lương HĐLĐ / 22) * (Phép + Lễ) | Lương K3 theo CB = 0 | Tổng LCB (Mới) = Lương Thời Gian + Lương K3 theo CB + Lương Lễ Phép.
                 </div>
                 <button onclick="exportSalaryToExcel()" class="btn-export">Xuất File Excel Lương (.xlsx)</button>
             </div>
         </div>
 
+        <!-- ======================= PHÂN HỆ 2: QUẢN TRỊ MỞ RỘNG ======================= -->
         <div id="module-docs-container" style="display: none;">
             <div class="grid-layout">
                 <div>
@@ -312,7 +245,6 @@
                         </div>
                         <div style="text-align: center; margin-bottom: 12px; background: #1e293b; padding: 10px; border-radius: 6px;">
                             <div style="font-size: 15px; font-weight: bold; color: #fff;">Tháng 7 Năm 2026</div>
-                            <div style="font-size: 11px; color: #a1a1aa; margin-top: 2px;">Tiết khí: Tiểu Thử - Hoàng đạo</div>
                         </div>
                         <div class="calendar-grid cal-days-container"></div>
                     </div>
@@ -320,65 +252,67 @@
 
                 <div style="min-width: 0;">
                     <div style="display: flex; gap: 8px; margin-bottom: 15px; background: #e2e8f0; padding: 4px; border-radius: 6px; width: fit-content;">
-                        <button class="tab-sub-btn active" id="btn-sub-tasks" onclick="switchSubTab('tasks')">📝 Quản Lý Công Việc Hàng Ngày</button>
-                        <button class="tab-sub-btn" id="btn-sub-payments" onclick="switchSubTab('payments')">🧾 Hồ Sơ Thanh Toán Chuyên Nghiệp</button>
+                        <button class="tab-sub-btn active" id="btn-sub-tasks" onclick="switchSubTab('tasks')">📝 Quản Lý Công Việc</button>
+                        <button class="tab-sub-btn" id="btn-sub-payments" onclick="switchSubTab('payments')">🧾 Hồ Sơ Thanh Toán</button>
                         <button class="tab-sub-btn" id="btn-sub-telecom" onclick="switchSubTab('telecom')">🌐 Cước Viễn Thông & Internet</button>
                     </div>
 
                     <div class="stat-banner" id="sub-stat-banner"></div>
 
+                    <!-- 1. QUẢN LÝ CÔNG VIỆC -->
                     <div id="sub-section-tasks" style="border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
-                        <h3 style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">📋 Lên Kế Hoạch & Theo Dõi Tiến Độ Công Việc</h3>
+                        <h3 id="task-form-title" style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">📋 Thêm Kế Hoạch & Tiến Độ Công Việc</h3>
                         <form id="task-form" onsubmit="saveTaskRecord(event)">
-                            <input type="hidden" id="task-id">
+                            <input type="hidden" id="task-id-holder">
                             <div class="form-grid">
                                 <div class="form-group" style="grid-column: span 2;">
-                                    <label>Tên Đầu Việc / Nội Dung Công Việc</label>
-                                    <input type="text" id="task-title" class="form-control" placeholder="Ví dụ: Hoàn thiện tờ trình quyết toán Quý II" required>
+                                    <label>Nội Dung Đầu Việc</label>
+                                    <input type="text" id="task-title" class="form-control" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Mức Độ Ưu Tiên</label>
                                     <select id="task-priority" class="form-control">
-                                        <option value="Cao">🔴 Cao (Urgent)</option>
+                                        <option value="Cao">🔴 Cao</option>
                                         <option value="Trung bình">🟡 Trung bình</option>
                                         <option value="Thấp">🟢 Thấp</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Thời Hạn Hoàn Thành</label>
+                                    <label>Hạn Hoàn Thành</label>
                                     <input type="date" id="task-deadline" class="form-control" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Người Thực Hiện</label>
-                                    <input type="text" id="task-assignee" class="form-control" placeholder="Nhập tên nhân sự" required>
+                                    <input type="text" id="task-assignee" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Tiến Độ Hiện Tại (%)</label>
+                                    <label>Tiến Độ (%)</label>
                                     <input type="number" id="task-progress" class="form-control" min="0" max="100" value="0" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Trạng Thái</label>
                                     <select id="task-status" class="form-control">
-                                        <option value="Chưa bắt đầu">Chờ xử lý</option>
+                                        <option value="Chờ xử lý">Chờ xử lý</option>
                                         <option value="Đang thực hiện">Đang thực hiện</option>
                                         <option value="Đã hoàn thành">Đã hoàn thành</option>
-                                        <option value="Trễ hạn">Trễ hạn</option>
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" id="task-btn-submit" class="btn-add">💾 Lưu Lên Cloud</button>
-                            <button type="button" id="task-btn-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditTask()">Hủy sửa</button>
+                            <div style="display:flex; gap:10px;">
+                                <button type="submit" id="btn-task-submit" class="btn-add">💾 Lưu Công Việc</button>
+                                <button type="button" id="btn-task-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditTask()">Hủy Sửa</button>
+                            </div>
                         </form>
 
                         <div class="table-responsive" style="margin-top: 15px;">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th class="text-left">Nội Dung Công Việc</th>
+                                        <th class="text-left">Nội Dung</th>
                                         <th>Người Đảm Nhiệm</th>
                                         <th>Hạn Định</th>
-                                        <th>Mức Ưu Tiên</th>
-                                        <th>Tiến Độ (%)</th>
+                                        <th>Ưu Tiên</th>
+                                        <th>Tiến Độ</th>
                                         <th>Trạng Thái</th>
                                         <th>Hành Động</th>
                                     </tr>
@@ -388,84 +322,85 @@
                         </div>
                     </div>
 
+                    <!-- 2. HỒ SƠ THANH TOÁN -->
                     <div id="sub-section-payments" style="display:none; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
-                        <h3 style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">🧾 Quản Lý Danh Mục Hồ Sơ & Chứng Từ Thanh Toán</h3>
+                        <h3 id="pay-form-title" style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">🧾 Lập Hồ Sơ & Chứng Từ Thanh Toán</h3>
                         <form id="payment-form" onsubmit="savePaymentRecord(event)">
-                            <input type="hidden" id="pay-id">
+                            <input type="hidden" id="pay-id-holder">
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label>Mã Hồ Sơ (Tự sinh)</label>
+                                    <label>Mã Hồ Sơ</label>
                                     <input type="text" id="pay-code" class="form-control" readonly style="background:#f1f5f9; font-weight:bold; color:var(--blue);">
                                 </div>
                                 <div class="form-group" style="grid-column: span 2;">
                                     <label>Tên Hồ Sơ / Nội Dung Chi</label>
-                                    <input type="text" id="pay-name" class="form-control" placeholder="Tên chứng từ chi tiết..." required>
+                                    <input type="text" id="pay-name" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Đơn Vị Thụ Hưởng / Đối Tác</label>
+                                    <label>Đơn Vị Thụ Hưởng</label>
                                     <input type="text" id="pay-recipient" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Số Tài Khoản Thụ Hưởng</label>
-                                    <input type="text" id="pay-bank-acc" class="form-control" placeholder="Nhập STK..." required>
+                                    <label>Số Tài Khoản</label>
+                                    <input type="text" id="pay-bank-acc" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Ngân Hàng Thụ Hưởng</label>
-                                    <input type="text" id="pay-bank-name" class="form-control" placeholder="Ví dụ: Vietcombank, Techcombank, BIDV, MB..." required>
+                                    <label>Ngân Hàng</label>
+                                    <input type="text" id="pay-bank-name" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Số Lượng (Khối lượng)</label>
+                                    <label>Số Lượng</label>
                                     <input type="number" id="pay-qty" class="form-control" value="1" min="1" oninput="calculateFormAmounts()" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Đơn Giá Trước Thuế (VND)</label>
-                                    <input type="text" id="pay-price" class="form-control" value="0" oninput="formatCurrencyInput(this); calculateFormAmounts()" placeholder="0">
+                                    <label>Đơn Giá Trước Thuế</label>
+                                    <input type="text" id="pay-price" class="form-control" value="0" oninput="formatCurrencyInput(this); calculateFormAmounts()">
                                 </div>
                                 <div class="form-group">
-                                    <label>Thuế Suất VAT (%)</label>
+                                    <label>Thuế Suất VAT</label>
                                     <select id="pay-vat-rate" class="form-control" onchange="calculateFormAmounts()">
                                         <option value="0.10" selected>10%</option>
                                         <option value="0.08">8%</option>
-                                        <option value="0.05">5%</option>
                                         <option value="0">Không VAT</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Tổng Tiền Sau Thuế (Tự tính)</label>
-                                    <input type="text" id="pay-amount-after" class="form-control" readonly style="background:#f1f5f9; font-weight:bold; color: #15803d;">
+                                    <label>Tổng Tiền Sau Thuế</label>
+                                    <input type="text" id="pay-amount-after" class="form-control" readonly style="background:#f1f5f9; font-weight:bold; color: #059669;">
                                 </div>
                                 <div class="form-group">
                                     <label>Phòng Ban Đề Xuất</label>
-                                    <input type="text" id="pay-dept" class="form-control" placeholder="Hành chính / Kinh doanh..." required>
+                                    <input type="text" id="pay-dept" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Trạng Thái Kiểm Duyệt</label>
+                                    <label>Trạng Thái</label>
                                     <select id="pay-status" class="form-control">
-                                        <option value="Chờ duyệt hồ sơ">⚠️ Chờ phê duyệt</option>
-                                        <option value="Đang thẩm định">🔄 Đang kiểm tra hồ sơ</option>
-                                        <option value="Đã duyệt chi toán">✅ Đã phê duyệt chi</option>
-                                        <option value="Bị bác bỏ">❌ Từ chối thanh toán</option>
+                                        <option value="Chờ phê duyệt">⚠️ Chờ phê duyệt</option>
+                                        <option value="Đã phê duyệt">✅ Đã phê duyệt chi</option>
                                     </select>
                                 </div>
                                 <div class="form-group" style="grid-column: span 2;">
-                                    <label>Chứng Từ Đính Kèm (Ảnh, PDF)</label>
-                                    <input type="file" id="pay-file" class="form-control" accept=".png,.jpg,.jpeg,.gif,.pdf" onchange="handleFileSelect(event)">
-                                    <div class="file-preview" id="pay-file-preview" style="display:none;"></div>
+                                    <label>Chứng Từ Đính Kèm (Hỗ trợ Ảnh & PDF)</label>
+                                    <input type="file" id="pay-file" class="form-control" accept="image/*,.pdf" onchange="handleFileSelect(event)">
+                                    <div class="file-preview-box" id="pay-file-preview" style="display:none;"></div>
                                 </div>
                             </div>
-                            <button type="submit" id="pay-btn-submit" class="btn-add">💾 Lưu Lên Cloud</button>
-                            <button type="button" id="pay-btn-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditPay()">Hủy sửa</button>
+                            <div style="display:flex; gap:10px;">
+                                <button type="submit" id="btn-pay-submit" class="btn-add">💾 Lưu Hồ Sơ</button>
+                                <button type="button" id="btn-pay-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditPay()">Hủy Sửa</button>
+                            </div>
                         </form>
 
                         <div class="table-responsive" style="margin-top: 15px;">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th class="text-left">Mã Số / Hồ Sơ Chi Tiêu</th>
-                                        <th>Đơn Vị Thụ Hưởng / Ngân Hàng</th>
+                                        <th class="text-left">Mã Số / Tên Hồ Sơ</th>
+                                        <th>Đơn Vị Thụ Hưởng</th>
                                         <th>Phòng Đề Xuất</th>
                                         <th>Tổng Sau Thuế (VND)</th>
-                                        <th>Tài Liệu</th>
+                                        <th>File Đính Kèm</th>
+                                        <th>Mã QR Hồ Sơ</th>
                                         <th>Trạng Thái</th>
                                         <th>Hành Động</th>
                                     </tr>
@@ -475,57 +410,59 @@
                         </div>
                     </div>
 
+                    <!-- 3. CƯỚC VIỄN THÔNG -->
                     <div id="sub-section-telecom" style="display:none; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
-                        <h3 style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">🌐 Quản Lý Cước Phí Đường Truyền Internet & Viễn Thông</h3>
+                        <h3 id="tele-form-title" style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">🌐 Thiết Lập Cước Viễn Thông & Internet</h3>
                         <form id="telecom-form" onsubmit="saveTelecomRecord(event)">
-                            <input type="hidden" id="tele-id">
+                            <input type="hidden" id="tele-id-holder">
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label>Mã Đường Truyền / Số Thuê Bao</label>
-                                    <input type="text" id="tele-code" class="form-control" placeholder="Mã TB..." required>
+                                    <label>Mã Thuê Bao / Số Đường Truyền</label>
+                                    <input type="text" id="tele-code" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Nhà Cung Cấp (ISP)</label>
+                                    <label>Nhà Mạng (ISP)</label>
                                     <select id="tele-provider" class="form-control">
                                         <option value="Viettel">Viettel</option>
                                         <option value="VNPT">VNPT</option>
-                                        <option value="FPT">FPT Telecom</option>
-                                        <option value="CMC">CMC Telecom</option>
+                                        <option value="FPT">FPT</option>
                                     </select>
                                 </div>
                                 <div class="form-group" style="grid-column: span 2;">
-                                    <label>Vị Trí Lắp Đặt / Bộ Phận Sử Dụng</label>
-                                    <input type="text" id="tele-location" class="form-control" placeholder="Ví dụ: VP Tổng giám đốc, Phòng máy chủ..." required>
+                                    <label>Vị Trí Lắp Đặt</label>
+                                    <input type="text" id="tele-location" class="form-control" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Cước Phí Trọn Gói / Tháng</label>
-                                    <input type="text" id="tele-cost" class="form-control" oninput="formatCurrencyInput(this)" placeholder="0" required>
+                                    <input type="text" id="tele-cost" class="form-control" oninput="formatCurrencyInput(this)" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Ngày Hạn Thanh Toán</label>
+                                    <label>Hạn Thanh Toán</label>
                                     <input type="date" id="tele-due-date" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Tình Trạng Thanh Toán</label>
+                                    <label>Tình Trạng</label>
                                     <select id="tele-status" class="form-control">
                                         <option value="Chưa thanh toán">🔴 Chưa thanh toán</option>
-                                        <option value="Đã thanh toán">🟢 Đã đóng cước</option>
+                                        <option value="Đã đóng cước">🟢 Đã đóng cước</option>
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" id="tele-btn-submit" class="btn-add">💾 Lưu Lên Cloud</button>
-                            <button type="button" id="tele-btn-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditTele()">Hủy sửa</button>
+                            <div style="display:flex; gap:10px;">
+                                <button type="submit" id="btn-tele-submit" class="btn-add">💾 Lưu Thông Tin Cước</button>
+                                <button type="button" id="btn-tele-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditTele()">Hủy Sửa</button>
+                            </div>
                         </form>
 
                         <div class="table-responsive" style="margin-top: 15px;">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th class="text-left">Mã Số / Đường Truyền</th>
+                                        <th class="text-left">Mã Số Thuê Bao</th>
                                         <th>Nhà Cung Cấp</th>
                                         <th>Địa Điểm Lắp Đặt</th>
                                         <th>Giá Cước / Tháng</th>
-                                        <th>Thời Hạn Nộp</th>
+                                        <th>Hạn Nộp</th>
                                         <th>Trạng Thái</th>
                                         <th>Hành Động</th>
                                     </tr>
@@ -534,35 +471,32 @@
                             </table>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="preview-modal" class="modal" onclick="closeModalOnOuterClick(event)">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeDocModal()">&times;</span>
-            <h3 id="modal-title" style="margin-bottom: 5px; font-size: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">Xem Trước Chứng Từ</h3>
-            <div id="modal-body" class="modal-body-content"></div>
+    <!-- MODAL XEM TRƯỚC TÀI LIỆU CHUYÊN NGHIỆP -->
+    <div class="preview-modal" id="document-preview-modal">
+        <div class="preview-modal-content">
+            <div class="preview-header">
+                <span id="preview-modal-title" style="font-weight:bold;">XEM TRƯỚC CHỨNG TỪ CHI TIẾT</span>
+                <span style="font-size:24px; cursor:pointer;" onclick="closePreviewModal()">&times;</span>
+            </div>
+            <div class="preview-body" id="preview-modal-body">
+                <!-- Nội dung xem trước được cập nhật động qua JS -->
+            </div>
         </div>
     </div>
 
+    <!-- KHU VỰC IN MÃ QR (Được định dạng riêng để in decal dán hồ sơ) -->
+    <div id="qr-print-section" style="display:none;"></div>
+
     <script>
-        // ĐỊNH NGHĨA BIẾN MÔI TRƯỜNG CLOUD KẾT NỐI HỢP NHẤT
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
-        
-        // SỬA LỖI TRÙNG BIẾN CHÍNH XÁC: Gán vào biến nghiệp vụ riêng biệt để không xung đột CDN toàn cục
         let supabaseClient;
-
-        function bootstrapSupabase() {
-            try {
-                return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            } catch (err) {
-                console.error("Lỗi liên kết thư viện Cloud:", err);
-                return null;
-            }
-        }
 
         let currentTab = 1;
         let activeSubTab = 'tasks';
@@ -570,10 +504,10 @@
         let taskRecords = [];
         let paymentRecords = [];
         let telecomRecords = [];
+        let uploadedFileBase64 = '';
+        let uploadedFileType = '';
+        let uploadedFileName = '';
 
-        let uploadedFileObj = { base64: '', fileName: '', fileType: '' };
-
-        // BỘ DỮ LIỆU ĐỒNG BỘ 20 NHÂN SỰ CHUẨN XÁC GỐC ĐƯỢC BẢO LƯU 100%
         let dataset = [
             {"stt":1,"name":"NGUYỄN MINH NGỌC","heSoCB":2.19,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":5.80,"tamUngTru":5000000,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0},
             {"stt":2,"name":"NGUYỄN VĂN NAM","heSoCB":1.48,"cong":19,"phep":3,"le":0,"heSoHT":1.0,"heSoCV":2.24,"tamUngTru":4000000,"quyPCTT":0,"truUngT4":0,"congAnCa":19,"ngayDocHai":0},
@@ -597,63 +531,25 @@
             {"stt":20,"name":"KHỔNG VĂN CHƯƠNG","heSoCB":1.53,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":1.85,"tamUngTru":0,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0}
         ];
 
-        window.onload = async function() {
+        window.onload = function() {
             renderSalaryModule();
             initCalendar();
             generateAutoPaymentCode();
+            renderSubModule();
             
-            // Kích hoạt kết nối Client
-            supabaseClient = bootstrapSupabase();
-            
-            if (supabaseClient) {
-                document.getElementById('sync-dot').classList.add('online');
-                document.getElementById('sync-text').innerText = "Đã kết nối an toàn với Cloud Supabase (Realtime-Sync Active)";
-                document.getElementById('sync-text').style.color = "#34d399";
-                // Tải đồng bộ dữ liệu
-                await fetchAllCloudData();
-                listenRealtime();
-            } else {
-                document.getElementById('sync-text').innerText = "Hệ thống ngoại tuyến hoặc lỗi nạp cấu hình.";
-                document.getElementById('sync-text').style.color = "#ef4444";
-            }
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                if (supabaseClient) {
+                    document.getElementById('sync-dot').classList.add('online');
+                    document.getElementById('sync-text').innerText = "Đã kết nối Cloud Supabase (Hồ Sơ & Công Việc Sẵn Sàng)";
+                    document.getElementById('sync-text').style.color = "#34d399";
+                }
+            } catch (err) {}
 
             setInterval(() => {
                 document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('vi-VN');
             }, 1000);
         };
-
-        // ĐỒNG BỘ DỮ LIỆU BAN ĐẦU TỪ TRÊN SERVER CLOUD XUỐNG
-        async function fetchAllCloudData() {
-            if(!supabaseClient) return;
-            try {
-                // Tải Tasks
-                const { data: tData, error: tErr } = await supabaseClient.from('tasks').select('*').order('id', { ascending: true });
-                if(!tErr && tData) taskRecords = tData;
-
-                // Tải Hồ sơ thanh toán
-                const { data: pData, error: pErr } = await supabaseClient.from('payments').select('*').order('id', { ascending: true });
-                if(!pErr && pData) {
-                    paymentRecords = pData.map(p => ({
-                        id: Number(p.id), code: p.code, name: p.name, recipient: p.recipient,
-                        bankAcc: p.bank_acc, bankName: p.bank_name, qty: p.qty, price: Number(p.price),
-                        before: Number(p.before_tax), tax: Number(p.tax), after: Number(p.after_tax),
-                        dept: p.dept, status: p.status, file: p.file_data
-                    }));
-                }
-
-                // Tải Cước viễn thông
-                const { data: telData, error: telErr } = await supabaseClient.from('telecoms').select('*').order('id', { ascending: true });
-                if(!telErr && telData) telecomRecords = telData;
-
-                renderSubModule();
-            } catch(e) {
-                console.error("Lỗi nạp luồng Cloud:", e);
-            }
-        }
-
-        function generateAutoPaymentCode() {
-            document.getElementById('pay-code').value = "HSTT-2026-" + Math.floor(1000 + Math.random() * 9000);
-        }
 
         function switchModule(mod) {
             document.getElementById('module-luong-container').style.display = (mod === 'luong') ? 'block' : 'none';
@@ -662,408 +558,446 @@
             if(mod === 'luong') document.getElementById('btn-mod-luong').classList.add('active');
             if(mod === 'docs') document.getElementById('btn-mod-docs').classList.add('active');
         }
-
-        function switchTab(t) {
-            currentTab = t;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + t).classList.add('active');
-            renderSalaryModule();
+        
+        function switchTab(t) { currentTab = t; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('tab-' + t).classList.add('active'); renderSalaryModule(); }
+        
+        function switchSubTab(tab) { 
+            activeSubTab = tab; 
+            document.querySelectorAll('.tab-sub-btn').forEach(b => b.classList.remove('active')); 
+            document.getElementById('btn-sub-' + tab).classList.add('active'); 
+            document.getElementById('sub-section-tasks').style.display = (tab === 'tasks') ? 'block' : 'none'; 
+            document.getElementById('sub-section-payments').style.display = (tab === 'payments') ? 'block' : 'none'; 
+            document.getElementById('sub-section-telecom').style.display = (tab === 'telecom') ? 'block' : 'none'; 
+            renderSubModule(); 
         }
 
-        function switchSubTab(tab) {
-            activeSubTab = tab;
-            document.querySelectorAll('.tab-sub-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-sub-' + tab).classList.add('active');
-            document.getElementById('sub-section-tasks').style.display = (tab === 'tasks') ? 'block' : 'none';
-            document.getElementById('sub-section-payments').style.display = (tab === 'payments') ? 'block' : 'none';
-            document.getElementById('sub-section-telecom').style.display = (tab === 'telecom') ? 'block' : 'none';
-            renderSubModule();
-        }
-
-        function formatMoney(num) {
-            if (num === "" || num === undefined || isNaN(num)) return "-";
-            return Math.round(num).toLocaleString('vi-VN');
-        }
-
-        function formatDateVN(dateStr) {
-            if (!dateStr) return "-";
-            let parts = dateStr.split("-");
-            return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr;
-        }
-
-        function formatCurrencyInput(input) {
-            let value = input.value.replace(/\./g, '');
-            if(!isNaN(value) && value !== "") input.value = parseInt(value).toLocaleString('vi-VN');
-        }
-
-        function getRawNumber(str) {
-            if(!str) return 0;
-            return parseFloat(str.toString().replace(/\./g, '').replace(/,/g, '')) || 0;
-        }
-
-        function mapBankNameToVietQRId(bankName) {
-            if (!bankName) return 'VCB';
-            let name = bankName.toLowerCase().replace(/\s+/g, '');
-            if (name.includes('vietcom') || name.includes('vcb')) return 'VCB';
-            if (name.includes('techcom') || name.includes('tcb')) return 'TCB';
-            if (name.includes('mb') || name.includes('quandoi') || name.includes('mbb')) return 'MB';
-            if (name.includes('bidv') || name.includes('dautu')) return 'BIDV';
-            if (name.includes('agri') || name.includes('vba') || name.includes('nongnghiep')) return 'VBA';
-            if (name.includes('vietin') || name.includes('ctg') || name.includes('icb')) return 'CTG';
-            if (name.includes('acb') || name.includes('achau')) return 'ACB';
-            return 'VCB';
-        }
+        function formatMoney(num) { if (num === "" || num === undefined || isNaN(num)) return "0"; return Math.round(num).toLocaleString('vi-VN'); }
+        function formatDateVN(dateStr) { if (!dateStr) return "-"; let parts = dateStr.split("-"); return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr; }
+        function getRawNumber(str) { if(!str) return 0; return parseFloat(str.toString().replace(/\./g, '').replace(/,/g, '')) || 0; }
+        function formatCurrencyInput(input) { let value = input.value.replace(/\./g, ''); if(!isNaN(value) && value !== "") input.value = parseInt(value).toLocaleString('vi-VN'); }
 
         function updateSalaryData(index, field, value) {
-            dataset[index][field] = (field === 'tamUngTru' || field === 'quyPCTT' || field === 'truUngT4') ? getRawNumber(value) : parseFloat(value) || 0;
+            let val = parseFloat(value); if(isNaN(val)) val = 0;
+            dataset[index][field] = (field === 'tamUngTru' || field === 'quyPCTT' || field === 'truUngT4') ? getRawNumber(value) : val;
             renderSalaryModule();
         }
 
-        /* ================= PHÂN HỆ 1: KỊCH BẢN BẢO LƯU LƯƠNG NHÂN SỰ GỐC ================= */
+        /* ================= PHÂN HỆ LƯƠNG: CHỐT CỨNG CỐ ĐỊNH 100% ================= */
         function renderSalaryModule() {
             let head = document.getElementById('table-head'), body = document.getElementById('table-body'), foot = document.getElementById('table-foot');
             head.innerHTML = ''; body.innerHTML = ''; foot.innerHTML = '';
-            let sums = { heSoCB:0, tlcb:0, bhtn:0, bhxh:0, thucLinhLCB:0, heSoCV:0, luongCVThuc:0, tamUngTru:0, quyPCTT:0, truUngT4:0, thucLinhLCV:0, congAnCa:0, tienAnCa:0, ngayDH:0, docHai:0, tongPC:0, thucNhan:0, cong:0 };
+            let sums = { heSoCB:0, tlcb:0, bhtn:0, bhxh:0, thucLinhLCB:0, heSoCV:0, luongCVThuc:0, tamUngTru:0, quyPCTT:0, truUngT4:0, thucLinhLCV:0, congAnCa:0, tienAnCa:0, ngayDH:0, docHai:0, tongPC:0, thucNhan:0, cong:0, tongCB_CV: 0 };
             let bodyHtml = '', headHtml = '', footHtml = '';
 
             if(currentTab === 1) {
-                headHtml = `<tr><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th>Hệ Số LCB</th><th>Lương ký HĐLĐ</th><th>Lương Cơ Bản</th><th>Công NT</th><th>Phép</th><th>Lễ</th><th>Lương Thời Gian</th><th>Lương Lễ Phép</th><th>Hệ Số HT</th><th>Tổng Tiền LCB</th><th>BHTN (1%)</th><th>BHXH (9.5%)</th><th style="background: #2563eb;">Thực Lĩnh LCB</th></tr>`;
+                headHtml = `<tr><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th>Hệ Số LCB</th><th>Lương ký HĐLĐ</th><th>Lương Cơ Bản</th><th>Công NT</th><th>Phép</th><th>Lễ</th><th>Lương Thời Gian</th><th>Lương K3 theo CB</th><th>Lương Lễ Phép</th><th style="background: var(--blue);">Tổng LCB mới</th><th>BHTN (1%)</th><th>BHXH (9.5%)</th><th style="background: #1e293b;">Thực Lĩnh LCB</th></tr>`;
                 dataset.forEach((s, idx) => {
-                    let luongHD = s.heSoCB * 4140000, lcb = s.heSoCB * 2530000, ltg = (lcb / 22) * s.cong, llp = Math.round(luongHD / 22) * (s.phep + s.le), tlcb = (ltg + llp) * s.heSoHT, bhtn = -Math.round(luongHD * 0.01), bhxh = -Math.round(luongHD * 0.095), thucLinhLCB = tlcb + bhtn + bhxh;
-                    sums.heSoCB+=s.heSoCB; sums.tlcb+=tlcb; sums.bhtn+=bhtn; sums.bhxh+=bhxh; sums.thucLinhLCB+=thucLinhLCB;
-                    bodyHtml += `<tr><td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td><input type="number" step="0.01" class="table-input he-so" value="${s.heSoCB}" onchange="updateSalaryData(${idx}, 'heSoCB', this.value)"></td><td>${formatMoney(luongHD)}</td><td>${formatMoney(lcb)}</td><td><input type="number" class="table-input" value="${s.cong}" onchange="updateSalaryData(${idx}, 'cong', this.value)"></td><td><input type="number" class="table-input" value="${s.phep}" onchange="updateSalaryData(${idx}, 'phep', this.value)"></td><td><input type="number" class="table-input" value="${s.le}" onchange="updateSalaryData(${idx}, 'le', this.value)"></td><td>${formatMoney(ltg)}</td><td>${formatMoney(llp)}</td><td><input type="number" step="0.1" class="table-input he-so" value="${s.heSoHT}" onchange="updateSalaryData(${idx}, 'heSoHT', this.value)"></td><td class="font-bold">${formatMoney(tlcb)}</td><td class="color-minus">${formatMoney(bhtn)}</td><td class="color-minus">${formatMoney(bhxh)}</td><td class="color-tongcuoi">${formatMoney(thucLinhLCB)}</td></tr>`;
+                    let phep = parseFloat(s.phep) || 0; let le = parseFloat(s.le) || 0; let cong = parseFloat(s.cong) || 0; let heSoCB = parseFloat(s.heSoCB) || 0;
+                    let luongHD = heSoCB * 4140000; let lcb = heSoCB * 2530000; let ltg = (lcb / 22) * cong;
+                    let lk3_cb = 0; 
+                    let llp = Math.round(luongHD / 22) * (phep + le);
+                    let tlcb = ltg + lk3_cb + llp;
+                    let bhtn = -Math.round(luongHD * 0.01); let bhxh = -Math.round(luongHD * 0.095); let thucLinhLCB = tlcb + bhtn + bhxh;
+                    sums.heSoCB += heSoCB; sums.tlcb += tlcb; sums.bhtn += bhtn; sums.bhxh += bhxh; sums.thucLinhLCB += thucLinhLCB;
+
+                    bodyHtml += `<tr>
+                        <td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td>
+                        <td><input type="number" step="0.01" class="table-input he-so" value="${heSoCB}" onchange="updateSalaryData(${idx}, 'heSoCB', this.value)"></td>
+                        <td>${formatMoney(luongHD)}</td><td>${formatMoney(lcb)}</td>
+                        <td><input type="number" class="table-input days-input" value="${cong}" onchange="updateSalaryData(${idx}, 'cong', this.value)"></td>
+                        <td><input type="number" class="table-input phep-le-input" value="${phep}" onchange="updateSalaryData(${idx}, 'phep', this.value)"></td>
+                        <td><input type="number" class="table-input phep-le-input" value="${le}" onchange="updateSalaryData(${idx}, 'le', this.value)"></td>
+                        <td>${formatMoney(ltg)}</td><td style="color:#94a3b8; font-weight:bold;">${formatMoney(lk3_cb)}</td><td>${formatMoney(llp)}</td>
+                        <td class="font-bold" style="color:var(--blue);">${formatMoney(tlcb)}</td><td class="color-minus">${formatMoney(bhtn)}</td><td class="color-minus">${formatMoney(bhxh)}</td><td class="color-tongcuoi">${formatMoney(thucLinhLCB)}</td>
+                    </tr>`;
                 });
-                footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td>${sums.heSoCB.toFixed(2)}</td><td colspan="7">-</td><td class="font-bold">${formatMoney(sums.tlcb)}</td><td class="color-minus">${formatMoney(sums.bhtn)}</td><td class="color-minus">${formatMoney(sums.bhxh)}</td><td class="color-tongcuoi">${formatMoney(sums.thucLinhLCB)}</td></tr>`;
+                footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td>${sums.heSoCB.toFixed(2)}</td><td colspan="8">-</td><td class="font-bold" style="color:var(--blue);">${formatMoney(sums.tlcb)}</td><td class="color-minus">${formatMoney(sums.bhtn)}</td><td class="color-minus">${formatMoney(sums.bhxh)}</td><td class="color-tongcuoi">${formatMoney(sums.thucLinhLCB)}</td></tr>`;
             } else if(currentTab === 2) {
-                headHtml = `<tr class="lcv-header"><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th class="highlight-lcv">Hệ Số LCV</th><th>Ngày Công</th><th>Lương LCV Định Mức</th><th>Lương CV Thực Tế</th><th class="highlight-lcv">Tạm Ứng Trừ</th><th>Quỹ PCTT</th><th>Trừ Ứng T4</th><th class="highlight-lcv">Thực Lĩnh LCV</th><th class="highlight-total">Tổng Thực Lĩnh</th></tr>`;
+                headHtml = `<tr class="lcv-header"><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th class="highlight-lcv">Hệ Số LCV</th><th>Ngày Công</th><th>Lương LCV Định Mức</th><th>Lương CV Thực Tế</th><th class="highlight-lcv">Tạm Ứng Trừ</th><th>Quỹ PCTT</th><th>Trừ Ứng T4</th><th class="highlight-lcv">Thực Lĩnh LCV</th><th style="background:var(--purple); color:white;">Tổng CB & CV Thực Tế</th><th class="highlight-total">Tổng Thực Lĩnh Chuyển Khoản</th></tr>`;
                 dataset.forEach((s, idx) => {
-                    let luongCVChuan = s.heSoCV * 2087970, luongCVThucTe = Math.round((luongCVChuan / 22) * s.cong), thucLinhLCV = luongCVThucTe - s.tamUngTru - s.quyPCTT - s.truUngT4;
-                    let luongHD = s.heSoCB * 4140000, lcb = s.heSoCB * 2530000, ltg = (lcb / 22) * s.cong, llp = Math.round(luongHD / 22) * (s.phep + s.le), tlcb = (ltg + llp) * s.heSoHT, bhtn = -Math.round(luongHD * 0.01), bhxh = -Math.round(luongHD * 0.095), thucLinhLCB = tlcb + bhtn + bhxh, tongThucLinh = thucLinhLCB + thucLinhLCV;
-                    sums.heSoCV+=s.heSoCV; sums.cong+=s.cong; sums.luongCVThuc+=luongCVThucTe; sums.tamUngTru+=s.tamUngTru; sums.quyPCTT+=s.quyPCTT; sums.truUngT4+=s.truUngT4; sums.thucLinhLCV+=thucLinhLCV; sums.thucNhan+=tongThucLinh;
-                    bodyHtml += `<tr><td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td><input type="number" step="0.01" class="table-input he-so" value="${s.heSoCV}" onchange="updateSalaryData(${idx}, 'heSoCV', this.value)"></td><td>${s.cong}</td><td>${formatMoney(luongCVChuan)}</td><td class="font-bold">${formatMoney(luongCVThucTe)}</td><td><input type="text" class="table-input money-input" value="${formatMoney(s.tamUngTru)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'tamUngTru', this.value)"></td><td><input type="text" class="table-input money-input" style="color:#475569; background:#fff;" value="${formatMoney(s.quyPCTT)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'quyPCTT', this.value)"></td><td><input type="text" class="table-input money-input" style="color:#475569; background:#fff;" value="${formatMoney(s.truUngT4)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'truUngT4', this.value)"></td><td class="font-bold" style="color:#d97706;">${formatMoney(thucLinhLCV)}</td><td class="color-tongcuoi" style="background:#f0fdf4;">${formatMoney(tongThucLinh)}</td></tr>`;
+                    let phep = parseFloat(s.phep) || 0; let le = parseFloat(s.le) || 0; let cong = parseFloat(s.cong) || 0; let heSoCB = parseFloat(s.heSoCB) || 0; let heSoCV = parseFloat(s.heSoCV) || 0;
+                    let luongCVChuan = heSoCV * 2087970; let luongCVThucTe = Math.round((luongCVChuan / 22) * cong); let thucLinhLCV = luongCVThucTe - s.tamUngTru - s.quyPCTT - s.truUngT4;
+                    let luongHD = heSoCB * 4140000; let ltg = ((heSoCB * 2530000) / 22) * cong; let tlcb = ltg + 0 + (Math.round(luongHD / 22) * (phep + le));
+                    let thucLinhLCB = tlcb + (-Math.round(luongHD * 0.01)) + (-Math.round(luongHD * 0.095));
+                    sums.heSoCV += heSoCV; sums.cong += cong; sums.luongCVThuc += luongCVThucTe; sums.tamUngTru += s.tamUngTru; sums.quyPCTT += s.quyPCTT; sums.truUngT4 += s.truUngT4; sums.thucLinhLCV += thucLinhLCV; sums.tongCB_CV += (luongCVThucTe + tlcb); sums.thucNhan += (thucLinhLCB + thucLinhLCV);
+                    bodyHtml += `<tr>
+                        <td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td><input type="number" step="0.01" class="table-input he-so" value="${heSoCV}" onchange="updateSalaryData(${idx}, 'heSoCV', this.value)"></td><td>${cong}</td><td>${formatMoney(luongCVChuan)}</td><td class="font-bold">${formatMoney(luongCVThucTe)}</td>
+                        <td><input type="text" class="table-input money-input" value="${formatMoney(s.tamUngTru)}" onchange="updateSalaryData(${idx}, 'tamUngTru', this.value)"></td><td><input type="text" class="table-input money-input" style="color:#475569; background:#fff;" value="${formatMoney(s.quyPCTT)}" onchange="updateSalaryData(${idx}, 'quyPCTT', this.value)"></td><td><input type="text" class="table-input money-input" style="color:#475569; background:#fff;" value="${formatMoney(s.truUngT4)}" onchange="updateSalaryData(${idx}, 'truUngT4', this.value)"></td>
+                        <td class="font-bold" style="color:#d97706;">${formatMoney(thucLinhLCV)}</td><td class="font-bold" style="color:var(--purple); background:#faf5ff;">${formatMoney(luongCVThucTe + tlcb)}</td><td class="color-tongcuoi" style="background:#f0fdf4;">${formatMoney(thucLinhLCB + thucLinhLCV)}</td>
+                    </tr>`;
                 });
-                footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td>${sums.heSoCV.toFixed(2)}</td><td>${sums.cong}</td><td>-</td><td class="font-bold">${formatMoney(sums.luongCVThuc)}</td><td class="color-minus">${formatMoney(sums.tamUngTru)}</td><td>${formatMoney(sums.quyPCTT)}</td><td>${formatMoney(sums.truUngT4)}</td><td class="font-bold" style="color:#d97706;">${formatMoney(sums.thucLinhLCV)}</td><td class="color-tongcuoi">${formatMoney(sums.thucNhan)}</td></tr>`;
+                footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td>${sums.heSoCV.toFixed(2)}</td><td>${sums.cong}</td><td>-</td><td class="font-bold">${formatMoney(sums.luongCVThuc)}</td><td class="color-minus">${formatMoney(sums.tamUngTru)}</td><td>${formatMoney(sums.quyPCTT)}</td><td>${formatMoney(sums.truUngT4)}</td><td class="font-bold" style="color:#d97706;">${formatMoney(sums.thucLinhLCV)}</td><td class="font-bold" style="color:var(--purple);">${formatMoney(sums.tongCB_CV)}</td><td class="color-tongcuoi">${formatMoney(sums.thucNhan)}</td></tr>`;
             } else if(currentTab === 3) {
                 headHtml = `<tr><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th>Công Ăn Ca</th><th class="highlight-pc">Tiền Ăn Ca (3)</th><th class="highlight-pc">Ngày Độc Hại</th><th>Độc Hại (4)</th><th class="font-bold">Tổng Cộng Phụ Cấp</th></tr>`;
                 dataset.forEach((s, idx) => {
-                    let tienAnCa = s.congAnCa * 5000, tienDocHai = s.ngayDocHai * 13000, tongPC = tienAnCa + tienDocHai;
-                    sums.congAnCa+=s.congAnCa; sums.tienAnCa+=tienAnCa; sums.ngayDH+=s.ngayDocHai; sums.docHai+=tienDocHai; sums.tongPC+=tongPC;
-                    bodyHtml += `<tr><td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td>${s.congAnCa}</td><td>${formatMoney(tienAnCa)}</td><td><input type="number" class="table-input" value="${s.ngayDocHai}" onchange="updateSalaryData(${idx}, 'ngayDocHai', this.value)"></td><td>${formatMoney(tienDocHai)}</td><td class="font-bold">${formatMoney(tongPC)}</td></tr>`;
+                    let tienAnCa = s.congAnCa * 5000, tienDocHai = s.ngayDocHai * 13000; sums.congAnCa+=s.congAnCa; sums.tienAnCa+=tienAnCa; sums.ngayDH+=s.ngayDocHai; sums.docHai+=tienDocHai; sums.tongPC+=(tienAnCa + tienDocHai);
+                    bodyHtml += `<tr><td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td>${s.congAnCa}</td><td>${formatMoney(tienAnCa)}</td><td><input type="number" class="table-input days-input" value="${s.ngayDocHai}" onchange="updateSalaryData(${idx}, 'ngayDocHai', this.value)"></td><td>${formatMoney(tienDocHai)}</td><td class="font-bold">${formatMoney(tienAnCa + tienDocHai)}</td></tr>`;
                 });
                 footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td>${sums.congAnCa}</td><td>${formatMoney(sums.tienAnCa)}</td><td>${sums.ngayDH}</td><td>${formatMoney(sums.docHai)}</td><td class="font-bold">${formatMoney(sums.tongPC)}</td></tr>`;
             } else if(currentTab === 4) {
                 headHtml = `<tr class="th-header"><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th>Thực Lĩnh LCB (1)</th><th>Thực Lĩnh LCV (2)</th><th>Ăn Ca</th><th>Độc Hại</th><th class="highlight-th">Thực Nhận Chuyển Khoản</th></tr>`;
                 dataset.forEach(s => {
-                    let luongHD = s.heSoCB * 4140000, lcb = s.heSoCB * 2530000, ltg = (lcb / 22) * s.cong, llp = Math.round(luongHD / 22) * (s.phep + s.le), tlcb = (ltg + llp) * s.heSoHT, bhtn = -Math.round(luongHD * 0.01), bhxh = -Math.round(luongHD * 0.095), thucLinhLCB = tlcb + bhtn + bhxh;
-                    let luongCVChuan = s.heSoCV * 2087970, luongCVThucTe = Math.round((luongCVChuan / 22) * s.cong), thucLinhLCV = luongCVThucTe - s.tamUngTru - s.quyPCTT - s.truUngT4, thucNhan = thucLinhLCB + thucLinhLCV;
-                    sums.thucLinhLCB+=thucLinhLCB; sums.thucLinhLCV+=thucLinhLCV; sums.tienAnCa+=(s.congAnCa*5000); sums.docHai+=(s.ngayDocHai*13000); sums.thucNhan+=thucNhan;
-                    bodyHtml += `<tr><td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td class="font-bold" style="color:#1d4ed8;">${formatMoney(thucLinhLCB)}</td><td class="font-bold ${thucLinhLCV < 0 ? 'color-minus' : ''}" style="color:#b45309;">${formatMoney(thucLinhLCV)}</td><td style="color:#64748b;">${formatMoney(s.congAnCa * 5000)}</td><td style="color:#64748b;">${formatMoney(s.ngayDocHai * 13000)}</td><td class="bg-highlight-thucnhan text-center">${formatMoney(thucNhan)}</td></tr>`;
+                    let luongHD = s.heSoCB * 4140000; let tlcb = (((s.heSoCB * 2530000) / 22) * s.cong) + 0 + (Math.round(luongHD / 22) * (s.phep + s.le));
+                    let thucLinhLCB = tlcb + (-Math.round(luongHD * 0.01)) + (-Math.round(luongHD * 0.095));
+                    let thucLinhLCV = Math.round(((s.heSoCV * 2087970) / 22) * s.cong) - s.tamUngTru - s.quyPCTT - s.truUngT4;
+                    sums.thucLinhLCB+=thucLinhLCB; sums.thucLinhLCV+=thucLinhLCV; sums.tienAnCa+=(s.congAnCa*5000); sums.docHai+=(s.ngayDocHai*13000); sums.thucNhan+=(thucLinhLCB + thucLinhLCV);
+                    bodyHtml += `<tr><td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td class="font-bold" style="color:#1d4ed8;">${formatMoney(thucLinhLCB)}</td><td class="font-bold" style="color:#b45309;">${formatMoney(thucLinhLCV)}</td><td>${formatMoney(s.congAnCa * 5000)}</td><td>${formatMoney(s.ngayDocHai * 13000)}</td><td class="bg-highlight-thucnhan text-center">${formatMoney(thucLinhLCB + thucLinhLCV)}</td></tr>`;
                 });
-                footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td class="font-bold" style="color:#1d4ed8;">${formatMoney(sums.thucLinhLCB)}</td><td class="font-bold" style="color:#b45309;">${formatMoney(sums.thucLinhLCV)}</td><td style="color:#64748b;">${formatMoney(sums.tienAnCa)}</td><td style="color:#64748b;">${formatMoney(sums.docHai)}</td><td class="bg-highlight-thucnhan text-center">${formatMoney(sums.thucNhan)}</td></tr>`;
+                footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td class="font-bold" style="color:#1d4ed8;">${formatMoney(sums.thucLinhLCB)}</td><td class="font-bold" style="color:#b45309;">${formatMoney(sums.thucLinhLCV)}</td><td>${formatMoney(sums.tienAnCa)}</td><td>${formatMoney(sums.docHai)}</td><td class="bg-highlight-thucnhan text-center">${formatMoney(sums.thucNhan)}</td></tr>`;
             }
             head.innerHTML = headHtml; body.innerHTML = bodyHtml; foot.innerHTML = footHtml;
         }
 
+        /* ================= PHÂN HỆ SỐ 2: TÍCH HỢP QUẢN TRỊ BỔ SUNG & QR CODE & EDIT CHUYÊN NGHIỆP ================= */
         function initCalendar() {
-            let container = document.querySelector('.cal-days-container');
+            let container = document.querySelector('.cal-days-container'); if(!container) return;
             container.innerHTML = `<div class="calendar-day-name">CN</div><div class="calendar-day-name">T2</div><div class="calendar-day-name">T3</div><div class="calendar-day-name">T4</div><div class="calendar-day-name">T5</div><div class="calendar-day-name">T6</div><div class="calendar-day-name">T7</div>`;
             for(let i=0; i<3; i++) container.innerHTML += '<div></div>';
-            for(let d=1; d<=31; d++) {
-                let act = (d === 15) ? 'active-day' : '';
-                container.innerHTML += `<div class="calendar-cell ${act}"><strong>${d}</strong><span class="lunar-day">${d-13>0?d-13:d+17}/6</span></div>`;
-            }
+            for(let d=1; d<=31; d++) { container.innerHTML += `<div class="calendar-cell ${d===15?'active-day':''}"><strong>${d}</strong><span class="lunar-day">${d-13>0?d-13:d+17}/6</span></div>`; }
         }
 
+        function generateAutoPaymentCode() { document.getElementById('pay-code').value = "HSTT-2026-" + Math.floor(1000 + Math.random() * 9000); }
+        
+        // Nhận diện File và Lưu thông tin Loại file
         function handleFileSelect(event) {
-            let file = event.target.files[0];
-            if (!file) return;
-            uploadedFileObj.fileName = file.name;
-            uploadedFileObj.fileType = file.type;
+            let file = event.target.files[0]; if (!file) return;
+            uploadedFileName = file.name;
+            uploadedFileType = file.type;
             let reader = new FileReader();
-            reader.onload = function(e) {
-                uploadedFileObj.base64 = e.target.result;
-                updateFilePreviewUI();
+            reader.onload = function(e) { 
+                uploadedFileBase64 = e.target.result; 
+                document.getElementById('pay-file-preview').style.display = 'flex'; 
+                let previewHtml = '';
+                if(uploadedFileType.includes('image')) {
+                    previewHtml = `<div class="file-item-preview"><img class="file-thumb" src="${uploadedFileBase64}"> <span>${uploadedFileName}</span> <button type="button" onclick="previewDocument('${uploadedFileBase64}', 'image')" class="btn-action btn-edit">Xem lớn</button></div>`;
+                } else if(uploadedFileType.includes('pdf')) {
+                    previewHtml = `<div class="file-item-preview"><div style="font-size:24px;">📄</div> <span>${uploadedFileName}</span> <button type="button" onclick="previewDocument('${uploadedFileBase64}', 'pdf')" class="btn-action btn-edit">Xem PDF</button></div>`;
+                } else {
+                    previewHtml = `<div class="file-item-preview"><div style="font-size:24px;">📎</div> <span>${uploadedFileName}</span></div>`;
+                }
+                document.getElementById('pay-file-preview').innerHTML = previewHtml;
             };
             reader.readAsDataURL(file);
         }
 
-        function updateFilePreviewUI() {
-            let container = document.getElementById('pay-file-preview');
-            if (!uploadedFileObj.base64) { container.style.display = 'none'; return; }
-            container.style.display = 'flex';
-            let html = uploadedFileObj.fileType.startsWith('image/') ? `<img src="${uploadedFileObj.base64}">` : `<div style="font-size:24px;">📕</div>`;
-            html += `<div style="flex:1;"><span style="font-size:12px; font-weight:bold; display:block; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${uploadedFileObj.fileName}</span></div>`;
-            html += `<button type="button" class="btn-remove-file" onclick="removeAttachedFile()">Gỡ</button>`;
-            container.innerHTML = html;
+        // Gọi modal xem trước lớn
+        function previewDocument(base64Data, type) {
+            let modal = document.getElementById('document-preview-modal');
+            let body = document.getElementById('preview-modal-body');
+            body.innerHTML = '';
+            if(type === 'image') {
+                body.innerHTML = `<img src="${base64Data}" style="max-width:100%; max-height: 70vh; object-fit: contain;">`;
+            } else if(type === 'pdf') {
+                body.innerHTML = `<iframe src="${base64Data}" style="width:100%; height:70vh; border:none;"></iframe>`;
+            } else {
+                body.innerHTML = `<p>Định dạng này không hỗ trợ xem trực tiếp. Vui lòng tải về máy.</p>`;
+            }
+            modal.style.display = 'flex';
         }
 
-        function removeAttachedFile() {
-            uploadedFileObj = { base64: '', fileName: '', fileType: '' };
-            document.getElementById('pay-file').value = '';
-            updateFilePreviewUI();
+        function closePreviewModal() {
+            document.getElementById('document-preview-modal').style.display = 'none';
         }
 
-        function previewDocumentFile(id) {
-            let p = paymentRecords.find(x => x.id === id);
-            if (!p || !p.file || !p.file.base64) return;
-            document.getElementById('modal-title').innerText = p.file.fileName;
-            let body = document.getElementById('modal-body');
-            body.innerHTML = p.file.fileType.startsWith('image/') ? `<img src="${p.file.base64}" style="max-width:100%; max-height:100%; object-fit:contain;">` : `<iframe src="${p.file.base64}" style="width:100%; height:100%; border:none;"></iframe>`;
-            document.getElementById('preview-modal').style.display = 'flex';
+        // Tạo mã QR Code
+        function generateQRCodeSvg(dataString) {
+            try {
+                let qr = qrcode(0, 'M');
+                qr.addData(dataString);
+                qr.make();
+                return qr.createSvgTag(3, 8); // Kích thước khối và viền
+            } catch (err) {
+                return '<span style="color:red;">Lỗi tạo QR</span>';
+            }
         }
 
-        function closeDocModal() { document.getElementById('preview-modal').style.display = 'none'; }
-        function closeModalOnOuterClick(e) { if(e.target.id === 'preview-modal') closeDocModal(); }
+        // In mã QR Code
+        function printQRCode(code, details) {
+            let prtSection = document.getElementById('qr-print-section');
+            let qrSvg = generateQRCodeSvg(`Mã hồ sơ: ${code}\nChi tiết: ${details}`);
+            prtSection.innerHTML = `
+                <div style="font-family:'Times New Roman'; padding:10px; border:1px solid #000; text-align:center; display:inline-block; background:#fff;">
+                    <div style="font-size:10px; font-weight:bold; margin-bottom:5px;">VINAPACO - NHÃN HỒ SƠ</div>
+                    ${qrSvg}
+                    <div style="font-size:9px; font-weight:bold; margin-top:5px;">Mã số: ${code}</div>
+                    <div style="font-size:8px; width:130px; word-wrap:break-word; margin:2px auto;">${details}</div>
+                </div>
+            `;
+            window.print();
+        }
 
         function calculateFormAmounts() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = getRawNumber(document.getElementById('pay-price').value);
             let before = qty * price;
-            let tax = before * (parseFloat(document.getElementById('pay-vat-rate').value) || 0);
+            let tax = before * parseFloat(document.getElementById('pay-vat-rate').value);
             document.getElementById('pay-amount-after').value = Math.round(before + tax).toLocaleString('vi-VN') + " đ";
         }
 
-        /* ================= CRUD CHUYÊN NGHIỆP TRỰC TIẾP LÊN CLOUD SUPABASE ================= */
-        
-        // 1. NGHIỆP VỤ QUẢN LÝ CÔNG VIỆC
-        async function saveTaskRecord(e) {
+        /* ---------------- QUẢN LÝ CÔNG VIỆC (Cập nhật Hành động Sửa/Xóa) ---------------- */
+        function saveTaskRecord(e) {
             e.preventDefault();
-            if(!supabaseClient) return alert("Chưa liên kết cơ sở dữ liệu Cloud.");
-            let id = document.getElementById('task-id').value;
-            let rec = {
-                title: document.getElementById('task-title').value,
-                assignee: document.getElementById('task-assignee').value,
-                deadline: document.getElementById('task-deadline').value,
-                priority: document.getElementById('task-priority').value,
-                progress: parseInt(document.getElementById('task-progress').value) || 0,
-                status: document.getElementById('task-status').value
-            };
+            let id = document.getElementById('task-id-holder').value;
+            let title = document.getElementById('task-title').value;
+            let assignee = document.getElementById('task-assignee').value;
+            let deadline = document.getElementById('task-deadline').value;
+            let priority = document.getElementById('task-priority').value;
+            let progress = document.getElementById('task-progress').value;
+            let status = document.getElementById('task-status').value;
+
             if (id) {
-                await supabaseClient.from('tasks').update(rec).eq('id', id);
+                // Đang sửa bản ghi
+                let idx = taskRecords.findIndex(t => t.id == id);
+                if(idx !== -1) {
+                    taskRecords[idx] = { id: parseFloat(id), title, assignee, deadline, priority, progress, status };
+                }
+                cancelEditTask();
             } else {
-                rec.id = Date.now();
-                await supabaseClient.from('tasks').insert([rec]);
+                // Thêm mới bản ghi
+                taskRecords.push({ id: Date.now(), title, assignee, deadline, priority, progress, status });
             }
-            cancelEditTask();
-            await fetchAllCloudData();
+            document.getElementById('task-form').reset(); 
+            renderSubModule();
         }
 
-        function editTaskRecord(id) {
-            let t = taskRecords.find(x => x.id == id);
-            if (!t) return;
-            document.getElementById('task-id').value = t.id;
-            document.getElementById('task-title').value = t.title;
-            document.getElementById('task-assignee').value = t.assignee;
-            document.getElementById('task-deadline').value = t.deadline;
-            document.getElementById('task-priority').value = t.priority;
-            document.getElementById('task-progress').value = t.progress;
-            document.getElementById('task-status').value = t.status;
-            document.getElementById('task-btn-submit').innerText = "💾 Cập nhật Cloud";
-            document.getElementById('task-btn-cancel').style.display = "inline-block";
+        function editTask(id) {
+            let item = taskRecords.find(t => t.id == id);
+            if(!item) return;
+            document.getElementById('task-id-holder').value = item.id;
+            document.getElementById('task-title').value = item.title;
+            document.getElementById('task-assignee').value = item.assignee;
+            document.getElementById('task-deadline').value = item.deadline;
+            document.getElementById('task-priority').value = item.priority;
+            document.getElementById('task-progress').value = item.progress;
+            document.getElementById('task-status').value = item.status;
+
+            document.getElementById('task-form-title').innerText = "✏️ Cập Nhật Kế Hoạch & Tiến Độ Công Việc";
+            document.getElementById('btn-task-submit').innerText = "⚡ Cập Nhật Công Việc";
+            document.getElementById('btn-task-cancel').style.display = 'inline-block';
         }
 
         function cancelEditTask() {
-            document.getElementById('task-id').value = '';
+            document.getElementById('task-id-holder').value = '';
             document.getElementById('task-form').reset();
-            document.getElementById('task-btn-submit').innerText = "💾 Lưu Lên Cloud";
-            document.getElementById('task-btn-cancel').style.display = "none";
+            document.getElementById('task-form-title').innerText = "📋 Thêm Kế Hoạch & Tiến Độ Công Việc";
+            document.getElementById('btn-task-submit').innerText = "💾 Lưu Công Việc";
+            document.getElementById('btn-task-cancel').style.display = 'none';
         }
 
-        async function deleteTaskRecord(id) {
-            if(confirm("Xóa vĩnh viễn công việc trên Cloud?")) {
-                await supabaseClient.from('tasks').delete().eq('id', id);
-                await fetchAllCloudData();
+        function deleteTask(id) { 
+            if(confirm('Bạn có chắc chắn muốn xóa công việc này không?')) {
+                taskRecords = taskRecords.filter(t => t.id !== id); 
+                renderSubModule(); 
             }
         }
 
-        // 2. NGHIỆP VỤ HỒ SƠ THANH TOÁN
-        async function savePaymentRecord(e) {
+        /* ---------------- HỒ SƠ THANH TOÁN (Cập nhật Sửa/Xóa/QR) ---------------- */
+        function savePaymentRecord(e) {
             e.preventDefault();
-            if(!supabaseClient) return alert("Chôm kết nối Cloud.");
-            let id = document.getElementById('pay-id').value;
+            let id = document.getElementById('pay-id-holder').value;
+            let code = document.getElementById('pay-code').value;
+            let name = document.getElementById('pay-name').value;
+            let recipient = document.getElementById('pay-recipient').value;
+            let dept = document.getElementById('pay-dept').value;
+            let bankAcc = document.getElementById('pay-bank-acc').value;
+            let bankName = document.getElementById('pay-bank-name').value;
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = getRawNumber(document.getElementById('pay-price').value);
-            let before = qty * price;
-            let tax = before * (parseFloat(document.getElementById('pay-vat-rate').value) || 0);
-            
-            let rec = {
-                code: document.getElementById('pay-code').value,
-                name: document.getElementById('pay-name').value,
-                recipient: document.getElementById('pay-recipient').value,
-                bank_acc: document.getElementById('pay-bank-acc').value,
-                bank_name: document.getElementById('pay-bank-name').value,
-                qty: qty, price: price, before_tax: before, tax: tax, after_tax: before + tax,
-                dept: document.getElementById('pay-dept').value,
-                status: document.getElementById('pay-status').value,
-                file_data: uploadedFileObj.base64 ? { ...uploadedFileObj } : null
-            };
+            let vatRate = parseFloat(document.getElementById('pay-vat-rate').value);
+            let after = (qty * price) * (1 + vatRate);
+            let status = document.getElementById('pay-status').value;
 
             if (id) {
-                let old = paymentRecords.find(x => x.id == id);
-                if(!rec.file_data && old && old.file) rec.file_data = old.file;
-                await supabaseClient.from('payments').update(rec).eq('id', id);
+                // Cập nhật sửa
+                let idx = paymentRecords.findIndex(p => p.id == id);
+                if (idx !== -1) {
+                    paymentRecords[idx] = { 
+                        id: parseFloat(id), code, name, recipient, dept, bankAcc, bankName, qty, price, vatRate, after, status,
+                        file: uploadedFileBase64 ? uploadedFileBase64 : paymentRecords[idx].file,
+                        fileType: uploadedFileBase64 ? uploadedFileType : paymentRecords[idx].fileType,
+                        fileName: uploadedFileBase64 ? uploadedFileName : paymentRecords[idx].fileName
+                    };
+                }
+                cancelEditPay();
             } else {
-                rec.id = Date.now();
-                await supabaseClient.from('payments').insert([rec]);
+                // Thêm mới
+                paymentRecords.push({ id: Date.now(), code, name, recipient, dept, bankAcc, bankName, qty, price, vatRate, after, file: uploadedFileBase64, fileType: uploadedFileType, fileName: uploadedFileName, status });
             }
-            cancelEditPay();
-            await fetchAllCloudData();
+            document.getElementById('payment-form').reset(); 
+            uploadedFileBase64 = ''; uploadedFileType = ''; uploadedFileName = '';
+            document.getElementById('pay-file-preview').style.display = 'none'; 
+            generateAutoPaymentCode(); 
+            renderSubModule();
         }
 
-        function editPaymentRecord(id) {
-            let p = paymentRecords.find(x => x.id == id);
-            if (!p) return;
-            document.getElementById('pay-id').value = p.id;
-            document.getElementById('pay-code').value = p.code;
-            document.getElementById('pay-name').value = p.name;
-            document.getElementById('pay-recipient').value = p.recipient;
-            document.getElementById('pay-bank-acc').value = p.bankAcc;
-            document.getElementById('pay-bank-name').value = p.bankName;
-            document.getElementById('pay-qty').value = p.qty;
-            document.getElementById('pay-price').value = p.price.toLocaleString('vi-VN');
-            document.getElementById('pay-dept').value = p.dept;
-            document.getElementById('pay-status').value = p.status;
-            calculateFormAmounts();
-            if (p.file && p.file.base64) {
-                uploadedFileObj = { ...p.file };
-                updateFilePreviewUI();
-            } else { removeAttachedFile(); }
-            document.getElementById('pay-btn-submit').innerText = "💾 Cập nhật Cloud";
-            document.getElementById('pay-btn-cancel').style.display = "inline-block";
+        function editPay(id) {
+            let item = paymentRecords.find(p => p.id == id);
+            if(!item) return;
+            document.getElementById('pay-id-holder').value = item.id;
+            document.getElementById('pay-code').value = item.code;
+            document.getElementById('pay-name').value = item.name;
+            document.getElementById('pay-recipient').value = item.recipient;
+            document.getElementById('pay-dept').value = item.dept;
+            document.getElementById('pay-bank-acc').value = item.bankAcc;
+            document.getElementById('pay-bank-name').value = item.bankName;
+            document.getElementById('pay-qty').value = item.qty;
+            document.getElementById('pay-price').value = item.price.toLocaleString('vi-VN');
+            document.getElementById('pay-vat-rate').value = item.vatRate;
+            document.getElementById('pay-amount-after').value = Math.round(item.after).toLocaleString('vi-VN') + " đ";
+            document.getElementById('pay-status').value = item.status;
+
+            if(item.file) {
+                document.getElementById('pay-file-preview').style.display = 'flex';
+                let previewHtml = '';
+                if(item.fileType.includes('image')) {
+                    previewHtml = `<div class="file-item-preview"><img class="file-thumb" src="${item.file}"> <span>${item.fileName}</span> <button type="button" onclick="previewDocument('${item.file}', 'image')" class="btn-action btn-edit">Xem lớn</button></div>`;
+                } else if(item.fileType.includes('pdf')) {
+                    previewHtml = `<div class="file-item-preview"><div style="font-size:24px;">📄</div> <span>${item.fileName}</span> <button type="button" onclick="previewDocument('${item.file}', 'pdf')" class="btn-action btn-edit">Xem PDF</button></div>`;
+                }
+                document.getElementById('pay-file-preview').innerHTML = previewHtml;
+            } else {
+                document.getElementById('pay-file-preview').style.display = 'none';
+            }
+
+            document.getElementById('pay-form-title').innerText = "✏️ Cập Nhật Hồ Sơ & Chứng Từ Thanh Toán";
+            document.getElementById('btn-pay-submit').innerText = "⚡ Cập Nhật Hồ Sơ";
+            document.getElementById('btn-pay-cancel').style.display = 'inline-block';
         }
 
         function cancelEditPay() {
-            document.getElementById('pay-id').value = '';
+            document.getElementById('pay-id-holder').value = '';
             document.getElementById('payment-form').reset();
-            document.getElementById('pay-amount-after').value = '';
-            document.getElementById('pay-btn-submit').innerText = "💾 Lưu Lên Cloud";
-            document.getElementById('pay-btn-cancel').style.display = "none";
-            removeAttachedFile(); generateAutoPaymentCode();
+            document.getElementById('pay-file-preview').style.display = 'none';
+            document.getElementById('pay-form-title').innerText = "🧾 Lập Hồ Sơ & Chứng Từ Thanh Toán";
+            document.getElementById('btn-pay-submit').innerText = "💾 Lưu Hồ Sơ";
+            document.getElementById('btn-pay-cancel').style.display = 'none';
+            generateAutoPaymentCode();
         }
 
-        async function deletePaymentRecord(id) {
-            if(confirm("Xóa tờ trình này trên Server Cloud?")) {
-                await supabaseClient.from('payments').delete().eq('id', id);
-                await fetchAllCloudData();
+        function deletePay(id) { 
+            if(confirm('Bạn có chắc chắn muốn xóa hồ sơ thanh toán này không?')) {
+                paymentRecords = paymentRecords.filter(p => p.id !== id); 
+                renderSubModule(); 
             }
         }
 
-        // 3. NGHIỆP VỤ ĐƯỜNG TRUYỀN CƯỚC VIỄN THÔNG
-        async function saveTelecomRecord(e) {
+        /* ---------------- CƯỚC VIỄN THÔNG (Cập nhật Sửa/Xóa) ---------------- */
+        function saveTelecomRecord(e) {
             e.preventDefault();
-            if(!supabaseClient) return alert("Ngoại tuyến DB.");
-            let id = document.getElementById('tele-id').value;
-            let rec = {
-                code: document.getElementById('tele-code').value,
-                provider: document.getElementById('tele-provider').value,
-                location: document.getElementById('tele-location').value,
-                cost: getRawNumber(document.getElementById('tele-cost').value),
-                due_date: document.getElementById('tele-due-date').value,
-                status: document.getElementById('tele-status').value
-            };
-            if(id) {
-                await supabaseClient.from('telecoms').update(rec).eq('id', id);
+            let id = document.getElementById('tele-id-holder').value;
+            let code = document.getElementById('tele-code').value;
+            let provider = document.getElementById('tele-provider').value;
+            let location = document.getElementById('tele-location').value;
+            let cost = document.getElementById('tele-cost').value;
+            let due = document.getElementById('tele-due-date').value;
+            let status = document.getElementById('tele-status').value;
+
+            if (id) {
+                // Sửa
+                let idx = telecomRecords.findIndex(t => t.id == id);
+                if (idx !== -1) {
+                    telecomRecords[idx] = { id: parseFloat(id), code, provider, location, cost, due, status };
+                }
+                cancelEditTele();
             } else {
-                rec.id = Date.now();
-                await supabaseClient.from('telecoms').insert([rec]);
+                // Mới
+                telecomRecords.push({ id: Date.now(), code, provider, location, cost, due, status });
             }
-            cancelEditTele();
-            await fetchAllCloudData();
+            document.getElementById('telecom-form').reset(); 
+            renderSubModule();
         }
 
-        function editTelecomRecord(id) {
-            let t = telecomRecords.find(x => x.id == id);
-            if (!t) return;
-            document.getElementById('tele-id').value = t.id;
-            document.getElementById('tele-code').value = t.code;
-            document.getElementById('tele-provider').value = t.provider;
-            document.getElementById('tele-location').value = t.location;
-            document.getElementById('tele-cost').value = t.cost.toLocaleString('vi-VN');
-            document.getElementById('tele-due-date').value = t.due_date;
-            document.getElementById('tele-status').value = t.status;
-            document.getElementById('tele-btn-submit').innerText = "💾 Cập nhật Cloud";
-            document.getElementById('tele-btn-cancel').style.display = "inline-block";
+        function editTele(id) {
+            let item = telecomRecords.find(t => t.id == id);
+            if(!item) return;
+            document.getElementById('tele-id-holder').value = item.id;
+            document.getElementById('tele-code').value = item.code;
+            document.getElementById('tele-provider').value = item.provider;
+            document.getElementById('tele-location').value = item.location;
+            document.getElementById('tele-cost').value = item.cost;
+            document.getElementById('tele-due-date').value = item.due;
+            document.getElementById('tele-status').value = item.status;
+
+            document.getElementById('tele-form-title').innerText = "✏️ Cập Nhật Cước Viễn Thông & Internet";
+            document.getElementById('btn-tele-submit').innerText = "⚡ Cập Nhật Thông Tin";
+            document.getElementById('btn-tele-cancel').style.display = 'inline-block';
         }
 
         function cancelEditTele() {
-            document.getElementById('tele-id').value = '';
+            document.getElementById('tele-id-holder').value = '';
             document.getElementById('telecom-form').reset();
-            document.getElementById('tele-btn-submit').innerText = "💾 Lưu Lên Cloud";
-            document.getElementById('tele-btn-cancel').style.display = "none";
+            document.getElementById('tele-form-title').innerText = "🌐 Thiết Lập Cước Viễn Thông & Internet";
+            document.getElementById('btn-tele-submit').innerText = "💾 Lưu Thông Tin Cước";
+            document.getElementById('btn-tele-cancel').style.display = 'none';
         }
 
-        async function deleteTelecomRecord(id) {
-            if(confirm("Xóa hồ sơ cước thuê bao?")) {
-                await supabaseClient.from('telecoms').delete().eq('id', id);
-                await fetchAllCloudData();
+        function deleteTele(id) { 
+            if(confirm('Bạn có chắc chắn muốn xóa dòng thông tin cước viễn thông này không?')) {
+                telecomRecords = telecomRecords.filter(t => t.id !== id); 
+                renderSubModule(); 
             }
         }
 
-        // KỊCH BẢN ĐỔ DỮ LIỆU ĐỒNG BỘ VÀO BẢNG
+        /* RENDER DANH SÁCH BẢNG PHÂN HỆ SỐ 2 VỚI QR CODE & ĐA PHƯƠNG TIỆN */
         function renderSubModule() {
-            let stat = document.getElementById('sub-stat-banner');
-            stat.innerHTML = '';
+            let stat = document.getElementById('sub-stat-banner'); 
+            let tbodyTasks = document.getElementById('task-table-body');
+            let tbodyPays = document.getElementById('payment-table-body');
+            let tbodyTeles = document.getElementById('telecom-table-body');
+            
+            if(activeSubTab === 'tasks') {
+                stat.innerHTML = `<div class="stat-box" style="border-left-color:var(--blue);"><div class="stat-title">Tổng số việc</div><div class="stat-value">${taskRecords.length} việc</div></div>`;
+                tbodyTasks.innerHTML = taskRecords.map(t => `<tr>
+                    <td class="text-left font-bold">${t.title}</td><td>${t.assignee}</td><td>${formatDateVN(t.deadline)}</td><td>${t.priority}</td><td>${t.progress}%</td><td>${t.status}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="editTask(${t.id})">Sửa</button>
+                        <button class="btn-action btn-delete" onclick="deleteTask(${t.id})">Xóa</button>
+                    </td>
+                </tr>`).join('');
+            } else if(activeSubTab === 'payments') {
+                let totalCost = paymentRecords.reduce((sum, p) => sum + p.after, 0);
+                stat.innerHTML = `<div class="stat-box" style="border-left-color:var(--green);"><div class="stat-title">Tổng Chi Tiêu Duyệt</div><div class="stat-value">${formatMoney(totalCost)} đ</div></div>`;
+                
+                tbodyPays.innerHTML = paymentRecords.map(p => {
+                    // Mã hóa QR tự động chứa mã hồ sơ, phòng ban, và giá tiền
+                    let qrRawString = `Mã: ${p.code}\nNội dung: ${p.name}\nThành tiền: ${Math.round(p.after).toLocaleString('vi-VN')} đ`;
+                    let qrSvg = generateQRCodeSvg(qrRawString);
+                    
+                    let fileBtn = '-';
+                    if (p.file) {
+                        let docType = p.fileType.includes('pdf') ? 'pdf' : 'image';
+                        fileBtn = `<button class="btn-add" style="padding: 3px 8px; font-size:10px;" onclick="previewDocument('${p.file}', '${docType}')">👁️ Xem file</button>`;
+                    }
 
-            if (activeSubTab === 'tasks') {
-                let total = taskRecords.length, done = taskRecords.filter(t => t.status === 'Đã hoàn thành').length, pending = taskRecords.filter(t => t.status === 'Chưa bắt đầu').length, progressAvg = Math.round(taskRecords.reduce((acc, curr) => acc + curr.progress, 0) / (total || 1));
-                stat.innerHTML = `<div class="stat-box" style="border-left-color: var(--blue);"><div class="stat-title">Tổng nhiệm vụ</div><div class="stat-value">${total} việc</div></div><div class="stat-box" style="border-left-color: var(--green);"><div class="stat-title">Đã xong</div><div class="stat-value">${done} việc</div></div><div class="stat-box" style="border-left-color: var(--orange);"><div class="stat-title">Đang Chờ</div><div class="stat-value">${pending} việc</div></div><div class="stat-box" style="border-left-color: var(--purple);"><div class="stat-title">Hiệu suất</div><div class="stat-value">${progressAvg}%</div></div>`;
-
-                let tbody = document.getElementById('task-table-body'); tbody.innerHTML = '';
-                if(taskRecords.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Hệ thống Cloud trống. Hãy tạo đầu việc mới.</td></tr>`; }
-                else {
-                    taskRecords.forEach(t => {
-                        let badg = t.status === 'Đã hoàn thành' ? 'bg-success' : (t.status === 'Đang thực hiện' ? 'bg-progress' : 'bg-pending');
-                        tbody.innerHTML += `<tr><td class="text-left font-bold">${t.title}</td><td class="text-center">${t.assignee}</td><td class="text-center">${formatDateVN(t.deadline)}</td><td class="text-center"><span class="badge ${t.priority==='Cao'?'bg-danger':'bg-pending'}">${t.priority}</span></td><td class="text-center"><div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${t.progress}%"></div></div> <span style="font-size:11px;">${t.progress}%</span></td><td class="text-center"><span class="badge ${badg}">${t.status}</span></td><td class="text-center"><button class="btn-action btn-edit" onclick="editTaskRecord(${t.id})">Sửa</button><button class="btn-action btn-delete" onclick="deleteTaskRecord(${t.id})">Xóa</button></td></tr>`;
-                    });
-                }
-            } else if (activeSubTab === 'payments') {
-                let total = paymentRecords.length, totalAfter = paymentRecords.reduce((a, b) => a + b.after, 0);
-                stat.innerHTML = `<div class="stat-box" style="border-left-color: var(--blue);"><div class="stat-title">Hồ Sơ Trực Tuyến</div><div class="stat-value">${total} tờ trình</div></div><div class="stat-box" style="border-left-color: var(--green);"><div class="stat-title">Tổng Giá Trị Giải Ngân</div><div class="stat-value" style="color:var(--green);">${formatMoney(totalAfter)} đ</div></div>`;
-
-                let tbody = document.getElementById('payment-table-body'); tbody.innerHTML = '';
-                if(paymentRecords.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Chưa có tờ trình chi tiêu trên Cloud.</td></tr>`; }
-                else {
-                    paymentRecords.forEach(p => {
-                        let badg = p.status.includes('Đã') ? 'bg-success' : 'bg-pending';
-                        let fIcon = (p.file && p.file.base64) ? `<button type="button" style="border:none; background:#f1f5f9; cursor:pointer; padding:4px 8px; border-radius:4px; font-weight:bold; color:var(--blue);" onclick="previewDocumentFile(${p.id})">👁️ Xem file</button>` : `<span style="color:#94a3b8;font-style:italic;">Không tệp</span>`;
-                        tbody.innerHTML += `<tr><td class="text-left font-bold"><span style="color:var(--blue);">[${p.code}]</span> ${p.name}</td><td class="text-left font-bold">${p.recipient}<br><span style="font-size:11px;color:#64748b;">${p.bankAcc} (${p.bankName})</span></td><td class="text-center">${p.dept}</td><td class="font-bold" style="color:var(--green);">${formatMoney(p.after)}</td><td class="text-center">${fIcon}</td><td class="text-center"><span class="badge ${badg}">${p.status}</span></td><td class="text-center"><button class="btn-action btn-print" onclick="printPaymentBill(${p.id})">In</button><button class="btn-action btn-edit" onclick="editPaymentRecord(${p.id})">Sửa</button><button class="btn-action btn-delete" onclick="deletePaymentRecord(${p.id})">Xóa</button></td></tr>`;
-                    });
-                }
-            } else if (activeSubTab === 'telecom') {
-                let total = telecomRecords.length, totalCost = telecomRecords.reduce((a, b) => a + Number(b.cost), 0);
-                stat.innerHTML = `<div class="stat-box" style="border-left-color: var(--purple);"><div class="stat-title">Đường truyền</div><div class="stat-value">${total} mạng</div></div><div class="stat-box" style="border-left-color: var(--red);"><div class="stat-title">Tổng cước phát sinh</div><div class="stat-value">${formatMoney(totalCost)} đ</div></div>`;
-
-                let tbody = document.getElementById('telecom-table-body'); tbody.innerHTML = '';
-                if(telecomRecords.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Chưa ghi nhận thông tin đường truyền cước phí.</td></tr>`; }
-                else {
-                    telecomRecords.forEach(t => {
-                        let badg = t.status === 'Đã thanh toán' ? 'bg-success' : 'bg-danger';
-                        tbody.innerHTML += `<tr><td class="text-left font-bold">${t.code}</td><td class="text-center font-bold">${t.provider}</td><td class="text-left">${t.location}</td><td class="font-bold">${formatMoney(t.cost)}</td><td class="text-center">${formatDateVN(t.due_date)}</td><td class="text-center"><span class="badge ${badg}">${t.status}</span></td><td class="text-center"><button class="btn-action btn-edit" onclick="editTelecomRecord(${t.id})">Sửa</button><button class="btn-action btn-delete" onclick="deleteTelecomRecord(${t.id})">Xóa</button></td></tr>`;
-                    });
-                }
+                    return `<tr>
+                        <td class="text-left font-bold">[${p.code}] ${p.name}</td><td>${p.recipient}</td><td>${p.dept}</td><td class="font-bold" style="color:var(--green);">${formatMoney(p.after)}</td>
+                        <td>${fileBtn}</td>
+                        <td class="text-center">
+                            <div class="qr-badge" onclick="printQRCode('${p.code}', '${p.name} - ${formatMoney(p.after)} đ')" title="Nhấp để quét thử hoặc in">
+                                ${qrSvg}
+                                <span style="font-size:9px; color:var(--blue); font-weight:bold;">🖨️ In Nhãn QR</span>
+                            </div>
+                        </td>
+                        <td>${p.status}</td>
+                        <td>
+                            <button class="btn-action btn-edit" onclick="editPay(${p.id})">Sửa</button>
+                            <button class="btn-action btn-delete" onclick="deletePay(${p.id})">Xóa</button>
+                        </td>
+                    </tr>`;
+                }).join('');
+            } else if(activeSubTab === 'telecom') {
+                stat.innerHTML = `<div class="stat-box" style="border-left-color:var(--purple);"><div class="stat-title">Đường Truyền</div><div class="stat-value">${telecomRecords.length} Thuê bao</div></div>`;
+                tbodyTeles.innerHTML = telecomRecords.map(t => `<tr>
+                    <td class="text-left font-bold">${t.code}</td><td>${t.provider}</td><td>${t.location}</td><td>${t.cost} đ</td><td>${formatDateVN(t.due)}</td><td>${t.status}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="editTele(${t.id})">Sửa</button>
+                        <button class="btn-action btn-delete" onclick="deleteTele(${t.id})">Xóa</button>
+                    </td>
+                </tr>`).join('');
             }
-        }
-
-        function printPaymentBill(id) {
-            let p = paymentRecords.find(x => x.id === id); if (!p) return;
-            let bankId = mapBankNameToVietQRId(p.bankName);
-            let qrUrl = `https://img.vietqr.io/image/${bankId}-${p.bankAcc}-compact.png?amount=${Math.round(p.after)}&addInfo=${encodeURIComponent(p.code)}&accountName=${encodeURIComponent(p.recipient)}`;
-            let w = window.open('', '', 'width=800,height=600');
-            w.document.write(`<html><body style="font-family:'Times New Roman'; padding:30px;"><h2>TỔNG CÔNG TY GIẤY VIỆT NAM (VINAPACO)</h2><hr><h3>ĐỀ NGHỊ THANH TOÁN CHỨNG TỪ [${p.code}]</h3><p><b>Nội dung:</b> ${p.name}</p><p><b>Đoạn vị thụ hưởng:</b> ${p.recipient} - STK: ${p.bankAcc} tại ${p.bankName}</p><p><b>Số tiền sau thuế:</b> ${Math.round(p.after).toLocaleString('vi-VN')} đ</p><div style="text-align:center;margin-top:20px;"><p>MÃ QR QUÉT THANH TOÁN CHUYỂN KHOẢN NHANH NỘI BỘ</p><img src="${qrUrl}" style="width:160px;"><br><br><button onclick="window.print()">In ngay</button></div></body></html>`);
-            w.document.close();
         }
 
         function exportSalaryToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("main-salary-table")), "BANG_LUONG_VINAPACO.xlsx"); }
-
-        // ĐỒNG BỘ REALTIME ĐA NHIỆM CHUYÊN NGHIỆP
-        function listenRealtime() {
-            supabaseClient
-                .channel('realtime-sync')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => { fetchAllCloudData(); })
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'payments' }, () => { fetchAllCloudData(); })
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'telecoms' }, () => { fetchAllCloudData(); })
-                .subscribe();
-        }
     </script>
 </body>
 </html>
