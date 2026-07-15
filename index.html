@@ -165,7 +165,8 @@
         .btn-action { border: none; background: none; font-weight: bold; cursor: pointer; margin: 0 4px; font-size: 12px; }
         .btn-edit { color: #2563eb; }
         .btn-delete { color: #dc2626; }
-        .btn-export { background: #059669; color: white; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-export { background: #059669; color: white; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .btn-export:hover { opacity: 0.9; transform: translateY(-1px); }
 
         .file-preview-box { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed var(--border-color); }
         .file-item-preview { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -222,11 +223,18 @@
                 </table>
             </div>
             
-            <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <div style="font-size: 11px; color: #64748b; font-style: italic;">
                     * Quy định công thức cố định: Lương Lễ Phép = Math.round(Lương HĐLĐ / 22) * (Phép + Lễ) | Lương K3 theo CB = 0 | Tổng LCB (Mới) = Lương Thời Gian + Lương K3 theo CB + Lương Lễ Phép.
                 </div>
-                <button onclick="exportSalaryToExcel()" class="btn-export">Xuất File Excel Lương (.xlsx)</button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button onclick="document.getElementById('import-excel-file').click()" class="btn-export" style="background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1;">📥 Nhập File Công (.xlsx)</button>
+                    <input type="file" id="import-excel-file" style="display: none;" accept=".xlsx, .xls" onchange="importAttendanceExcel(event)">
+
+                    <button onclick="saveSalaryToSupabase()" class="btn-export" style="background: #2563eb;">💾 Lưu Bảng Lương Lên Cloud</button>
+
+                    <button onclick="exportSalaryToExcel()" class="btn-export" style="background: #059669;">Xuất File Excel Lương (.xlsx)</button>
+                </div>
             </div>
         </div>
 
@@ -482,7 +490,7 @@
     <div id="qr-print-section" style="display:none;"></div>
 
     <script>
-        // CẤU HÌNH SUPABASE CỦA BẠN (CẦN GIỮ NGUYÊN HOẶC ĐỔI NẾU BẠN CÓ APP MỚI)
+        // CẤU HÌNH SUPABASE CỦA BẠN
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
         let supabaseClient;
@@ -497,6 +505,7 @@
         let uploadedFileType = '';
         let uploadedFileName = '';
 
+        // Dataset mặc định (Sẽ tự động cập nhật nếu trên database Supabase đã lưu phiên bản mới hơn)
         let dataset = [
             {"stt":1,"name":"NGUYỄN MINH NGỌC","heSoCB":2.19,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":5.80,"tamUngTru":5000000,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0},
             {"stt":2,"name":"NGUYỄN VĂN NAM","heSoCB":1.48,"cong":19,"phep":3,"le":0,"heSoHT":1.0,"heSoCV":2.24,"tamUngTru":4000000,"quyPCTT":0,"truUngT4":0,"congAnCa":19,"ngayDocHai":0},
@@ -525,7 +534,7 @@
             initCalendar();
             generateAutoPaymentCode();
             
-            // Khởi tạo Supabase thực tế
+            // Khởi tạo Supabase
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 if (supabaseClient) {
@@ -533,7 +542,7 @@
                     document.getElementById('sync-text').innerText = "Đã liên kết Cloud Supabase THỜI GIAN THỰC thành công!";
                     document.getElementById('sync-text').style.color = "#34d399";
                     
-                    // Tải dữ liệu từ database về hệ thống ngay khi mở trang
+                    // Tải dữ liệu đám mây
                     await loadAllDataFromSupabase();
                 }
             } catch (err) {
@@ -548,15 +557,37 @@
 
         async function loadAllDataFromSupabase() {
             try {
-                // Tải dữ liệu Công việc
+                // 1. Tải bảng lương
+                const { data: salaryData, error: sErr } = await supabaseClient.from('salary_dataset').select('*').order('stt', { ascending: true });
+                if(!sErr && salaryData && salaryData.length > 0) {
+                    // Chuyển cấu trúc snake_case từ db sang camelCase trong code
+                    dataset = salaryData.map(item => ({
+                        stt: item.stt,
+                        name: item.name,
+                        heSoCB: parseFloat(item.he_so_cb),
+                        cong: parseFloat(item.cong),
+                        phep: parseFloat(item.phep),
+                        le: parseFloat(item.le),
+                        heSoHT: parseFloat(item.he_so_ht),
+                        heSoCV: parseFloat(item.he_so_cv),
+                        tamUngTru: parseFloat(item.tam_ung_tru),
+                        quyPCTT: parseFloat(item.quy_pctt),
+                        truUngT4: parseFloat(item.tru_ung_t4),
+                        congAnCa: parseFloat(item.cong_an_ca),
+                        ngayDocHai: parseFloat(item.ngay_doc_hai)
+                    }));
+                    renderSalaryModule();
+                }
+
+                // 2. Tải dữ liệu Công việc
                 const { data: tasks, error: tErr } = await supabaseClient.from('task_records').select('*').order('created_at', { ascending: false });
                 if(!tErr && tasks) taskRecords = tasks;
 
-                // Tải dữ liệu Hồ sơ thanh toán
+                // 3. Tải dữ liệu Hồ sơ thanh toán
                 const { data: pays, error: pErr } = await supabaseClient.from('payment_records').select('*').order('created_at', { ascending: false });
                 if(!pErr && pays) paymentRecords = pays;
 
-                // Tải dữ liệu Cước Viễn Thông
+                // 4. Tải dữ liệu Cước Viễn Thông
                 const { data: teles, error: telErr } = await supabaseClient.from('telecom_records').select('*').order('created_at', { ascending: false });
                 if(!telErr && teles) telecomRecords = teles;
 
@@ -564,6 +595,114 @@
             } catch (err) {
                 console.error("Lỗi tải dữ liệu: ", err);
             }
+        }
+
+        /* ---------------- CHỦ ĐỘNG LƯU BẢNG LƯƠNG LÊN SUPABASE CLOUD ---------------- */
+        async function saveSalaryToSupabase() {
+            if (!supabaseClient) {
+                alert("Hệ thống chưa kết nối thành công với Supabase!");
+                return;
+            }
+
+            // Hiển thị trạng thái đang xử lý
+            document.getElementById('sync-text').innerText = "Đang đồng bộ bảng lương lên Cloud...";
+            document.getElementById('sync-text').style.color = "#f59e0b";
+
+            try {
+                // Chuyển đổi dữ liệu sang dạng snake_case khớp với database
+                const payload = dataset.map(item => ({
+                    stt: item.stt,
+                    name: item.name,
+                    he_so_cb: item.heSoCB,
+                    cong: item.cong,
+                    phep: item.phep,
+                    le: item.le,
+                    he_so_ht: item.heSoHT,
+                    he_so_cv: item.heSoCV,
+                    tam_ung_tru: item.tamUngTru,
+                    quy_pctt: item.quyPCTT,
+                    tru_ung_t4: item.truUngT4,
+                    cong_an_ca: item.congAnCa,
+                    ngay_doc_hai: item.ngayDocHai
+                }));
+
+                // Thực hiện ghi đè (upsert)
+                const { error } = await supabaseClient.from('salary_dataset').upsert(payload, { onConflict: 'stt' });
+
+                if (error) {
+                    throw error;
+                }
+
+                document.getElementById('sync-text').innerText = "Đã lưu bảng lương lên Cloud Supabase thành công!";
+                document.getElementById('sync-text').style.color = "#34d399";
+                alert("🎉 Đã lưu và đồng bộ toàn bộ bảng lương lên hệ thống Cloud thành công!");
+
+            } catch (err) {
+                console.error("Lỗi đồng bộ bảng lương:", err);
+                document.getElementById('sync-text').innerText = "Lỗi khi lưu bảng lương: " + err.message;
+                document.getElementById('sync-text').style.color = "#f87171";
+                alert("❌ Gặp lỗi khi đồng bộ dữ liệu: " + err.message);
+            }
+        }
+
+        /* ---------------- BỘ ĐỌC FILE EXCEL CHẤM CÔNG ---------------- */
+        function importAttendanceExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                
+                if (jsonData.length === 0) {
+                    alert("File Excel trống!");
+                    return;
+                }
+
+                let importCount = 0;
+
+                jsonData.forEach(row => {
+                    let rowText = row.join(" | ").toUpperCase();
+                    
+                    dataset.forEach((employee, index) => {
+                        const empNameUpper = employee.name.toUpperCase();
+                        
+                        if (rowText.includes(empNameUpper)) {
+                            let congThucTe = null;
+                            let phep = 0;
+                            let le = 0;
+
+                            // Giả định tiêu chuẩn: Cột 2 (index 2) là Công NT, Cột 3 là Phép, Cột 4 là Lễ
+                            if (row.length >= 3) {
+                                congThucTe = parseFloat(row[2]);
+                                phep = parseFloat(row[3]) || 0;
+                                le = parseFloat(row[4]) || 0;
+                            }
+
+                            if (congThucTe !== null && !isNaN(congThucTe)) {
+                                dataset[index].cong = congThucTe;
+                                dataset[index].phep = phep;
+                                dataset[index].le = le;
+                                dataset[index].congAnCa = congThucTe; // Đồng bộ ăn ca
+                                importCount++;
+                            }
+                        }
+                    });
+                });
+
+                if (importCount > 0) {
+                    alert(`🎉 Đã import thành công dữ liệu chấm công cho ${importCount} nhân sự!\nHãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.`);
+                    renderSalaryModule();
+                } else {
+                    alert("Không khớp được nhân sự nào. Hãy chắc chắn cột Họ Tên trong file trùng khớp với danh sách hệ thống!");
+                }
+                event.target.value = '';
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         function switchModule(mod) {
@@ -597,7 +736,7 @@
             renderSalaryModule();
         }
 
-        /* ================= PHÂN HỆ LƯƠNG: CÔNG THỨC CỐ ĐỊNH ================= */
+        /* ================= PHÂN HỆ LƯƠNG ================= */
         function renderSalaryModule() {
             let head = document.getElementById('table-head'), body = document.getElementById('table-body'), foot = document.getElementById('table-foot');
             head.innerHTML = ''; body.innerHTML = ''; foot.innerHTML = '';
@@ -755,11 +894,9 @@
             let status = document.getElementById('task-status').value;
 
             if (id) {
-                // UPDATE Supabase
                 const { error } = await supabaseClient.from('task_records').update({ title, assignee, deadline, priority, progress, status }).eq('id', id);
                 if(!error) cancelEditTask();
             } else {
-                // INSERT Supabase
                 const newId = Date.now();
                 const { error } = await supabaseClient.from('task_records').insert([{ id: newId, title, assignee, deadline, priority, progress, status }]);
             }
