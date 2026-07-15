@@ -169,10 +169,10 @@
         .btn-export:hover { opacity: 0.9; transform: translateY(-1px); }
 
         .file-preview-box { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed var(--border-color); }
-        .file-item-preview { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .file-item-preview { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
         .file-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color); }
         
-        /* CSS CHO MODAL PREVIEW MỚI NÂNG CẤP */
+        /* CSS CHO MODAL PREVIEW */
         .preview-modal {
             display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85);
             align-items: center; justify-content: center; padding: 20px;
@@ -510,7 +510,6 @@
         </div>
     </div>
 
-    <!-- MODAL XEM TRƯỚC TÀI LIỆU CHUYÊN NGHIỆP (ĐM - ĐÃ KHÔI PHỤC HOÀN CHỈNH) -->
     <div class="preview-modal" id="document-preview-modal">
         <div class="preview-modal-content">
             <div class="preview-header">
@@ -518,7 +517,6 @@
                 <span style="font-size:24px; cursor:pointer;" onclick="closePreviewModal()">&times;</span>
             </div>
             <div class="preview-body">
-                <!-- Bộ Steps Tiến độ phê duyệt -->
                 <div class="steps-container">
                     <div class="step-progress-line" id="modal-step-line"></div>
                     <div class="step-node" id="step-node-1">
@@ -540,20 +538,17 @@
                 </div>
 
                 <div class="preview-columns">
-                    <!-- Bên trái: Xem file tài liệu hoặc Trống -->
                     <div>
                         <div style="font-weight: bold; margin-bottom: 8px; color: #475569;">📎 Tài liệu chứng từ đính kèm:</div>
                         <div class="preview-document-container" id="modal-doc-viewer"></div>
                     </div>
 
-                    <!-- Bên phải: Thông tin chi tiết + Bảng tính toán tiền bạc -->
                     <div class="preview-details-container">
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">
                             <span style="font-weight: bold; font-size: 15px; color: #0f172a;" id="modal-pay-code">HSTT-XXXX</span>
                             <span id="modal-pay-status-badge" class="status-badge">N/A</span>
                         </div>
 
-                        <!-- Thông tin cơ bản -->
                         <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; margin-top: 5px;">
                             <div><strong>Nội dung chi:</strong> <span id="modal-pay-name" style="color: #334155;">-</span></div>
                             <div><strong>Đơn vị thụ hưởng:</strong> <span id="modal-pay-recipient">-</span></div>
@@ -562,7 +557,6 @@
                             <div><strong>Số lượng đơn giá:</strong> <span id="modal-pay-qty-price">-</span></div>
                         </div>
 
-                        <!-- Theo dõi tổng tiền chi tiết -->
                         <div style="margin-top: 10px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
                             <div style="font-weight: bold; color: #475569; margin-bottom: 5px;">📊 Theo dõi tổng tiền dự án:</div>
                             <table class="money-summary-table">
@@ -593,7 +587,6 @@
     <div id="qr-print-section" style="display:none;"></div>
 
     <script>
-        // CẤU HÌNH SUPABASE CỦA BẠN
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
         let supabaseClient;
@@ -608,7 +601,6 @@
         let uploadedFileType = '';
         let uploadedFileName = '';
 
-        // Dataset mặc định (Sẽ tự động cập nhật nếu trên database Supabase đã lưu phiên bản mới hơn)
         let dataset = [
             {"stt":1,"name":"NGUYỄN MINH NGỌC","heSoCB":2.19,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":5.80,"tamUngTru":5000000,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0},
             {"stt":2,"name":"NGUYỄN VĂN NAM","heSoCB":1.48,"cong":19,"phep":3,"le":0,"heSoHT":1.0,"heSoCV":2.24,"tamUngTru":4000000,"quyPCTT":0,"truUngT4":0,"congAnCa":19,"ngayDocHai":0},
@@ -637,15 +629,12 @@
             initCalendar();
             generateAutoPaymentCode();
             
-            // Khởi tạo Supabase
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 if (supabaseClient) {
                     document.getElementById('sync-dot').classList.add('online');
                     document.getElementById('sync-text').innerText = "Đã liên kết Cloud Supabase THỜI GIAN THỰC thành công!";
                     document.getElementById('sync-text').style.color = "#34d399";
-                    
-                    // Tải dữ liệu đám mây
                     await loadAllDataFromSupabase();
                 }
             } catch (err) {
@@ -660,7 +649,6 @@
 
         async function loadAllDataFromSupabase() {
             try {
-                // 1. Tải bảng lương
                 const { data: salaryData, error: sErr } = await supabaseClient.from('salary_dataset').select('*').order('stt', { ascending: true });
                 if(!sErr && salaryData && salaryData.length > 0) {
                     dataset = salaryData.map(item => ({
@@ -681,15 +669,12 @@
                     renderSalaryModule();
                 }
 
-                // 2. Tải dữ liệu Công việc
                 const { data: tasks, error: tErr } = await supabaseClient.from('task_records').select('*').order('created_at', { ascending: false });
                 if(!tErr && tasks) taskRecords = tasks;
 
-                // 3. Tải dữ liệu Hồ sơ thanh toán
                 const { data: pays, error: pErr } = await supabaseClient.from('payment_records').select('*').order('created_at', { ascending: false });
                 if(!pErr && pays) paymentRecords = pays;
 
-                // 4. Tải dữ liệu Cước Viễn Thông
                 const { data: teles, error: telErr } = await supabaseClient.from('telecom_records').select('*').order('created_at', { ascending: false });
                 if(!telErr && teles) telecomRecords = teles;
 
@@ -699,7 +684,6 @@
             }
         }
 
-        /* ---------------- CHỦ ĐỘNG LƯU BẢNG LƯƠNG LÊN SUPABASE CLOUD ---------------- */
         async function saveSalaryToSupabase() {
             if (!supabaseClient) {
                 alert("Hệ thống chưa kết nối thành công với Supabase!");
@@ -742,7 +726,6 @@
             }
         }
 
-        /* ---------------- BỘ ĐỌC FILE EXCEL CHẤM CÔNG ---------------- */
         function importAttendanceExcel(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -791,8 +774,7 @@
                 });
 
                 if (importCount > 0) {
-                    alert(`🎉 Đã import thành công dữ liệu chấm công cho ${importCount} nhân sự!
-Hãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.`);
+                    alert(`🎉 Đã import thành công dữ liệu chấm công cho ${importCount} nhân sự!\nHãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.`);
                     renderSalaryModule();
                 } else {
                     alert("Không khớp được nhân sự nào. Hãy chắc chắn cột Họ Tên trong file trùng khớp với danh sách hệ thống!");
@@ -909,6 +891,34 @@ Hãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.
 
         function generateAutoPaymentCode() { document.getElementById('pay-code').value = "HSTT-2026-" + Math.floor(1000 + Math.random() * 9000); }
         
+        // HÀM CHUYỂN ĐỔI BASE64 SANG BLOB ĐỂ HIỂN THỊ PDF KHÔNG BỊ TRẮNG TRANG
+        function base64ToBlobUrl(base64Data, mimeType) {
+            try {
+                const parts = base64Data.split(',');
+                const byteCharacters = atob(parts[1] || parts[0]);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], {type: mimeType});
+                return URL.createObjectURL(blob);
+            } catch (err) {
+                console.error("Lỗi chuyển đổi Base64 sang Blob:", err);
+                return base64Data;
+            }
+        }
+
+        // HÀM GỠ FILE ĐÍNH KÈM KHỎI FORM
+        function removeAttachedFile() {
+            uploadedFileBase64 = '';
+            uploadedFileType = '';
+            uploadedFileName = '';
+            document.getElementById('pay-file').value = '';
+            document.getElementById('pay-file-preview').innerHTML = '';
+            document.getElementById('pay-file-preview').style.display = 'none';
+        }
+
         function handleFileSelect(event) {
             let file = event.target.files[0]; if (!file) return;
             uploadedFileName = file.name;
@@ -919,23 +929,52 @@ Hãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.
                 document.getElementById('pay-file-preview').style.display = 'flex'; 
                 let previewHtml = '';
                 if(uploadedFileType.includes('image')) {
-                    previewHtml = `<div class="file-item-preview"><img class="file-thumb" src="${uploadedFileBase64}"> <span>${uploadedFileName}</span> <button type="button" onclick="openPaymentDetailModal('${uploadedFileBase64}', 'image')" class="btn-action btn-edit">Xem lớn</button></div>`;
+                    previewHtml = `
+                    <div class="file-item-preview">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img class="file-thumb" src="${uploadedFileBase64}"> 
+                            <span style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${uploadedFileName}</span>
+                        </div>
+                        <div style="display:flex; gap:5px;">
+                            <button type="button" onclick="openPaymentDetailModal('${uploadedFileBase64}', 'image')" class="btn-export" style="padding: 4px 8px; font-size:11px;">👁️ Xem trước</button>
+                            <button type="button" onclick="removeAttachedFile()" class="btn-export" style="padding: 4px 8px; font-size:11px; background:#dc2626;">🗑️ Gỡ tệp</button>
+                        </div>
+                    </div>`;
                 } else if(uploadedFileType.includes('pdf')) {
-                    previewHtml = `<div class="file-item-preview"><div style="font-size:24px;">📄</div> <span>${uploadedFileName}</span> <button type="button" onclick="openPaymentDetailModal('${uploadedFileBase64}', 'pdf')" class="btn-action btn-edit">Xem PDF</button></div>`;
+                    previewHtml = `
+                    <div class="file-item-preview">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="font-size:24px;">📄</div> 
+                            <span style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${uploadedFileName}</span>
+                        </div>
+                        <div style="display:flex; gap:5px;">
+                            <button type="button" onclick="openPaymentDetailModal('${uploadedFileBase64}', 'pdf')" class="btn-export" style="padding: 4px 8px; font-size:11px;">👁️ Xem trước PDF</button>
+                            <button type="button" onclick="removeAttachedFile()" class="btn-export" style="padding: 4px 8px; font-size:11px; background:#dc2626;">🗑️ Gỡ tệp</button>
+                        </div>
+                    </div>`;
                 } else {
-                    previewHtml = `<div class="file-item-preview"><div style="font-size:24px;">📎</div> <span>${uploadedFileName}</span></div>`;
+                    previewHtml = `
+                    <div class="file-item-preview">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="font-size:24px;">📎</div> 
+                            <span style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${uploadedFileName}</span>
+                        </div>
+                        <div style="display:flex; gap:5px;">
+                            <button type="button" onclick="openPaymentDetailModal('${uploadedFileBase64}', 'other')" class="btn-export" style="padding: 4px 8px; font-size:11px;">👁️ Chi tiết</button>
+                            <button type="button" onclick="removeAttachedFile()" class="btn-export" style="padding: 4px 8px; font-size:11px; background:#dc2626;">🗑️ Gỡ tệp</button>
+                        </div>
+                    </div>`;
                 }
                 document.getElementById('pay-file-preview').innerHTML = previewHtml;
             };
             reader.readAsDataURL(file);
         }
 
-        /* ---------------- NÂNG CẤP CHI TIẾT MODAL XEM TRƯỚC CHỨNG TỪ ---------------- */
+        /* ---------------- CHI TIẾT MODAL XEM TRƯỚC CHỨNG TỪ ---------------- */
         function openPaymentDetailModal(recordIdOrBase64, customType) {
             let modal = document.getElementById('document-preview-modal');
             let viewer = document.getElementById('modal-doc-viewer');
             
-            // Khởi tạo các giá trị trống mặc định
             let code = "HSTT-AUTO";
             let name = "Hồ Sơ Không Tên";
             let recipient = "-";
@@ -950,9 +989,7 @@ Hãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.
             let fileData = "";
             let fileType = "";
 
-            // Kiểm tra xem là xem từ ID (trong bảng) hay xem thử file đang tạo ở form
             if (typeof recordIdOrBase64 === 'string' && recordIdOrBase64.startsWith("data:")) {
-                // Đọc trực tiếp từ form
                 code = document.getElementById('pay-code').value || "MÃ TẠM";
                 name = document.getElementById('pay-name').value || "Nội dung đang soạn thảo";
                 recipient = document.getElementById('pay-recipient').value || "-";
@@ -967,7 +1004,6 @@ Hãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.
                 fileData = recordIdOrBase64;
                 fileType = customType;
             } else {
-                // Đọc từ bảng dữ liệu paymentRecords
                 let item = paymentRecords.find(p => p.id == recordIdOrBase64);
                 if (!item) return;
                 code = item.code;
@@ -985,7 +1021,6 @@ Hãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.
                 fileType = item.file_type || item.fileType;
             }
 
-            // 1. Cập nhật thông tin text lên Modal
             document.getElementById('modal-pay-code').innerText = code;
             document.getElementById('modal-pay-name').innerText = name;
             document.getElementById('modal-pay-recipient').innerText = recipient;
@@ -994,7 +1029,6 @@ Hãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.
             document.getElementById('modal-pay-bank-name').innerText = bankName;
             document.getElementById('modal-pay-qty-price').innerText = `${qty} x ${price.toLocaleString('vi-VN')} đ`;
 
-            // 2. Tính toán các mốc tiền chi tiết
             let totalBefore = qty * price;
             let vatValue = totalBefore * vatRate;
             document.getElementById('modal-total-before').innerText = totalBefore.toLocaleString('vi-VN') + " đ";
@@ -1002,40 +1036,43 @@ Hãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.
             document.getElementById('modal-vat-value').innerText = vatValue.toLocaleString('vi-VN') + " đ";
             document.getElementById('modal-total-after').innerText = Math.round(after).toLocaleString('vi-VN') + " đ";
 
-            // 3. Xử lý Trạng thái & Tiến độ phê duyệt
             let statusBadge = document.getElementById('modal-pay-status-badge');
             statusBadge.className = "status-badge";
             
-            // Xóa hết trạng thái active/completed của Steps
             for (let i = 1; i <= 4; i++) {
                 document.getElementById(`step-node-${i}`).className = "step-node";
             }
             let stepLine = document.getElementById('modal-step-line');
 
-            // Thiết lập Step 1 luôn là Completed
             document.getElementById('step-node-1').classList.add('completed');
 
             if (status === "Chờ phê duyệt" || status.includes("Chờ")) {
                 statusBadge.innerText = "⚠️ CHỜ PHÊ DUYỆT";
                 statusBadge.className = "status-badge pending";
+                
                 document.getElementById('step-node-2').classList.add('active');
                 stepLine.style.width = "33%";
             } else {
                 statusBadge.innerText = "✅ ĐÃ PHÊ DUYỆT CHI";
                 statusBadge.className = "status-badge approved";
+                
                 document.getElementById('step-node-2').classList.add('completed');
                 document.getElementById('step-node-3').classList.add('completed');
                 document.getElementById('step-node-4').classList.add('active');
                 stepLine.style.width = "100%";
             }
 
-            // 4. Render Document Viewer bên trái
             viewer.innerHTML = "";
             if (fileData) {
                 if (fileType && fileType.includes('image')) {
                     viewer.innerHTML = `<img src="${fileData}" style="max-width:100%; max-height: 420px; object-fit: contain; border-radius: 4px;">`;
                 } else if (fileType && fileType.includes('pdf')) {
-                    viewer.innerHTML = `<iframe src="${fileData}" style="width:100%; height:420px; border:none; border-radius: 4px;"></iframe>`;
+                    // PHƯƠNG PHÁP CHUYỂN ĐỔI SANG BLOB ĐỂ HIỂN THỊ PDF TRÊN IFRAME KHÔNG BỊ LỖI TRẮNG NỀN TRÊN SAFARI/CHROME
+                    let pdfUrl = fileData;
+                    if (fileData.startsWith('data:')) {
+                        pdfUrl = base64ToBlobUrl(fileData, 'application/pdf');
+                    }
+                    viewer.innerHTML = `<iframe src="${pdfUrl}" style="width:100%; height:420px; border:none; border-radius: 4px;"></iframe>`;
                 } else {
                     viewer.innerHTML = `<div style="text-align:center; color:#64748b;">📄 Tập tin đã được đính kèm thành công<br><strong>${uploadedFileName || "document.file"}</strong></div>`;
                 }
@@ -1061,8 +1098,7 @@ Hãy ấn nút "LƯU BẢNG LƯƠNG LÊN CLOUD" để cập nhật vĩnh viễn.
 
         function printQRCode(code, details) {
             let prtSection = document.getElementById('qr-print-section');
-            let qrSvg = generateQRCodeSvg(`Mã hồ sơ: ${code}
-Chi tiết: ${details}`);
+            let qrSvg = generateQRCodeSvg(`Mã hồ sơ: ${code}\nChi tiết: ${details}`);
             prtSection.innerHTML = `
                 <div style="font-family:'Times New Roman'; padding:10px; border:1px solid #000; text-align:center; display:inline-block; background:#fff;">
                     <div style="font-size:10px; font-weight:bold; margin-bottom:5px;">VINAPACO - NHÃN HỒ SƠ</div>
@@ -1154,8 +1190,8 @@ Chi tiết: ${details}`);
             if (id) {
                 let existing = paymentRecords.find(p => p.id == id);
                 const fileToSave = uploadedFileBase64 ? uploadedFileBase64 : existing.file;
-                const fileTypeToSave = uploadedFileBase64 ? uploadedFileType : existing.fileType;
-                const fileNameToSave = uploadedFileBase64 ? uploadedFileName : existing.fileName;
+                const fileTypeToSave = uploadedFileBase64 ? uploadedFileType : existing.file_type || existing.fileType;
+                const fileNameToSave = uploadedFileBase64 ? uploadedFileName : existing.file_name || existing.fileName;
 
                 const { error } = await supabaseClient.from('payment_records').update({
                     code, name, recipient, dept, bank_acc: bankAcc, bank_name: bankName, qty, price, vat_rate: vatRate, after,
@@ -1171,8 +1207,7 @@ Chi tiết: ${details}`);
             }
             await loadAllDataFromSupabase();
             document.getElementById('payment-form').reset();
-            uploadedFileBase64 = ''; uploadedFileType = ''; uploadedFileName = '';
-            document.getElementById('pay-file-preview').style.display = 'none';
+            removeAttachedFile();
             generateAutoPaymentCode();
         }
 
@@ -1199,10 +1234,30 @@ Chi tiết: ${details}`);
             if(fileData) {
                 document.getElementById('pay-file-preview').style.display = 'flex';
                 let previewHtml = '';
-                if(fileType.includes('image')) {
-                    previewHtml = `<div class="file-item-preview"><img class="file-thumb" src="${fileData}"> <span>${fileName}</span> <button type="button" onclick="openPaymentDetailModal('${item.id}', 'image')" class="btn-action btn-edit">Xem lớn</button></div>`;
-                } else if(fileType.includes('pdf')) {
-                    previewHtml = `<div class="file-item-preview"><div style="font-size:24px;">📄</div> <span>${fileName}</span> <button type="button" onclick="openPaymentDetailModal('${item.id}', 'pdf')" class="btn-action btn-edit">Xem PDF</button></div>`;
+                if(fileType && fileType.includes('image')) {
+                    previewHtml = `
+                    <div class="file-item-preview">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img class="file-thumb" src="${fileData}"> 
+                            <span style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${fileName}</span>
+                        </div>
+                        <div style="display:flex; gap:5px;">
+                            <button type="button" onclick="openPaymentDetailModal('${item.id}', 'image')" class="btn-action btn-edit">Xem lớn</button>
+                            <button type="button" onclick="removeAttachedFile()" class="btn-export" style="padding: 4px 8px; font-size:11px; background:#dc2626;">🗑️ Gỡ tệp</button>
+                        </div>
+                    </div>`;
+                } else if(fileType && fileType.includes('pdf')) {
+                    previewHtml = `
+                    <div class="file-item-preview">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="font-size:24px;">📄</div> 
+                            <span style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${fileName}</span>
+                        </div>
+                        <div style="display:flex; gap:5px;">
+                            <button type="button" onclick="openPaymentDetailModal('${item.id}', 'pdf')" class="btn-action btn-edit">Xem PDF</button>
+                            <button type="button" onclick="removeAttachedFile()" class="btn-export" style="padding: 4px 8px; font-size:11px; background:#dc2626;">🗑️ Gỡ tệp</button>
+                        </div>
+                    </div>`;
                 }
                 document.getElementById('pay-file-preview').innerHTML = previewHtml;
             } else {
@@ -1217,7 +1272,7 @@ Chi tiết: ${details}`);
         function cancelEditPay() {
             document.getElementById('pay-id-holder').value = '';
             document.getElementById('payment-form').reset();
-            document.getElementById('pay-file-preview').style.display = 'none';
+            removeAttachedFile();
             document.getElementById('pay-form-title').innerText = "🧾 Lập Hồ Sơ & Chứng Từ Thanh Toán";
             document.getElementById('btn-pay-submit').innerText = "💾 Lưu Hồ Sơ";
             document.getElementById('btn-pay-cancel').style.display = 'none';
