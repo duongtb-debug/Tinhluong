@@ -6,7 +6,6 @@
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP TOÀN DIỆN</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- Thư viện tạo mã QR Code chuyên nghiệp -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <style>
         :root {
@@ -172,7 +171,6 @@
         .file-item-preview { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .file-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color); }
         
-        /* Modal Style để xem trước tài liệu chuyên nghiệp */
         .preview-modal {
             display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85);
             align-items: center; justify-content: center; padding: 20px;
@@ -183,7 +181,6 @@
         .preview-header { padding: 12px 15px; background: #0f172a; color: white; display: flex; justify-content: space-between; align-items: center; }
         .preview-body { padding: 15px; flex: 1; overflow-y: auto; text-align: center; min-height: 400px; display: flex; align-items: center; justify-content: center; }
         
-        /* Chức năng in nhãn QR Code chuyên nghiệp */
         @media print {
             body * { visibility: hidden; }
             #qr-print-section, #qr-print-section * { visibility: visible; }
@@ -209,7 +206,6 @@
             <button class="module-btn" id="btn-mod-docs" onclick="switchModule('docs')">📂 2. Hệ Thống Quản Trị Chuyên Nghiệp Mở Rộng</button>
         </div>
 
-        <!-- ======================= PHÂN HỆ 1: LƯƠNG NHÂN SỰ ======================= -->
         <div id="module-luong-container">
             <div class="tabs">
                 <button class="tab-btn tab-lcb active" id="tab-1" onclick="switchTab(1)">1. Phân Hệ Lương Cơ Bản mới (Có K3)</button>
@@ -234,7 +230,6 @@
             </div>
         </div>
 
-        <!-- ======================= PHÂN HỆ 2: QUẢN TRỊ MỞ RỘNG ======================= -->
         <div id="module-docs-container" style="display: none;">
             <div class="grid-layout">
                 <div>
@@ -259,7 +254,6 @@
 
                     <div class="stat-banner" id="sub-stat-banner"></div>
 
-                    <!-- 1. QUẢN LÝ CÔNG VIỆC -->
                     <div id="sub-section-tasks" style="border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
                         <h3 id="task-form-title" style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">📋 Thêm Kế Hoạch & Tiến Độ Công Việc</h3>
                         <form id="task-form" onsubmit="saveTaskRecord(event)">
@@ -322,7 +316,6 @@
                         </div>
                     </div>
 
-                    <!-- 2. HỒ SƠ THANH TOÁN -->
                     <div id="sub-section-payments" style="display:none; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
                         <h3 id="pay-form-title" style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">🧾 Lập Hồ Sơ & Chứng Từ Thanh Toán</h3>
                         <form id="payment-form" onsubmit="savePaymentRecord(event)">
@@ -410,7 +403,6 @@
                         </div>
                     </div>
 
-                    <!-- 3. CƯỚC VIỄN THÔNG -->
                     <div id="sub-section-telecom" style="display:none; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
                         <h3 id="tele-form-title" style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">🌐 Thiết Lập Cước Viễn Thông & Internet</h3>
                         <form id="telecom-form" onsubmit="saveTelecomRecord(event)">
@@ -477,23 +469,20 @@
         </div>
     </div>
 
-    <!-- MODAL XEM TRƯỚC TÀI LIỆU CHUYÊN NGHIỆP -->
     <div class="preview-modal" id="document-preview-modal">
         <div class="preview-modal-content">
             <div class="preview-header">
                 <span id="preview-modal-title" style="font-weight:bold;">XEM TRƯỚC CHỨNG TỪ CHI TIẾT</span>
                 <span style="font-size:24px; cursor:pointer;" onclick="closePreviewModal()">&times;</span>
             </div>
-            <div class="preview-body" id="preview-modal-body">
-                <!-- Nội dung xem trước được cập nhật động qua JS -->
-            </div>
+            <div class="preview-body" id="preview-modal-body"></div>
         </div>
     </div>
 
-    <!-- KHU VỰC IN MÃ QR (Được định dạng riêng để in decal dán hồ sơ) -->
     <div id="qr-print-section" style="display:none;"></div>
 
     <script>
+        // CẤU HÌNH SUPABASE CỦA BẠN (CẦN GIỮ NGUYÊN HOẶC ĐỔI NẾU BẠN CÓ APP MỚI)
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
         let supabaseClient;
@@ -531,25 +520,51 @@
             {"stt":20,"name":"KHỔNG VĂN CHƯƠNG","heSoCB":1.53,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":1.85,"tamUngTru":0,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0}
         ];
 
-        window.onload = function() {
+        window.onload = async function() {
             renderSalaryModule();
             initCalendar();
             generateAutoPaymentCode();
-            renderSubModule();
             
+            // Khởi tạo Supabase thực tế
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 if (supabaseClient) {
                     document.getElementById('sync-dot').classList.add('online');
-                    document.getElementById('sync-text').innerText = "Đã kết nối Cloud Supabase (Hồ Sơ & Công Việc Sẵn Sàng)";
+                    document.getElementById('sync-text').innerText = "Đã liên kết Cloud Supabase THỜI GIAN THỰC thành công!";
                     document.getElementById('sync-text').style.color = "#34d399";
+                    
+                    // Tải dữ liệu từ database về hệ thống ngay khi mở trang
+                    await loadAllDataFromSupabase();
                 }
-            } catch (err) {}
+            } catch (err) {
+                document.getElementById('sync-text').innerText = "Lỗi kết nối tới cơ sở dữ liệu Supabase: " + err.message;
+                document.getElementById('sync-text').style.color = "#f87171";
+            }
 
             setInterval(() => {
                 document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('vi-VN');
             }, 1000);
         };
+
+        async function loadAllDataFromSupabase() {
+            try {
+                // Tải dữ liệu Công việc
+                const { data: tasks, error: tErr } = await supabaseClient.from('task_records').select('*').order('created_at', { ascending: false });
+                if(!tErr && tasks) taskRecords = tasks;
+
+                // Tải dữ liệu Hồ sơ thanh toán
+                const { data: pays, error: pErr } = await supabaseClient.from('payment_records').select('*').order('created_at', { ascending: false });
+                if(!pErr && pays) paymentRecords = pays;
+
+                // Tải dữ liệu Cước Viễn Thông
+                const { data: teles, error: telErr } = await supabaseClient.from('telecom_records').select('*').order('created_at', { ascending: false });
+                if(!telErr && teles) telecomRecords = teles;
+
+                renderSubModule();
+            } catch (err) {
+                console.error("Lỗi tải dữ liệu: ", err);
+            }
+        }
 
         function switchModule(mod) {
             document.getElementById('module-luong-container').style.display = (mod === 'luong') ? 'block' : 'none';
@@ -582,7 +597,7 @@
             renderSalaryModule();
         }
 
-        /* ================= PHÂN HỆ LƯƠNG: CHỐT CỨNG CỐ ĐỊNH 100% ================= */
+        /* ================= PHÂN HỆ LƯƠNG: CÔNG THỨC CỐ ĐỊNH ================= */
         function renderSalaryModule() {
             let head = document.getElementById('table-head'), body = document.getElementById('table-body'), foot = document.getElementById('table-foot');
             head.innerHTML = ''; body.innerHTML = ''; foot.innerHTML = '';
@@ -648,7 +663,7 @@
             head.innerHTML = headHtml; body.innerHTML = bodyHtml; foot.innerHTML = footHtml;
         }
 
-        /* ================= PHÂN HỆ SỐ 2: TÍCH HỢP QUẢN TRỊ BỔ SUNG & QR CODE & EDIT CHUYÊN NGHIỆP ================= */
+        /* ================= LỊCH VẠN NIÊN & FILE UPLOAD ================= */
         function initCalendar() {
             let container = document.querySelector('.cal-days-container'); if(!container) return;
             container.innerHTML = `<div class="calendar-day-name">CN</div><div class="calendar-day-name">T2</div><div class="calendar-day-name">T3</div><div class="calendar-day-name">T4</div><div class="calendar-day-name">T5</div><div class="calendar-day-name">T6</div><div class="calendar-day-name">T7</div>`;
@@ -658,7 +673,6 @@
 
         function generateAutoPaymentCode() { document.getElementById('pay-code').value = "HSTT-2026-" + Math.floor(1000 + Math.random() * 9000); }
         
-        // Nhận diện File và Lưu thông tin Loại file
         function handleFileSelect(event) {
             let file = event.target.files[0]; if (!file) return;
             uploadedFileName = file.name;
@@ -680,7 +694,6 @@
             reader.readAsDataURL(file);
         }
 
-        // Gọi modal xem trước lớn
         function previewDocument(base64Data, type) {
             let modal = document.getElementById('document-preview-modal');
             let body = document.getElementById('preview-modal-body');
@@ -690,28 +703,24 @@
             } else if(type === 'pdf') {
                 body.innerHTML = `<iframe src="${base64Data}" style="width:100%; height:70vh; border:none;"></iframe>`;
             } else {
-                body.innerHTML = `<p>Định dạng này không hỗ trợ xem trực tiếp. Vui lòng tải về máy.</p>`;
+                body.innerHTML = `<p>Định dạng này không hỗ trợ xem trực tiếp.</p>`;
             }
             modal.style.display = 'flex';
         }
 
-        function closePreviewModal() {
-            document.getElementById('document-preview-modal').style.display = 'none';
-        }
+        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
 
-        // Tạo mã QR Code
         function generateQRCodeSvg(dataString) {
             try {
                 let qr = qrcode(0, 'M');
                 qr.addData(dataString);
                 qr.make();
-                return qr.createSvgTag(3, 8); // Kích thước khối và viền
+                return qr.createSvgTag(3, 8);
             } catch (err) {
                 return '<span style="color:red;">Lỗi tạo QR</span>';
             }
         }
 
-        // In mã QR Code
         function printQRCode(code, details) {
             let prtSection = document.getElementById('qr-print-section');
             let qrSvg = generateQRCodeSvg(`Mã hồ sơ: ${code}\nChi tiết: ${details}`);
@@ -734,30 +743,28 @@
             document.getElementById('pay-amount-after').value = Math.round(before + tax).toLocaleString('vi-VN') + " đ";
         }
 
-        /* ---------------- QUẢN LÝ CÔNG VIỆC (Cập nhật Hành động Sửa/Xóa) ---------------- */
-        function saveTaskRecord(e) {
+        /* ---------------- DỮ LIỆU CÔNG VIỆC TRÊN CLOUD SUPABASE ---------------- */
+        async function saveTaskRecord(e) {
             e.preventDefault();
             let id = document.getElementById('task-id-holder').value;
             let title = document.getElementById('task-title').value;
             let assignee = document.getElementById('task-assignee').value;
             let deadline = document.getElementById('task-deadline').value;
             let priority = document.getElementById('task-priority').value;
-            let progress = document.getElementById('task-progress').value;
+            let progress = parseInt(document.getElementById('task-progress').value) || 0;
             let status = document.getElementById('task-status').value;
 
             if (id) {
-                // Đang sửa bản ghi
-                let idx = taskRecords.findIndex(t => t.id == id);
-                if(idx !== -1) {
-                    taskRecords[idx] = { id: parseFloat(id), title, assignee, deadline, priority, progress, status };
-                }
-                cancelEditTask();
+                // UPDATE Supabase
+                const { error } = await supabaseClient.from('task_records').update({ title, assignee, deadline, priority, progress, status }).eq('id', id);
+                if(!error) cancelEditTask();
             } else {
-                // Thêm mới bản ghi
-                taskRecords.push({ id: Date.now(), title, assignee, deadline, priority, progress, status });
+                // INSERT Supabase
+                const newId = Date.now();
+                const { error } = await supabaseClient.from('task_records').insert([{ id: newId, title, assignee, deadline, priority, progress, status }]);
             }
-            document.getElementById('task-form').reset(); 
-            renderSubModule();
+            await loadAllDataFromSupabase();
+            document.getElementById('task-form').reset();
         }
 
         function editTask(id) {
@@ -784,15 +791,15 @@
             document.getElementById('btn-task-cancel').style.display = 'none';
         }
 
-        function deleteTask(id) { 
-            if(confirm('Bạn có chắc chắn muốn xóa công việc này không?')) {
-                taskRecords = taskRecords.filter(t => t.id !== id); 
-                renderSubModule(); 
+        async function deleteTask(id) { 
+            if(confirm('Bạn có chắc chắn muốn xóa vĩnh viễn công việc này trên Cloud?')) {
+                const { error } = await supabaseClient.from('task_records').delete().eq('id', id);
+                await loadAllDataFromSupabase();
             }
         }
 
-        /* ---------------- HỒ SƠ THANH TOÁN (Cập nhật Sửa/Xóa/QR) ---------------- */
-        function savePaymentRecord(e) {
+        /* ---------------- DỮ LIỆU HỒ SƠ TRÊN CLOUD SUPABASE ---------------- */
+        async function savePaymentRecord(e) {
             e.preventDefault();
             let id = document.getElementById('pay-id-holder').value;
             let code = document.getElementById('pay-code').value;
@@ -808,26 +815,28 @@
             let status = document.getElementById('pay-status').value;
 
             if (id) {
-                // Cập nhật sửa
-                let idx = paymentRecords.findIndex(p => p.id == id);
-                if (idx !== -1) {
-                    paymentRecords[idx] = { 
-                        id: parseFloat(id), code, name, recipient, dept, bankAcc, bankName, qty, price, vatRate, after, status,
-                        file: uploadedFileBase64 ? uploadedFileBase64 : paymentRecords[idx].file,
-                        fileType: uploadedFileBase64 ? uploadedFileType : paymentRecords[idx].fileType,
-                        fileName: uploadedFileBase64 ? uploadedFileName : paymentRecords[idx].fileName
-                    };
-                }
-                cancelEditPay();
+                let existing = paymentRecords.find(p => p.id == id);
+                const fileToSave = uploadedFileBase64 ? uploadedFileBase64 : existing.file;
+                const fileTypeToSave = uploadedFileBase64 ? uploadedFileType : existing.fileType;
+                const fileNameToSave = uploadedFileBase64 ? uploadedFileName : existing.fileName;
+
+                const { error } = await supabaseClient.from('payment_records').update({
+                    code, name, recipient, dept, bank_acc: bankAcc, bank_name: bankName, qty, price, vat_rate: vatRate, after,
+                    file: fileToSave, file_type: fileTypeToSave, file_name: fileNameToSave, status
+                }).eq('id', id);
+                if(!error) cancelEditPay();
             } else {
-                // Thêm mới
-                paymentRecords.push({ id: Date.now(), code, name, recipient, dept, bankAcc, bankName, qty, price, vatRate, after, file: uploadedFileBase64, fileType: uploadedFileType, fileName: uploadedFileName, status });
+                const newId = Date.now();
+                const { error } = await supabaseClient.from('payment_records').insert([{
+                    id: newId, code, name, recipient, dept, bank_acc: bankAcc, bank_name: bankName, qty, price, vat_rate: vatRate, after,
+                    file: uploadedFileBase64, file_type: uploadedFileType, file_name: uploadedFileName, status
+                }]);
             }
-            document.getElementById('payment-form').reset(); 
+            await loadAllDataFromSupabase();
+            document.getElementById('payment-form').reset();
             uploadedFileBase64 = ''; uploadedFileType = ''; uploadedFileName = '';
-            document.getElementById('pay-file-preview').style.display = 'none'; 
-            generateAutoPaymentCode(); 
-            renderSubModule();
+            document.getElementById('pay-file-preview').style.display = 'none';
+            generateAutoPaymentCode();
         }
 
         function editPay(id) {
@@ -838,21 +847,25 @@
             document.getElementById('pay-name').value = item.name;
             document.getElementById('pay-recipient').value = item.recipient;
             document.getElementById('pay-dept').value = item.dept;
-            document.getElementById('pay-bank-acc').value = item.bankAcc;
-            document.getElementById('pay-bank-name').value = item.bankName;
+            document.getElementById('pay-bank-acc').value = item.bank_acc || item.bankAcc;
+            document.getElementById('pay-bank-name').value = item.bank_name || item.bankName;
             document.getElementById('pay-qty').value = item.qty;
             document.getElementById('pay-price').value = item.price.toLocaleString('vi-VN');
-            document.getElementById('pay-vat-rate').value = item.vatRate;
+            document.getElementById('pay-vat-rate').value = item.vat_rate !== undefined ? item.vat_rate : item.vatRate;
             document.getElementById('pay-amount-after').value = Math.round(item.after).toLocaleString('vi-VN') + " đ";
             document.getElementById('pay-status').value = item.status;
 
-            if(item.file) {
+            const fileData = item.file;
+            const fileType = item.file_type || item.fileType;
+            const fileName = item.file_name || item.fileName;
+
+            if(fileData) {
                 document.getElementById('pay-file-preview').style.display = 'flex';
                 let previewHtml = '';
-                if(item.fileType.includes('image')) {
-                    previewHtml = `<div class="file-item-preview"><img class="file-thumb" src="${item.file}"> <span>${item.fileName}</span> <button type="button" onclick="previewDocument('${item.file}', 'image')" class="btn-action btn-edit">Xem lớn</button></div>`;
-                } else if(item.fileType.includes('pdf')) {
-                    previewHtml = `<div class="file-item-preview"><div style="font-size:24px;">📄</div> <span>${item.fileName}</span> <button type="button" onclick="previewDocument('${item.file}', 'pdf')" class="btn-action btn-edit">Xem PDF</button></div>`;
+                if(fileType.includes('image')) {
+                    previewHtml = `<div class="file-item-preview"><img class="file-thumb" src="${fileData}"> <span>${fileName}</span> <button type="button" onclick="previewDocument('${fileData}', 'image')" class="btn-action btn-edit">Xem lớn</button></div>`;
+                } else if(fileType.includes('pdf')) {
+                    previewHtml = `<div class="file-item-preview"><div style="font-size:24px;">📄</div> <span>${fileName}</span> <button type="button" onclick="previewDocument('${fileData}', 'pdf')" class="btn-action btn-edit">Xem PDF</button></div>`;
                 }
                 document.getElementById('pay-file-preview').innerHTML = previewHtml;
             } else {
@@ -874,15 +887,15 @@
             generateAutoPaymentCode();
         }
 
-        function deletePay(id) { 
-            if(confirm('Bạn có chắc chắn muốn xóa hồ sơ thanh toán này không?')) {
-                paymentRecords = paymentRecords.filter(p => p.id !== id); 
-                renderSubModule(); 
+        async function deletePay(id) {
+            if(confirm('Bạn có chắc chắn muốn xóa hồ sơ này trên đám mây?')) {
+                const { error } = await supabaseClient.from('payment_records').delete().eq('id', id);
+                await loadAllDataFromSupabase();
             }
         }
 
-        /* ---------------- CƯỚC VIỄN THÔNG (Cập nhật Sửa/Xóa) ---------------- */
-        function saveTelecomRecord(e) {
+        /* ---------------- DỮ LIỆU CƯỚC TRÊN CLOUD SUPABASE ---------------- */
+        async function saveTelecomRecord(e) {
             e.preventDefault();
             let id = document.getElementById('tele-id-holder').value;
             let code = document.getElementById('tele-code').value;
@@ -893,18 +906,14 @@
             let status = document.getElementById('tele-status').value;
 
             if (id) {
-                // Sửa
-                let idx = telecomRecords.findIndex(t => t.id == id);
-                if (idx !== -1) {
-                    telecomRecords[idx] = { id: parseFloat(id), code, provider, location, cost, due, status };
-                }
-                cancelEditTele();
+                const { error } = await supabaseClient.from('telecom_records').update({ code, provider, location, cost, due, status }).eq('id', id);
+                if(!error) cancelEditTele();
             } else {
-                // Mới
-                telecomRecords.push({ id: Date.now(), code, provider, location, cost, due, status });
+                const newId = Date.now();
+                const { error } = await supabaseClient.from('telecom_records').insert([{ id: newId, code, provider, location, cost, due, status }]);
             }
-            document.getElementById('telecom-form').reset(); 
-            renderSubModule();
+            await loadAllDataFromSupabase();
+            document.getElementById('telecom-form').reset();
         }
 
         function editTele(id) {
@@ -931,14 +940,14 @@
             document.getElementById('btn-tele-cancel').style.display = 'none';
         }
 
-        function deleteTele(id) { 
-            if(confirm('Bạn có chắc chắn muốn xóa dòng thông tin cước viễn thông này không?')) {
-                telecomRecords = telecomRecords.filter(t => t.id !== id); 
-                renderSubModule(); 
+        async function deleteTele(id) {
+            if(confirm('Bạn có chắc chắn muốn xóa vĩnh viễn dòng cước này?')) {
+                const { error } = await supabaseClient.from('telecom_records').delete().eq('id', id);
+                await loadAllDataFromSupabase();
             }
         }
 
-        /* RENDER DANH SÁCH BẢNG PHÂN HỆ SỐ 2 VỚI QR CODE & ĐA PHƯƠNG TIỆN */
+        /* ---------------- VẼ BẢNG KHI TẢI DỮ LIỆU THÀNH CÔNG ---------------- */
         function renderSubModule() {
             let stat = document.getElementById('sub-stat-banner'); 
             let tbodyTasks = document.getElementById('task-table-body');
@@ -959,21 +968,27 @@
                 stat.innerHTML = `<div class="stat-box" style="border-left-color:var(--green);"><div class="stat-title">Tổng Chi Tiêu Duyệt</div><div class="stat-value">${formatMoney(totalCost)} đ</div></div>`;
                 
                 tbodyPays.innerHTML = paymentRecords.map(p => {
-                    // Mã hóa QR tự động chứa mã hồ sơ, phòng ban, và giá tiền
-                    let qrRawString = `Mã: ${p.code}\nNội dung: ${p.name}\nThành tiền: ${Math.round(p.after).toLocaleString('vi-VN')} đ`;
+                    const code = p.code;
+                    const name = p.name;
+                    const after = p.after;
+                    const fileData = p.file;
+                    const fileType = p.file_type || p.fileType;
+                    const fileName = p.file_name || p.fileName;
+
+                    let qrRawString = `Mã: ${code}\nNội dung: ${name}\nThành tiền: ${Math.round(after).toLocaleString('vi-VN')} đ`;
                     let qrSvg = generateQRCodeSvg(qrRawString);
                     
                     let fileBtn = '-';
-                    if (p.file) {
-                        let docType = p.fileType.includes('pdf') ? 'pdf' : 'image';
-                        fileBtn = `<button class="btn-add" style="padding: 3px 8px; font-size:10px;" onclick="previewDocument('${p.file}', '${docType}')">👁️ Xem file</button>`;
+                    if (fileData) {
+                        let docType = fileType.includes('pdf') ? 'pdf' : 'image';
+                        fileBtn = `<button class="btn-add" style="padding: 3px 8px; font-size:10px;" onclick="previewDocument('${fileData}', '${docType}')">👁️ Xem file</button>`;
                     }
 
                     return `<tr>
-                        <td class="text-left font-bold">[${p.code}] ${p.name}</td><td>${p.recipient}</td><td>${p.dept}</td><td class="font-bold" style="color:var(--green);">${formatMoney(p.after)}</td>
+                        <td class="text-left font-bold">[${code}] ${name}</td><td>${p.recipient}</td><td>${p.dept}</td><td class="font-bold" style="color:var(--green);">${formatMoney(after)}</td>
                         <td>${fileBtn}</td>
                         <td class="text-center">
-                            <div class="qr-badge" onclick="printQRCode('${p.code}', '${p.name} - ${formatMoney(p.after)} đ')" title="Nhấp để quét thử hoặc in">
+                            <div class="qr-badge" onclick="printQRCode('${code}', '${name} - ${formatMoney(after)} đ')" title="Quét thử hoặc in ấn">
                                 ${qrSvg}
                                 <span style="font-size:9px; color:var(--blue); font-weight:bold;">🖨️ In Nhãn QR</span>
                             </div>
@@ -986,7 +1001,8 @@
                     </tr>`;
                 }).join('');
             } else if(activeSubTab === 'telecom') {
-                stat.innerHTML = `<div class="stat-box" style="border-left-color:var(--purple);"><div class="stat-title">Đường Truyền</div><div class="stat-value">${telecomRecords.length} Thuê bao</div></div>`;
+                let totalTeleCost = telecomRecords.reduce((sum, t) => sum + getRawNumber(t.cost), 0);
+                stat.innerHTML = `<div class="stat-box" style="border-left-color:var(--purple);"><div class="stat-title">Tổng cước phí</div><div class="stat-value">${formatMoney(totalTeleCost)} đ</div></div>`;
                 tbodyTeles.innerHTML = telecomRecords.map(t => `<tr>
                     <td class="text-left font-bold">${t.code}</td><td>${t.provider}</td><td>${t.location}</td><td>${t.cost} đ</td><td>${formatDateVN(t.due)}</td><td>${t.status}</td>
                     <td>
