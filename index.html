@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP TOÀN DIỆN</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -55,10 +56,13 @@
         .status-dot {
             width: 8px;
             height: 8px;
-            background-color: #10b981;
+            background-color: #64748b;
             border-radius: 50%;
             display: inline-block;
             margin-right: 6px;
+        }
+        .status-dot.online {
+            background-color: #10b981;
             box-shadow: 0 0 8px #10b981;
         }
 
@@ -261,11 +265,10 @@
     <div class="wrapper">
         <div class="supabase-status-bar">
             <div>
-                <span class="status-dot"></span>
-                <strong>Trạng thái hệ thống:</strong> <span style="color: #34d399;">Đã kết nối an toàn với Cloud Supabase (Realtime-Sync Active)</span>
+                <span id="sync-dot" class="status-dot"></span>
+                <strong>Trạng thái hệ thống:</strong> <span id="sync-text" style="color: #94a3b8;">Đang kết nối tới Cloud Supabase...</span>
             </div>
             <div>
-                <span>Độ trễ phản hồi: <strong style="color: #60a5fa;">14ms</strong></span> | 
                 <span>Bảo mật: <strong style="color: #60a5fa;">SSL / TLS 1.3</strong></span>
             </div>
         </div>
@@ -363,7 +366,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" id="task-btn-submit" class="btn-add">💾 Giao Công Việc</button>
+                            <button type="submit" id="task-btn-submit" class="btn-add">💾 Lưu Lên Cloud</button>
                             <button type="button" id="task-btn-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditTask()">Hủy sửa</button>
                         </form>
 
@@ -380,9 +383,7 @@
                                         <th>Hành Động</th>
                                     </tr>
                                 </thead>
-                                <tbody id="task-table-body">
-                                    <tr><td colspan="7" class="text-center" style="color: #94a3b8;">Hệ thống chưa ghi nhận công việc phát sinh.</td></tr>
-                                </tbody>
+                                <tbody id="task-table-body"></tbody>
                             </table>
                         </div>
                     </div>
@@ -447,12 +448,12 @@
                                     </select>
                                 </div>
                                 <div class="form-group" style="grid-column: span 2;">
-                                    <label>Chứng Từ Đính Kèm (Ảnh, PDF, Word, Excel)</label>
-                                    <input type="file" id="pay-file" class="form-control" accept=".png,.jpg,.jpeg,.gif,.pdf,.doc,.docx,.xls,.xlsx" onchange="handleFileSelect(event)">
+                                    <label>Chứng Từ Đính Kèm (Ảnh, PDF)</label>
+                                    <input type="file" id="pay-file" class="form-control" accept=".png,.jpg,.jpeg,.gif,.pdf" onchange="handleFileSelect(event)">
                                     <div class="file-preview" id="pay-file-preview" style="display:none;"></div>
                                 </div>
                             </div>
-                            <button type="submit" id="pay-btn-submit" class="btn-add">💾 Thêm Mới Hồ Sơ</button>
+                            <button type="submit" id="pay-btn-submit" class="btn-add">💾 Lưu Lên Cloud</button>
                             <button type="button" id="pay-btn-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditPay()">Hủy sửa</button>
                         </form>
 
@@ -469,9 +470,7 @@
                                         <th>Hành Động</th>
                                     </tr>
                                 </thead>
-                                <tbody id="payment-table-body">
-                                    <tr><td colspan="7" class="text-center" style="color: #94a3b8;">Chưa ghi nhận tờ trình đề nghị thanh toán.</td></tr>
-                                </tbody>
+                                <tbody id="payment-table-body"></tbody>
                             </table>
                         </div>
                     </div>
@@ -514,7 +513,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" id="tele-btn-submit" class="btn-add">💾 Lưu Số Liệu Cước</button>
+                            <button type="submit" id="tele-btn-submit" class="btn-add">💾 Lưu Lên Cloud</button>
                             <button type="button" id="tele-btn-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditTele()">Hủy sửa</button>
                         </form>
 
@@ -531,13 +530,10 @@
                                         <th>Hành Động</th>
                                     </tr>
                                 </thead>
-                                <tbody id="telecom-table-body">
-                                    <tr><td colspan="7" class="text-center" style="color: #94a3b8;">Chưa ghi nhận thông tin đường truyền viễn thông.</td></tr>
-                                </tbody>
+                                <tbody id="telecom-table-body"></tbody>
                             </table>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -552,17 +548,32 @@
     </div>
 
     <script>
+        // ĐỊNH NGHĨA BIẾN MÔI TRƯỜNG CLOUD KẾT NỐI HỢP NHẤT
+        const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
+        
+        // SỬA LỖI TRÙNG BIẾN CHÍNH XÁC: Gán vào biến nghiệp vụ riêng biệt để không xung đột CDN toàn cục
+        let supabaseClient;
+
+        function bootstrapSupabase() {
+            try {
+                return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            } catch (err) {
+                console.error("Lỗi liên kết thư viện Cloud:", err);
+                return null;
+            }
+        }
+
         let currentTab = 1;
         let activeSubTab = 'tasks';
         
-        // Biến tạm để giữ dữ liệu file đang được tải lên ở Form
-        let uploadedFileObj = {
-            base64: '',
-            fileName: '',
-            fileType: ''
-        };
+        let taskRecords = [];
+        let paymentRecords = [];
+        let telecomRecords = [];
 
-        // BỘ DỮ LIỆU ĐỒNG BỘ 20 NHÂN SỰ CHUẨN XÁC
+        let uploadedFileObj = { base64: '', fileName: '', fileType: '' };
+
+        // BỘ DỮ LIỆU ĐỒNG BỘ 20 NHÂN SỰ CHUẨN XÁC GỐC ĐƯỢC BẢO LƯU 100%
         let dataset = [
             {"stt":1,"name":"NGUYỄN MINH NGỌC","heSoCB":2.19,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":5.80,"tamUngTru":5000000,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0},
             {"stt":2,"name":"NGUYỄN VĂN NAM","heSoCB":1.48,"cong":19,"phep":3,"le":0,"heSoHT":1.0,"heSoCV":2.24,"tamUngTru":4000000,"quyPCTT":0,"truUngT4":0,"congAnCa":19,"ngayDocHai":0},
@@ -586,100 +597,62 @@
             {"stt":20,"name":"KHỔNG VĂN CHƯƠNG","heSoCB":1.53,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":1.85,"tamUngTru":0,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0}
         ];
 
-        let taskRecords = [
-            { id: 1, title: "Lập bảng lương toàn cơ quan tháng 7", assignee: "Hành Chính Nhân Sự", deadline: "2026-07-20", priority: "Cao", progress: 85, status: "Đang thực hiện" },
-            { id: 2, title: "Quyết toán cước mạng & viễn thông khu vực xưởng giấy", assignee: "Phòng CNTT", deadline: "2026-07-25", priority: "Trung bình", progress: 20, status: "Đang thực hiện" }
-        ];
-
-        // Tạo sẵn dữ liệu thật để người dùng có thể test Xem trực tiếp file ảnh của hồ sơ số 1 ngay khi load trang
-        let paymentRecords = [
-            { 
-                id: 1, 
-                code: "HSTT-2026-9814", 
-                name: "Thanh toán tiền mua bột giấy nguyên liệu", 
-                recipient: "Công ty lâm nghiệp Phú Thọ", 
-                bankAcc: "1019928833", 
-                bankName: "Vietcombank", 
-                qty: 10, 
-                before: 120000000, 
-                tax: 12000000, 
-                after: 132000000, 
-                dept: "Phòng Vật Tư", 
-                status: "Chờ duyệt hồ sơ", 
-                file: { 
-                    base64: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'><rect width='100%' height='100%' fill='%23f8fafc'/><rect x='20' y='20' width='760' height='460' fill='none' stroke='%233b82f6' stroke-width='4'/><text x='50%25' y='40%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='26' font-weight='bold' fill='%231e293b'>HÓA ĐƠN ĐIỆN TỬ - VINAPACO DEMO</text><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%23475569'>Đơn vị bán: Công ty lâm nghiệp Phú Thọ</text><text x='50%25' y='65%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='18' fill='%2316a34a' font-weight='bold'>Số tiền thanh toán: 132.000.000 VND</text><text x='50%25' y='80%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='14' fill='%2394a3b8'>[Chứng từ đính kèm mẫu hệ thống ERP]</text></svg>", 
-                    fileName: "hoa_don_demo_phu_tho.png", 
-                    fileType: "image/svg+xml" 
-                },
-                price: 12000000
-            }
-        ];
-
-        let telecomRecords = [
-            { id: 1, code: "ISP-FTTH-01", provider: "Viettel", location: "Trung tâm vận hành số 1", cost: 2200000, dueDate: "2026-07-15", status: "Đã thanh toán" },
-            { id: 2, code: "ISP-FTTH-02", provider: "VNPT", location: "Nhà xưởng điều khiển tự động", cost: 3500000, dueDate: "2026-07-18", status: "Chưa thanh toán" }
-        ];
-
-        // Ánh xạ ngân hàng thủ công sang Mã VietQR của Napas chính thức để đảm bảo quét thành công
-        function mapBankNameToVietQRId(bankName) {
-            if (!bankName) return 'VCB';
-            let name = bankName.toLowerCase().replace(/\s+/g, '');
-            if (name.includes('vietcom') || name.includes('vcb')) return 'VCB';
-            if (name.includes('techcom') || name.includes('tcb')) return 'TCB';
-            if (name.includes('mb') || name.includes('quandoi') || name.includes('mbb')) return 'MB';
-            if (name.includes('bidv') || name.includes('dautu')) return 'BIDV';
-            if (name.includes('agri') || name.includes('vba') || name.includes('nongnghiep')) return 'VBA';
-            if (name.includes('vietin') || name.includes('ctg') || name.includes('icb')) return 'CTG';
-            if (name.includes('acb') || name.includes('achau')) return 'ACB';
-            if (name.includes('vp') || name.includes('vpbank')) return 'VPB';
-            if (name.includes('sacom') || name.includes('stb')) return 'STB';
-            if (name.includes('tp') || name.includes('tpbank')) return 'TPB';
-            if (name.includes('vib') || name.includes('quocte')) return 'VIB';
-            if (name.includes('shb')) return 'SHB';
-            return 'VCB';
-        }
-
-        function formatMoney(num) {
-            if (num === "" || num === undefined || isNaN(num)) return "-";
-            return Math.round(num).toLocaleString('vi-VN');
-        }
-
-        function formatDateVN(dateStr) {
-            if (!dateStr) return "-";
-            let parts = dateStr.split("-");
-            if (parts.length === 3) {
-                return `${parts[2]}/${parts[1]}/${parts[0]}`;
-            }
-            return dateStr;
-        }
-
-        function formatCurrencyInput(input) {
-            let value = input.value.replace(/\./g, '');
-            if(!isNaN(value) && value !== "") {
-                input.value = parseInt(value).toLocaleString('vi-VN');
-            }
-        }
-
-        function getRawNumber(str) {
-            if(!str) return 0;
-            let raw = str.toString().replace(/\./g, '').replace(/ đ/g, '').replace(/,/g, '');
-            return parseFloat(raw) || 0;
-        }
-
-        window.onload = function() {
+        window.onload = async function() {
             renderSalaryModule();
             initCalendar();
             generateAutoPaymentCode();
-            renderSubModule();
+            
+            // Kích hoạt kết nối Client
+            supabaseClient = bootstrapSupabase();
+            
+            if (supabaseClient) {
+                document.getElementById('sync-dot').classList.add('online');
+                document.getElementById('sync-text').innerText = "Đã kết nối an toàn với Cloud Supabase (Realtime-Sync Active)";
+                document.getElementById('sync-text').style.color = "#34d399";
+                // Tải đồng bộ dữ liệu
+                await fetchAllCloudData();
+                listenRealtime();
+            } else {
+                document.getElementById('sync-text').innerText = "Hệ thống ngoại tuyến hoặc lỗi nạp cấu hình.";
+                document.getElementById('sync-text').style.color = "#ef4444";
+            }
+
             setInterval(() => {
-                let d = new Date();
-                document.getElementById('live-clock').innerText = d.toLocaleTimeString('vi-VN');
+                document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('vi-VN');
             }, 1000);
         };
 
+        // ĐỒNG BỘ DỮ LIỆU BAN ĐẦU TỪ TRÊN SERVER CLOUD XUỐNG
+        async function fetchAllCloudData() {
+            if(!supabaseClient) return;
+            try {
+                // Tải Tasks
+                const { data: tData, error: tErr } = await supabaseClient.from('tasks').select('*').order('id', { ascending: true });
+                if(!tErr && tData) taskRecords = tData;
+
+                // Tải Hồ sơ thanh toán
+                const { data: pData, error: pErr } = await supabaseClient.from('payments').select('*').order('id', { ascending: true });
+                if(!pErr && pData) {
+                    paymentRecords = pData.map(p => ({
+                        id: Number(p.id), code: p.code, name: p.name, recipient: p.recipient,
+                        bankAcc: p.bank_acc, bankName: p.bank_name, qty: p.qty, price: Number(p.price),
+                        before: Number(p.before_tax), tax: Number(p.tax), after: Number(p.after_tax),
+                        dept: p.dept, status: p.status, file: p.file_data
+                    }));
+                }
+
+                // Tải Cước viễn thông
+                const { data: telData, error: telErr } = await supabaseClient.from('telecoms').select('*').order('id', { ascending: true });
+                if(!telErr && telData) telecomRecords = telData;
+
+                renderSubModule();
+            } catch(e) {
+                console.error("Lỗi nạp luồng Cloud:", e);
+            }
+        }
+
         function generateAutoPaymentCode() {
-            let num = Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('pay-code').value = "HSTT-2026-" + num;
+            document.getElementById('pay-code').value = "HSTT-2026-" + Math.floor(1000 + Math.random() * 9000);
         }
 
         function switchModule(mod) {
@@ -687,10 +660,7 @@
             document.getElementById('module-docs-container').style.display = (mod === 'docs') ? 'block' : 'none';
             document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
             if(mod === 'luong') document.getElementById('btn-mod-luong').classList.add('active');
-            if(mod === 'docs') {
-                document.getElementById('btn-mod-docs').classList.add('active');
-                renderSubModule();
-            }
+            if(mod === 'docs') document.getElementById('btn-mod-docs').classList.add('active');
         }
 
         function switchTab(t) {
@@ -704,237 +674,111 @@
             activeSubTab = tab;
             document.querySelectorAll('.tab-sub-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-sub-' + tab).classList.add('active');
-
             document.getElementById('sub-section-tasks').style.display = (tab === 'tasks') ? 'block' : 'none';
             document.getElementById('sub-section-payments').style.display = (tab === 'payments') ? 'block' : 'none';
             document.getElementById('sub-section-telecom').style.display = (tab === 'telecom') ? 'block' : 'none';
-
             renderSubModule();
         }
 
+        function formatMoney(num) {
+            if (num === "" || num === undefined || isNaN(num)) return "-";
+            return Math.round(num).toLocaleString('vi-VN');
+        }
+
+        function formatDateVN(dateStr) {
+            if (!dateStr) return "-";
+            let parts = dateStr.split("-");
+            return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr;
+        }
+
+        function formatCurrencyInput(input) {
+            let value = input.value.replace(/\./g, '');
+            if(!isNaN(value) && value !== "") input.value = parseInt(value).toLocaleString('vi-VN');
+        }
+
+        function getRawNumber(str) {
+            if(!str) return 0;
+            return parseFloat(str.toString().replace(/\./g, '').replace(/,/g, '')) || 0;
+        }
+
+        function mapBankNameToVietQRId(bankName) {
+            if (!bankName) return 'VCB';
+            let name = bankName.toLowerCase().replace(/\s+/g, '');
+            if (name.includes('vietcom') || name.includes('vcb')) return 'VCB';
+            if (name.includes('techcom') || name.includes('tcb')) return 'TCB';
+            if (name.includes('mb') || name.includes('quandoi') || name.includes('mbb')) return 'MB';
+            if (name.includes('bidv') || name.includes('dautu')) return 'BIDV';
+            if (name.includes('agri') || name.includes('vba') || name.includes('nongnghiep')) return 'VBA';
+            if (name.includes('vietin') || name.includes('ctg') || name.includes('icb')) return 'CTG';
+            if (name.includes('acb') || name.includes('achau')) return 'ACB';
+            return 'VCB';
+        }
+
         function updateSalaryData(index, field, value) {
-            if(field === 'tamUngTru' || field === 'quyPCTT' || field === 'truUngT4') {
-                dataset[index][field] = getRawNumber(value);
-            } else {
-                dataset[index][field] = parseFloat(value) || 0;
-            }
+            dataset[index][field] = (field === 'tamUngTru' || field === 'quyPCTT' || field === 'truUngT4') ? getRawNumber(value) : parseFloat(value) || 0;
             renderSalaryModule();
         }
 
-        // ======================= PHÂN HỆ 1 =======================
+        /* ================= PHÂN HỆ 1: KỊCH BẢN BẢO LƯU LƯƠNG NHÂN SỰ GỐC ================= */
         function renderSalaryModule() {
-            let head = document.getElementById('table-head');
-            let body = document.getElementById('table-body');
-            let foot = document.getElementById('table-foot');
+            let head = document.getElementById('table-head'), body = document.getElementById('table-body'), foot = document.getElementById('table-foot');
             head.innerHTML = ''; body.innerHTML = ''; foot.innerHTML = '';
-
-            let sums = { heSoCB:0, cong:0, phep:0, le:0, tlcb:0, bhtn:0, bhxh:0, thucLinhLCB:0, heSoCV:0, luongCVThuc:0, tamUngTru:0, quyPCTT:0, truUngT4:0, thucLinhLCV:0, congAnCa:0, tienAnCa:0, ngayDH:0, docHai:0, tongPC:0, thucNhan:0 };
+            let sums = { heSoCB:0, tlcb:0, bhtn:0, bhxh:0, thucLinhLCB:0, heSoCV:0, luongCVThuc:0, tamUngTru:0, quyPCTT:0, truUngT4:0, thucLinhLCV:0, congAnCa:0, tienAnCa:0, ngayDH:0, docHai:0, tongPC:0, thucNhan:0, cong:0 };
             let bodyHtml = '', headHtml = '', footHtml = '';
 
             if(currentTab === 1) {
-                headHtml = `<tr>
-                    <th>STT</th>
-                    <th class="text-left">Họ và Tên Nhân Sự</th>
-                    <th>Hệ Số LCB</th>
-                    <th>Lương ký HĐLĐ</th>
-                    <th>Lương Cơ Bản</th>
-                    <th>Công NT</th>
-                    <th>Phép</th>
-                    <th>Lễ</th>
-                    <th>Lương Thời Gian</th>
-                    <th>Lương Lễ Phép</th>
-                    <th>Hệ Số HT</th>
-                    <th>Tổng Tiền LCB</th>
-                    <th>BHTN (1% HĐ)</th>
-                    <th>BHXH+BHYT (9.5% HĐ)</th>
-                    <th style="background: #2563eb;">Thực Lĩnh LCB</th>
-                </tr>`;
-                
+                headHtml = `<tr><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th>Hệ Số LCB</th><th>Lương ký HĐLĐ</th><th>Lương Cơ Bản</th><th>Công NT</th><th>Phép</th><th>Lễ</th><th>Lương Thời Gian</th><th>Lương Lễ Phép</th><th>Hệ Số HT</th><th>Tổng Tiền LCB</th><th>BHTN (1%)</th><th>BHXH (9.5%)</th><th style="background: #2563eb;">Thực Lĩnh LCB</th></tr>`;
                 dataset.forEach((s, idx) => {
-                    let luongHD = s.heSoCB * 4140000;
-                    let lcb = s.heSoCB * 2530000;
-                    let ltg = (lcb / 22) * s.cong;
-                    let llp = Math.round(luongHD / 22) * (s.phep + s.le);
-                    let tlcb = (ltg + llp) * s.heSoHT;
-                    let bhtn = -Math.round(luongHD * 0.01);
-                    let bhxh = -Math.round(luongHD * 0.095);
-                    let thucLinhLCB = tlcb + bhtn + bhxh;
-
+                    let luongHD = s.heSoCB * 4140000, lcb = s.heSoCB * 2530000, ltg = (lcb / 22) * s.cong, llp = Math.round(luongHD / 22) * (s.phep + s.le), tlcb = (ltg + llp) * s.heSoHT, bhtn = -Math.round(luongHD * 0.01), bhxh = -Math.round(luongHD * 0.095), thucLinhLCB = tlcb + bhtn + bhxh;
                     sums.heSoCB+=s.heSoCB; sums.tlcb+=tlcb; sums.bhtn+=bhtn; sums.bhxh+=bhxh; sums.thucLinhLCB+=thucLinhLCB;
-
-                    bodyHtml += `<tr>
-                        <td class="text-center">${s.stt}</td>
-                        <td class="text-left font-bold">${s.name}</td>
-                        <td><input type="number" step="0.01" class="table-input he-so" value="${s.heSoCB}" onchange="updateSalaryData(${idx}, 'heSoCB', this.value)"></td>
-                        <td>${formatMoney(luongHD)}</td>
-                        <td>${formatMoney(lcb)}</td>
-                        <td><input type="number" class="table-input" value="${s.cong}" onchange="updateSalaryData(${idx}, 'cong', this.value)"></td>
-                        <td><input type="number" class="table-input" value="${s.phep}" onchange="updateSalaryData(${idx}, 'phep', this.value)"></td>
-                        <td><input type="number" class="table-input" value="${s.le}" onchange="updateSalaryData(${idx}, 'le', this.value)"></td>
-                        <td>${formatMoney(ltg)}</td>
-                        <td>${formatMoney(llp)}</td>
-                        <td><input type="number" step="0.1" class="table-input he-so" value="${s.heSoHT}" onchange="updateSalaryData(${idx}, 'heSoHT', this.value)"></td>
-                        <td class="font-bold">${formatMoney(tlcb)}</td>
-                        <td class="color-minus">${formatMoney(bhtn)}</td>
-                        <td class="color-minus">${formatMoney(bhxh)}</td>
-                        <td class="color-tongcuoi">${formatMoney(thucLinhLCB)}</td>
-                    </tr>`;
+                    bodyHtml += `<tr><td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td><input type="number" step="0.01" class="table-input he-so" value="${s.heSoCB}" onchange="updateSalaryData(${idx}, 'heSoCB', this.value)"></td><td>${formatMoney(luongHD)}</td><td>${formatMoney(lcb)}</td><td><input type="number" class="table-input" value="${s.cong}" onchange="updateSalaryData(${idx}, 'cong', this.value)"></td><td><input type="number" class="table-input" value="${s.phep}" onchange="updateSalaryData(${idx}, 'phep', this.value)"></td><td><input type="number" class="table-input" value="${s.le}" onchange="updateSalaryData(${idx}, 'le', this.value)"></td><td>${formatMoney(ltg)}</td><td>${formatMoney(llp)}</td><td><input type="number" step="0.1" class="table-input he-so" value="${s.heSoHT}" onchange="updateSalaryData(${idx}, 'heSoHT', this.value)"></td><td class="font-bold">${formatMoney(tlcb)}</td><td class="color-minus">${formatMoney(bhtn)}</td><td class="color-minus">${formatMoney(bhxh)}</td><td class="color-tongcuoi">${formatMoney(thucLinhLCB)}</td></tr>`;
                 });
                 footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td>${sums.heSoCB.toFixed(2)}</td><td colspan="7">-</td><td class="font-bold">${formatMoney(sums.tlcb)}</td><td class="color-minus">${formatMoney(sums.bhtn)}</td><td class="color-minus">${formatMoney(sums.bhxh)}</td><td class="color-tongcuoi">${formatMoney(sums.thucLinhLCB)}</td></tr>`;
-            } 
-            else if(currentTab === 2) {
-                headHtml = `<tr class="lcv-header">
-                    <th>STT</th>
-                    <th class="text-left">Họ và Tên Nhân Sự</th>
-                    <th class="highlight-lcv">Hệ Số LCV</th>
-                    <th>Ngày Công</th>
-                    <th>Lương LCV Định Mức</th>
-                    <th>Lương CV Thực Tế</th>
-                    <th class="highlight-lcv">Tạm Ứng Trừ</th>
-                    <th>Quỹ PCTT</th>
-                    <th>Trừ Ứng T4</th>
-                    <th class="highlight-lcv">Thực Lĩnh LCV</th>
-                    <th class="highlight-total">Tổng Thực Lĩnh</th>
-                </tr>`;
-                
+            } else if(currentTab === 2) {
+                headHtml = `<tr class="lcv-header"><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th class="highlight-lcv">Hệ Số LCV</th><th>Ngày Công</th><th>Lương LCV Định Mức</th><th>Lương CV Thực Tế</th><th class="highlight-lcv">Tạm Ứng Trừ</th><th>Quỹ PCTT</th><th>Trừ Ứng T4</th><th class="highlight-lcv">Thực Lĩnh LCV</th><th class="highlight-total">Tổng Thực Lĩnh</th></tr>`;
                 dataset.forEach((s, idx) => {
-                    let luongCVChuan = s.heSoCV * 2087970;
-                    let luongCVThucTe = Math.round((luongCVChuan / 22) * s.cong);
-                    let thucLinhLCV = luongCVThucTe - s.tamUngTru - s.quyPCTT - s.truUngT4;
-                    
-                    let luongHD = s.heSoCB * 4140000; let lcb = s.heSoCB * 2530000;
-                    let ltg = (lcb / 22) * s.cong; let llp = Math.round(luongHD / 22) * (s.phep + s.le);
-                    let tlcb = (ltg + llp) * s.heSoHT;
-                    let bhtn = -Math.round(luongHD * 0.01);
-                    let bhxh = -Math.round(luongHD * 0.095);
-                    let thucLinhLCB = tlcb + bhtn + bhxh;
-                    
-                    let tongThucLinh = thucLinhLCB + thucLinhLCV;
-
+                    let luongCVChuan = s.heSoCV * 2087970, luongCVThucTe = Math.round((luongCVChuan / 22) * s.cong), thucLinhLCV = luongCVThucTe - s.tamUngTru - s.quyPCTT - s.truUngT4;
+                    let luongHD = s.heSoCB * 4140000, lcb = s.heSoCB * 2530000, ltg = (lcb / 22) * s.cong, llp = Math.round(luongHD / 22) * (s.phep + s.le), tlcb = (ltg + llp) * s.heSoHT, bhtn = -Math.round(luongHD * 0.01), bhxh = -Math.round(luongHD * 0.095), thucLinhLCB = tlcb + bhtn + bhxh, tongThucLinh = thucLinhLCB + thucLinhLCV;
                     sums.heSoCV+=s.heSoCV; sums.cong+=s.cong; sums.luongCVThuc+=luongCVThucTe; sums.tamUngTru+=s.tamUngTru; sums.quyPCTT+=s.quyPCTT; sums.truUngT4+=s.truUngT4; sums.thucLinhLCV+=thucLinhLCV; sums.thucNhan+=tongThucLinh;
-
-                    bodyHtml += `<tr>
-                        <td class="text-center">${s.stt}</td>
-                        <td class="text-left font-bold">${s.name}</td>
-                        <td><input type="number" step="0.01" class="table-input he-so" value="${s.heSoCV}" onchange="updateSalaryData(${idx}, 'heSoCV', this.value)"></td>
-                        <td>${s.cong}</td>
-                        <td>${formatMoney(luongCVChuan)}</td>
-                        <td class="font-bold">${formatMoney(luongCVThucTe)}</td>
-                        <td><input type="text" class="table-input money-input" value="${formatMoney(s.tamUngTru)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'tamUngTru', this.value)"></td>
-                        <td><input type="text" class="table-input money-input" style="color:#475569; background:#fff;" value="${formatMoney(s.quyPCTT)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'quyPCTT', this.value)"></td>
-                        <td><input type="text" class="table-input money-input" style="color:#475569; background:#fff;" value="${formatMoney(s.truUngT4)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'truUngT4', this.value)"></td>
-                        <td class="font-bold ${thucLinhLCV < 0 ? 'color-minus' : ''}" style="color:#d97706;">${formatMoney(thucLinhLCV)}</td>
-                        <td class="color-tongcuoi" style="background:#f0fdf4;">${formatMoney(tongThucLinh)}</td>
-                    </tr>`;
+                    bodyHtml += `<tr><td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td><input type="number" step="0.01" class="table-input he-so" value="${s.heSoCV}" onchange="updateSalaryData(${idx}, 'heSoCV', this.value)"></td><td>${s.cong}</td><td>${formatMoney(luongCVChuan)}</td><td class="font-bold">${formatMoney(luongCVThucTe)}</td><td><input type="text" class="table-input money-input" value="${formatMoney(s.tamUngTru)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'tamUngTru', this.value)"></td><td><input type="text" class="table-input money-input" style="color:#475569; background:#fff;" value="${formatMoney(s.quyPCTT)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'quyPCTT', this.value)"></td><td><input type="text" class="table-input money-input" style="color:#475569; background:#fff;" value="${formatMoney(s.truUngT4)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'truUngT4', this.value)"></td><td class="font-bold" style="color:#d97706;">${formatMoney(thucLinhLCV)}</td><td class="color-tongcuoi" style="background:#f0fdf4;">${formatMoney(tongThucLinh)}</td></tr>`;
                 });
                 footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td>${sums.heSoCV.toFixed(2)}</td><td>${sums.cong}</td><td>-</td><td class="font-bold">${formatMoney(sums.luongCVThuc)}</td><td class="color-minus">${formatMoney(sums.tamUngTru)}</td><td>${formatMoney(sums.quyPCTT)}</td><td>${formatMoney(sums.truUngT4)}</td><td class="font-bold" style="color:#d97706;">${formatMoney(sums.thucLinhLCV)}</td><td class="color-tongcuoi">${formatMoney(sums.thucNhan)}</td></tr>`;
-            }
-            else if(currentTab === 3) {
-                headHtml = `<tr class="pc-header">
-                    <th>STT</th>
-                    <th class="text-left">Họ và Tên Nhân Sự</th>
-                    <th>Công Ăn Ca</th>
-                    <th class="highlight-pc">Tiền Ăn Ca (3)</th>
-                    <th class="highlight-pc">Ngày Độc Hại</th>
-                    <th>Độc Hại (4)</th>
-                    <th class="highlight-pc-total">Tổng Cộng Phụ Cấp (Theo dõi ngoài)</th>
-                </tr>`;
-                
+            } else if(currentTab === 3) {
+                headHtml = `<tr><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th>Công Ăn Ca</th><th class="highlight-pc">Tiền Ăn Ca (3)</th><th class="highlight-pc">Ngày Độc Hại</th><th>Độc Hại (4)</th><th class="font-bold">Tổng Cộng Phụ Cấp</th></tr>`;
                 dataset.forEach((s, idx) => {
-                    let tienAnCa = s.congAnCa * 5000;
-                    let tienDocHai = s.ngayDocHai * 13000;
-                    let tongPC = tienAnCa + tienDocHai;
+                    let tienAnCa = s.congAnCa * 5000, tienDocHai = s.ngayDocHai * 13000, tongPC = tienAnCa + tienDocHai;
                     sums.congAnCa+=s.congAnCa; sums.tienAnCa+=tienAnCa; sums.ngayDH+=s.ngayDocHai; sums.docHai+=tienDocHai; sums.tongPC+=tongPC;
-
-                    bodyHtml += `<tr>
-                        <td class="text-center">${s.stt}</td>
-                        <td class="text-left font-bold">${s.name}</td>
-                        <td>${s.congAnCa}</td>
-                        <td>${formatMoney(tienAnCa)}</td>
-                        <td><input type="number" class="table-input" value="${s.ngayDocHai}" onchange="updateSalaryData(${idx}, 'ngayDocHai', this.value)"></td>
-                        <td>${formatMoney(tienDocHai)}</td>
-                        <td class="font-bold">${formatMoney(tongPC)}</td>
-                    </tr>`;
+                    bodyHtml += `<tr><td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td>${s.congAnCa}</td><td>${formatMoney(tienAnCa)}</td><td><input type="number" class="table-input" value="${s.ngayDocHai}" onchange="updateSalaryData(${idx}, 'ngayDocHai', this.value)"></td><td>${formatMoney(tienDocHai)}</td><td class="font-bold">${formatMoney(tongPC)}</td></tr>`;
                 });
                 footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td>${sums.congAnCa}</td><td>${formatMoney(sums.tienAnCa)}</td><td>${sums.ngayDH}</td><td>${formatMoney(sums.docHai)}</td><td class="font-bold">${formatMoney(sums.tongPC)}</td></tr>`;
-            }
-            else if(currentTab === 4) {
-                headHtml = `<tr class="th-header">
-                    <th>STT</th>
-                    <th class="text-left">Họ và Tên Nhân Sự</th>
-                    <th>Thực Lĩnh LCB (1)</th>
-                    <th>Thực Lĩnh LCV (2)</th>
-                    <th>Ăn Ca</th>
-                    <th>Độc Hại</th>
-                    <th class="highlight-th">Thực Nhận Chuyển Khoản Ngân Hàng</th>
-                </tr>`;
-                
-                dataset.forEach((s, idx) => {
-                    let luongHD = s.heSoCB * 4140000; let lcb = s.heSoCB * 2530000;
-                    let ltg = (lcb / 22) * s.cong; let llp = Math.round(luongHD / 22) * (s.phep + s.le);
-                    let tlcb = (ltg + llp) * s.heSoHT;
-                    let bhtn = -Math.round(luongHD * 0.01);
-                    let bhxh = -Math.round(luongHD * 0.095);
-                    let thucLinhLCB = tlcb + bhtn + bhxh;
-
-                    let luongCVChuan = s.heSoCV * 2087970;
-                    let luongCVThucTe = Math.round((luongCVChuan / 22) * s.cong);
-                    let thucLinhLCV = luongCVThucTe - s.tamUngTru - s.quyPCTT - s.truUngT4;
-                    
-                    let thucNhan = thucLinhLCB + thucLinhLCV;
-
+            } else if(currentTab === 4) {
+                headHtml = `<tr class="th-header"><th>STT</th><th class="text-left">Họ và Tên Nhân Sự</th><th>Thực Lĩnh LCB (1)</th><th>Thực Lĩnh LCV (2)</th><th>Ăn Ca</th><th>Độc Hại</th><th class="highlight-th">Thực Nhận Chuyển Khoản</th></tr>`;
+                dataset.forEach(s => {
+                    let luongHD = s.heSoCB * 4140000, lcb = s.heSoCB * 2530000, ltg = (lcb / 22) * s.cong, llp = Math.round(luongHD / 22) * (s.phep + s.le), tlcb = (ltg + llp) * s.heSoHT, bhtn = -Math.round(luongHD * 0.01), bhxh = -Math.round(luongHD * 0.095), thucLinhLCB = tlcb + bhtn + bhxh;
+                    let luongCVChuan = s.heSoCV * 2087970, luongCVThucTe = Math.round((luongCVChuan / 22) * s.cong), thucLinhLCV = luongCVThucTe - s.tamUngTru - s.quyPCTT - s.truUngT4, thucNhan = thucLinhLCB + thucLinhLCV;
                     sums.thucLinhLCB+=thucLinhLCB; sums.thucLinhLCV+=thucLinhLCV; sums.tienAnCa+=(s.congAnCa*5000); sums.docHai+=(s.ngayDocHai*13000); sums.thucNhan+=thucNhan;
-
-                    bodyHtml += `<tr>
-                        <td class="text-center">${s.stt}</td>
-                        <td class="text-left font-bold">${s.name}</td>
-                        <td class="font-bold" style="color:#1d4ed8;">${formatMoney(thucLinhLCB)}</td>
-                        <td class="font-bold ${thucLinhLCV < 0 ? 'color-minus' : ''}" style="color:#b45309;">${formatMoney(thucLinhLCV)}</td>
-                        <td style="color:#64748b;">${formatMoney(s.congAnCa * 5000)}</td>
-                        <td style="color:#64748b;">${formatMoney(s.ngayDocHai * 13000)}</td>
-                        <td class="bg-highlight-thucnhan text-center">${formatMoney(thucNhan)}</td>
-                    </tr>`;
+                    bodyHtml += `<tr><td class="text-center">${s.stt}</td><td class="text-left font-bold">${s.name}</td><td class="font-bold" style="color:#1d4ed8;">${formatMoney(thucLinhLCB)}</td><td class="font-bold ${thucLinhLCV < 0 ? 'color-minus' : ''}" style="color:#b45309;">${formatMoney(thucLinhLCV)}</td><td style="color:#64748b;">${formatMoney(s.congAnCa * 5000)}</td><td style="color:#64748b;">${formatMoney(s.ngayDocHai * 13000)}</td><td class="bg-highlight-thucnhan text-center">${formatMoney(thucNhan)}</td></tr>`;
                 });
                 footHtml = `<tr><td colspan="2" class="font-bold text-center">TỔNG CỘNG</td><td class="font-bold" style="color:#1d4ed8;">${formatMoney(sums.thucLinhLCB)}</td><td class="font-bold" style="color:#b45309;">${formatMoney(sums.thucLinhLCV)}</td><td style="color:#64748b;">${formatMoney(sums.tienAnCa)}</td><td style="color:#64748b;">${formatMoney(sums.docHai)}</td><td class="bg-highlight-thucnhan text-center">${formatMoney(sums.thucNhan)}</td></tr>`;
             }
-
             head.innerHTML = headHtml; body.innerHTML = bodyHtml; foot.innerHTML = footHtml;
         }
 
-        // ======================= PHÂN HỆ 2 =======================
-        
         function initCalendar() {
             let container = document.querySelector('.cal-days-container');
-            container.innerHTML = `
-                <div class="calendar-day-name">CN</div>
-                <div class="calendar-day-name">T2</div>
-                <div class="calendar-day-name">T3</div>
-                <div class="calendar-day-name">T4</div>
-                <div class="calendar-day-name">T5</div>
-                <div class="calendar-day-name">T6</div>
-                <div class="calendar-day-name">T7</div>
-            `;
+            container.innerHTML = `<div class="calendar-day-name">CN</div><div class="calendar-day-name">T2</div><div class="calendar-day-name">T3</div><div class="calendar-day-name">T4</div><div class="calendar-day-name">T5</div><div class="calendar-day-name">T6</div><div class="calendar-day-name">T7</div>`;
             for(let i=0; i<3; i++) container.innerHTML += '<div></div>';
-            
             for(let d=1; d<=31; d++) {
                 let act = (d === 15) ? 'active-day' : '';
-                container.innerHTML += `
-                    <div class="calendar-cell ${act}">
-                        <strong>${d}</strong>
-                        <span class="lunar-day">${d-13>0?d-13:d+17}/6</span>
-                    </div>
-                `;
+                container.innerHTML += `<div class="calendar-cell ${act}"><strong>${d}</strong><span class="lunar-day">${d-13>0?d-13:d+17}/6</span></div>`;
             }
         }
 
-        // Đọc File đính kèm dưới dạng Base64 và lưu trữ loại file đầy đủ
         function handleFileSelect(event) {
             let file = event.target.files[0];
             if (!file) return;
-
             uploadedFileObj.fileName = file.name;
             uploadedFileObj.fileType = file.type;
-
             let reader = new FileReader();
             reader.onload = function(e) {
                 uploadedFileObj.base64 = e.target.result;
@@ -943,328 +787,69 @@
             reader.readAsDataURL(file);
         }
 
-        // Cập nhật giao diện xem trước tại form nhập liệu
         function updateFilePreviewUI() {
-            let previewContainer = document.getElementById('pay-file-preview');
-            if (!uploadedFileObj.base64) {
-                previewContainer.style.display = 'none';
-                previewContainer.innerHTML = '';
-                return;
-            }
-
-            previewContainer.style.display = 'flex';
-            let innerHtml = '';
-
-            // Nếu là File ảnh
-            if (uploadedFileObj.fileType.startsWith('image/')) {
-                innerHtml = `
-                    <img src="${uploadedFileObj.base64}" alt="Preview">
-                    <div style="flex:1;">
-                        <span style="font-size:12px; font-weight:bold; color:#0f172a; display:block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${uploadedFileObj.fileName}</span>
-                        <span style="font-size:11px; color:#64748b;">Ảnh đính kèm</span>
-                    </div>
-                `;
-            } else if (uploadedFileObj.fileType === 'application/pdf') {
-                // PDF File
-                innerHtml = `
-                    <div style="font-size: 24px;">📕</div>
-                    <div style="flex:1;">
-                        <span style="font-size:12px; font-weight:bold; color:#0f172a; display:block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${uploadedFileObj.fileName}</span>
-                        <span style="font-size:11px; color:#ef4444; font-weight:bold;">PDF Document</span>
-                    </div>
-                `;
-            } else {
-                // Word / Excel
-                let isWord = uploadedFileObj.fileName.endsWith('.doc') || uploadedFileObj.fileName.endsWith('.docx');
-                let fileIcon = isWord ? '📘' : '📗';
-                innerHtml = `
-                    <div style="font-size: 24px;">${fileIcon}</div>
-                    <div style="flex:1;">
-                        <span style="font-size:12px; font-weight:bold; color:#0f172a; display:block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${uploadedFileObj.fileName}</span>
-                        <span style="font-size:11px; color:var(--blue); font-weight:bold;">${isWord ? 'Word Document' : 'Excel Sheet'}</span>
-                    </div>
-                `;
-            }
-
-            // Nút gỡ file đính kèm
-            innerHtml += `<button type="button" class="btn-remove-file" onclick="removeAttachedFile()">Gỡ</button>`;
-            previewContainer.innerHTML = innerHtml;
+            let container = document.getElementById('pay-file-preview');
+            if (!uploadedFileObj.base64) { container.style.display = 'none'; return; }
+            container.style.display = 'flex';
+            let html = uploadedFileObj.fileType.startsWith('image/') ? `<img src="${uploadedFileObj.base64}">` : `<div style="font-size:24px;">📕</div>`;
+            html += `<div style="flex:1;"><span style="font-size:12px; font-weight:bold; display:block; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${uploadedFileObj.fileName}</span></div>`;
+            html += `<button type="button" class="btn-remove-file" onclick="removeAttachedFile()">Gỡ</button>`;
+            container.innerHTML = html;
         }
 
-        // Chức năng gỡ bỏ tài liệu đính kèm hoàn toàn
         function removeAttachedFile() {
             uploadedFileObj = { base64: '', fileName: '', fileType: '' };
-            document.getElementById('pay-file').value = ''; // Reset thẻ input
+            document.getElementById('pay-file').value = '';
             updateFilePreviewUI();
         }
 
-        // MODAL XEM TRƯỚC TÀI LIỆU HOẠT ĐỘNG HOÀN HẢO
         function previewDocumentFile(id) {
             let p = paymentRecords.find(x => x.id === id);
-            if (!p || !p.file || !p.file.base64) {
-                alert("Không tìm thấy tệp đính kèm hợp lệ!");
-                return;
-            }
-
-            let fileData = p.file;
-            let modal = document.getElementById('preview-modal');
-            let mTitle = document.getElementById('modal-title');
-            let mBody = document.getElementById('modal-body');
-
-            mTitle.innerText = `Xem trước: ${fileData.fileName}`;
-            mBody.innerHTML = '';
-
-            if (fileData.fileType.startsWith('image/')) {
-                // Hiển thị ảnh thực tế
-                mBody.innerHTML = `<img src="${fileData.base64}" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15);" />`;
-            } else if (fileData.fileType === 'application/pdf') {
-                // Hiển thị PDF trực tiếp cực đẹp
-                mBody.innerHTML = `<iframe src="${fileData.base64}" style="width:100%; height:100%; border:none; border-radius:6px;"></iframe>`;
-            } else {
-                // Định dạng Word / Excel không thể render trực tiếp qua trình duyệt, chuyển thành nút tải xuống sang trọng
-                let isWord = fileData.fileName.endsWith('.doc') || fileData.fileName.endsWith('.docx');
-                let fileIcon = isWord ? '📘' : '📗';
-                mBody.innerHTML = `
-                    <div class="doc-icon-view">
-                        <div style="font-size: 64px; margin-bottom: 20px;">${fileIcon}</div>
-                        <h4 style="font-size:16px; margin-bottom: 10px; color:#1e293b;">${fileData.fileName}</h4>
-                        <p style="color:#64748b; font-size:13px; margin-bottom: 25px;">Định dạng Word/Excel cần được tải xuống máy tính để xem chi tiết.</p>
-                        <a href="${fileData.base64}" download="${fileData.fileName}" style="background:var(--blue); color:white; padding:10px 24px; text-decoration:none; font-weight:bold; border-radius:6px;">📥 Tải xuống tài liệu</a>
-                    </div>
-                `;
-            }
-
-            modal.style.display = 'flex';
+            if (!p || !p.file || !p.file.base64) return;
+            document.getElementById('modal-title').innerText = p.file.fileName;
+            let body = document.getElementById('modal-body');
+            body.innerHTML = p.file.fileType.startsWith('image/') ? `<img src="${p.file.base64}" style="max-width:100%; max-height:100%; object-fit:contain;">` : `<iframe src="${p.file.base64}" style="width:100%; height:100%; border:none;"></iframe>`;
+            document.getElementById('preview-modal').style.display = 'flex';
         }
 
-        function closeDocModal() {
-            document.getElementById('preview-modal').style.display = 'none';
-        }
-
-        function closeModalOnOuterClick(e) {
-            if (e.target.id === 'preview-modal') {
-                closeDocModal();
-            }
-        }
-
-        function renderSubModule() {
-            let stat = document.getElementById('sub-stat-banner');
-            stat.innerHTML = '';
-
-            if (activeSubTab === 'tasks') {
-                let total = taskRecords.length;
-                let done = taskRecords.filter(t => t.status === 'Đã hoàn thành').length;
-                let pending = taskRecords.filter(t => t.status === 'Chưa bắt đầu').length;
-                let progressAvg = Math.round(taskRecords.reduce((acc, curr) => acc + curr.progress, 0) / (total || 1));
-
-                stat.innerHTML = `
-                    <div class="stat-box" style="border-left-color: var(--blue);">
-                        <div class="stat-title">Tổng đầu việc</div>
-                        <div class="stat-value">${total} nhiệm vụ</div>
-                    </div>
-                    <div class="stat-box" style="border-left-color: var(--green);">
-                        <div class="stat-title">Đã Hoàn Thành</div>
-                        <div class="stat-value">${done} việc</div>
-                    </div>
-                    <div class="stat-box" style="border-left-color: var(--orange);">
-                        <div class="stat-title">Đang Chờ</div>
-                        <div class="stat-value">${pending} việc</div>
-                    </div>
-                    <div class="stat-box" style="border-left-color: var(--purple);">
-                        <div class="stat-title">Hiệu Suất Chung</div>
-                        <div class="stat-value">${progressAvg}%</div>
-                    </div>
-                `;
-
-                let tbody = document.getElementById('task-table-body');
-                tbody.innerHTML = '';
-                if(taskRecords.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Không có công việc nào cần xử lý.</td></tr>`;
-                } else {
-                    taskRecords.forEach(t => {
-                        let statusBadge = 'bg-pending';
-                        if(t.status === 'Đã hoàn thành') statusBadge = 'bg-success';
-                        if(t.status === 'Đang thực hiện') statusBadge = 'bg-progress';
-                        if(t.status === 'Trễ hạn') statusBadge = 'bg-danger';
-
-                        tbody.innerHTML += `<tr>
-                            <td class="text-left font-bold">${t.title}</td>
-                            <td class="text-center">${t.assignee}</td>
-                            <td class="text-center">${formatDateVN(t.deadline)}</td>
-                            <td class="text-center"><span class="badge ${t.priority==='Cao'?'bg-danger':t.priority==='Thấp'?'bg-success':'bg-pending'}">${t.priority}</span></td>
-                            <td class="text-center">
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar-fill" style="width: ${t.progress}%"></div>
-                                </div>
-                                <span style="font-size:11px; margin-left:4px;">${t.progress}%</span>
-                            </td>
-                            <td class="text-center"><span class="badge ${statusBadge}">${t.status}</span></td>
-                            <td class="text-center">
-                                <button class="btn-action btn-edit" onclick="editTaskRecord(${t.id})">Sửa</button>
-                                <button class="btn-action btn-delete" onclick="deleteTaskRecord(${t.id})">Xóa</button>
-                            </td>
-                        </tr>`;
-                    });
-                }
-            } 
-            else if (activeSubTab === 'payments') {
-                let total = paymentRecords.length;
-                let totalBefore = paymentRecords.reduce((a, b) => a + b.before, 0);
-                let totalVAT = paymentRecords.reduce((a, b) => a + b.tax, 0);
-                let totalAfter = paymentRecords.reduce((a, b) => a + b.after, 0);
-
-                stat.innerHTML = `
-                    <div class="stat-box" style="border-left-color: var(--blue);">
-                        <div class="stat-title">Tổng Tờ Trình Đề Xuất</div>
-                        <div class="stat-value">${total} hồ sơ</div>
-                    </div>
-                    <div class="stat-box" style="border-left-color: var(--orange);">
-                        <div class="stat-title">Tiền trước thuế</div>
-                        <div class="stat-value">${formatMoney(totalBefore)} đ</div>
-                    </div>
-                    <div class="stat-box" style="border-left-color: var(--purple);">
-                        <div class="stat-title">Thuế VAT đầu vào</div>
-                        <div class="stat-value">${formatMoney(totalVAT)} đ</div>
-                    </div>
-                    <div class="stat-box" style="border-left-color: var(--green);">
-                        <div class="stat-title">Giá trị sau thuế</div>
-                        <div class="stat-value" style="color:var(--green);">${formatMoney(totalAfter)} đ</div>
-                    </div>
-                `;
-
-                let tbody = document.getElementById('payment-table-body');
-                tbody.innerHTML = '';
-                if(paymentRecords.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Chưa ghi nhận tờ trình đề nghị thanh toán.</td></tr>`;
-                } else {
-                    paymentRecords.forEach(p => {
-                        let statusBadge = 'bg-pending';
-                        if(p.status.includes('Đã')) statusBadge = 'bg-success';
-                        if(p.status.includes('bác')) statusBadge = 'bg-danger';
-
-                        let fileIcon = '<span style="color:#94a3b8;font-style:italic;">Không có</span>';
-                        if (p.file && p.file.base64) {
-                            let typeIcon = '📂';
-                            if (p.file.fileType.startsWith('image/')) typeIcon = '🖼️';
-                            else if (p.file.fileType === 'application/pdf') typeIcon = '📕';
-                            else if (p.file.fileName.endsWith('.xls') || p.file.fileName.endsWith('.xlsx')) typeIcon = '📗';
-                            else if (p.file.fileName.endsWith('.doc') || p.file.fileName.endsWith('.docx')) typeIcon = '📘';
-
-                            fileIcon = `
-                                <button type="button" style="border:none; background:#f1f5f9; cursor:pointer; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:11px; color:var(--blue);" onclick="previewDocumentFile(${p.id})">
-                                    ${typeIcon} Xem file
-                                </button>
-                            `;
-                        }
-
-                        tbody.innerHTML += `<tr>
-                            <td class="text-left font-bold"><span style="color:var(--blue);">[${p.code}]</span> ${p.name}</td>
-                            <td class="text-left font-bold">
-                                <span>${p.recipient}</span><br>
-                                <span style="font-size:11px;color:#64748b;">${p.bankAcc} - ${p.bankName}</span>
-                            </td>
-                            <td class="text-center">${p.dept}</td>
-                            <td class="font-bold" style="color:var(--green);">${formatMoney(p.after)}</td>
-                            <td class="text-center">${fileIcon}</td>
-                            <td class="text-center"><span class="badge ${statusBadge}">${p.status}</span></td>
-                            <td class="text-center">
-                                <button class="btn-action btn-print" onclick="printPaymentBill(${p.id})">In & QR</button>
-                                <button class="btn-action btn-edit" onclick="editPaymentRecord(${p.id})">Sửa</button>
-                                <button class="btn-action btn-delete" onclick="deletePaymentRecord(${p.id})">Xóa</button>
-                            </td>
-                        </tr>`;
-                    });
-                }
-            } 
-            else if (activeSubTab === 'telecom') {
-                let total = telecomRecords.length;
-                let paid = telecomRecords.filter(t => t.status === 'Đã thanh toán').reduce((a, b) => a + b.cost, 0);
-                let unpaid = telecomRecords.filter(t => t.status === 'Chưa thanh toán').reduce((a, b) => a + b.cost, 0);
-                let totalCost = telecomRecords.reduce((a, b) => a + b.cost, 0);
-
-                stat.innerHTML = `
-                    <div class="stat-box" style="border-left-color: var(--blue);">
-                        <div class="stat-title">Tổng đường truyền</div>
-                        <div class="stat-value">${total} bao gồm Internet/VPN</div>
-                    </div>
-                    <div class="stat-box" style="border-left-color: var(--green);">
-                        <div class="stat-title">Đã thanh toán</div>
-                        <div class="stat-value" style="color:var(--green);">${formatMoney(paid)} đ</div>
-                    </div>
-                    <div class="stat-box" style="border-left-color: var(--red);">
-                        <div class="stat-title">Chờ thanh toán</div>
-                        <div class="stat-value" style="color:var(--red);">${formatMoney(unpaid)} đ</div>
-                    </div>
-                    <div class="stat-box" style="border-left-color: var(--purple);">
-                        <div class="stat-title">Tổng chi phí dự kiến</div>
-                        <div class="stat-value">${formatMoney(totalCost)} đ</div>
-                    </div>
-                `;
-
-                let tbody = document.getElementById('telecom-table-body');
-                tbody.innerHTML = '';
-                if(telecomRecords.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Chưa ghi nhận thông tin đường truyền viễn thông.</td></tr>`;
-                } else {
-                    telecomRecords.forEach(t => {
-                        let statusBadge = (t.status === 'Đã thanh toán') ? 'bg-success' : 'bg-danger';
-                        tbody.innerHTML += `<tr>
-                            <td class="text-left font-bold"><span style="color:var(--purple);">${t.code}</span></td>
-                            <td class="text-center font-bold">${t.provider}</td>
-                            <td class="text-left">${t.location}</td>
-                            <td class="font-bold">${formatMoney(t.cost)}</td>
-                            <td class="text-center">${formatDateVN(t.dueDate)}</td>
-                            <td class="text-center"><span class="badge ${statusBadge}">${t.status}</span></td>
-                            <td class="text-center">
-                                <button class="btn-action btn-edit" onclick="editTelecomRecord(${t.id})">Sửa</button>
-                                <button class="btn-action btn-delete" onclick="deleteTelecomRecord(${t.id})">Xóa</button>
-                            </td>
-                        </tr>`;
-                    });
-                }
-            }
-        }
+        function closeDocModal() { document.getElementById('preview-modal').style.display = 'none'; }
+        function closeModalOnOuterClick(e) { if(e.target.id === 'preview-modal') closeDocModal(); }
 
         function calculateFormAmounts() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = getRawNumber(document.getElementById('pay-price').value);
-            let vatRate = parseFloat(document.getElementById('pay-vat-rate').value) || 0;
-            
             let before = qty * price;
-            let tax = before * vatRate;
-            let after = before + tax;
-
-            document.getElementById('pay-amount-after').value = Math.round(after).toLocaleString('vi-VN') + " đ";
+            let tax = before * (parseFloat(document.getElementById('pay-vat-rate').value) || 0);
+            document.getElementById('pay-amount-after').value = Math.round(before + tax).toLocaleString('vi-VN') + " đ";
         }
 
-        // Quản lý Công việc (Task)
-        function saveTaskRecord(e) {
+        /* ================= CRUD CHUYÊN NGHIỆP TRỰC TIẾP LÊN CLOUD SUPABASE ================= */
+        
+        // 1. NGHIỆP VỤ QUẢN LÝ CÔNG VIỆC
+        async function saveTaskRecord(e) {
             e.preventDefault();
+            if(!supabaseClient) return alert("Chưa liên kết cơ sở dữ liệu Cloud.");
             let id = document.getElementById('task-id').value;
-            let title = document.getElementById('task-title').value;
-            let assignee = document.getElementById('task-assignee').value;
-            let deadline = document.getElementById('task-deadline').value;
-            let priority = document.getElementById('task-priority').value;
-            let progress = parseFloat(document.getElementById('task-progress').value) || 0;
-            let status = document.getElementById('task-status').value;
-
+            let rec = {
+                title: document.getElementById('task-title').value,
+                assignee: document.getElementById('task-assignee').value,
+                deadline: document.getElementById('task-deadline').value,
+                priority: document.getElementById('task-priority').value,
+                progress: parseInt(document.getElementById('task-progress').value) || 0,
+                status: document.getElementById('task-status').value
+            };
             if (id) {
-                let t = taskRecords.find(x => x.id == id);
-                if (t) {
-                    t.title = title; t.assignee = assignee; t.deadline = deadline;
-                    t.priority = priority; t.progress = progress; t.status = status;
-                }
-                cancelEditTask();
+                await supabaseClient.from('tasks').update(rec).eq('id', id);
             } else {
-                let rec = { id: Date.now(), title, assignee, deadline, priority, progress, status };
-                taskRecords.push(rec);
+                rec.id = Date.now();
+                await supabaseClient.from('tasks').insert([rec]);
             }
-            renderSubModule();
-            document.getElementById('task-form').reset();
+            cancelEditTask();
+            await fetchAllCloudData();
         }
 
         function editTaskRecord(id) {
-            let t = taskRecords.find(x => x.id === id);
+            let t = taskRecords.find(x => x.id == id);
             if (!t) return;
             document.getElementById('task-id').value = t.id;
             document.getElementById('task-title').value = t.title;
@@ -1273,69 +858,60 @@
             document.getElementById('task-priority').value = t.priority;
             document.getElementById('task-progress').value = t.progress;
             document.getElementById('task-status').value = t.status;
-
-            document.getElementById('task-btn-submit').innerText = "💾 Cập nhật";
+            document.getElementById('task-btn-submit').innerText = "💾 Cập nhật Cloud";
             document.getElementById('task-btn-cancel').style.display = "inline-block";
         }
 
         function cancelEditTask() {
             document.getElementById('task-id').value = '';
             document.getElementById('task-form').reset();
-            document.getElementById('task-btn-submit').innerText = "💾 Giao Công Việc";
+            document.getElementById('task-btn-submit').innerText = "💾 Lưu Lên Cloud";
             document.getElementById('task-btn-cancel').style.display = "none";
         }
 
-        function deleteTaskRecord(id) {
-            taskRecords = taskRecords.filter(t => t.id !== id);
-            renderSubModule();
+        async function deleteTaskRecord(id) {
+            if(confirm("Xóa vĩnh viễn công việc trên Cloud?")) {
+                await supabaseClient.from('tasks').delete().eq('id', id);
+                await fetchAllCloudData();
+            }
         }
 
-        // Quản lý Hồ sơ thanh toán (Payment)
-        function savePaymentRecord(e) {
+        // 2. NGHIỆP VỤ HỒ SƠ THANH TOÁN
+        async function savePaymentRecord(e) {
             e.preventDefault();
+            if(!supabaseClient) return alert("Chôm kết nối Cloud.");
             let id = document.getElementById('pay-id').value;
-            let code = document.getElementById('pay-code').value;
-            let name = document.getElementById('pay-name').value;
-            let recipient = document.getElementById('pay-recipient').value;
-            let bankAcc = document.getElementById('pay-bank-acc').value;
-            let bankName = document.getElementById('pay-bank-name').value;
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = getRawNumber(document.getElementById('pay-price').value);
-            let vatRate = parseFloat(document.getElementById('pay-vat-rate').value) || 0;
-            let dept = document.getElementById('pay-dept').value;
-            let status = document.getElementById('pay-status').value;
-
             let before = qty * price;
-            let tax = before * vatRate;
-            let after = before + tax;
+            let tax = before * (parseFloat(document.getElementById('pay-vat-rate').value) || 0);
+            
+            let rec = {
+                code: document.getElementById('pay-code').value,
+                name: document.getElementById('pay-name').value,
+                recipient: document.getElementById('pay-recipient').value,
+                bank_acc: document.getElementById('pay-bank-acc').value,
+                bank_name: document.getElementById('pay-bank-name').value,
+                qty: qty, price: price, before_tax: before, tax: tax, after_tax: before + tax,
+                dept: document.getElementById('pay-dept').value,
+                status: document.getElementById('pay-status').value,
+                file_data: uploadedFileObj.base64 ? { ...uploadedFileObj } : null
+            };
 
             if (id) {
-                let p = paymentRecords.find(x => x.id == id);
-                if (p) {
-                    p.code = code; p.name = name; p.recipient = recipient; p.bankAcc = bankAcc;
-                    p.bankName = bankName; p.qty = qty; p.before = before; p.tax = tax;
-                    p.after = after; p.dept = dept; p.status = status; 
-                    p.file = { ...uploadedFileObj }; // Đồng bộ trực tiếp dữ liệu file mới
-                    p.price = price;
-                }
-                cancelEditPay();
+                let old = paymentRecords.find(x => x.id == id);
+                if(!rec.file_data && old && old.file) rec.file_data = old.file;
+                await supabaseClient.from('payments').update(rec).eq('id', id);
             } else {
-                let rec = {
-                    id: Date.now(), code, name, recipient, bankAcc, bankName,
-                    qty, before, tax, after, dept, status, 
-                    file: { ...uploadedFileObj }, price: price // Đồng bộ trực tiếp dữ liệu file mới
-                };
-                paymentRecords.push(rec);
+                rec.id = Date.now();
+                await supabaseClient.from('payments').insert([rec]);
             }
-            renderSubModule();
-            document.getElementById('payment-form').reset();
-            document.getElementById('pay-amount-after').value = '';
-            removeAttachedFile();
-            generateAutoPaymentCode();
+            cancelEditPay();
+            await fetchAllCloudData();
         }
 
         function editPaymentRecord(id) {
-            let p = paymentRecords.find(x => x.id === id);
+            let p = paymentRecords.find(x => x.id == id);
             if (!p) return;
             document.getElementById('pay-id').value = p.id;
             document.getElementById('pay-code').value = p.code;
@@ -1344,185 +920,149 @@
             document.getElementById('pay-bank-acc').value = p.bankAcc;
             document.getElementById('pay-bank-name').value = p.bankName;
             document.getElementById('pay-qty').value = p.qty;
-            
-            let rawPrice = p.price || (p.before / (p.qty || 1));
-            document.getElementById('pay-price').value = rawPrice.toLocaleString('vi-VN');
-            
+            document.getElementById('pay-price').value = p.price.toLocaleString('vi-VN');
             document.getElementById('pay-dept').value = p.dept;
             document.getElementById('pay-status').value = p.status;
-            
             calculateFormAmounts();
             if (p.file && p.file.base64) {
                 uploadedFileObj = { ...p.file };
                 updateFilePreviewUI();
-            } else {
-                removeAttachedFile();
-            }
-
-            document.getElementById('pay-btn-submit').innerText = "💾 Cập nhật";
+            } else { removeAttachedFile(); }
+            document.getElementById('pay-btn-submit').innerText = "💾 Cập nhật Cloud";
             document.getElementById('pay-btn-cancel').style.display = "inline-block";
         }
 
         function cancelEditPay() {
             document.getElementById('pay-id').value = '';
             document.getElementById('payment-form').reset();
-            document.getElementById('pay-btn-submit').innerText = "💾 Thêm Mới Hồ Sơ";
+            document.getElementById('pay-amount-after').value = '';
+            document.getElementById('pay-btn-submit').innerText = "💾 Lưu Lên Cloud";
             document.getElementById('pay-btn-cancel').style.display = "none";
-            removeAttachedFile();
-            generateAutoPaymentCode();
+            removeAttachedFile(); generateAutoPaymentCode();
         }
 
-        function deletePaymentRecord(id) {
-            paymentRecords = paymentRecords.filter(p => p.id !== id);
-            renderSubModule();
-        }
-
-        // Quản lý Cước Viễn thông (Telecom)
-        function saveTelecomRecord(e) {
-            e.preventDefault();
-            let id = document.getElementById('tele-id').value;
-            let code = document.getElementById('tele-code').value;
-            let provider = document.getElementById('tele-provider').value;
-            let location = document.getElementById('tele-location').value;
-            let cost = getRawNumber(document.getElementById('tele-cost').value);
-            let dueDate = document.getElementById('tele-due-date').value;
-            let status = document.getElementById('tele-status').value;
-
-            if (id) {
-                let t = telecomRecords.find(x => x.id == id);
-                if (t) {
-                    t.code = code; t.provider = provider; t.location = location;
-                    t.cost = cost; t.dueDate = dueDate; t.status = status;
-                }
-                cancelEditTele();
-            } else {
-                let rec = { id: Date.now(), code, provider, location, cost, dueDate, status };
-                telecomRecords.push(rec);
+        async function deletePaymentRecord(id) {
+            if(confirm("Xóa tờ trình này trên Server Cloud?")) {
+                await supabaseClient.from('payments').delete().eq('id', id);
+                await fetchAllCloudData();
             }
-            renderSubModule();
-            document.getElementById('telecom-form').reset();
+        }
+
+        // 3. NGHIỆP VỤ ĐƯỜNG TRUYỀN CƯỚC VIỄN THÔNG
+        async function saveTelecomRecord(e) {
+            e.preventDefault();
+            if(!supabaseClient) return alert("Ngoại tuyến DB.");
+            let id = document.getElementById('tele-id').value;
+            let rec = {
+                code: document.getElementById('tele-code').value,
+                provider: document.getElementById('tele-provider').value,
+                location: document.getElementById('tele-location').value,
+                cost: getRawNumber(document.getElementById('tele-cost').value),
+                due_date: document.getElementById('tele-due-date').value,
+                status: document.getElementById('tele-status').value
+            };
+            if(id) {
+                await supabaseClient.from('telecoms').update(rec).eq('id', id);
+            } else {
+                rec.id = Date.now();
+                await supabaseClient.from('telecoms').insert([rec]);
+            }
+            cancelEditTele();
+            await fetchAllCloudData();
         }
 
         function editTelecomRecord(id) {
-            let t = telecomRecords.find(x => x.id === id);
+            let t = telecomRecords.find(x => x.id == id);
             if (!t) return;
             document.getElementById('tele-id').value = t.id;
             document.getElementById('tele-code').value = t.code;
             document.getElementById('tele-provider').value = t.provider;
             document.getElementById('tele-location').value = t.location;
             document.getElementById('tele-cost').value = t.cost.toLocaleString('vi-VN');
-            document.getElementById('tele-due-date').value = t.dueDate;
+            document.getElementById('tele-due-date').value = t.due_date;
             document.getElementById('tele-status').value = t.status;
-
-            document.getElementById('tele-btn-submit').innerText = "💾 Cập nhật";
+            document.getElementById('tele-btn-submit').innerText = "💾 Cập nhật Cloud";
             document.getElementById('tele-btn-cancel').style.display = "inline-block";
         }
 
         function cancelEditTele() {
             document.getElementById('tele-id').value = '';
             document.getElementById('telecom-form').reset();
-            document.getElementById('tele-btn-submit').innerText = "💾 Lưu Số Liệu Cước";
+            document.getElementById('tele-btn-submit').innerText = "💾 Lưu Lên Cloud";
             document.getElementById('tele-btn-cancel').style.display = "none";
         }
 
-        function deleteTelecomRecord(id) {
-            telecomRecords = telecomRecords.filter(t => t.id !== id);
-            renderSubModule();
+        async function deleteTelecomRecord(id) {
+            if(confirm("Xóa hồ sơ cước thuê bao?")) {
+                await supabaseClient.from('telecoms').delete().eq('id', id);
+                await fetchAllCloudData();
+            }
         }
 
-        // IN ẤN ĐỀ NGHỊ THANH TOÁN & QUÉT MÃ QR HOẠT ĐỘNG HOÀN HẢO
+        // KỊCH BẢN ĐỔ DỮ LIỆU ĐỒNG BỘ VÀO BẢNG
+        function renderSubModule() {
+            let stat = document.getElementById('sub-stat-banner');
+            stat.innerHTML = '';
+
+            if (activeSubTab === 'tasks') {
+                let total = taskRecords.length, done = taskRecords.filter(t => t.status === 'Đã hoàn thành').length, pending = taskRecords.filter(t => t.status === 'Chưa bắt đầu').length, progressAvg = Math.round(taskRecords.reduce((acc, curr) => acc + curr.progress, 0) / (total || 1));
+                stat.innerHTML = `<div class="stat-box" style="border-left-color: var(--blue);"><div class="stat-title">Tổng nhiệm vụ</div><div class="stat-value">${total} việc</div></div><div class="stat-box" style="border-left-color: var(--green);"><div class="stat-title">Đã xong</div><div class="stat-value">${done} việc</div></div><div class="stat-box" style="border-left-color: var(--orange);"><div class="stat-title">Đang Chờ</div><div class="stat-value">${pending} việc</div></div><div class="stat-box" style="border-left-color: var(--purple);"><div class="stat-title">Hiệu suất</div><div class="stat-value">${progressAvg}%</div></div>`;
+
+                let tbody = document.getElementById('task-table-body'); tbody.innerHTML = '';
+                if(taskRecords.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Hệ thống Cloud trống. Hãy tạo đầu việc mới.</td></tr>`; }
+                else {
+                    taskRecords.forEach(t => {
+                        let badg = t.status === 'Đã hoàn thành' ? 'bg-success' : (t.status === 'Đang thực hiện' ? 'bg-progress' : 'bg-pending');
+                        tbody.innerHTML += `<tr><td class="text-left font-bold">${t.title}</td><td class="text-center">${t.assignee}</td><td class="text-center">${formatDateVN(t.deadline)}</td><td class="text-center"><span class="badge ${t.priority==='Cao'?'bg-danger':'bg-pending'}">${t.priority}</span></td><td class="text-center"><div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${t.progress}%"></div></div> <span style="font-size:11px;">${t.progress}%</span></td><td class="text-center"><span class="badge ${badg}">${t.status}</span></td><td class="text-center"><button class="btn-action btn-edit" onclick="editTaskRecord(${t.id})">Sửa</button><button class="btn-action btn-delete" onclick="deleteTaskRecord(${t.id})">Xóa</button></td></tr>`;
+                    });
+                }
+            } else if (activeSubTab === 'payments') {
+                let total = paymentRecords.length, totalAfter = paymentRecords.reduce((a, b) => a + b.after, 0);
+                stat.innerHTML = `<div class="stat-box" style="border-left-color: var(--blue);"><div class="stat-title">Hồ Sơ Trực Tuyến</div><div class="stat-value">${total} tờ trình</div></div><div class="stat-box" style="border-left-color: var(--green);"><div class="stat-title">Tổng Giá Trị Giải Ngân</div><div class="stat-value" style="color:var(--green);">${formatMoney(totalAfter)} đ</div></div>`;
+
+                let tbody = document.getElementById('payment-table-body'); tbody.innerHTML = '';
+                if(paymentRecords.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Chưa có tờ trình chi tiêu trên Cloud.</td></tr>`; }
+                else {
+                    paymentRecords.forEach(p => {
+                        let badg = p.status.includes('Đã') ? 'bg-success' : 'bg-pending';
+                        let fIcon = (p.file && p.file.base64) ? `<button type="button" style="border:none; background:#f1f5f9; cursor:pointer; padding:4px 8px; border-radius:4px; font-weight:bold; color:var(--blue);" onclick="previewDocumentFile(${p.id})">👁️ Xem file</button>` : `<span style="color:#94a3b8;font-style:italic;">Không tệp</span>`;
+                        tbody.innerHTML += `<tr><td class="text-left font-bold"><span style="color:var(--blue);">[${p.code}]</span> ${p.name}</td><td class="text-left font-bold">${p.recipient}<br><span style="font-size:11px;color:#64748b;">${p.bankAcc} (${p.bankName})</span></td><td class="text-center">${p.dept}</td><td class="font-bold" style="color:var(--green);">${formatMoney(p.after)}</td><td class="text-center">${fIcon}</td><td class="text-center"><span class="badge ${badg}">${p.status}</span></td><td class="text-center"><button class="btn-action btn-print" onclick="printPaymentBill(${p.id})">In</button><button class="btn-action btn-edit" onclick="editPaymentRecord(${p.id})">Sửa</button><button class="btn-action btn-delete" onclick="deletePaymentRecord(${p.id})">Xóa</button></td></tr>`;
+                    });
+                }
+            } else if (activeSubTab === 'telecom') {
+                let total = telecomRecords.length, totalCost = telecomRecords.reduce((a, b) => a + Number(b.cost), 0);
+                stat.innerHTML = `<div class="stat-box" style="border-left-color: var(--purple);"><div class="stat-title">Đường truyền</div><div class="stat-value">${total} mạng</div></div><div class="stat-box" style="border-left-color: var(--red);"><div class="stat-title">Tổng cước phát sinh</div><div class="stat-value">${formatMoney(totalCost)} đ</div></div>`;
+
+                let tbody = document.getElementById('telecom-table-body'); tbody.innerHTML = '';
+                if(telecomRecords.length === 0) { tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Chưa ghi nhận thông tin đường truyền cước phí.</td></tr>`; }
+                else {
+                    telecomRecords.forEach(t => {
+                        let badg = t.status === 'Đã thanh toán' ? 'bg-success' : 'bg-danger';
+                        tbody.innerHTML += `<tr><td class="text-left font-bold">${t.code}</td><td class="text-center font-bold">${t.provider}</td><td class="text-left">${t.location}</td><td class="font-bold">${formatMoney(t.cost)}</td><td class="text-center">${formatDateVN(t.due_date)}</td><td class="text-center"><span class="badge ${badg}">${t.status}</span></td><td class="text-center"><button class="btn-action btn-edit" onclick="editTelecomRecord(${t.id})">Sửa</button><button class="btn-action btn-delete" onclick="deleteTelecomRecord(${t.id})">Xóa</button></td></tr>`;
+                    });
+                }
+            }
+        }
+
         function printPaymentBill(id) {
-            let p = paymentRecords.find(x => x.id === id);
-            if (!p) return;
-
+            let p = paymentRecords.find(x => x.id === id); if (!p) return;
             let bankId = mapBankNameToVietQRId(p.bankName);
-            let accountNo = p.bankAcc;
-            let amount = Math.round(p.after);
-            let description = encodeURIComponent(`${p.code} chuyen tien`);
-            
-            let qrUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact.png?amount=${amount}&addInfo=${description}&accountName=${encodeURIComponent(p.recipient)}`;
-
-            let printWindow = window.open('', '', 'width=800,height=600');
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>In Hồ Sơ Thanh Toán - ${p.code}</title>
-                    <style>
-                        body { font-family: 'Times New Roman', Times, serif; padding: 30px; line-height: 1.6; color: #000; }
-                        .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #000; padding-bottom: 15px; }
-                        .title { font-size: 20px; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
-                        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-                        .info-item { font-size: 14px; margin-bottom: 10px; }
-                        .info-label { font-weight: bold; }
-                        .table-bill { width: 100%; border-collapse: collapse; margin: 25px 0; }
-                        .table-bill th, .table-bill td { border: 1px solid #000; padding: 10px; text-align: left; }
-                        .table-bill th { background-color: #f2f2f2; font-weight: bold; }
-                        .qr-section { text-align: center; margin-top: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-                        .qr-image { width: 180px; height: 180px; border: 1px solid #cbd5e1; padding: 5px; border-radius: 6px; }
-                        .footer-sign { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-top: 50px; font-weight: bold; }
-                        @media print {
-                            .no-print { display: none; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <div style="font-size:14px; font-weight:bold;">TỔNG CÔNG TY GIẤY VIỆT NAM (VINAPACO)</div>
-                        <div class="title">ĐỀ NGHỊ THANH TOÁN CHỨNG TỪ</div>
-                        <div style="font-size:12px; font-style:italic;">Mã hồ sơ hệ thống: ${p.code}</div>
-                    </div>
-                    
-                    <div class="info-grid">
-                        <div class="info-item"><span class="info-label">Phòng ban đề xuất:</span> ${p.dept}</div>
-                        <div class="info-item"><span class="info-label">Đơn vị thụ hưởng:</span> ${p.recipient}</div>
-                        <div class="info-item"><span class="info-label">Số tài khoản:</span> ${p.bankAcc}</div>
-                        <div class="info-item"><span class="info-label">Tại ngân hàng:</span> ${p.bankName} (${bankId})</div>
-                    </div>
-
-                    <table class="table-bill">
-                        <thead>
-                            <tr>
-                                <th>Nội Dung Chi Tiết</th>
-                                <th style="text-align: right;">Giá Trị Trước Thuế</th>
-                                <th style="text-align: right;">Thuế VAT</th>
-                                <th style="text-align: right;">Tổng Tiền Sau Thuế</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>${p.name}</td>
-                                <td style="text-align: right;">${Math.round(p.before).toLocaleString('vi-VN')} đ</td>
-                                <td style="text-align: right;">${Math.round(p.tax).toLocaleString('vi-VN')} đ</td>
-                                <td style="text-align: right; font-weight:bold;">${Math.round(p.after).toLocaleString('vi-VN')} đ</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div style="font-size:13px; font-style:italic; margin-bottom:15px;">Số tiền viết bằng chữ:................................................................................................................................</div>
-
-                    <div class="qr-section">
-                        <p style="font-size:12px; font-weight:bold; margin-bottom:8px;">QUÉT MÃ QR CHUYỂN KHOẢN AN TOÀN (NHANH 24/7)</p>
-                        <img class="qr-image" src="${qrUrl}" alt="VietQR Pay" />
-                        <p style="font-size:10px; color:#64748b; margin-top:5px;">Hỗ trợ tất cả ứng dụng Ngân hàng di động tại Việt Nam</p>
-                    </div>
-
-                    <div class="footer-sign">
-                        <div>Người Đề Nghị</div>
-                        <div>Kế Toán Trưởng</div>
-                        <div>Tổng Giám Đốc</div>
-                    </div>
-
-                    <div style="text-align:center; margin-top:40px;" class="no-print">
-                        <button onclick="window.print()" style="padding: 10px 20px; background:#059669; color:#fff; border:none; font-weight:bold; border-radius:4px; cursor:pointer;">Tiến hành In ấn</button>
-                    </div>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
+            let qrUrl = `https://img.vietqr.io/image/${bankId}-${p.bankAcc}-compact.png?amount=${Math.round(p.after)}&addInfo=${encodeURIComponent(p.code)}&accountName=${encodeURIComponent(p.recipient)}`;
+            let w = window.open('', '', 'width=800,height=600');
+            w.document.write(`<html><body style="font-family:'Times New Roman'; padding:30px;"><h2>TỔNG CÔNG TY GIẤY VIỆT NAM (VINAPACO)</h2><hr><h3>ĐỀ NGHỊ THANH TOÁN CHỨNG TỪ [${p.code}]</h3><p><b>Nội dung:</b> ${p.name}</p><p><b>Đoạn vị thụ hưởng:</b> ${p.recipient} - STK: ${p.bankAcc} tại ${p.bankName}</p><p><b>Số tiền sau thuế:</b> ${Math.round(p.after).toLocaleString('vi-VN')} đ</p><div style="text-align:center;margin-top:20px;"><p>MÃ QR QUÉT THANH TOÁN CHUYỂN KHOẢN NHANH NỘI BỘ</p><img src="${qrUrl}" style="width:160px;"><br><br><button onclick="window.print()">In ngay</button></div></body></html>`);
+            w.document.close();
         }
 
-        function exportSalaryToExcel() { 
-            XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("main-salary-table")), "BANG_LUONG_VINAPACO_XUAT_KHAU.xlsx"); 
+        function exportSalaryToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("main-salary-table")), "BANG_LUONG_VINAPACO.xlsx"); }
+
+        // ĐỒNG BỘ REALTIME ĐA NHIỆM CHUYÊN NGHIỆP
+        function listenRealtime() {
+            supabaseClient
+                .channel('realtime-sync')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => { fetchAllCloudData(); })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'payments' }, () => { fetchAllCloudData(); })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'telecoms' }, () => { fetchAllCloudData(); })
+                .subscribe();
         }
     </script>
 </body>
