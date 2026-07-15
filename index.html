@@ -6,7 +6,6 @@
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP TOÀN DIỆN</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <style>
         :root {
             --primary: #0f172a;
@@ -214,14 +213,6 @@
         .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .status-badge.pending { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
         .status-badge.approved { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-
-        @media print {
-            body * { visibility: hidden; }
-            #qr-print-section, #qr-print-section * { visibility: visible; }
-            #qr-print-section { position: absolute; left: 0; top: 0; width: 50mm; height: 50mm; text-align: center; }
-        }
-        .qr-badge { display: inline-flex; flex-direction: column; align-items: center; border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; background: #fff; cursor: pointer; }
-        .qr-badge svg { margin-bottom: 4px; }
     </style>
 </head>
 <body>
@@ -434,7 +425,6 @@
                                         <th>Phòng Đề Xuất</th>
                                         <th>Tổng Sau Thuế (VND)</th>
                                         <th>File Đính Kèm</th>
-                                        <th>Mã QR Hồ Sơ</th>
                                         <th>Trạng Thái</th>
                                         <th>Hành Động</th>
                                     </tr>
@@ -583,8 +573,6 @@
             </div>
         </div>
     </div>
-
-    <div id="qr-print-section" style="display:none;"></div>
 
     <script>
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
@@ -1067,7 +1055,6 @@
                 if (fileType && fileType.includes('image')) {
                     viewer.innerHTML = `<img src="${fileData}" style="max-width:100%; max-height: 420px; object-fit: contain; border-radius: 4px;">`;
                 } else if (fileType && fileType.includes('pdf')) {
-                    // PHƯƠNG PHÁP CHUYỂN ĐỔI SANG BLOB ĐỂ HIỂN THỊ PDF TRÊN IFRAME KHÔNG BỊ LỖI TRẮNG NỀN TRÊN SAFARI/CHROME
                     let pdfUrl = fileData;
                     if (fileData.startsWith('data:')) {
                         pdfUrl = base64ToBlobUrl(fileData, 'application/pdf');
@@ -1084,31 +1071,6 @@
         }
 
         function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
-
-        function generateQRCodeSvg(dataString) {
-            try {
-                let qr = qrcode(0, 'M');
-                qr.addData(dataString);
-                qr.make();
-                return qr.createSvgTag(3, 8);
-            } catch (err) {
-                return '<span style="color:red;">Lỗi tạo QR</span>';
-            }
-        }
-
-        function printQRCode(code, details) {
-            let prtSection = document.getElementById('qr-print-section');
-            let qrSvg = generateQRCodeSvg(`Mã hồ sơ: ${code}\nChi tiết: ${details}`);
-            prtSection.innerHTML = `
-                <div style="font-family:'Times New Roman'; padding:10px; border:1px solid #000; text-align:center; display:inline-block; background:#fff;">
-                    <div style="font-size:10px; font-weight:bold; margin-bottom:5px;">VINAPACO - NHÃN HỒ SƠ</div>
-                    ${qrSvg}
-                    <div style="font-size:9px; font-weight:bold; margin-top:5px;">Mã số: ${code}</div>
-                    <div style="font-size:8px; width:130px; word-wrap:break-word; margin:2px auto;">${details}</div>
-                </div>
-            `;
-            window.print();
-        }
 
         function calculateFormAmounts() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
@@ -1369,9 +1331,6 @@
                         const name = p.name;
                         const after = p.after;
                         const fileData = p.file;
-
-                        let qrRawString = `Mã: ${code}\nNội dung: ${name}\nThành tiền: ${Math.round(after).toLocaleString('vi-VN')} đ`;
-                        let qrSvg = generateQRCodeSvg(qrRawString);
                         
                         let fileBtn = '-';
                         if (fileData) {
@@ -1381,12 +1340,6 @@
                         return `<tr>
                             <td class="text-left font-bold">[${code}] ${name}</td><td>${p.recipient}</td><td>${p.dept}</td><td class="font-bold" style="color:var(--green);">${formatMoney(after)}</td>
                             <td>${fileBtn}</td>
-                            <td class="text-center">
-                                <div class="qr-badge" onclick="printQRCode('${code}', '${name} - ${formatMoney(after)} đ')" title="Quét thử hoặc in ấn">
-                                    ${qrSvg}
-                                    <span style="font-size:9px; color:var(--blue); font-weight:bold;">🖨️ In Nhãn QR</span>
-                                </div>
-                            </td>
                             <td>
                                 <span class="status-badge ${p.status === 'Chờ phê duyệt' ? 'pending' : 'approved'}">
                                     ${p.status === 'Chờ phê duyệt' ? '⚠️ Chờ phê duyệt' : '✅ Đã phê duyệt'}
