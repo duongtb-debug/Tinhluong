@@ -169,19 +169,86 @@
         .btn-print { color: #059669; }
         .btn-export { background: #059669; color: white; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
 
-        /* File Upload */
+        /* File Upload & Preview Style */
         .file-preview {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 5px;
+            gap: 12px;
+            margin-top: 8px;
+            background: #f8fafc;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px dashed var(--border-color);
         }
         .file-preview img {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             object-fit: cover;
             border-radius: 4px;
             border: 1px solid #cbd5e1;
+        }
+        .btn-remove-file {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-remove-file:hover { background: #b91c1c; }
+
+        /* MODAL POPUP XEM TRƯỚC TÀI LIỆU */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(15, 23, 42, 0.85);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 900px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+        }
+        .close-modal:hover { color: #000; }
+        .modal-body-content {
+            flex: 1;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+        }
+        .doc-icon-view {
+            text-align: center;
+            padding: 40px;
+        }
+        .doc-icon-view img {
+            width: 100px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -251,8 +318,7 @@
                         <button class="tab-sub-btn" id="btn-sub-telecom" onclick="switchSubTab('telecom')">🌐 Cước Viễn Thông & Internet</button>
                     </div>
 
-                    <div class="stat-banner" id="sub-stat-banner">
-                        </div>
+                    <div class="stat-banner" id="sub-stat-banner"></div>
 
                     <div id="sub-section-tasks" style="border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
                         <h3 style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">📋 Lên Kế Hoạch & Theo Dõi Tiến Độ Công Việc</h3>
@@ -340,7 +406,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Ngân Hàng Thụ Hưởng</label>
-                                    <input type="text" id="pay-bank-name" class="form-control" placeholder="Ví dụ: Vietcombank, BIDV..." required>
+                                    <input type="text" id="pay-bank-name" class="form-control" placeholder="Ví dụ: Vietcombank, Techcombank, BIDV, MB..." required>
                                 </div>
                                 <div class="form-group">
                                     <label>Số Lượng (Khối lượng)</label>
@@ -377,9 +443,9 @@
                                     </select>
                                 </div>
                                 <div class="form-group" style="grid-column: span 2;">
-                                    <label>Tải Lên Chứng Từ / Hóa Đơn (Hình ảnh đính kèm)</label>
-                                    <input type="file" id="pay-file" class="form-control" accept="image/*" onchange="handleFileSelect(event)">
-                                    <div class="file-preview" id="pay-file-preview"></div>
+                                    <label>Chứng Từ Đính Kèm (Ảnh, PDF, Word, Excel)</label>
+                                    <input type="file" id="pay-file" class="form-control" accept=".png,.jpg,.jpeg,.gif,.pdf,.doc,.docx,.xls,.xlsx" onchange="handleFileSelect(event)">
+                                    <div class="file-preview" id="pay-file-preview" style="display:none;"></div>
                                 </div>
                             </div>
                             <button type="submit" id="pay-btn-submit" class="btn-add">💾 Thêm Mới Hồ Sơ</button>
@@ -394,7 +460,7 @@
                                         <th>Đơn Vị Thụ Hưởng / Ngân Hàng</th>
                                         <th>Phòng Đề Xuất</th>
                                         <th>Tổng Sau Thuế (VND)</th>
-                                        <th>Chứng Từ</th>
+                                        <th>Tài Liệu</th>
                                         <th>Trạng Thái</th>
                                         <th>Hành Động</th>
                                     </tr>
@@ -473,12 +539,26 @@
         </div>
     </div>
 
+    <div id="preview-modal" class="modal" onclick="closeModalOnOuterClick(event)">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeDocModal()">&times;</span>
+            <h3 id="modal-title" style="margin-bottom: 10px; font-size: 16px; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">Xem Trước Chứng Từ</h3>
+            <div id="modal-body" class="modal-body-content"></div>
+        </div>
+    </div>
+
     <script>
         let currentTab = 1;
         let activeSubTab = 'tasks';
-        let uploadedFileBase64 = ''; // Lưu trữ tài liệu dưới dạng Base64 tạm thời
+        
+        // Lưu trữ thông tin tài liệu đính kèm đầy đủ
+        let uploadedFileObj = {
+            base64: '',
+            fileName: '',
+            fileType: ''
+        };
 
-        // BỘ DỮ LIỆU ĐỒNG BỘ 20 NHÂN SỰ CHUẨN XÁC (ĐÃ KHÓA BẢO LƯU 100%)
+        // BỘ DỮ LIỆU ĐỒNG BỘ 20 NHÂN SỰ CHUẨN XÁC
         let dataset = [
             {"stt":1,"name":"NGUYỄN MINH NGỌC","heSoCB":2.19,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":5.80,"tamUngTru":5000000,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0},
             {"stt":2,"name":"NGUYỄN VĂN NAM","heSoCB":1.48,"cong":19,"phep":3,"le":0,"heSoHT":1.0,"heSoCV":2.24,"tamUngTru":4000000,"quyPCTT":0,"truUngT4":0,"congAnCa":19,"ngayDocHai":0},
@@ -502,14 +582,27 @@
             {"stt":20,"name":"KHỔNG VĂN CHƯƠNG","heSoCB":1.53,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":1.85,"tamUngTru":0,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0}
         ];
 
-        // KHAI BÁO DỮ LIỆU BAN ĐẦU CHO CÁC PHÂN HỆ MỚI
         let taskRecords = [
             { id: 1, title: "Lập bảng lương toàn cơ quan tháng 7", assignee: "Hành Chính Nhân Sự", deadline: "2026-07-20", priority: "Cao", progress: 85, status: "Đang thực hiện" },
             { id: 2, title: "Quyết toán cước mạng & viễn thông khu vực xưởng giấy", assignee: "Phòng CNTT", deadline: "2026-07-25", priority: "Trung bình", progress: 20, status: "Đang thực hiện" }
         ];
 
         let paymentRecords = [
-            { id: 1, code: "HSTT-2026-9814", name: "Thanh toán tiền mua bột giấy nguyên liệu", recipient: "Công ty lâm nghiệp Phú Thọ", bankAcc: "1019928833", bankName: "Vietcombank", qty: 10, before: 120000000, tax: 12000000, after: 132000000, dept: "Phòng Vật Tư", status: "Chờ duyệt hồ sơ", file: "" }
+            { 
+                id: 1, 
+                code: "HSTT-2026-9814", 
+                name: "Thanh toán tiền mua bột giấy nguyên liệu", 
+                recipient: "Công ty lâm nghiệp Phú Thọ", 
+                bankAcc: "1019928833", 
+                bankName: "Vietcombank", 
+                qty: 10, 
+                before: 120000000, 
+                tax: 12000000, 
+                after: 132000000, 
+                dept: "Phòng Vật Tư", 
+                status: "Chờ duyệt hồ sơ", 
+                file: { base64: "", fileName: "", fileType: "" } 
+            }
         ];
 
         let telecomRecords = [
@@ -517,21 +610,46 @@
             { id: 2, code: "ISP-FTTH-02", provider: "VNPT", location: "Nhà xưởng điều khiển tự động", cost: 3500000, dueDate: "2026-07-18", status: "Chưa thanh toán" }
         ];
 
-        // Hàm định dạng số thành chuỗi tiền tệ (Ví dụ: 5000000 -> 5.000.000)
+        // Ánh xạ ngân hàng thủ công sang Mã VietQR của Napas chính thức để đảm bảo quét thành công
+        function mapBankNameToVietQRId(bankName) {
+            if (!bankName) return 'VCB';
+            let name = bankName.toLowerCase().replace(/\s+/g, '');
+            if (name.includes('vietcom') || name.includes('vcb')) return 'VCB';
+            if (name.includes('techcom') || name.includes('tcb')) return 'TCB';
+            if (name.includes('mb') || name.includes('quandoi') || name.includes('mbb')) return 'MB';
+            if (name.includes('bidv') || name.includes('dautu')) return 'BIDV';
+            if (name.includes('agri') || name.includes('vba') || name.includes('nongnghiep')) return 'VBA';
+            if (name.includes('vietin') || name.includes('ctg') || name.includes('icb')) return 'CTG';
+            if (name.includes('acb') || name.includes('achau')) return 'ACB';
+            if (name.includes('vp') || name.includes('vpbank')) return 'VPB';
+            if (name.includes('sacom') || name.includes('stb')) return 'STB';
+            if (name.includes('tp') || name.includes('tpbank')) return 'TPB';
+            if (name.includes('vib') || name.includes('quocte')) return 'VIB';
+            if (name.includes('shb')) return 'SHB';
+            return 'VCB'; // mặc định nếu không khớp
+        }
+
         function formatMoney(num) {
             if (num === "" || num === undefined || isNaN(num)) return "-";
             return Math.round(num).toLocaleString('vi-VN');
         }
 
-        // Hàm phân tách dấu chấm thực tế khi người dùng gõ phím trực tiếp vào ô input
+        function formatDateVN(dateStr) {
+            if (!dateStr) return "-";
+            let parts = dateStr.split("-");
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
         function formatCurrencyInput(input) {
-            let value = input.value.replace(/\./g, ''); // Xóa bỏ toàn bộ dấu chấm cũ
+            let value = input.value.replace(/\./g, '');
             if(!isNaN(value) && value !== "") {
                 input.value = parseInt(value).toLocaleString('vi-VN');
             }
         }
 
-        // Trích xuất số nguyên thuần túy từ chuỗi định dạng để thực hiện tính toán
         function getRawNumber(str) {
             if(!str) return 0;
             let raw = str.toString().replace(/\./g, '').replace(/ đ/g, '').replace(/,/g, '');
@@ -543,14 +661,12 @@
             initCalendar();
             generateAutoPaymentCode();
             renderSubModule();
-            // Cập nhật đồng hồ thời gian thực
             setInterval(() => {
                 let d = new Date();
                 document.getElementById('live-clock').innerText = d.toLocaleTimeString('vi-VN');
             }, 1000);
         };
 
-        // Hàm sinh mã hồ sơ thanh toán tự động
         function generateAutoPaymentCode() {
             let num = Math.floor(1000 + Math.random() * 9000);
             document.getElementById('pay-code').value = "HSTT-2026-" + num;
@@ -587,7 +703,6 @@
         }
 
         function updateSalaryData(index, field, value) {
-            // Định dạng tiền tạm ứng khi cập nhật trực tiếp tại bảng Lương Công Việc
             if(field === 'tamUngTru' || field === 'quyPCTT' || field === 'truUngT4') {
                 dataset[index][field] = getRawNumber(value);
             } else {
@@ -596,7 +711,7 @@
             renderSalaryModule();
         }
 
-        // ======================= PHÂN HỆ 1: QUẢN LÝ LƯƠNG NHÂN SỰ (BẢO LƯU) =======================
+        // ======================= PHÂN HỆ 1 =======================
         function renderSalaryModule() {
             let head = document.getElementById('table-head');
             let body = document.getElementById('table-body');
@@ -631,10 +746,8 @@
                     let ltg = (lcb / 22) * s.cong;
                     let llp = Math.round(luongHD / 22) * (s.phep + s.le);
                     let tlcb = (ltg + llp) * s.heSoHT;
-                    
                     let bhtn = -Math.round(luongHD * 0.01);
                     let bhxh = -Math.round(luongHD * 0.095);
-                    
                     let thucLinhLCB = tlcb + bhtn + bhxh;
 
                     sums.heSoCB+=s.heSoCB; sums.tlcb+=tlcb; sums.bhtn+=bhtn; sums.bhxh+=bhxh; sums.thucLinhLCB+=thucLinhLCB;
@@ -778,9 +891,8 @@
             head.innerHTML = headHtml; body.innerHTML = bodyHtml; foot.innerHTML = footHtml;
         }
 
-        // ======================= PHÂN HỆ 2: QUẢN TRỊ TOÀN DIỆN MỞ RỘNG =======================
+        // ======================= PHÂN HỆ 2 =======================
         
-        // 1. Khởi tạo Lịch Vạn Niên 31 Ngày của tháng 07/2026
         function initCalendar() {
             let container = document.querySelector('.cal-days-container');
             container.innerHTML = `
@@ -792,11 +904,10 @@
                 <div class="calendar-day-name">T6</div>
                 <div class="calendar-day-name">T7</div>
             `;
-            // Bù 3 ô trống đầu tháng (Do ngày 1/7/2026 rơi vào Thứ Tư)
             for(let i=0; i<3; i++) container.innerHTML += '<div></div>';
             
             for(let d=1; d<=31; d++) {
-                let act = (d === 15) ? 'active-day' : ''; // Làm nổi bật ngày 15
+                let act = (d === 15) ? 'active-day' : '';
                 container.innerHTML += `
                     <div class="calendar-cell ${act}">
                         <strong>${d}</strong>
@@ -806,20 +917,123 @@
             }
         }
 
-        // Đọc File đính kèm dưới dạng Base64
+        // Đọc File đính kèm dưới dạng Base64 và hỗ trợ đầy đủ các định dạng
         function handleFileSelect(event) {
             let file = event.target.files[0];
             if (!file) return;
+
+            uploadedFileObj.fileName = file.name;
+            uploadedFileObj.fileType = file.type;
+
             let reader = new FileReader();
             reader.onload = function(e) {
-                uploadedFileBase64 = e.target.result;
-                let previewContainer = document.getElementById('pay-file-preview');
-                previewContainer.innerHTML = `<img src="${uploadedFileBase64}" alt="Preview"> <span style="font-size:11px;color:#059669;">Đã nạp tài liệu</span>`;
+                uploadedFileObj.base64 = e.target.result;
+                updateFilePreviewUI();
             };
             reader.readAsDataURL(file);
         }
 
-        // 2. Chức năng Quản lý Độc lập cho từng Sub-Tab Phân hệ 2
+        // Hàm cập nhật giao diện xem trước tại form nhập liệu
+        function updateFilePreviewUI() {
+            let previewContainer = document.getElementById('pay-file-preview');
+            if (!uploadedFileObj.base64) {
+                previewContainer.style.display = 'none';
+                previewContainer.innerHTML = '';
+                return;
+            }
+
+            previewContainer.style.display = 'flex';
+            let innerHtml = '';
+
+            // Nếu là File ảnh
+            if (uploadedFileObj.fileType.startsWith('image/')) {
+                innerHtml = `
+                    <img src="${uploadedFileObj.base64}" alt="Preview">
+                    <div style="flex:1;">
+                        <span style="font-size:12px; font-weight:bold; color:#0f172a; display:block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${uploadedFileObj.fileName}</span>
+                        <span style="font-size:11px; color:#64748b;">Ảnh đính kèm</span>
+                    </div>
+                `;
+            } else if (uploadedFileObj.fileType === 'application/pdf') {
+                // PDF File
+                innerHtml = `
+                    <div style="font-size: 24px;">📕</div>
+                    <div style="flex:1;">
+                        <span style="font-size:12px; font-weight:bold; color:#0f172a; display:block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${uploadedFileObj.fileName}</span>
+                        <span style="font-size:11px; color:#ef4444; font-weight:bold;">PDF Document</span>
+                    </div>
+                `;
+            } else {
+                // Word / Excel
+                let isWord = uploadedFileObj.fileName.endsWith('.doc') || uploadedFileObj.fileName.endsWith('.docx');
+                let fileIcon = isWord ? '📘' : '📗';
+                innerHtml = `
+                    <div style="font-size: 24px;">${fileIcon}</div>
+                    <div style="flex:1;">
+                        <span style="font-size:12px; font-weight:bold; color:#0f172a; display:block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${uploadedFileObj.fileName}</span>
+                        <span style="font-size:11px; color:var(--blue); font-weight:bold;">${isWord ? 'Word Document' : 'Excel Sheet'}</span>
+                    </div>
+                `;
+            }
+
+            // Nút gỡ file đính kèm
+            innerHtml += `<button type="button" class="btn-remove-file" onclick="removeAttachedFile()">Gỡ</button>`;
+            previewContainer.innerHTML = innerHtml;
+        }
+
+        // Chức năng gỡ bỏ tài liệu đính kèm hoàn toàn
+        function removeAttachedFile() {
+            uploadedFileObj = { base64: '', fileName: '', fileType: '' };
+            document.getElementById('pay-file').value = ''; // Reset thẻ input
+            updateFilePreviewUI();
+        }
+
+        // MODAL XEM TRƯỚC TÀI LIỆU CHUYÊN NGHIỆP
+        function previewDocumentFile(id) {
+            let p = paymentRecords.find(x => x.id === id);
+            if (!p || !p.file || !p.file.base64) return;
+
+            let fileData = p.file;
+            let modal = document.getElementById('preview-modal');
+            let mTitle = document.getElementById('modal-title');
+            let mBody = document.getElementById('modal-body');
+
+            mTitle.innerText = `Xem trước: ${fileData.fileName}`;
+            mBody.innerHTML = '';
+
+            if (fileData.fileType.startsWith('image/')) {
+                // Hiển thị ảnh
+                mBody.innerHTML = `<img src="${fileData.base64}" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15);" />`;
+            } else if (fileData.fileType === 'application/pdf') {
+                // Hiển thị PDF trực tiếp cực đẹp
+                mBody.innerHTML = `<iframe src="${fileData.base64}" style="width:100%; height:100%; border:none; border-radius:6px;"></iframe>`;
+            } else {
+                // Định dạng Word / Excel không thể xem trực tiếp qua trình duyệt, ta chuyển thành nút tải xuống sang trọng
+                let isWord = fileData.fileName.endsWith('.doc') || fileData.fileName.endsWith('.docx');
+                let fileIcon = isWord ? '📘' : '📗';
+                mBody.innerHTML = `
+                    <div class="doc-icon-view">
+                        <div style="font-size: 64px; margin-bottom: 20px;">${fileIcon}</div>
+                        <h4 style="font-size:16px; margin-bottom: 10px; color:#1e293b;">${fileData.fileName}</h4>
+                        <p style="color:#64748b; font-size:13px; margin-bottom: 25px;">Định dạng Word/Excel cần được tải xuống máy tính để xem chi tiết.</p>
+                        <a href="${fileData.base64}" download="${fileData.fileName}" style="background:var(--blue); color:white; padding:10px 24px; text-decoration:none; font-weight:bold; border-radius:6px;">📥 Tải xuống tài liệu</a>
+                    </div>
+                `;
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeDocModal() {
+            document.getElementById('preview-modal').style.display = 'none';
+        }
+
+        function closeModalOnOuterClick(e) {
+            if (e.target.id === 'preview-modal') {
+                closeDocModal();
+            }
+        }
+
         function renderSubModule() {
             let stat = document.getElementById('sub-stat-banner');
             stat.innerHTML = '';
@@ -863,7 +1077,7 @@
                         tbody.innerHTML += `<tr>
                             <td class="text-left font-bold">${t.title}</td>
                             <td class="text-center">${t.assignee}</td>
-                            <td class="text-center">${t.deadline}</td>
+                            <td class="text-center">${formatDateVN(t.deadline)}</td>
                             <td class="text-center"><span class="badge ${t.priority==='Cao'?'bg-danger':t.priority==='Thấp'?'bg-success':'bg-pending'}">${t.priority}</span></td>
                             <td class="text-center">
                                 <div class="progress-bar-container">
@@ -915,7 +1129,20 @@
                         if(p.status.includes('Đã')) statusBadge = 'bg-success';
                         if(p.status.includes('bác')) statusBadge = 'bg-danger';
 
-                        let fileIcon = p.file ? `<img src="${p.file}" style="width:30px; height:30px; border-radius:4px; cursor:zoom-in;" onclick="previewDocumentImage('${p.file}')" />` : `<span style="color:#94a3b8;font-style:italic;">Không có</span>`;
+                        let fileIcon = '<span style="color:#94a3b8;font-style:italic;">Không có</span>';
+                        if (p.file && p.file.base64) {
+                            let typeIcon = '📂';
+                            if (p.file.fileType.startsWith('image/')) typeIcon = '🖼️';
+                            else if (p.file.fileType === 'application/pdf') typeIcon = '📕';
+                            else if (p.file.fileName.endsWith('.xls') || p.file.fileName.endsWith('.xlsx')) typeIcon = '📗';
+                            else if (p.file.fileName.endsWith('.doc') || p.file.fileName.endsWith('.docx')) typeIcon = '📘';
+
+                            fileIcon = `
+                                <button type="button" style="border:none; background:#f1f5f9; cursor:pointer; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:11px;" onclick="previewDocumentFile(${p.id})">
+                                    ${typeIcon} Xem file
+                                </button>
+                            `;
+                        }
 
                         tbody.innerHTML += `<tr>
                             <td class="text-left font-bold"><span style="color:var(--blue);">[${p.code}]</span> ${p.name}</td>
@@ -964,7 +1191,7 @@
                 let tbody = document.getElementById('telecom-table-body');
                 tbody.innerHTML = '';
                 if(telecomRecords.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Chưa ghi nhận thông tin cước phí đường truyền.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Chưa ghi nhận thông tin đường truyền viễn thông.</td></tr>`;
                 } else {
                     telecomRecords.forEach(t => {
                         let statusBadge = (t.status === 'Đã thanh toán') ? 'bg-success' : 'bg-danger';
@@ -973,7 +1200,7 @@
                             <td class="text-center font-bold">${t.provider}</td>
                             <td class="text-left">${t.location}</td>
                             <td class="font-bold">${formatMoney(t.cost)}</td>
-                            <td class="text-center">${t.dueDate}</td>
+                            <td class="text-center">${formatDateVN(t.dueDate)}</td>
                             <td class="text-center"><span class="badge ${statusBadge}">${t.status}</span></td>
                             <td class="text-center">
                                 <button class="btn-action btn-edit" onclick="editTelecomRecord(${t.id})">Sửa</button>
@@ -985,7 +1212,6 @@
             }
         }
 
-        // 3. Logic thêm mới và sửa Hồ sơ/Công việc/Cước mạng
         function calculateFormAmounts() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = getRawNumber(document.getElementById('pay-price').value);
@@ -1075,22 +1301,23 @@
                 if (p) {
                     p.code = code; p.name = name; p.recipient = recipient; p.bankAcc = bankAcc;
                     p.bankName = bankName; p.qty = qty; p.before = before; p.tax = tax;
-                    p.after = after; p.dept = dept; p.status = status; p.file = uploadedFileBase64 || p.file;
+                    p.after = after; p.dept = dept; p.status = status; 
+                    p.file = { ...uploadedFileObj }; // Sao chép sâu dữ liệu file
                     p.price = price;
                 }
                 cancelEditPay();
             } else {
                 let rec = {
                     id: Date.now(), code, name, recipient, bankAcc, bankName,
-                    qty, before, tax, after, dept, status, file: uploadedFileBase64, price: price
+                    qty, before, tax, after, dept, status, 
+                    file: { ...uploadedFileObj }, price: price
                 };
                 paymentRecords.push(rec);
             }
             renderSubModule();
             document.getElementById('payment-form').reset();
             document.getElementById('pay-amount-after').value = '';
-            uploadedFileBase64 = '';
-            document.getElementById('pay-file-preview').innerHTML = '';
+            removeAttachedFile();
             generateAutoPaymentCode();
         }
 
@@ -1112,12 +1339,11 @@
             document.getElementById('pay-status').value = p.status;
             
             calculateFormAmounts();
-            if (p.file) {
-                document.getElementById('pay-file-preview').innerHTML = `<img src="${p.file}" alt="Preview"> <span style="font-size:11px;color:#059669;">Bản chứng từ cũ</span>`;
-                uploadedFileBase64 = p.file;
+            if (p.file && p.file.base64) {
+                uploadedFileObj = { ...p.file };
+                updateFilePreviewUI();
             } else {
-                document.getElementById('pay-file-preview').innerHTML = '';
-                uploadedFileBase64 = '';
+                removeAttachedFile();
             }
 
             document.getElementById('pay-btn-submit').innerText = "💾 Cập nhật";
@@ -1129,8 +1355,7 @@
             document.getElementById('payment-form').reset();
             document.getElementById('pay-btn-submit').innerText = "💾 Thêm Mới Hồ Sơ";
             document.getElementById('pay-btn-cancel').style.display = "none";
-            document.getElementById('pay-file-preview').innerHTML = '';
-            uploadedFileBase64 = '';
+            removeAttachedFile();
             generateAutoPaymentCode();
         }
 
@@ -1192,19 +1417,18 @@
             renderSubModule();
         }
 
-        function previewDocumentImage(base64) {
-            let win = window.open();
-            win.document.write(`<iframe src="${base64}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
-        }
-
+        // IN ẤN ĐỀ NGHỊ THANH TOÁN & QUÉT MÃ QR HOẠT ĐỘNG HOÀN HẢO
         function printPaymentBill(id) {
             let p = paymentRecords.find(x => x.id === id);
             if (!p) return;
 
-            let bankId = p.bankName.replace(/\s+/g, '').toUpperCase();
+            // Chuyển đổi tên ngân hàng người dùng nhập tự do thành mã NAPAS chính xác
+            let bankId = mapBankNameToVietQRId(p.bankName);
             let accountNo = p.bankAcc;
             let amount = Math.round(p.after);
-            let description = encodeURIComponent(`Thanh toan ${p.code}`);
+            let description = encodeURIComponent(`${p.code} chuyen tien`);
+            
+            // VietQR API tạo mã QR chuyển khoản chuẩn quốc gia
             let qrUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact.png?amount=${amount}&addInfo=${description}&accountName=${encodeURIComponent(p.recipient)}`;
 
             let printWindow = window.open('', '', 'width=800,height=600');
@@ -1223,7 +1447,7 @@
                         .table-bill th, .table-bill td { border: 1px solid #000; padding: 10px; text-align: left; }
                         .table-bill th { background-color: #f2f2f2; font-weight: bold; }
                         .qr-section { text-align: center; margin-top: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-                        .qr-image { width: 150px; height: 150px; border: 1px solid #cbd5e1; padding: 5px; border-radius: 6px; }
+                        .qr-image { width: 180px; height: 180px; border: 1px solid #cbd5e1; padding: 5px; border-radius: 6px; }
                         .footer-sign { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-top: 50px; font-weight: bold; }
                         @media print {
                             .no-print { display: none; }
@@ -1241,7 +1465,7 @@
                         <div class="info-item"><span class="info-label">Phòng ban đề xuất:</span> ${p.dept}</div>
                         <div class="info-item"><span class="info-label">Đơn vị thụ hưởng:</span> ${p.recipient}</div>
                         <div class="info-item"><span class="info-label">Số tài khoản:</span> ${p.bankAcc}</div>
-                        <div class="info-item"><span class="info-label">Tại ngân hàng:</span> ${p.bankName}</div>
+                        <div class="info-item"><span class="info-label">Tại ngân hàng:</span> ${p.bankName} (${bankId})</div>
                     </div>
 
                     <table class="table-bill">
@@ -1263,11 +1487,12 @@
                         </tbody>
                     </table>
 
-                    <div style="font-size:13px; font-style:italic;">Số tiền viết bằng chữ:................................................................................................................................</div>
+                    <div style="font-size:13px; font-style:italic; margin-bottom:15px;">Số tiền viết bằng chữ:................................................................................................................................</div>
 
                     <div class="qr-section">
-                        <p style="font-size:12px; font-weight:bold; margin-bottom:8px;">QUÉT MÃ QR THANH TOÁN (VIETQR CHUẨN)</p>
+                        <p style="font-size:12px; font-weight:bold; margin-bottom:8px;">QUÉT MÃ QR CHUYỂN KHOẢN AN TOÀN (NHANH 24/7)</p>
                         <img class="qr-image" src="${qrUrl}" alt="VietQR Pay" />
+                        <p style="font-size:10px; color:#64748b; margin-top:5px;">Hỗ trợ tất cả ứng dụng Ngân hàng di động tại Việt Nam</p>
                     </div>
 
                     <div class="footer-sign">
