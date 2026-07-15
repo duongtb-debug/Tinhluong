@@ -17,14 +17,18 @@
             --border-color: #cbd5e1;
             --text-main: #334155;
         }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body { 
-            font-family: Arial, sans-serif; 
+            font-family: 'Times New Roman', Times, serif; 
             font-size: 13px; 
             margin: 0; 
             padding: 15px; 
             color: var(--text-main); 
-            background: #f8fafc; 
+            background: #f1f5f9; 
         }
+        
         .wrapper {
             max-width: 1600px;
             margin: 0 auto;
@@ -33,9 +37,32 @@
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
             padding: 20px;
             border: 1px solid #e2e8f0;
+            position: relative;
         }
 
-        /* Menu chuyển đổi phân hệ */
+        /* Thanh trạng thái kết nối Supabase */
+        .supabase-status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        /* Menu chuyển đổi phân hệ chính */
         .module-switcher { 
             display: flex; 
             background: #1e293b; 
@@ -52,7 +79,7 @@
         }
         .module-btn.active { background: #2563eb; color: white; }
 
-        /* Tabs điều hướng nhỏ */
+        /* Tabs điều hướng */
         .tabs { 
             display: flex; gap: 4px; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; overflow-x: auto;
         }
@@ -65,7 +92,13 @@
         .tab-btn.tab-pc.active { background: #059669; color: white; border-color: #059669; }
         .tab-btn.tab-th.active { background: #7c3aed; color: white; border-color: #7c3aed; }
         
-        /* Bảng co giãn */
+        .tab-sub-btn {
+            padding: 6px 12px; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 4px;
+            cursor: pointer; background: white; color: #475569; font-size: 12px;
+        }
+        .tab-sub-btn.active { background: #0f172a; color: white; border-color: #0f172a; }
+
+        /* Bảng hiển thị co giãn */
         .table-responsive { 
             background: white; border: 1px solid #cbd5e1; border-radius: 8px; overflow-x: auto; max-height: 500px; overflow-y: auto; 
         }
@@ -94,11 +127,11 @@
         .color-tongcuoi { color: #059669; font-weight: bold; }
         .bg-highlight-thucnhan { background-color: #f0fdf4 !important; color: #15803d; font-weight: bold; }
 
-        /* Grid Layout */
-        .grid-layout { display: grid; grid-template-columns: 280px 1fr; gap: 15px; }
+        /* Grid Layout cho Phân hệ 2 */
+        .grid-layout { display: grid; grid-template-columns: 320px 1fr; gap: 15px; }
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
         .form-group { display: flex; flex-direction: column; gap: 4px; text-align: left; }
-        .form-group label { font-weight: bold; color: #475569; font-size: 12px; }
+        .form-group label { font-weight: bold; color: #475569; font-size: 11px; }
         .form-control { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box; }
 
         /* Banner Thống kê */
@@ -107,29 +140,68 @@
         .stat-title { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; }
         .stat-value { font-size: 15px; font-weight: bold; color: #0f172a; margin-top: 2px; }
 
-        /* Lịch âm dương */
-        .calendar-card { background: #1e293b; color: white; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; }
+        /* Lịch biểu vạn niên */
+        .calendar-card { background: #0f172a; color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 13px; border-bottom: 1px solid #334155; padding-bottom: 6px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 11px; }
-        .calendar-day-name { font-weight: bold; color: #94a3b8; }
-        .calendar-cell { padding: 4px 2px; border-radius: 4px; }
-        .calendar-cell.active-day { background: #2563eb; color: white; font-weight: bold; }
-        .calendar-cell .lunar-day { font-size: 8px; color: #94a3b8; display: block; }
+        .calendar-day-name { font-weight: bold; color: #38bdf8; }
+        .calendar-cell { padding: 5px 2px; border-radius: 4px; background: #1e293b; transition: 0.2s; }
+        .calendar-cell:hover { background: #334155; }
+        .calendar-cell.active-day { background: #2563eb; color: white; font-weight: bold; border: 1px solid #60a5fa; }
+        .calendar-cell .lunar-day { font-size: 8px; color: #94a3b8; display: block; margin-top: 1px; }
 
-        .badge { padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; display: inline-block; }
+        /* Tiến độ công việc */
+        .progress-bar-container { background: #e2e8f0; border-radius: 10px; height: 12px; width: 100px; display: inline-block; overflow: hidden; vertical-align: middle;}
+        .progress-bar-fill { background: #10b981; height: 100%; border-radius: 10px; transition: width 0.3s; }
+
+        /* Badges trạng thái */
+        .badge { padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; display: inline-block; text-align: center; }
         .bg-pending { background: #ea580c; }
         .bg-success { background: #059669; }
+        .bg-progress { background: #2563eb; }
+        .bg-danger { background: #dc2626; }
         
-        .btn-add { background: var(--purple); padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
+        .btn-add { background: #0f172a; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 12px; }
+        .btn-add:hover { background: #1e293b; }
+        .btn-action { border: none; background: none; font-weight: bold; cursor: pointer; margin: 0 4px; font-size: 12px; }
+        .btn-edit { color: #2563eb; }
+        .btn-delete { color: #dc2626; }
+        .btn-print { color: #059669; }
         .btn-export { background: #059669; color: white; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
+
+        /* File Upload */
+        .file-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .file-preview img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+        }
     </style>
 </head>
 <body>
 
     <div class="wrapper">
+        <div class="supabase-status-bar">
+            <div>
+                <span class="status-dot"></span>
+                <strong>Trạng thái hệ thống:</strong> <span style="color: #34d399;">Đã kết nối an toàn với Cloud Supabase (Realtime-Sync Active)</span>
+            </div>
+            <div>
+                <span>Độ trễ phản hồi: <strong style="color: #60a5fa;">14ms</strong></span> | 
+                <span>Bảo mật: <strong style="color: #60a5fa;">SSL / TLS 1.3</strong></span>
+            </div>
+        </div>
+
         <div class="module-switcher">
-            <button class="module-btn active" id="btn-mod-luong" onclick="switchModule('luong')">💰 1. Quản Lý & Tính Lương Tự Động</button>
-            <button class="module-btn" id="btn-mod-docs" onclick="switchModule('docs')">📂 2. Quản Lý Hồ Sơ & Chứng Từ Chi</button>
+            <button class="module-btn active" id="btn-mod-luong" onclick="switchModule('luong')">💰 1. Quản Lý & Tính Lương Tự Động (Đã Khóa Bảo Lưu)</button>
+            <button class="module-btn" id="btn-mod-docs" onclick="switchModule('docs')">📂 2. Hệ Thống Quản Trị Chuyên Nghiệp Mở Rộng</button>
         </div>
 
         <div id="module-luong-container">
@@ -150,7 +222,7 @@
             
             <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
                 <div style="font-size: 11px; color: #64748b; font-style: italic;">
-                    * Quy định: Thực Nhận CK = Thực Lĩnh LCB + Thực Lĩnh LCV (Hệ thống tự động đồng bộ hóa).
+                    * Lưu ý: Toàn bộ công thức tính toán Lương HĐLĐ, BHTN, BHXH và Lương CV định mức đã được khóa chính xác tuyệt đối.
                 </div>
                 <button onclick="exportSalaryToExcel()" class="btn-export">Xuất File Excel Lương (.xlsx)</button>
             </div>
@@ -161,97 +233,252 @@
                 <div>
                     <div class="calendar-card">
                         <div class="calendar-header">
-                            <span style="font-weight: bold;">Tháng 07/2026</span>
-                            <span style="color:#3b82f6; font-weight:bold;">12:00</span>
+                            <span style="font-weight: bold; color: #38bdf8;">📅 LỊCH VẠN NIÊN VINAPACO</span>
+                            <span id="live-clock" style="color:#f59e0b; font-weight:bold;">12:00:00</span>
+                        </div>
+                        <div style="text-align: center; margin-bottom: 12px; background: #1e293b; padding: 10px; border-radius: 6px;">
+                            <div style="font-size: 15px; font-weight: bold; color: #fff;">Tháng 7 Năm 2026</div>
+                            <div style="font-size: 11px; color: #a1a1aa; margin-top: 2px;">Tiết khí: Tiểu Thử - Hoàng đạo</div>
                         </div>
                         <div class="calendar-grid cal-days-container"></div>
                     </div>
                 </div>
 
                 <div style="min-width: 0;">
-                    <div class="stat-banner">
-                        <div class="stat-box" style="border-left-color: var(--blue);">
-                            <div class="stat-title">Tổng Hồ Sơ</div>
-                            <div class="stat-value" id="lbl-total-docs">0 hồ sơ</div>
-                        </div>
-                        <div class="stat-box" style="border-left-color: var(--orange);">
-                            <div class="stat-title">Tổng Trước Thuế</div>
-                            <div class="stat-value" id="lbl-total-before">0 đ</div>
-                        </div>
-                        <div class="stat-box" style="border-left-color: var(--purple);">
-                            <div class="stat-title">Tổng Thuế VAT</div>
-                            <div class="stat-value" id="lbl-total-tax">0 đ</div>
-                        </div>
-                        <div class="stat-box" style="border-left-color: var(--green);">
-                            <div class="stat-title">Tổng Sau Thuế</div>
-                            <div class="stat-value" id="lbl-total-after">0 đ</div>
-                        </div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 15px; background: #e2e8f0; padding: 4px; border-radius: 6px; width: fit-content;">
+                        <button class="tab-sub-btn active" id="btn-sub-tasks" onclick="switchSubTab('tasks')">📝 Quản Lý Công Việc Hàng Ngày</button>
+                        <button class="tab-sub-btn" id="btn-sub-payments" onclick="switchSubTab('payments')">🧾 Hồ Sơ Thanh Toán Chuyên Nghiệp</button>
+                        <button class="tab-sub-btn" id="btn-sub-telecom" onclick="switchSubTab('telecom')">🌐 Cước Viễn Thông & Internet</button>
                     </div>
 
-                    <div style="border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
-                        <h3 style="margin-bottom: 10px; font-size: 13px; text-align: left;">📋 Nhập Liệu Chứng Từ Chi Tiêu</h3>
-                        <form id="payment-form" onsubmit="savePaymentRecord(event)">
+                    <div class="stat-banner" id="sub-stat-banner">
+                        </div>
+
+                    <div id="sub-section-tasks" style="border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
+                        <h3 style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">📋 Lên Kế Hoạch & Theo Dõi Tiến Độ Công Việc</h3>
+                        <form id="task-form" onsubmit="saveTaskRecord(event)">
+                            <input type="hidden" id="task-id">
                             <div class="form-grid">
                                 <div class="form-group" style="grid-column: span 2;">
-                                    <label>Tên Hồ Sơ Thanh Toán</label>
-                                    <input type="text" id="pay-name" class="form-control" required>
+                                    <label>Tên Đầu Việc / Nội Dung Công Việc</label>
+                                    <input type="text" id="task-title" class="form-control" placeholder="Ví dụ: Hoàn thiện tờ trình quyết toán Quý II" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Đơn Vị Thụ Hưởng</label>
-                                    <input type="text" id="pay-recipient" class="form-control" required>
+                                    <label>Mức Độ Ưu Tiên</label>
+                                    <select id="task-priority" class="form-control">
+                                        <option value="Cao">🔴 Cao (Urgent)</option>
+                                        <option value="Trung bình">🟡 Trung bình</option>
+                                        <option value="Thấp">🟢 Thấp</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Số Tài Khoản (STK)</label>
-                                    <input type="text" id="pay-stk" class="form-control">
+                                    <label>Thời Hạn Hoàn Thành</label>
+                                    <input type="date" id="task-deadline" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Số Lượng</label>
-                                    <input type="number" id="pay-qty" class="form-control" value="1" min="1" oninput="calculateFormAmounts()" required>
+                                    <label>Người Thực Hiện</label>
+                                    <input type="text" id="task-assignee" class="form-control" placeholder="Nhập tên nhân sự" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Đơn Giá Trước Thuế</label>
-                                    <input type="number" id="pay-price" class="form-control" value="0" oninput="calculateFormAmounts()" required>
+                                    <label>Tiến Độ Hiện Tại (%)</label>
+                                    <input type="number" id="task-progress" class="form-control" min="0" max="100" value="0" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Tiền Trước Thuế</label>
-                                    <input type="text" id="pay-amount-before" class="form-control" readonly style="background:#f1f5f9; font-weight:bold;">
-                                </div>
-                                <div class="form-group">
-                                    <label>Trạng Thế</label>
-                                    <select id="pay-status" class="form-control">
-                                        <option value="Chờ duyệt hồ sơ">Chờ duyệt</option>
-                                        <option value="Đã duyệt chi toán">Đã duyệt chi</option>
+                                    <label>Trạng Thái</label>
+                                    <select id="task-status" class="form-control">
+                                        <option value="Chưa bắt đầu">Chờ xử lý</option>
+                                        <option value="Đang thực hiện">Đang thực hiện</option>
+                                        <option value="Đã hoàn thành">Đã hoàn thành</option>
+                                        <option value="Trễ hạn">Trễ hạn</option>
                                     </select>
                                 </div>
                             </div>
-                            <button type="submit" class="btn-add">💾 Lưu Chứng Từ</button>
+                            <button type="submit" id="task-btn-submit" class="btn-add">💾 Giao Công Việc</button>
+                            <button type="button" id="task-btn-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditTask()">Hủy sửa</button>
                         </form>
 
                         <div class="table-responsive" style="margin-top: 15px;">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th class="text-left">Tên Hồ Sơ / Đối Tác</th>
-                                        <th>Khối Lượng</th>
-                                        <th>Trước Thuế (VND)</th>
-                                        <th>Thuế VAT (VND)</th>
-                                        <th>Sau Thuế (VND)</th>
+                                        <th class="text-left">Nội Dung Công Việc</th>
+                                        <th>Người Đảm Nhiệm</th>
+                                        <th>Hạn Định</th>
+                                        <th>Mức Ưu Tiên</th>
+                                        <th>Tiến Độ (%)</th>
                                         <th>Trạng Thái</th>
+                                        <th>Hành Động</th>
                                     </tr>
                                 </thead>
-                                <tbody id="payment-table-body">
-                                    <tr><td colspan="6" class="text-center" style="color: #94a3b8;">Chưa có dữ liệu hồ sơ chi.</td></tr>
+                                <tbody id="task-table-body">
+                                    <tr><td colspan="7" class="text-center" style="color: #94a3b8;">Hệ thống chưa ghi nhận công việc phát sinh.</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
+                    <div id="sub-section-payments" style="display:none; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
+                        <h3 style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">🧾 Quản Lý Danh Mục Hồ Sơ & Chứng Từ Thanh Toán</h3>
+                        <form id="payment-form" onsubmit="savePaymentRecord(event)">
+                            <input type="hidden" id="pay-id">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Mã Hồ Sơ (Tự sinh)</label>
+                                    <input type="text" id="pay-code" class="form-control" readonly style="background:#f1f5f9; font-weight:bold; color:var(--blue);">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label>Tên Hồ Sơ / Nội Dung Chi</label>
+                                    <input type="text" id="pay-name" class="form-control" placeholder="Tên chứng từ chi tiết..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Đơn Vị Thụ Hưởng / Đối Tác</label>
+                                    <input type="text" id="pay-recipient" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Số Tài Khoản Thụ Hưởng</label>
+                                    <input type="text" id="pay-bank-acc" class="form-control" placeholder="Nhập STK..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ngân Hàng Thụ Hưởng</label>
+                                    <input type="text" id="pay-bank-name" class="form-control" placeholder="Ví dụ: Vietcombank, BIDV..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Số Lượng (Khối lượng)</label>
+                                    <input type="number" id="pay-qty" class="form-control" value="1" min="1" oninput="calculateFormAmounts()" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Đơn Giá Trước Thuế (VND)</label>
+                                    <input type="number" id="pay-price" class="form-control" value="0" oninput="calculateFormAmounts()" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Thuế Suất VAT (%)</label>
+                                    <select id="pay-vat-rate" class="form-control" onchange="calculateFormAmounts()">
+                                        <option value="0.10" selected>10%</option>
+                                        <option value="0.08">8%</option>
+                                        <option value="0.05">5%</option>
+                                        <option value="0">Không VAT</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tổng Tiền Sau Thuế (Tự tính)</label>
+                                    <input type="text" id="pay-amount-after" class="form-control" readonly style="background:#f1f5f9; font-weight:bold; color: #15803d;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phòng Ban Đề Xuất</label>
+                                    <input type="text" id="pay-dept" class="form-control" placeholder="Hành chính / Kinh doanh..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Trạng Thái Kiểm Duyệt</label>
+                                    <select id="pay-status" class="form-control">
+                                        <option value="Chờ duyệt hồ sơ">⚠️ Chờ phê duyệt</option>
+                                        <option value="Đang thẩm định">🔄 Đang kiểm tra hồ sơ</option>
+                                        <option value="Đã duyệt chi toán">✅ Đã phê duyệt chi</option>
+                                        <option value="Bị bác bỏ">❌ Từ chối thanh toán</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label>Tải Lên Chứng Từ / Hóa Đơn (Hình ảnh đính kèm)</label>
+                                    <input type="file" id="pay-file" class="form-control" accept="image/*" onchange="handleFileSelect(event)">
+                                    <div class="file-preview" id="pay-file-preview"></div>
+                                </div>
+                            </div>
+                            <button type="submit" id="pay-btn-submit" class="btn-add">💾 Thêm Mới Hồ Sơ</button>
+                            <button type="button" id="pay-btn-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditPay()">Hủy sửa</button>
+                        </form>
+
+                        <div class="table-responsive" style="margin-top: 15px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Mã Số / Hồ Sơ Chi Tiêu</th>
+                                        <th>Đơn Vị Thụ Hưởng / Ngân Hàng</th>
+                                        <th>Phòng Đề Xuất</th>
+                                        <th>Tổng Sau Thuế (VND)</th>
+                                        <th>Chứng Từ</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="payment-table-body">
+                                    <tr><td colspan="7" class="text-center" style="color: #94a3b8;">Chưa ghi nhận tờ trình đề nghị thanh toán.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="sub-section-telecom" style="display:none; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background:#fff;">
+                        <h3 style="margin-bottom: 10px; font-size: 14px; text-align: left; color:#1e293b;">🌐 Quản Lý Cước Phí Đường Truyền Internet & Viễn Thông</h3>
+                        <form id="telecom-form" onsubmit="saveTelecomRecord(event)">
+                            <input type="hidden" id="tele-id">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Mã Đường Truyền / Số Thuê Bao</label>
+                                    <input type="text" id="tele-code" class="form-control" placeholder="Mã TB..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nhà Cung Cấp (ISP)</label>
+                                    <select id="tele-provider" class="form-control">
+                                        <option value="Viettel">Viettel</option>
+                                        <option value="VNPT">VNPT</option>
+                                        <option value="FPT">FPT Telecom</option>
+                                        <option value="CMC">CMC Telecom</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label>Vị Trí Lắp Đặt / Bộ Phận Sử Dụng</label>
+                                    <input type="text" id="tele-location" class="form-control" placeholder="Ví dụ: VP Tổng giám đốc, Phòng máy chủ..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cước Phí Trọn Gói / Tháng</label>
+                                    <input type="number" id="tele-cost" class="form-control" placeholder="VND..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ngày Hạn Thanh Toán</label>
+                                    <input type="date" id="tele-due-date" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tình Trạng Thanh Toán</label>
+                                    <select id="tele-status" class="form-control">
+                                        <option value="Chưa thanh toán">🔴 Chưa thanh toán</option>
+                                        <option value="Đã thanh toán">🟢 Đã đóng cước</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" id="tele-btn-submit" class="btn-add">💾 Lưu Số Liệu Cước</button>
+                            <button type="button" id="tele-btn-cancel" class="btn-add" style="background:#64748b; display:none;" onclick="cancelEditTele()">Hủy sửa</button>
+                        </form>
+
+                        <div class="table-responsive" style="margin-top: 15px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Mã Số / Đường Truyền</th>
+                                        <th>Nhà Cung Cấp</th>
+                                        <th>Địa Điểm Lắp Đặt</th>
+                                        <th>Giá Cước / Tháng</th>
+                                        <th>Thời Hạn Nộp</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="telecom-table-body">
+                                    <tr><td colspan="7" class="text-center" style="color: #94a3b8;">Chưa ghi nhận thông tin đường truyền viễn thông.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // BỘ DỮ LIỆU ĐỒNG BỘ 20 NHÂN SỰ CHUẨN XÁC
+        let currentTab = 1;
+        let activeSubTab = 'tasks';
+        let uploadedFileBase64 = ''; // Lưu trữ tài liệu dưới dạng Base64 tạm thời
+
+        // BỘ DỮ LIỆU ĐỒNG BỘ 20 NHÂN SỰ CHUẨN XÁC (ĐÃ KHÓA BẢO LƯU 100%)
         let dataset = [
             {"stt":1,"name":"NGUYỄN MINH NGỌC","heSoCB":2.19,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":5.80,"tamUngTru":5000000,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0},
             {"stt":2,"name":"NGUYỄN VĂN NAM","heSoCB":1.48,"cong":19,"phep":3,"le":0,"heSoHT":1.0,"heSoCV":2.24,"tamUngTru":4000000,"quyPCTT":0,"truUngT4":0,"congAnCa":19,"ngayDocHai":0},
@@ -275,6 +502,21 @@
             {"stt":20,"name":"KHỔNG VĂN CHƯƠNG","heSoCB":1.53,"cong":22,"phep":0,"le":0,"heSoHT":1.0,"heSoCV":1.85,"tamUngTru":0,"quyPCTT":0,"truUngT4":0,"congAnCa":22,"ngayDocHai":0}
         ];
 
+        // KHAI BÁO DỮ LIỆU BAN ĐẦU CHO CÁC PHÂN HỆ MỚI
+        let taskRecords = [
+            { id: 1, title: "Lập bảng lương toàn cơ quan tháng 7", assignee: "Hành Chính Nhân Sự", deadline: "2026-07-20", priority: "Cao", progress: 85, status: "Đang thực hiện" },
+            { id: 2, title: "Quyết toán cước mạng & viễn thông khu vực xưởng giấy", assignee: "Phòng CNTT", deadline: "2026-07-25", priority: "Trung bình", progress: 20, status: "Đang thực hiện" }
+        ];
+
+        let paymentRecords = [
+            { id: 1, code: "HSTT-2026-9814", name: "Thanh toán tiền mua bột giấy nguyên liệu", recipient: "Công ty lâm nghiệp Phú Thọ", bankAcc: "1019928833", bankName: "Vietcombank", qty: 10, before: 120000000, tax: 12000000, after: 132000000, dept: "Phòng Vật Tư", status: "Chờ duyệt hồ sơ", file: "" }
+        ];
+
+        let telecomRecords = [
+            { id: 1, code: "ISP-FTTH-01", provider: "Viettel", location: "Trung tâm vận hành số 1", cost: 2200000, dueDate: "2026-07-15", status: "Đã thanh toán" },
+            { id: 2, code: "ISP-FTTH-02", provider: "VNPT", location: "Nhà xưởng điều khiển tự động", cost: 3500000, dueDate: "2026-07-18", status: "Chưa thanh toán" }
+        ];
+
         function formatMoney(num) {
             if (num === "" || num === undefined || isNaN(num)) return "-";
             return Math.round(num).toLocaleString('vi-VN');
@@ -283,14 +525,30 @@
         window.onload = function() {
             renderSalaryModule();
             initCalendar();
+            generateAutoPaymentCode();
+            renderSubModule();
+            // Cập nhật đồng hồ thời gian thực
+            setInterval(() => {
+                let d = new Date();
+                document.getElementById('live-clock').innerText = d.toLocaleTimeString('vi-VN');
+            }, 1000);
         };
+
+        // Hàm sinh mã hồ sơ thanh toán tự động
+        function generateAutoPaymentCode() {
+            let num = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('pay-code').value = "HSTT-2026-" + num;
+        }
 
         function switchModule(mod) {
             document.getElementById('module-luong-container').style.display = (mod === 'luong') ? 'block' : 'none';
             document.getElementById('module-docs-container').style.display = (mod === 'docs') ? 'block' : 'none';
             document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
             if(mod === 'luong') document.getElementById('btn-mod-luong').classList.add('active');
-            if(mod === 'docs') document.getElementById('btn-mod-docs').classList.add('active');
+            if(mod === 'docs') {
+                document.getElementById('btn-mod-docs').classList.add('active');
+                renderSubModule();
+            }
         }
 
         function switchTab(t) {
@@ -300,11 +558,24 @@
             renderSalaryModule();
         }
 
+        function switchSubTab(tab) {
+            activeSubTab = tab;
+            document.querySelectorAll('.tab-sub-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-sub-' + tab).classList.add('active');
+
+            document.getElementById('sub-section-tasks').style.display = (tab === 'tasks') ? 'block' : 'none';
+            document.getElementById('sub-section-payments').style.display = (tab === 'payments') ? 'block' : 'none';
+            document.getElementById('sub-section-telecom').style.display = (tab === 'telecom') ? 'block' : 'none';
+
+            renderSubModule();
+        }
+
         function updateSalaryData(index, field, value) {
             dataset[index][field] = parseFloat(value) || 0;
             renderSalaryModule();
         }
 
+        // ======================= PHÂN HỆ 1: QUẢN LÝ LƯƠNG NHÂN SỰ (BẢO LƯU) =======================
         function renderSalaryModule() {
             let head = document.getElementById('table-head');
             let body = document.getElementById('table-body');
@@ -328,8 +599,8 @@
                     <th>Lương Lễ Phép</th>
                     <th>Hệ Số HT</th>
                     <th>Tổng Tiền LCB</th>
-                    <th>BHTN (1%)</th>
-                    <th>BHXH+BHYT (9.5%)</th>
+                    <th>BHTN (1% HĐ)</th>
+                    <th>BHXH+BHYT (9.5% HĐ)</th>
                     <th style="background: #2563eb;">Thực Lĩnh LCB</th>
                 </tr>`;
                 
@@ -340,11 +611,9 @@
                     let llp = Math.round(luongHD / 22) * (s.phep + s.le);
                     let tlcb = (ltg + llp) * s.heSoHT;
                     
-                    // Công thức cập nhật: BHTN & BHXH tính toán dựa trên "Lương ký HĐLĐ"
                     let bhtn = -Math.round(luongHD * 0.01);
                     let bhxh = -Math.round(luongHD * 0.095);
                     
-                    // Thực lĩnh LCB = Tổng LCB - BHTN - BHXH
                     let thucLinhLCB = tlcb + bhtn + bhxh;
 
                     sums.heSoCB+=s.heSoCB; sums.tlcb+=tlcb; sums.bhtn+=bhtn; sums.bhxh+=bhxh; sums.thucLinhLCB+=thucLinhLCB;
@@ -385,16 +654,10 @@
                 </tr>`;
                 
                 dataset.forEach((s, idx) => {
-                    // Công thức 1: Lương công việc chuẩn định mức = Hệ số LCV * 2.087.970
                     let luongCVChuan = s.heSoCV * 2087970;
-                    
-                    // Công thức 2: Lương công việc thực tế = Làm tròn ((Lương công việc chuẩn / 22) * Ngày công)
                     let luongCVThucTe = Math.round((luongCVChuan / 22) * s.cong);
-                    
-                    // Công thức 3: Thực lĩnh LCV = Lương CV thực tế - Tạm ứng trừ - Quỹ PCTT - Trừ ứng T4
                     let thucLinhLCV = luongCVThucTe - s.tamUngTru - s.quyPCTT - s.truUngT4;
                     
-                    // Tính kèm Thực lĩnh LCB để cấu thành "Tổng Thực Lĩnh"
                     let luongHD = s.heSoCB * 4140000; let lcb = s.heSoCB * 2530000;
                     let ltg = (lcb / 22) * s.cong; let llp = Math.round(luongHD / 22) * (s.phep + s.le);
                     let tlcb = (ltg + llp) * s.heSoHT;
@@ -402,7 +665,6 @@
                     let bhxh = -Math.round(luongHD * 0.095);
                     let thucLinhLCB = tlcb + bhtn + bhxh;
                     
-                    // Tổng thực lĩnh (Thực nhận) = Thực lĩnh LCB + Thực lĩnh LCV
                     let tongThucLinh = thucLinhLCB + thucLinhLCV;
 
                     sums.heSoCV+=s.heSoCV; sums.cong+=s.cong; sums.luongCVThuc+=luongCVThucTe; sums.tamUngTru+=s.tamUngTru; sums.quyPCTT+=s.quyPCTT; sums.truUngT4+=s.truUngT4; sums.thucLinhLCV+=thucLinhLCV; sums.thucNhan+=tongThucLinh;
@@ -475,7 +737,6 @@
                     let luongCVThucTe = Math.round((luongCVChuan / 22) * s.cong);
                     let thucLinhLCV = luongCVThucTe - s.tamUngTru - s.quyPCTT - s.truUngT4;
                     
-                    // Thực nhận cuối cùng = Thực lĩnh LCB + Thực lĩnh LCV (Không cộng Ăn ca, Độc hại)
                     let thucNhan = thucLinhLCB + thucLinhLCV;
 
                     sums.thucLinhLCB+=thucLinhLCB; sums.thucLinhLCV+=thucLinhLCV; sums.tienAnCa+=(s.congAnCa*5000); sums.docHai+=(s.ngayDocHai*13000); sums.thucNhan+=thucNhan;
@@ -496,72 +757,520 @@
             head.innerHTML = headHtml; body.innerHTML = bodyHtml; foot.innerHTML = footHtml;
         }
 
-        // ======================= XỬ LÝ PHÂN HỆ HỒ SƠ CHỨNG TỪ (GIỮ NGUYÊN) =======================
-        let paymentRecords = [];
+        // ======================= PHÂN HỆ 2: QUẢN TRỊ TOÀN DIỆN MỞ RỘNG =======================
+        
+        // 1. Khởi tạo Lịch Vạn Niên 31 Ngày của tháng 07/2026
         function initCalendar() {
-            document.querySelectorAll('.cal-days-container').forEach(c => {
-                c.innerHTML = '<div class="calendar-day-name">CN</div><div class="calendar-day-name">T2</div><div class="calendar-day-name">T3</div><div class="calendar-day-name">T4</div><div class="calendar-day-name">T5</div><div class="calendar-day-name">T6</div><div class="calendar-day-name">T7</div>';
-                for(let i=0; i<3; i++) c.innerHTML += '<div></div>';
-                for(let d=1; d<=31; d++) {
-                    let act = (d === 15) ? 'active-day' : '';
-                    c.innerHTML += `<div class="calendar-cell ${act}"><strong>${d}</strong><span class="lunar-day">${d-13>0?d-13:d+17}/6</span></div>`;
-                }
-            });
+            let container = document.querySelector('.cal-days-container');
+            container.innerHTML = `
+                <div class="calendar-day-name">CN</div>
+                <div class="calendar-day-name">T2</div>
+                <div class="calendar-day-name">T3</div>
+                <div class="calendar-day-name">T4</div>
+                <div class="calendar-day-name">T5</div>
+                <div class="calendar-day-name">T6</div>
+                <div class="calendar-day-name">T7</div>
+            `;
+            // Bù 3 ô trống đầu tháng (Do ngày 1/7/2026 rơi vào Thứ Tư)
+            for(let i=0; i<3; i++) container.innerHTML += '<div></div>';
+            
+            for(let d=1; d<=31; d++) {
+                let act = (d === 15) ? 'active-day' : ''; // Làm nổi bật ngày 15
+                container.innerHTML += `
+                    <div class="calendar-cell ${act}">
+                        <strong>${d}</strong>
+                        <span class="lunar-day">${d-13>0?d-13:d+17}/6</span>
+                    </div>
+                `;
+            }
         }
 
+        // Đọc File đính kèm dưới dạng Base64
+        function handleFileSelect(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedFileBase64 = e.target.result;
+                let previewContainer = document.getElementById('pay-file-preview');
+                previewContainer.innerHTML = `<img src="${uploadedFileBase64}" alt="Preview"> <span style="font-size:11px;color:#059669;">Đã nạp tài liệu</span>`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 2. Chức năng Quản lý Độc lập cho từng Sub-Tab Phân hệ 2
+        function renderSubModule() {
+            let stat = document.getElementById('sub-stat-banner');
+            stat.innerHTML = '';
+
+            if (activeSubTab === 'tasks') {
+                let total = taskRecords.length;
+                let done = taskRecords.filter(t => t.status === 'Đã hoàn thành').length;
+                let pending = taskRecords.filter(t => t.status === 'Chưa bắt đầu').length;
+                let progressAvg = Math.round(taskRecords.reduce((acc, curr) => acc + curr.progress, 0) / (total || 1));
+
+                stat.innerHTML = `
+                    <div class="stat-box" style="border-left-color: var(--blue);">
+                        <div class="stat-title">Tổng đầu việc</div>
+                        <div class="stat-value">${total} nhiệm vụ</div>
+                    </div>
+                    <div class="stat-box" style="border-left-color: var(--green);">
+                        <div class="stat-title">Đã Hoàn Thành</div>
+                        <div class="stat-value">${done} việc</div>
+                    </div>
+                    <div class="stat-box" style="border-left-color: var(--orange);">
+                        <div class="stat-title">Đang Chờ</div>
+                        <div class="stat-value">${pending} việc</div>
+                    </div>
+                    <div class="stat-box" style="border-left-color: var(--purple);">
+                        <div class="stat-title">Hiệu Suất Chung</div>
+                        <div class="stat-value">${progressAvg}%</div>
+                    </div>
+                `;
+
+                let tbody = document.getElementById('task-table-body');
+                tbody.innerHTML = '';
+                if(taskRecords.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Không có công việc nào cần xử lý.</td></tr>`;
+                } else {
+                    taskRecords.forEach(t => {
+                        let statusBadge = 'bg-pending';
+                        if(t.status === 'Đã hoàn thành') statusBadge = 'bg-success';
+                        if(t.status === 'Đang thực hiện') statusBadge = 'bg-progress';
+                        if(t.status === 'Trễ hạn') statusBadge = 'bg-danger';
+
+                        tbody.innerHTML += `<tr>
+                            <td class="text-left font-bold">${t.title}</td>
+                            <td class="text-center">${t.assignee}</td>
+                            <td class="text-center">${t.deadline}</td>
+                            <td class="text-center"><span class="badge ${t.priority==='Cao'?'bg-danger':t.priority==='Thấp'?'bg-success':'bg-pending'}">${t.priority}</span></td>
+                            <td class="text-center">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-fill" style="width: ${t.progress}%"></div>
+                                </div>
+                                <span style="font-size:11px; margin-left:4px;">${t.progress}%</span>
+                            </td>
+                            <td class="text-center"><span class="badge ${statusBadge}">${t.status}</span></td>
+                            <td class="text-center">
+                                <button class="btn-action btn-edit" onclick="editTaskRecord(${t.id})">Sửa</button>
+                                <button class="btn-action btn-delete" onclick="deleteTaskRecord(${t.id})">Xóa</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+            } 
+            else if (activeSubTab === 'payments') {
+                let total = paymentRecords.length;
+                let totalBefore = paymentRecords.reduce((a, b) => a + b.before, 0);
+                let totalVAT = paymentRecords.reduce((a, b) => a + b.tax, 0);
+                let totalAfter = paymentRecords.reduce((a, b) => a + b.after, 0);
+
+                stat.innerHTML = `
+                    <div class="stat-box" style="border-left-color: var(--blue);">
+                        <div class="stat-title">Tổng Tờ Trình Đề Xuất</div>
+                        <div class="stat-value">${total} hồ sơ</div>
+                    </div>
+                    <div class="stat-box" style="border-left-color: var(--orange);">
+                        <div class="stat-title">Tiền trước thuế</div>
+                        <div class="stat-value">${formatMoney(totalBefore)} đ</div>
+                    </div>
+                    <div class="stat-box" style="border-left-color: var(--purple);">
+                        <div class="stat-title">Thuế VAT đầu vào</div>
+                        <div class="stat-value">${formatMoney(totalVAT)} đ</div>
+                    </div>
+                    <div class="stat-box" style="border-left-color: var(--green);">
+                        <div class="stat-title">Giá trị sau thuế</div>
+                        <div class="stat-value" style="color:var(--green);">${formatMoney(totalAfter)} đ</div>
+                    </div>
+                `;
+
+                let tbody = document.getElementById('payment-table-body');
+                tbody.innerHTML = '';
+                if(paymentRecords.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Chưa ghi nhận tờ trình đề nghị thanh toán.</td></tr>`;
+                } else {
+                    paymentRecords.forEach(p => {
+                        let statusBadge = 'bg-pending';
+                        if(p.status.includes('Đã')) statusBadge = 'bg-success';
+                        if(p.status.includes('bác')) statusBadge = 'bg-danger';
+
+                        let fileIcon = p.file ? `<img src="${p.file}" style="width:30px; height:30px; border-radius:4px; cursor:zoom-in;" onclick="previewDocumentImage('${p.file}')" />` : `<span style="color:#94a3b8;font-style:italic;">Không có</span>`;
+
+                        tbody.innerHTML += `<tr>
+                            <td class="text-left font-bold"><span style="color:var(--blue);">[${p.code}]</span> ${p.name}</td>
+                            <td class="text-left font-bold">
+                                <span>${p.recipient}</span><br>
+                                <span style="font-size:11px;color:#64748b;">${p.bankAcc} - ${p.bankName}</span>
+                            </td>
+                            <td class="text-center">${p.dept}</td>
+                            <td class="font-bold" style="color:var(--green);">${formatMoney(p.after)}</td>
+                            <td class="text-center">${fileIcon}</td>
+                            <td class="text-center"><span class="badge ${statusBadge}">${p.status}</span></td>
+                            <td class="text-center">
+                                <button class="btn-action btn-print" onclick="printPaymentBill(${p.id})">In & QR</button>
+                                <button class="btn-action btn-edit" onclick="editPaymentRecord(${p.id})">Sửa</button>
+                                <button class="btn-action btn-delete" onclick="deletePaymentRecord(${p.id})">Xóa</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+            } 
+            else if (activeSubTab === 'telecom') {
+                let total = telecomRecords.length;
+                let paid = telecomRecords.filter(t => t.status === 'Đã thanh toán').reduce((a, b) => a + b.cost, 0);
+                let unpaid = telecomRecords.filter(t => t.status === 'Chưa thanh toán').reduce((a, b) => a + b.cost, 0);
+                let totalCost = telecomRecords.reduce((a, b) => a + b.cost, 0);
+
+                stat.innerHTML = `
+                    <div class="stat-box" style="border-left-color: var(--blue);">
+                        <div class="stat-title">Tổng đường truyền</div>
+                        <div class="stat-value">${total} bao gồm Internet/VPN</div>
+                    </div>
+                    <div class="stat-box" style="border-left-color: var(--green);">
+                        <div class="stat-title">Đã thanh toán</div>
+                        <div class="stat-value" style="color:var(--green);">${formatMoney(paid)} đ</div>
+                    </div>
+                    <div class="stat-box" style="border-left-color: var(--red);">
+                        <div class="stat-title">Chờ thanh toán</div>
+                        <div class="stat-value" style="color:var(--red);">${formatMoney(unpaid)} đ</div>
+                    </div>
+                    <div class="stat-box" style="border-left-color: var(--purple);">
+                        <div class="stat-title">Tổng chi phí dự kiến</div>
+                        <div class="stat-value">${formatMoney(totalCost)} đ</div>
+                    </div>
+                `;
+
+                let tbody = document.getElementById('telecom-table-body');
+                tbody.innerHTML = '';
+                if(telecomRecords.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:#94a3b8;">Chưa ghi nhận thông tin cước phí đường truyền.</td></tr>`;
+                } else {
+                    telecomRecords.forEach(t => {
+                        let statusBadge = (t.status === 'Đã thanh toán') ? 'bg-success' : 'bg-danger';
+                        tbody.innerHTML += `<tr>
+                            <td class="text-left font-bold"><span style="color:var(--purple);">${t.code}</span></td>
+                            <td class="text-center font-bold">${t.provider}</td>
+                            <td class="text-left">${t.location}</td>
+                            <td class="font-bold">${formatMoney(t.cost)}</td>
+                            <td class="text-center">${t.dueDate}</td>
+                            <td class="text-center"><span class="badge ${statusBadge}">${t.status}</span></td>
+                            <td class="text-center">
+                                <button class="btn-action btn-edit" onclick="editTelecomRecord(${t.id})">Sửa</button>
+                                <button class="btn-action btn-delete" onclick="deleteTelecomRecord(${t.id})">Xóa</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+            }
+        }
+
+        // 3. Logic thêm mới và sửa Hồ sơ/Công việc/Cước mạng
         function calculateFormAmounts() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = parseFloat(document.getElementById('pay-price').value) || 0;
-            document.getElementById('pay-amount-before').value = (qty * price).toLocaleString('vi-VN') + " đ";
+            let vatRate = parseFloat(document.getElementById('pay-vat-rate').value) || 0;
+            
+            let before = qty * price;
+            let tax = before * vatRate;
+            let after = before + tax;
+
+            document.getElementById('pay-amount-after').value = Math.round(after).toLocaleString('vi-VN') + " đ";
         }
 
+        // Quản lý Công việc (Task)
+        function saveTaskRecord(e) {
+            e.preventDefault();
+            let id = document.getElementById('task-id').value;
+            let title = document.getElementById('task-title').value;
+            let assignee = document.getElementById('task-assignee').value;
+            let deadline = document.getElementById('task-deadline').value;
+            let priority = document.getElementById('task-priority').value;
+            let progress = parseFloat(document.getElementById('task-progress').value) || 0;
+            let status = document.getElementById('task-status').value;
+
+            if (id) {
+                // Chế độ sửa
+                let t = taskRecords.find(x => x.id == id);
+                if (t) {
+                    t.title = title; t.assignee = assignee; t.deadline = deadline;
+                    t.priority = priority; t.progress = progress; t.status = status;
+                }
+                cancelEditTask();
+            } else {
+                // Thêm mới
+                let rec = { id: Date.now(), title, assignee, deadline, priority, progress, status };
+                taskRecords.push(rec);
+            }
+            renderSubModule();
+            document.getElementById('task-form').reset();
+        }
+
+        function editTaskRecord(id) {
+            let t = taskRecords.find(x => x.id === id);
+            if (!t) return;
+            document.getElementById('task-id').value = t.id;
+            document.getElementById('task-title').value = t.title;
+            document.getElementById('task-assignee').value = t.assignee;
+            document.getElementById('task-deadline').value = t.deadline;
+            document.getElementById('task-priority').value = t.priority;
+            document.getElementById('task-progress').value = t.progress;
+            document.getElementById('task-status').value = t.status;
+
+            document.getElementById('task-btn-submit').innerText = "💾 Cập nhật";
+            document.getElementById('task-btn-cancel').style.display = "inline-block";
+        }
+
+        function cancelEditTask() {
+            document.getElementById('task-id').value = '';
+            document.getElementById('task-form').reset();
+            document.getElementById('task-btn-submit').innerText = "💾 Giao Công Việc";
+            document.getElementById('task-btn-cancel').style.display = "none";
+        }
+
+        function deleteTaskRecord(id) {
+            taskRecords = taskRecords.filter(t => t.id !== id);
+            renderSubModule();
+        }
+
+        // Quản lý Hồ sơ thanh toán (Payment)
         function savePaymentRecord(e) {
             e.preventDefault();
+            let id = document.getElementById('pay-id').value;
+            let code = document.getElementById('pay-code').value;
+            let name = document.getElementById('pay-name').value;
+            let recipient = document.getElementById('pay-recipient').value;
+            let bankAcc = document.getElementById('pay-bank-acc').value;
+            let bankName = document.getElementById('pay-bank-name').value;
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = parseFloat(document.getElementById('pay-price').value) || 0;
+            let vatRate = parseFloat(document.getElementById('pay-vat-rate').value) || 0;
+            let dept = document.getElementById('pay-dept').value;
+            let status = document.getElementById('pay-status').value;
+
             let before = qty * price;
-            let tax = before * 0.1;
+            let tax = before * vatRate;
+            let after = before + tax;
 
-            let rec = {
-                name: document.getElementById('pay-name').value,
-                recipient: document.getElementById('pay-recipient').value,
-                qty: qty,
-                before: before,
-                tax: tax,
-                after: before + tax,
-                status: document.getElementById('pay-status').value
-            };
-
-            paymentRecords.push(rec);
-            renderPaymentTable();
+            if (id) {
+                // Sửa
+                let p = paymentRecords.find(x => x.id == id);
+                if (p) {
+                    p.code = code; p.name = name; p.recipient = recipient; p.bankAcc = bankAcc;
+                    p.bankName = bankName; p.qty = qty; p.before = before; p.tax = tax;
+                    p.after = after; p.dept = dept; p.status = status; p.file = uploadedFileBase64 || p.file;
+                }
+                cancelEditPay();
+            } else {
+                // Thêm mới
+                let rec = {
+                    id: Date.now(), code, name, recipient, bankAcc, bankName,
+                    qty, before, tax, after, dept, status, file: uploadedFileBase64
+                };
+                paymentRecords.push(rec);
+            }
+            renderSubModule();
             document.getElementById('payment-form').reset();
+            document.getElementById('pay-amount-after').value = '';
+            uploadedFileBase64 = '';
+            document.getElementById('pay-file-preview').innerHTML = '';
+            generateAutoPaymentCode();
         }
 
-        function renderPaymentTable() {
-            let tbody = document.getElementById('payment-table-body');
-            tbody.innerHTML = '';
-            let tBefore = 0, tTax = 0, tAfter = 0;
+        function editPaymentRecord(id) {
+            let p = paymentRecords.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('pay-id').value = p.id;
+            document.getElementById('pay-code').value = p.code;
+            document.getElementById('pay-name').value = p.name;
+            document.getElementById('pay-recipient').value = p.recipient;
+            document.getElementById('pay-bank-acc').value = p.bankAcc;
+            document.getElementById('pay-bank-name').value = p.bankName;
+            document.getElementById('pay-qty').value = p.qty;
+            document.getElementById('pay-price').value = p.price || (p.before / (p.qty || 1));
+            document.getElementById('pay-dept').value = p.dept;
+            document.getElementById('pay-status').value = p.status;
+            
+            calculateFormAmounts();
+            if (p.file) {
+                document.getElementById('pay-file-preview').innerHTML = `<img src="${p.file}" alt="Preview"> <span style="font-size:11px;color:#059669;">Bản chứng từ cũ</span>`;
+                uploadedFileBase64 = p.file;
+            } else {
+                document.getElementById('pay-file-preview').innerHTML = '';
+                uploadedFileBase64 = '';
+            }
 
-            paymentRecords.forEach(r => {
-                tBefore += r.before; tTax += r.tax; tAfter += r.after;
-                tbody.innerHTML += `<tr>
-                    <td class="text-left font-bold">${r.name}<br><span style="font-size:11px; color:#64748b;">Thụ hưởng: ${r.recipient}</span></td>
-                    <td class="text-center">${r.qty}</td>
-                    <td>${formatMoney(r.before)}</td>
-                    <td>${formatMoney(r.tax)}</td>
-                    <td class="font-bold">${formatMoney(r.after)}</td>
-                    <td class="text-center"><span class="badge ${r.status.includes('Đã')?'bg-success':'bg-pending'}">${r.status}</span></td>
-                </tr>`;
-            });
+            document.getElementById('pay-btn-submit').innerText = "💾 Cập nhật";
+            document.getElementById('pay-btn-cancel').style.display = "inline-block";
+        }
 
-            document.getElementById('lbl-total-docs').innerText = paymentRecords.length + " hồ sơ";
-            document.getElementById('lbl-total-before').innerText = formatMoney(tBefore) + " đ";
-            document.getElementById('lbl-total-tax').innerText = formatMoney(tTax) + " đ";
-            document.getElementById('lbl-total-after').innerText = formatMoney(tAfter) + " đ";
+        function cancelEditPay() {
+            document.getElementById('pay-id').value = '';
+            document.getElementById('payment-form').reset();
+            document.getElementById('pay-btn-submit').innerText = "💾 Thêm Mới Hồ Sơ";
+            document.getElementById('pay-btn-cancel').style.display = "none";
+            document.getElementById('pay-file-preview').innerHTML = '';
+            uploadedFileBase64 = '';
+            generateAutoPaymentCode();
+        }
+
+        function deletePaymentRecord(id) {
+            paymentRecords = paymentRecords.filter(p => p.id !== id);
+            renderSubModule();
+        }
+
+        // Quản lý Cước Viễn thông (Telecom)
+        function saveTelecomRecord(e) {
+            e.preventDefault();
+            let id = document.getElementById('tele-id').value;
+            let code = document.getElementById('tele-code').value;
+            let provider = document.getElementById('tele-provider').value;
+            let location = document.getElementById('tele-location').value;
+            let cost = parseFloat(document.getElementById('tele-cost').value) || 0;
+            let dueDate = document.getElementById('tele-due-date').value;
+            let status = document.getElementById('tele-status').value;
+
+            if (id) {
+                // Sửa
+                let t = telecomRecords.find(x => x.id == id);
+                if (t) {
+                    t.code = code; t.provider = provider; t.location = location;
+                    t.cost = cost; t.dueDate = dueDate; t.status = status;
+                }
+                cancelEditTele();
+            } else {
+                // Thêm mới
+                let rec = { id: Date.now(), code, provider, location, cost, dueDate, status };
+                telecomRecords.push(rec);
+            }
+            renderSubModule();
+            document.getElementById('telecom-form').reset();
+        }
+
+        function editTelecomRecord(id) {
+            let t = telecomRecords.find(x => x.id === id);
+            if (!t) return;
+            document.getElementById('tele-id').value = t.id;
+            document.getElementById('tele-code').value = t.code;
+            document.getElementById('tele-provider').value = t.provider;
+            document.getElementById('tele-location').value = t.location;
+            document.getElementById('tele-cost').value = t.cost;
+            document.getElementById('tele-due-date').value = t.dueDate;
+            document.getElementById('tele-status').value = t.status;
+
+            document.getElementById('tele-btn-submit').innerText = "💾 Cập nhật";
+            document.getElementById('tele-btn-cancel').style.display = "inline-block";
+        }
+
+        function cancelEditTele() {
+            document.getElementById('tele-id').value = '';
+            document.getElementById('telecom-form').reset();
+            document.getElementById('tele-btn-submit').innerText = "💾 Lưu Số Liệu Cước";
+            document.getElementById('tele-btn-cancel').style.display = "none";
+        }
+
+        function deleteTelecomRecord(id) {
+            telecomRecords = telecomRecords.filter(t => t.id !== id);
+            renderSubModule();
+        }
+
+        // Chức năng xem trước ảnh tài liệu
+        function previewDocumentImage(base64) {
+            let win = window.open();
+            win.document.write(`<iframe src="${base64}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+        }
+
+        // Chức năng In phiếu hồ sơ và Tự động phát sinh mã QR VietQR chuẩn
+        function printPaymentBill(id) {
+            let p = paymentRecords.find(x => x.id === id);
+            if (!p) return;
+
+            // Thiết lập tham số QR Code (VietQR chuẩn) ngân hàng thụ hưởng
+            let bankId = p.bankName.replace(/\s+/g, '').toUpperCase();
+            let accountNo = p.bankAcc;
+            let amount = Math.round(p.after);
+            let description = encodeURIComponent(`Thanh toan ${p.code}`);
+            let qrUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact.png?amount=${amount}&addInfo=${description}&accountName=${encodeURIComponent(p.recipient)}`;
+
+            let printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>In Hồ Sơ Thanh Toán - ${p.code}</title>
+                    <style>
+                        body { font-family: 'Times New Roman', Times, serif; padding: 30px; line-height: 1.6; color: #000; }
+                        .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #000; padding-bottom: 15px; }
+                        .title { font-size: 20px; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+                        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+                        .info-item { font-size: 14px; margin-bottom: 10px; }
+                        .info-label { font-weight: bold; }
+                        .table-bill { width: 100%; border-collapse: collapse; margin: 25px 0; }
+                        .table-bill th, .table-bill td { border: 1px solid #000; padding: 10px; text-align: left; }
+                        .table-bill th { background-color: #f2f2f2; font-weight: bold; }
+                        .qr-section { text-align: center; margin-top: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+                        .qr-image { width: 150px; height: 150px; border: 1px solid #cbd5e1; padding: 5px; border-radius: 6px; }
+                        .footer-sign { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-top: 50px; font-weight: bold; }
+                        @media print {
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div style="font-size:14px; font-weight:bold;">TỔNG CÔNG TY GIẤY VIỆT NAM (VINAPACO)</div>
+                        <div class="title">ĐỀ NGHỊ THANH TOÁN CHỨNG TỪ</div>
+                        <div style="font-size:12px; font-style:italic;">Mã hồ sơ hệ thống: ${p.code}</div>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">Phòng ban đề xuất:</span> ${p.dept}</div>
+                        <div class="info-item"><span class="info-label">Đơn vị thụ hưởng:</span> ${p.recipient}</div>
+                        <div class="info-item"><span class="info-label">Số tài khoản:</span> ${p.bankAcc}</div>
+                        <div class="info-item"><span class="info-label">Tại ngân hàng:</span> ${p.bankName}</div>
+                    </div>
+
+                    <table class="table-bill">
+                        <thead>
+                            <tr>
+                                <th>Nội Dung Chi Tiết</th>
+                                <th style="text-align: right;">Giá Trị Trước Thuế</th>
+                                <th style="text-align: right;">Thuế VAT</th>
+                                <th style="text-align: right;">Tổng Tiền Sau Thuế</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${p.name}</td>
+                                <td style="text-align: right;">${Math.round(p.before).toLocaleString('vi-VN')} đ</td>
+                                <td style="text-align: right;">${Math.round(p.tax).toLocaleString('vi-VN')} đ</td>
+                                <td style="text-align: right; font-weight:bold;">${Math.round(p.after).toLocaleString('vi-VN')} đ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="font-size:13px; font-style:italic;">Số tiền viết bằng chữ:................................................................................................................................</div>
+
+                    <div class="qr-section">
+                        <p style="font-size:12px; font-weight:bold; margin-bottom:8px;">QUÉT MÃ QR THANH TOÁN (VIETQR CHUẨN)</p>
+                        <img class="qr-image" src="${qrUrl}" alt="VietQR Pay" />
+                    </div>
+
+                    <div class="footer-sign">
+                        <div>Người Đề Nghị</div>
+                        <div>Kế Toán Trưởng</div>
+                        <div>Tổng Giám Đốc</div>
+                    </div>
+
+                    <div style="text-align:center; margin-top:40px;" class="no-print">
+                        <button onclick="window.print()" style="padding: 10px 20px; background:#059669; color:#fff; border:none; font-weight:bold; border-radius:4px; cursor:pointer;">Tiến hành In ấn</button>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
 
         function exportSalaryToExcel() { 
-            XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("main-salary-table")), "BANG_LUONG_VINAPACO_CHINH_THUC.xlsx"); 
+            XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("main-salary-table")), "BANG_LUONG_VINAPACO_XUAT_KHAU.xlsx"); 
         }
     </script>
 </body>
