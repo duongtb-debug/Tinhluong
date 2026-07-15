@@ -118,7 +118,7 @@
         /* Form inputs nhỏ gọn */
         .table-input { width: 100%; max-width: 75px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; text-align: center; font-weight: bold;}
         .table-input.he-so { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; max-width: 50px; }
-        .table-input.money-input { background: #fff5f5; border-color: #fed7d7; text-align: right; color: #dc2626; }
+        .table-input.money-input { background: #fff5f5; border-color: #fed7d7; text-align: right; color: #dc2626; max-width: 95px; }
 
         .text-left { text-align: left !important; }
         .text-center { text-align: center !important; }
@@ -348,7 +348,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Đơn Giá Trước Thuế (VND)</label>
-                                    <input type="number" id="pay-price" class="form-control" value="0" oninput="calculateFormAmounts()" required>
+                                    <input type="text" id="pay-price" class="form-control" value="0" oninput="formatCurrencyInput(this); calculateFormAmounts()" placeholder="0">
                                 </div>
                                 <div class="form-group">
                                     <label>Thuế Suất VAT (%)</label>
@@ -430,7 +430,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Cước Phí Trọn Gói / Tháng</label>
-                                    <input type="number" id="tele-cost" class="form-control" placeholder="VND..." required>
+                                    <input type="text" id="tele-cost" class="form-control" oninput="formatCurrencyInput(this)" placeholder="0" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Ngày Hạn Thanh Toán</label>
@@ -517,9 +517,25 @@
             { id: 2, code: "ISP-FTTH-02", provider: "VNPT", location: "Nhà xưởng điều khiển tự động", cost: 3500000, dueDate: "2026-07-18", status: "Chưa thanh toán" }
         ];
 
+        // Hàm định dạng số thành chuỗi tiền tệ (Ví dụ: 5000000 -> 5.000.000)
         function formatMoney(num) {
             if (num === "" || num === undefined || isNaN(num)) return "-";
             return Math.round(num).toLocaleString('vi-VN');
+        }
+
+        // Hàm phân tách dấu chấm thực tế khi người dùng gõ phím trực tiếp vào ô input
+        function formatCurrencyInput(input) {
+            let value = input.value.replace(/\./g, ''); // Xóa bỏ toàn bộ dấu chấm cũ
+            if(!isNaN(value) && value !== "") {
+                input.value = parseInt(value).toLocaleString('vi-VN');
+            }
+        }
+
+        // Trích xuất số nguyên thuần túy từ chuỗi định dạng để thực hiện tính toán
+        function getRawNumber(str) {
+            if(!str) return 0;
+            let raw = str.toString().replace(/\./g, '').replace(/ đ/g, '').replace(/,/g, '');
+            return parseFloat(raw) || 0;
         }
 
         window.onload = function() {
@@ -571,7 +587,12 @@
         }
 
         function updateSalaryData(index, field, value) {
-            dataset[index][field] = parseFloat(value) || 0;
+            // Định dạng tiền tạm ứng khi cập nhật trực tiếp tại bảng Lương Công Việc
+            if(field === 'tamUngTru' || field === 'quyPCTT' || field === 'truUngT4') {
+                dataset[index][field] = getRawNumber(value);
+            } else {
+                dataset[index][field] = parseFloat(value) || 0;
+            }
             renderSalaryModule();
         }
 
@@ -676,9 +697,9 @@
                         <td>${s.cong}</td>
                         <td>${formatMoney(luongCVChuan)}</td>
                         <td class="font-bold">${formatMoney(luongCVThucTe)}</td>
-                        <td><input type="number" class="table-input money-input" value="${s.tamUngTru}" onchange="updateSalaryData(${idx}, 'tamUngTru', this.value)"></td>
-                        <td><input type="number" class="table-input" value="${s.quyPCTT}" onchange="updateSalaryData(${idx}, 'quyPCTT', this.value)"></td>
-                        <td><input type="number" class="table-input" value="${s.truUngT4}" onchange="updateSalaryData(${idx}, 'truUngT4', this.value)"></td>
+                        <td><input type="text" class="table-input money-input" value="${formatMoney(s.tamUngTru)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'tamUngTru', this.value)"></td>
+                        <td><input type="text" class="table-input money-input" style="color:#475569; background:#fff;" value="${formatMoney(s.quyPCTT)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'quyPCTT', this.value)"></td>
+                        <td><input type="text" class="table-input money-input" style="color:#475569; background:#fff;" value="${formatMoney(s.truUngT4)}" oninput="formatCurrencyInput(this)" onchange="updateSalaryData(${idx}, 'truUngT4', this.value)"></td>
                         <td class="font-bold ${thucLinhLCV < 0 ? 'color-minus' : ''}" style="color:#d97706;">${formatMoney(thucLinhLCV)}</td>
                         <td class="color-tongcuoi" style="background:#f0fdf4;">${formatMoney(tongThucLinh)}</td>
                     </tr>`;
@@ -967,7 +988,7 @@
         // 3. Logic thêm mới và sửa Hồ sơ/Công việc/Cước mạng
         function calculateFormAmounts() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
-            let price = parseFloat(document.getElementById('pay-price').value) || 0;
+            let price = getRawNumber(document.getElementById('pay-price').value);
             let vatRate = parseFloat(document.getElementById('pay-vat-rate').value) || 0;
             
             let before = qty * price;
@@ -989,7 +1010,6 @@
             let status = document.getElementById('task-status').value;
 
             if (id) {
-                // Chế độ sửa
                 let t = taskRecords.find(x => x.id == id);
                 if (t) {
                     t.title = title; t.assignee = assignee; t.deadline = deadline;
@@ -997,7 +1017,6 @@
                 }
                 cancelEditTask();
             } else {
-                // Thêm mới
                 let rec = { id: Date.now(), title, assignee, deadline, priority, progress, status };
                 taskRecords.push(rec);
             }
@@ -1042,7 +1061,7 @@
             let bankAcc = document.getElementById('pay-bank-acc').value;
             let bankName = document.getElementById('pay-bank-name').value;
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
-            let price = parseFloat(document.getElementById('pay-price').value) || 0;
+            let price = getRawNumber(document.getElementById('pay-price').value);
             let vatRate = parseFloat(document.getElementById('pay-vat-rate').value) || 0;
             let dept = document.getElementById('pay-dept').value;
             let status = document.getElementById('pay-status').value;
@@ -1052,19 +1071,18 @@
             let after = before + tax;
 
             if (id) {
-                // Sửa
                 let p = paymentRecords.find(x => x.id == id);
                 if (p) {
                     p.code = code; p.name = name; p.recipient = recipient; p.bankAcc = bankAcc;
                     p.bankName = bankName; p.qty = qty; p.before = before; p.tax = tax;
                     p.after = after; p.dept = dept; p.status = status; p.file = uploadedFileBase64 || p.file;
+                    p.price = price;
                 }
                 cancelEditPay();
             } else {
-                // Thêm mới
                 let rec = {
                     id: Date.now(), code, name, recipient, bankAcc, bankName,
-                    qty, before, tax, after, dept, status, file: uploadedFileBase64
+                    qty, before, tax, after, dept, status, file: uploadedFileBase64, price: price
                 };
                 paymentRecords.push(rec);
             }
@@ -1086,7 +1104,10 @@
             document.getElementById('pay-bank-acc').value = p.bankAcc;
             document.getElementById('pay-bank-name').value = p.bankName;
             document.getElementById('pay-qty').value = p.qty;
-            document.getElementById('pay-price').value = p.price || (p.before / (p.qty || 1));
+            
+            let rawPrice = p.price || (p.before / (p.qty || 1));
+            document.getElementById('pay-price').value = rawPrice.toLocaleString('vi-VN');
+            
             document.getElementById('pay-dept').value = p.dept;
             document.getElementById('pay-status').value = p.status;
             
@@ -1125,12 +1146,11 @@
             let code = document.getElementById('tele-code').value;
             let provider = document.getElementById('tele-provider').value;
             let location = document.getElementById('tele-location').value;
-            let cost = parseFloat(document.getElementById('tele-cost').value) || 0;
+            let cost = getRawNumber(document.getElementById('tele-cost').value);
             let dueDate = document.getElementById('tele-due-date').value;
             let status = document.getElementById('tele-status').value;
 
             if (id) {
-                // Sửa
                 let t = telecomRecords.find(x => x.id == id);
                 if (t) {
                     t.code = code; t.provider = provider; t.location = location;
@@ -1138,7 +1158,6 @@
                 }
                 cancelEditTele();
             } else {
-                // Thêm mới
                 let rec = { id: Date.now(), code, provider, location, cost, dueDate, status };
                 telecomRecords.push(rec);
             }
@@ -1153,7 +1172,7 @@
             document.getElementById('tele-code').value = t.code;
             document.getElementById('tele-provider').value = t.provider;
             document.getElementById('tele-location').value = t.location;
-            document.getElementById('tele-cost').value = t.cost;
+            document.getElementById('tele-cost').value = t.cost.toLocaleString('vi-VN');
             document.getElementById('tele-due-date').value = t.dueDate;
             document.getElementById('tele-status').value = t.status;
 
@@ -1173,18 +1192,15 @@
             renderSubModule();
         }
 
-        // Chức năng xem trước ảnh tài liệu
         function previewDocumentImage(base64) {
             let win = window.open();
             win.document.write(`<iframe src="${base64}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
         }
 
-        // Chức năng In phiếu hồ sơ và Tự động phát sinh mã QR VietQR chuẩn
         function printPaymentBill(id) {
             let p = paymentRecords.find(x => x.id === id);
             if (!p) return;
 
-            // Thiết lập tham số QR Code (VietQR chuẩn) ngân hàng thụ hưởng
             let bankId = p.bankName.replace(/\s+/g, '').toUpperCase();
             let accountNo = p.bankAcc;
             let amount = Math.round(p.after);
