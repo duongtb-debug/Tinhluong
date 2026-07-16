@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TOÀN DIỆN VÀ TÍNH LƯƠNG TỰ ĐỘNG</title>
-    <!-- Thư viện Supabase và Excel -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -291,13 +290,11 @@
 </head>
 <body>
 
-    <!-- THANH TRẠNG THÁI KẾT NỐI SUPABASE -->
     <div class="db-status-bar">
         <span id="conn-status-dot" class="status-dot status-connecting"></span>
         <span id="conn-status-text">Đang kết nối cơ sở dữ liệu...</span>
     </div>
 
-    <!-- SCREEN 1: ĐĂNG NHẬP -->
     <div id="login-screen">
         <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">ĐĂNG NHẬP HỆ THỐNG</h2>
         <div class="form-group" style="margin-bottom: 15px;">
@@ -311,7 +308,6 @@
         <button class="btn btn-primary" style="width: 100%; padding: 10px;" onclick="handleLogin()">ĐĂNG NHẬP</button>
     </div>
 
-    <!-- SCREEN 2: GIAO DIỆN CHÍNH -->
     <div id="main-app" style="display: none;">
         <div class="header">
             <h1>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP TOÀN DIỆN</h1>
@@ -326,7 +322,6 @@
             <button class="nav-tab" onclick="switchTab('admin-finance')">Hành chính - Tác vụ chuyên nghiệp</button>
         </div>
 
-        <!-- ================= TAB 1: LƯƠNG NHÂN VIÊN ================= -->
         <div id="tab-salary" class="tab-content active">
             <div class="main-card">
                 <div class="card-title">Bộ lọc và công cụ dữ liệu</div>
@@ -353,7 +348,6 @@
                 <div class="card-title">
                     BẢNG TỔNG HỢP THANH TOÁN LƯƠNG CHI TIẾT (16 NHÂN SỰ VĂN PHÒNG TCT)
                     <div style="display: flex; gap: 10px;">
-                        <!-- NÚT LƯU CLOUD -->
                         <button class="btn" style="background: var(--purple); color: white;" onclick="saveSalaryToCloud()">Lưu Lên Cloud (Supabase)</button>
                         <button class="btn btn-success" onclick="exportSalaryToExcel()">Xuất Excel Lương Chuẩn</button>
                     </div>
@@ -399,9 +393,7 @@
             </div>
         </div>
 
-        <!-- ================= TAB 2: HÀNH CHÍNH TÁC VỤ KẾT NỐI SUPABASE ================= -->
         <div id="tab-admin-finance" class="tab-content">
-            <!-- Khu vực thống kê chỉ số trực quan hóa đơn -->
             <div class="stat-grid" id="admin-stats-v2"></div>
 
             <div class="sub-tabs">
@@ -409,37 +401,37 @@
                 <button class="sub-tab" id="btn-sub-telecom" onclick="switchSubTab('telecom')">Hạ tầng & Cước Internet - Viễn thông</button>
             </div>
 
-            <!-- PHÂN HỆ 1: QUẢN LÝ HỒ SƠ THANH TOÁN HÀNH CHÍNH -->
             <div id="sub-tab-office" class="main-card">
                 <div class="card-title">Thiết lập hồ sơ thanh toán hành chính mới</div>
                 <form id="office-form-v2" onsubmit="handleSaveOfficeV2(event)" style="margin-bottom: 20px;">
                     <input type="hidden" id="office-id">
                     <div class="grid-form">
-                        <div class="form-group">
-                            <label>Nội dung thanh toán</label>
-                            <input type="text" id="office-category" required placeholder="Văn phòng phẩm, nước uống, tiếp khách...">
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Nội dung thanh toán / Mua sắm</label>
+                            <input type="text" id="office-category" required placeholder="Văn phòng phẩm, nước uống, thiết bị CNTT, tiếp khách...">
                         </div>
                         <div class="form-group">
                             <label>Số tiền trước thuế (VNĐ)</label>
-                            <input type="text" id="office-amount-before" required onkeyup="formatCurrencyInput(this); calculateOfficeTax();" placeholder="Nhập số tiền trước thuế">
+                            <input type="text" id="office-amount-before" required onkeyup="formatCurrencyInput(this); calculateOfficeVAT();" placeholder="Nhập số tiền trước thuế">
                         </div>
                         <div class="form-group">
-                            <label>Thuế suất (%)</label>
-                            <select id="office-tax-rate" onchange="calculateOfficeTax()">
+                            <label>Thuếu suất VAT</label>
+                            <select id="office-tax-rate" onchange="calculateOfficeVAT()">
                                 <option value="0">0%</option>
                                 <option value="5">5%</option>
-                                <option value="8" selected>8%</option>
-                                <option value="10">10%</option>
+                                <option value="8">8%</option>
+                                <option value="10" selected>10%</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Số tiền thuế VAT</label>
-                            <input type="text" id="office-tax-value" readonly style="background-color: #f1f5f9; font-weight: bold;" value="0">
+                            <label>Tiền thuế VAT (VNĐ) <span style="font-weight:normal; font-style:italic; color:var(--blue);">(Có thể tự sửa)</span></label>
+                            <input type="text" id="office-tax-value" onkeyup="formatCurrencyInput(this); recalculateOfficeTotalByTax();" placeholder="Tự động tính / Ghi đè">
                         </div>
                         <div class="form-group">
-                            <label>Tổng tiền sau thuế</label>
-                            <input type="text" id="office-amount-after" readonly style="background-color: #f1f5f9; font-weight: bold; color: var(--blue);" value="0">
+                            <label>Tổng thanh toán sau thuế (VNĐ) <span style="font-weight:normal; font-style:italic; color:var(--purple);">(Có thể tự sửa)</span></label>
+                            <input type="text" id="office-amount-after" onkeyup="formatCurrencyInput(this); recalculateOfficeTaxByTotal();" placeholder="Tự động tính / Ghi đè">
                         </div>
+                        
                         <div class="form-group">
                             <label>Ngày đề nghị</label>
                             <input type="date" id="office-date" required>
@@ -456,7 +448,7 @@
                                 <option value="Đã thanh toán">Đã thanh toán</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="grid-column: span 2;">
                             <label>Tài liệu đính kèm (Hóa đơn/Chứng từ)</label>
                             <div class="file-upload-wrapper">
                                 <input type="file" id="office-file-input" style="display: none;" onchange="handleFileChange(event, 'office')">
@@ -470,7 +462,7 @@
                         </div>
                     </div>
                     <div style="margin-top: 15px; display: flex; gap: 10px;">
-                        <button type="submit" class="btn btn-primary">Lưu hồ sơ thanh toán</button>
+                        <button type="submit" class="btn btn-primary">Lưu hồ sơ mua sắm/thanh toán</button>
                         <button type="button" class="btn" style="background:#64748b; color:white;" onclick="resetOfficeFormV2()">Làm mới</button>
                     </div>
                 </form>
@@ -480,10 +472,10 @@
                         <thead>
                             <tr style="background:#e2e8f0;">
                                 <th>Nội dung thanh toán</th>
-                                <th class="text-right">Số tiền trước thuế</th>
-                                <th class="text-center">Thuế suất</th>
+                                <th class="text-right">Tiền trước thuế</th>
+                                <th class="text-center">VAT (%)</th>
                                 <th class="text-right">Tiền thuế VAT</th>
-                                <th class="text-right" style="color: var(--blue);">Tổng tiền sau thuế</th>
+                                <th class="text-right" style="color: var(--blue);">Tổng thanh toán</th>
                                 <th>Ngày đề nghị</th>
                                 <th>Hạn thanh toán</th>
                                 <th class="text-center">Trạng thái</th>
@@ -496,7 +488,6 @@
                 </div>
             </div>
 
-            <!-- PHÂN HỆ 2: QUẢN LÝ CƯỚC VIỄN THÔNG & INTERNET -->
             <div id="sub-tab-telecom" class="main-card" style="display: none;">
                 <div class="card-title">Cấu hình cước viễn thông hóa đơn mới</div>
                 <form id="tele-form-v2" onsubmit="handleSaveTeleV2(event)" style="margin-bottom: 20px;">
@@ -520,26 +511,10 @@
                             <input type="text" id="tele-location" required placeholder="Sảnh văn phòng, Phòng máy chủ...">
                         </div>
                         <div class="form-group">
-                            <label>Cước trước thuế (VNĐ)</label>
-                            <input type="text" id="tele-cost-before" required onkeyup="formatCurrencyInput(this); calculateTeleTax();" placeholder="Cước trước thuế">
+                            <label>Mức cước thanh toán (VNĐ)</label>
+                            <input type="text" id="tele-cost-after" required onkeyup="formatCurrencyInput(this);" placeholder="Nhập mức cước thanh toán">
                         </div>
-                        <div class="form-group">
-                            <label>Thuế suất (%)</label>
-                            <select id="tele-tax-rate" onchange="calculateTeleTax()">
-                                <option value="0">0%</option>
-                                <option value="5">5%</option>
-                                <option value="8">8%</option>
-                                <option value="10" selected>10%</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Tiền thuế VAT</label>
-                            <input type="text" id="tele-tax-value" readonly style="background-color: #f1f5f9; font-weight: bold;" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Tổng cước sau thuế</label>
-                            <input type="text" id="tele-cost-after" readonly style="background-color: #f1f5f9; font-weight: bold; color: var(--purple);" value="0">
-                        </div>
+
                         <div class="form-group">
                             <label>Ngày xuất hóa đơn</label>
                             <input type="date" id="tele-invoice-date" required>
@@ -555,7 +530,7 @@
                                 <option value="Đã thanh toán">Đã thanh toán</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="grid-column: span 2;">
                             <label>Hóa đơn điện tử đính kèm</label>
                             <div class="file-upload-wrapper">
                                 <input type="file" id="tele-file-input" style="display: none;" onchange="handleFileChange(event, 'tele')">
@@ -581,10 +556,7 @@
                                 <th>Mã đường truyền</th>
                                 <th>Nhà mạng</th>
                                 <th>Vị trí lắp đặt</th>
-                                <th class="text-right">Cước trước thuế</th>
-                                <th class="text-center">Thuế suất</th>
-                                <th class="text-right">Tiền thuế VAT</th>
-                                <th class="text-right" style="color: var(--purple);">Tổng sau thuế</th>
+                                <th class="text-right" style="color: var(--purple);">Mức cước thanh toán</th>
                                 <th>Ngày xuất HĐ</th>
                                 <th>Hạn thanh toán</th>
                                 <th class="text-center">Trạng thái</th>
@@ -599,7 +571,6 @@
         </div>
     </div>
 
-    <!-- MODAL PREVIEW TÀI LIỆU -->
     <div id="previewModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
@@ -614,13 +585,11 @@
         const SUPABASE_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Kiểm tra kết nối tới Supabase ngay khi tải trang
         async function checkSupabaseConnection() {
             const dot = document.getElementById('conn-status-dot');
             const text = document.getElementById('conn-status-text');
             
             try {
-                // Thử kết nối thực tế
                 const { data, error } = await _supabase.from('office_payments').select('id').limit(1);
                 if (error) throw error;
                 
@@ -653,19 +622,6 @@
             document.getElementById('main-app').style.display = 'none';
         }
 
-        // Lắng nghe sự kiện gõ phím Enter trên form đăng nhập
-        document.getElementById('login-user').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleLogin();
-            }
-        });
-
-        document.getElementById('login-pass').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                handleLogin();
-            }
-        });
-
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
@@ -674,7 +630,6 @@
             event.target.classList.add('active');
         }
 
-        // Khởi động kiểm tra kết nối khi trang load xong
         window.addEventListener('DOMContentLoaded', () => {
             checkSupabaseConnection();
         });
@@ -709,14 +664,12 @@
             return Math.round(amount).toLocaleString('vi-VN') + " đ";
         }
 
-        // Tải dữ liệu bảng lương (nếu có dữ liệu trên cloud thì ưu tiên kéo về, ngược lại hiển thị mặc định)
         async function loadSalaryData() {
             const selectedMonth = document.getElementById('filter-month').value;
             const tbody = document.getElementById('tbody-salary');
             tbody.innerHTML = '<tr><td colspan="22" class="text-center">Đang nạp dữ liệu...</td></tr>';
 
             try {
-                // Kiểm tra xem tháng này đã được lưu trên Cloud Supabase chưa
                 const { data, error } = await _supabase
                     .from('salary_sheets')
                     .select('staff_data')
@@ -725,12 +678,9 @@
 
                 if (data && data.staff_data) {
                     originalStaffs = data.staff_data;
-                    console.log(`Đã tải dữ liệu tháng ${selectedMonth} từ Cloud.`);
-                } else {
-                    console.log(`Chưa có dữ liệu trên Cloud cho tháng ${selectedMonth}. Sử dụng cấu trúc mặc định.`);
                 }
             } catch (err) {
-                console.warn("Không tìm thấy bản ghi cũ trên Cloud, sử dụng dữ liệu mặc định hệ thống.");
+                console.warn("Sử dụng dữ liệu mặc định hệ thống.");
             }
 
             renderSalaryTable();
@@ -801,7 +751,6 @@
             }
         }
 
-        // ================= LƯU BẢNG LƯƠNG LÊN CLOUD SUPABASE =================
         async function saveSalaryToCloud() {
             const selectedMonth = document.getElementById('filter-month').value;
             if (!selectedMonth) {
@@ -814,7 +763,6 @@
             }
 
             try {
-                // Upsert (Cập nhật nếu tồn tại tháng cũ, thêm mới nếu chưa có)
                 const { error } = await _supabase
                     .from('salary_sheets')
                     .upsert({
@@ -824,11 +772,10 @@
                     }, { onConflict: 'month_year' });
 
                 if (error) throw error;
-
                 alert(`Đã lưu trữ thành công bảng lương tháng ${selectedMonth} lên Supabase Cloud!`);
             } catch (err) {
-                console.error("Lỗi khi lưu bảng lương lên Cloud:", err);
-                alert("Lưu trữ đám mây thất bại! Vui lòng kiểm tra lại kết nối cơ sở dữ liệu.");
+                console.error(err);
+                alert("Lưu trữ đám mây thất bại!");
             }
         }
 
@@ -963,24 +910,32 @@
             }
         }
 
-        function calculateOfficeTax() {
+        // ================= CÔNG CỤ TÍNH THUẾ VAT LINH HOẠT HỒ SƠ MUA SẮM =================
+        function calculateOfficeVAT() {
             const beforeVal = getRawNumber(document.getElementById('office-amount-before').value);
-            const taxRate = parseFloat(document.getElementById('office-tax-rate').value) || 0;
-            const taxValue = Math.round(beforeVal * (taxRate / 100));
-            const afterVal = beforeVal + taxValue;
+            const rate = parseFloat(document.getElementById('office-tax-rate').value) / 100;
+            
+            const taxVal = Math.round(beforeVal * rate);
+            const afterVal = beforeVal + taxVal;
 
-            document.getElementById('office-tax-value').value = taxValue.toLocaleString('vi-VN');
+            document.getElementById('office-tax-value').value = taxVal.toLocaleString('vi-VN');
             document.getElementById('office-amount-after').value = afterVal.toLocaleString('vi-VN');
         }
 
-        function calculateTeleTax() {
-            const beforeVal = getRawNumber(document.getElementById('tele-cost-before').value);
-            const taxRate = parseFloat(document.getElementById('tele-tax-rate').value) || 0;
-            const taxValue = Math.round(beforeVal * (taxRate / 100));
-            const afterVal = beforeVal + taxValue;
+        function recalculateOfficeTotalByTax() {
+            const beforeVal = getRawNumber(document.getElementById('office-amount-before').value);
+            const taxVal = getRawNumber(document.getElementById('office-tax-value').value);
+            
+            const afterVal = beforeVal + taxVal;
+            document.getElementById('office-amount-after').value = afterVal.toLocaleString('vi-VN');
+        }
 
-            document.getElementById('tele-tax-value').value = taxValue.toLocaleString('vi-VN');
-            document.getElementById('tele-cost-after').value = afterVal.toLocaleString('vi-VN');
+        function recalculateOfficeTaxByTotal() {
+            const beforeVal = getRawNumber(document.getElementById('office-amount-before').value);
+            const afterVal = getRawNumber(document.getElementById('office-amount-after').value);
+            
+            const taxVal = afterVal - beforeVal;
+            document.getElementById('office-tax-value').value = taxVal.toLocaleString('vi-VN');
         }
 
         // ================= XỬ LÝ FILE ĐÍNH KÈM =================
@@ -1054,7 +1009,6 @@
         // ================= TRUY XUẤT DỮ LIỆU ĐỘNG TỪ SUPABASE =================
         async function fetchAdminDataV2() {
             try {
-                // Đọc Hồ sơ Hành chính
                 const { data: officeData, error: officeErr } = await _supabase
                     .from('office_payments')
                     .select('*')
@@ -1062,7 +1016,6 @@
                 if (officeErr) throw officeErr;
                 officeRecordsV2 = officeData || [];
 
-                // Đọc Cước Viễn thông
                 const { data: teleData, error: teleErr } = await _supabase
                     .from('telecom_bills')
                     .select('*')
@@ -1083,37 +1036,33 @@
             let totalOfficeTax = officeRecordsV2.reduce((sum, r) => sum + Number(r.tax_value || 0), 0);
             let totalOfficeAfter = officeRecordsV2.reduce((sum, r) => sum + Number(r.amount_after || 0), 0);
 
-            let totalTeleBefore = telecomRecordsV2.reduce((sum, r) => sum + Number(r.cost_before || 0), 0);
-            let totalTeleTax = telecomRecordsV2.reduce((sum, r) => sum + Number(r.tax_value || 0), 0);
-            let totalTeleAfter = telecomRecordsV2.reduce((sum, r) => sum + Number(r.cost_after || 0), 0);
+            let totalTeleCost = telecomRecordsV2.reduce((sum, r) => sum + Number(r.cost_after || 0), 0);
 
             statsDiv.innerHTML = `
                 <div class="stat-box">
-                    <div class="stat-title">THỐNG KÊ CHI PHÍ HÀNH CHÍNH</div>
-                    <div class="stat-value">
-                        <span style="color: #475569; font-size:12px;">Trước thuế: ${formatMoney(totalOfficeBefore)}</span>
-                        <span style="color: var(--orange); font-size:12px;">Thuế VAT: ${formatMoney(totalOfficeTax)}</span>
-                        <span style="color: var(--blue); font-size:14px; border-top: 1px dashed #cbd5e1; padding-top:2px;">Tổng sau thuế: ${formatMoney(totalOfficeAfter)}</span>
+                    <div class="stat-title">THỐNG KÊ CHI PHÍ MUA SẮM & HÀNH CHÍNH</div>
+                    <div class="stat-value" style="font-size:12px; gap:4px;">
+                        <span>Trước thuế: <b>${formatMoney(totalOfficeBefore)}</b></span>
+                        <span>Tiền thuế VAT: <b>${formatMoney(totalOfficeTax)}</b></span>
+                        <span style="color: var(--blue); font-size:14px;">Tổng sau thuế: <b>${formatMoney(totalOfficeAfter)}</b></span>
                     </div>
                 </div>
                 <div class="stat-box" style="border-left-color: var(--purple);">
-                    <div class="stat-title">THỐNG KÊ CƯỚC VIỄN THÔNG INTERNET</div>
-                    <div class="stat-value">
-                        <span style="color: #475569; font-size:12px;">Trước thuế: ${formatMoney(totalTeleBefore)}</span>
-                        <span style="color: var(--orange); font-size:12px;">Thuế VAT: ${formatMoney(totalTeleTax)}</span>
-                        <span style="color: var(--purple); font-size:14px; border-top: 1px dashed #cbd5e1; padding-top:2px;">Tổng sau thuế: ${formatMoney(totalTeleAfter)}</span>
+                    <div class="stat-title">THỐNG KÊ CƯỚC INTERNET VIỄN THÔNG (KHÔNG THUẾ)</div>
+                    <div class="stat-value" style="font-size:12px; gap:4px;">
+                        <span style="color: var(--purple); font-size:14px; margin-top: 15px;">Tổng cước thanh toán: <b>${formatMoney(totalTeleCost)}</b></span>
                     </div>
                 </div>
             `;
 
-            // Render Bảng Hành chính
+            // Render Bảng Hành chính/Mua sắm
             const tbodyOffice = document.getElementById('tbody-office-v2');
             tbodyOffice.innerHTML = officeRecordsV2.map(r => `
                 <tr>
                     <td class="font-bold">${r.category}</td>
                     <td class="text-right">${formatMoney(r.amount_before)}</td>
                     <td class="text-center font-bold">${r.tax_rate}%</td>
-                    <td class="text-right">${formatMoney(r.tax_value)}</td>
+                    <td class="text-right" style="color: var(--orange);">${formatMoney(r.tax_value)}</td>
                     <td class="text-right font-bold" style="color: var(--blue);">${formatMoney(r.amount_after)}</td>
                     <td>${r.date}</td>
                     <td>${r.due_date}</td>
@@ -1128,16 +1077,13 @@
                 </tr>
             `).join('');
 
-            // Render Bảng Viễn thông
+            // Render Bảng Viễn thông (Không có cột thuế)
             const tbodyTele = document.getElementById('tbody-telecom-v2');
             tbodyTele.innerHTML = telecomRecordsV2.map(t => `
                 <tr>
                     <td class="font-bold">${t.code}</td>
                     <td>${t.provider}</td>
                     <td>${t.location}</td>
-                    <td class="text-right">${formatMoney(t.cost_before)}</td>
-                    <td class="text-center font-bold">${t.tax_rate}%</td>
-                    <td class="text-right">${formatMoney(t.tax_value)}</td>
                     <td class="text-right font-bold" style="color: var(--purple);">${formatMoney(t.cost_after)}</td>
                     <td>${t.invoice_date}</td>
                     <td>${t.due_date}</td>
@@ -1160,8 +1106,8 @@
             const category = document.getElementById('office-category').value;
             const beforeVal = getRawNumber(document.getElementById('office-amount-before').value);
             const taxRate = parseFloat(document.getElementById('office-tax-rate').value);
-            const taxValue = Math.round(beforeVal * (taxRate / 100));
-            const afterVal = beforeVal + taxValue;
+            const taxValue = getRawNumber(document.getElementById('office-tax-value').value);
+            const afterVal = getRawNumber(document.getElementById('office-amount-after').value);
             const date = document.getElementById('office-date').value;
             const dueDate = document.getElementById('office-due-date').value;
             const status = document.getElementById('office-status').value;
@@ -1198,7 +1144,7 @@
                 resetOfficeFormV2();
                 await fetchAdminDataV2();
             } catch (error) {
-                alert("Lỗi khi lưu vào cơ sở dữ liệu: " + error.message);
+                alert("Lỗi khi lưu: " + error.message);
             }
         }
 
@@ -1226,7 +1172,7 @@
         }
 
         async function deleteOfficeV2(id) {
-            if (confirm("Chắc chắn muốn xóa bản ghi này trên hệ thống?")) {
+            if (confirm("Chắc chắn muốn xóa bản ghi này?")) {
                 try {
                     const { error } = await _supabase
                         .from('office_payments')
@@ -1246,29 +1192,27 @@
             removeAttachedFile('office');
         }
 
-        // ================= NGHIỆP VỤ VIỄN THÔNG SUPABASE =================
+        // ================= NGHIỆP VỤ VIỄN THÔNG SUPABASE (KHÔNG THUẾ) =================
         async function handleSaveTeleV2(e) {
             e.preventDefault();
             const id = document.getElementById('tele-id').value;
             const code = document.getElementById('tele-code').value;
             const provider = document.getElementById('tele-provider').value;
             const location = document.getElementById('tele-location').value;
-            const beforeVal = getRawNumber(document.getElementById('tele-cost-before').value);
-            const taxRate = parseFloat(document.getElementById('tele-tax-rate').value);
-            const taxValue = Math.round(beforeVal * (taxRate / 100));
-            const afterVal = beforeVal + taxValue;
+            const costAfter = getRawNumber(document.getElementById('tele-cost-after').value);
             const invoiceDate = document.getElementById('tele-invoice-date').value;
             const due = document.getElementById('tele-due').value;
             const status = document.getElementById('tele-status').value;
 
+            // Lưu các trường thuế về 0 hoặc null để đồng bộ với cấu trúc database cũ (nếu có)
             const payload = {
                 code,
                 provider,
                 location,
-                cost_before: beforeVal,
-                tax_rate: taxRate,
-                tax_value: taxValue,
-                cost_after: afterVal,
+                cost_before: costAfter, // Coi tiền trước thuế bằng tiền thanh toán
+                tax_rate: 0,
+                tax_value: 0,
+                cost_after: costAfter,
                 invoice_date: invoiceDate,
                 due_date: due,
                 status
@@ -1295,7 +1239,7 @@
                 resetTeleFormV2();
                 await fetchAdminDataV2();
             } catch (error) {
-                alert("Lỗi khi lưu vào cơ sở dữ liệu: " + error.message);
+                alert("Lỗi khi lưu: " + error.message);
             }
         }
 
@@ -1306,9 +1250,6 @@
                 document.getElementById('tele-code').value = rec.code;
                 document.getElementById('tele-provider').value = rec.provider;
                 document.getElementById('tele-location').value = rec.location;
-                document.getElementById('tele-cost-before').value = Number(rec.cost_before).toLocaleString('vi-VN');
-                document.getElementById('tele-tax-rate').value = rec.tax_rate;
-                document.getElementById('tele-tax-value').value = Number(rec.tax_value).toLocaleString('vi-VN');
                 document.getElementById('tele-cost-after').value = Number(rec.cost_after).toLocaleString('vi-VN');
                 document.getElementById('tele-invoice-date').value = rec.invoice_date;
                 document.getElementById('tele-due').value = rec.due_date;
@@ -1325,7 +1266,7 @@
         }
 
         async function deleteTeleV2(id) {
-            if (confirm("Xóa đường truyền này khỏi cơ sở dữ liệu Supabase?")) {
+            if (confirm("Xóa đường truyền này?")) {
                 try {
                     const { error } = await _supabase
                         .from('telecom_bills')
