@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TOÀN DIỆN VÀ TÍNH LƯƠNG TỰ ĐỘNG</title>
+    <!-- Thư viện Supabase và Excel -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -290,11 +291,13 @@
 </head>
 <body>
 
+    <!-- THANH TRẠNG THÁI KẾT NỐI SUPABASE -->
     <div class="db-status-bar">
         <span id="conn-status-dot" class="status-dot status-connecting"></span>
         <span id="conn-status-text">Đang kết nối cơ sở dữ liệu...</span>
     </div>
 
+    <!-- SCREEN 1: ĐĂNG NHẬP -->
     <div id="login-screen">
         <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">ĐĂNG NHẬP HỆ THỐNG</h2>
         <div class="form-group" style="margin-bottom: 15px;">
@@ -308,6 +311,7 @@
         <button class="btn btn-primary" style="width: 100%; padding: 10px;" onclick="handleLogin()">ĐĂNG NHẬP</button>
     </div>
 
+    <!-- SCREEN 2: GIAO DIỆN CHÍNH -->
     <div id="main-app" style="display: none;">
         <div class="header">
             <h1>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP TOÀN DIỆN</h1>
@@ -322,6 +326,7 @@
             <button class="nav-tab" onclick="switchTab('admin-finance')">Hành chính - Tác vụ chuyên nghiệp</button>
         </div>
 
+        <!-- ================= TAB 1: LƯƠNG NHÂN VIÊN ================= -->
         <div id="tab-salary" class="tab-content active">
             <div class="main-card">
                 <div class="card-title">Bộ lọc và công cụ dữ liệu</div>
@@ -393,7 +398,9 @@
             </div>
         </div>
 
+        <!-- ================= TAB 2: HÀNH CHÍNH TÁC VỤ KẾT NỐI SUPABASE ================= -->
         <div id="tab-admin-finance" class="tab-content">
+            <!-- Khu vực thống kê chỉ số hóa đơn -->
             <div class="stat-grid" id="admin-stats-v2"></div>
 
             <div class="sub-tabs">
@@ -401,6 +408,7 @@
                 <button class="sub-tab" id="btn-sub-telecom" onclick="switchSubTab('telecom')">Hạ tầng & Cước Internet - Viễn thông</button>
             </div>
 
+            <!-- PHÂN HỆ 1: QUẢN LÝ HỒ SƠ THANH TOÁN HÀNH CHÍNH (GIỮ VAT LINH HOẠT) -->
             <div id="sub-tab-office" class="main-card">
                 <div class="card-title">Thiết lập hồ sơ thanh toán hành chính mới</div>
                 <form id="office-form-v2" onsubmit="handleSaveOfficeV2(event)" style="margin-bottom: 20px;">
@@ -415,7 +423,7 @@
                             <input type="text" id="office-amount-before" required onkeyup="formatCurrencyInput(this); calculateOfficeVAT();" placeholder="Nhập số tiền trước thuế">
                         </div>
                         <div class="form-group">
-                            <label>Thuếu suất VAT</label>
+                            <label>Thuế suất VAT</label>
                             <select id="office-tax-rate" onchange="calculateOfficeVAT()">
                                 <option value="0">0%</option>
                                 <option value="5">5%</option>
@@ -488,6 +496,7 @@
                 </div>
             </div>
 
+            <!-- PHÂN HỆ 2: QUẢN LÝ CƯỚC VIỄN THÔNG & INTERNET (ĐÃ LƯỢC BỎ TOÀN BỘ THUẾ) -->
             <div id="sub-tab-telecom" class="main-card" style="display: none;">
                 <div class="card-title">Cấu hình cước viễn thông hóa đơn mới</div>
                 <form id="tele-form-v2" onsubmit="handleSaveTeleV2(event)" style="margin-bottom: 20px;">
@@ -571,6 +580,7 @@
         </div>
     </div>
 
+    <!-- MODAL PREVIEW TÀI LIỆU -->
     <div id="previewModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
@@ -662,6 +672,16 @@
         function formatMoney(amount) {
             if (amount === undefined || amount === null) return "0 đ";
             return Math.round(amount).toLocaleString('vi-VN') + " đ";
+        }
+
+        // Định dạng ngày hiển thị (YYYY-MM-DD -> DD/MM/YYYY)
+        function formatDateVN(dateStr) {
+            if (!dateStr) return "";
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
         }
 
         async function loadSalaryData() {
@@ -895,10 +915,13 @@
             renderAdminDataV2();
         }
 
+        // Đã sửa lại lỗi tính toán khi số chứa dấu chấm ngăn cách hàng nghìn
         function getRawNumber(str) {
             if (!str) return 0;
             if (typeof str === 'number') return str;
-            return parseFloat(str.replace(/[^0-9.-]+/g, "")) || 0;
+            // Loại bỏ tất cả dấu chấm (.) ngăn cách hàng nghìn khỏi chuỗi
+            const cleanStr = str.toString().replace(/\./g, "").replace(/[^0-9.-]+/g, "");
+            return parseFloat(cleanStr) || 0;
         }
 
         function formatCurrencyInput(input) {
@@ -1055,7 +1078,7 @@
                 </div>
             `;
 
-            // Render Bảng Hành chính/Mua sắm
+            // Render Bảng Hành chính/Mua sắm (định dạng ngày chuẩn Việt Nam DD/MM/YYYY)
             const tbodyOffice = document.getElementById('tbody-office-v2');
             tbodyOffice.innerHTML = officeRecordsV2.map(r => `
                 <tr>
@@ -1064,8 +1087,8 @@
                     <td class="text-center font-bold">${r.tax_rate}%</td>
                     <td class="text-right" style="color: var(--orange);">${formatMoney(r.tax_value)}</td>
                     <td class="text-right font-bold" style="color: var(--blue);">${formatMoney(r.amount_after)}</td>
-                    <td>${r.date}</td>
-                    <td>${r.due_date}</td>
+                    <td>${formatDateVN(r.date)}</td>
+                    <td>${formatDateVN(r.due_date)}</td>
                     <td class="text-center font-bold" style="color: ${r.status === 'Đã thanh toán' ? 'var(--green)' : r.status === 'Đã duyệt' ? 'var(--blue)' : 'var(--orange)'}">${r.status}</td>
                     <td class="text-center">
                         ${r.file_data ? `<button class="btn" style="padding: 3px 8px; font-size:10px; background:var(--green); color:white;" onclick="viewSavedFile('${r.id}', 'office')">Xem File</button>` : `<span style="color:#94a3b8;">Không có</span>`}
@@ -1077,7 +1100,7 @@
                 </tr>
             `).join('');
 
-            // Render Bảng Viễn thông (Không có cột thuế)
+            // Render Bảng Viễn thông (định dạng ngày chuẩn Việt Nam DD/MM/YYYY)
             const tbodyTele = document.getElementById('tbody-telecom-v2');
             tbodyTele.innerHTML = telecomRecordsV2.map(t => `
                 <tr>
@@ -1085,8 +1108,8 @@
                     <td>${t.provider}</td>
                     <td>${t.location}</td>
                     <td class="text-right font-bold" style="color: var(--purple);">${formatMoney(t.cost_after)}</td>
-                    <td>${t.invoice_date}</td>
-                    <td>${t.due_date}</td>
+                    <td>${formatDateVN(t.invoice_date)}</td>
+                    <td>${formatDateVN(t.due_date)}</td>
                     <td class="text-center font-bold" style="color: ${t.status === 'Đã thanh toán' ? 'var(--green)' : 'var(--red)'}">${t.status}</td>
                     <td class="text-center">
                         ${t.file_data ? `<button class="btn" style="padding: 3px 8px; font-size:10px; background:var(--green); color:white;" onclick="viewSavedFile('${t.id}', 'tele')">Xem File</button>` : `<span style="color:#94a3b8;">Không có</span>`}
@@ -1204,12 +1227,12 @@
             const due = document.getElementById('tele-due').value;
             const status = document.getElementById('tele-status').value;
 
-            // Lưu các trường thuế về 0 hoặc null để đồng bộ với cấu trúc database cũ (nếu có)
+            // Đồng bộ hoá cấu trúc DB cũ bằng cách lưu giá trị thực không thuế vào cost_before và cost_after
             const payload = {
                 code,
                 provider,
                 location,
-                cost_before: costAfter, // Coi tiền trước thuế bằng tiền thanh toán
+                cost_before: costAfter,
                 tax_rate: 0,
                 tax_value: 0,
                 cost_after: costAfter,
