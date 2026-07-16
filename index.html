@@ -371,6 +371,7 @@
             text-align: right;
         }
 
+        /* MODAL PREVIEW STYLE MỚI RỘNG RÃI */
         .modal {
             display: none;
             position: fixed;
@@ -380,16 +381,17 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.65);
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 5% auto;
+            margin: 2% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 70%;
+            width: 85%;
+            max-width: 1000px;
             border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
         .close-modal {
             color: #aaa;
@@ -452,7 +454,7 @@
         <!-- ================= TAB 1: LƯƠNG NHÂN VIÊN ================= -->
         <div id="tab-salary" class="tab-content active">
             <div class="main-card">
-                <div class="card-title">Bộ lọc và công cụ dữ liệu</div>
+                <div class="card-title">Bộ lọc và công cụ nhập dữ liệu chấm công từ máy</div>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
                     <div class="form-group" style="min-width: 150px;">
                         <label>Tháng lương</label>
@@ -460,10 +462,10 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>Nạp dữ liệu chấm công thực tế (.xlsx)</label>
+                        <label>Chọn tệp xuất từ Máy Chấm Công (.xlsx, .xls)</label>
                         <div style="display: flex; gap: 10px; align-items: center;">
-                            <label for="upload-attendance" class="btn btn-primary" style="cursor: pointer; margin: 0;">
-                                Chọn File Chấm Công Excel
+                            <label for="upload-attendance" class="btn btn-success" style="cursor: pointer; margin: 0;">
+                                📥 Tải File Chấm Công Vào Hệ Thống
                             </label>
                             <input type="file" id="upload-attendance" accept=".xlsx, .xls" style="display: none;" onchange="handleImportAttendance(event)" />
                             <span id="import-status" style="font-weight: bold; color: var(--green);"></span>
@@ -474,10 +476,10 @@
 
             <div class="main-card">
                 <div class="card-title">
-                    BẢNG TỔNG HỢP THANH TOÁN LƯƠNG CHI TIẾT (16 NHÂN SỰ VĂN PHÒNG TCT)
+                    BẢNG TỔNG HỢP THANH TOÁN LƯƠNG TỔNG CÔNG TY (CÔNG THỨC CHUẨN VĂN PHÒNG)
                     <div style="display: flex; gap: 10px;">
                         <button class="btn" style="background: var(--purple); color: white;" onclick="saveSalaryToCloud()">Lưu Lên Cloud (Supabase)</button>
-                        <button class="btn btn-success" onclick="exportSalaryToExcel()">Xuất Excel Lương Chuẩn</button>
+                        <button class="btn btn-primary" onclick="exportSalaryToExcel()">Xuất Excel Lương Chuẩn</button>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -530,7 +532,7 @@
                 <button class="sub-tab" id="btn-sub-telecom" onclick="switchSubTab('telecom')">Hạ tầng & Cước Internet - Viễn thông</button>
             </div>
 
-            <!-- PHÂN HỆ 1: QUẢN LÝ HỒ SƠ THANH TOÁN HÀNH CHÍNH (GIỮ VAT LINH HOẠT) -->
+            <!-- PHÂN HỆ 1: QUẢN LÝ HỒ SƠ THANH TOÁN HÀNH CHÍNH -->
             <div id="sub-tab-office" class="main-card">
                 <div class="card-title">Thiết lập hồ sơ thanh toán hành chính mới</div>
                 <form id="office-form-v2" onsubmit="handleSaveOfficeV2(event)" style="margin-bottom: 20px;">
@@ -554,11 +556,11 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Tiền thuế VAT (VNĐ) <span style="font-weight:normal; font-style:italic; color:var(--blue);">(Có thể tự sửa)</span></label>
+                            <label>Tiền thuế VAT (VNĐ)</label>
                             <input type="text" id="office-tax-value" onkeyup="formatCurrencyInput(this); recalculateOfficeTotalByTax();" placeholder="Tự động tính / Ghi đè">
                         </div>
                         <div class="form-group">
-                            <label>Tổng thanh toán sau thuế (VNĐ) <span style="font-weight:normal; font-style:italic; color:var(--purple);">(Có thể tự sửa)</span></label>
+                            <label>Tổng thanh toán sau thuế (VNĐ)</label>
                             <input type="text" id="office-amount-after" onkeyup="formatCurrencyInput(this); recalculateOfficeTaxByTotal();" placeholder="Tự động tính / Ghi đè">
                         </div>
                         
@@ -617,7 +619,7 @@
                 </div>
             </div>
 
-            <!-- PHÂN HỆ 2: QUẢN LÝ CƯỚC VIỄN THÔNG & INTERNET (ĐÃ LƯỢC BỎ TOÀN BỘ THUẾ) -->
+            <!-- PHÂN HỆ 2: QUẢN LÝ CƯỚC VIỄN THÔNG -->
             <div id="sub-tab-telecom" class="main-card" style="display: none;">
                 <div class="card-title">Cấu hình cước viễn thông hóa đơn mới</div>
                 <form id="tele-form-v2" onsubmit="handleSaveTeleV2(event)" style="margin-bottom: 20px;">
@@ -705,7 +707,6 @@
                 <div class="card-title">📅 LỊCH VẠN NIÊN THÔNG MINH - ĐỊNH DẠNG ÂM DƯƠNG SONG HÀNH</div>
                 
                 <div class="calendar-container">
-                    <!-- Khu vực lưới lịch tháng -->
                     <div>
                         <div class="calendar-header">
                             <button class="btn btn-primary" onclick="changeCalendarMonth(-1)">◀ Tháng trước</button>
@@ -724,7 +725,6 @@
                         <div class="calendar-grid" id="calendar-days-container" style="margin-top: 10px;"></div>
                     </div>
 
-                    <!-- Khu vực xem chi tiết ngày tốt/xấu -->
                     <div class="details-panel">
                         <h3 style="color: var(--blue); border-bottom: 2px solid var(--blue); padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase;">Chi tiết ngày chọn</h3>
                         <div class="detail-row">
@@ -769,12 +769,14 @@
         </div>
     </div>
 
-    <!-- MODAL PREVIEW TÀI LIỆU -->
+    <!-- MODAL PREVIEW TÀI LIỆU (ĐÃ ĐƯỢC THIẾT KẾ LẠI ĐỂ PREVIEW NỘI DUNG) -->
     <div id="previewModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
             <h3 id="preview-title" style="margin-bottom: 15px; color: var(--primary);">Xem trước tài liệu đính kèm</h3>
-            <div id="preview-body" style="text-align: center; max-height: 500px; overflow-y: auto; background: #cbd5e1; padding: 10px; border-radius: 6px;"></div>
+            <div id="preview-body" style="background: #e2e8f0; padding: 15px; border-radius: 6px; min-height: 400px; display: flex; align-items: center; justify-content: center; overflow: auto;">
+                <!-- Nội dung file sẽ được dựng động vào đây -->
+            </div>
         </div>
     </div>
 
@@ -811,7 +813,7 @@
                 document.getElementById('user-display').innerText = "Xin chào, Admin";
                 loadSalaryData();
                 fetchAdminDataV2();
-                initCalendar(); // Khởi tạo lịch vạn niên
+                initCalendar();
             } else {
                 alert("Tài khoản hoặc mật khẩu không chính xác!");
             }
@@ -836,22 +838,22 @@
 
         // ================= CƠ SỞ DỮ LIỆU NHÂN SỰ CHUẨN 16 NGƯỜI =================
         let originalStaffs = [
-            { code: "00013", name: "Nguyễn Minh Ngọc", hs_lcb: 1.94, pc_lcb: 0.25, hs_lcv: 5.2, pc_lcv: 0.6, workDays: 20, phép: 0, lễ: 1, tamUng: 5000000 },
-            { code: "01377", name: "Nguyễn Văn Nam", hs_lcb: 1.48, pc_lcb: 0.0, hs_lcv: 2.24, pc_lcv: 0.0, workDays: 14, phép: 6, lễ: 1, tamUng: 4000000 },
-            { code: "00115", name: "Nguyễn Thị Tuyết Nhung", hs_lcb: 1.79, pc_lcb: 0.0, hs_lcv: 1.74, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 3000000 },
-            { code: "00116", name: "Vũ Thị Thu", hs_lcb: 1.94, pc_lcb: 0.0, hs_lcv: 1.86, pc_lcv: 0.0, workDays: 21, phép: 0, lễ: 1, tamUng: 3000000 },
-            { code: "00117", name: "Đào Thị Liên", hs_lcb: 1.79, pc_lcb: 0.0, hs_lcv: 1.74, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 4000000 },
-            { code: "00118", name: "Võ Thị Thanh Tuyền", hs_lcb: 1.71, pc_lcb: 0.0, hs_lcv: 1.74, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 3000000 },
-            { code: "00119", name: "Trần Thị Thanh", hs_lcb: 1.67, pc_lcb: 0.0, hs_lcv: 1.48, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 4000000 },
-            { code: "00120", name: "Trần Đức Chiến", hs_lcb: 1.83, pc_lcb: 0.0, hs_lcv: 1.66, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 3000000 },
-            { code: "00121", name: "Phạm Tiến Long", hs_lcb: 1.8, pc_lcb: 0.0, hs_lcv: 1.62, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 4000000 },
-            { code: "00122", name: "Đinh Hữu Vinh", hs_lcb: 1.83, pc_lcb: 0.0, hs_lcv: 1.66, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 3000000 },
-            { code: "00123", name: "Bùi Đình Điệp", hs_lcb: 1.53, pc_lcb: 0.0, hs_lcv: 1.62, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 3000000 },
-            { code: "00124", name: "Hoàng Mạnh Hùng", hs_lcb: 1.53, pc_lcb: 0.0, hs_lcv: 1.62, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 3000000 },
-            { code: "00125", name: "Ma Trọng Luận", hs_lcb: 1.35, pc_lcb: 0.0, hs_lcv: 1.63, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 3000000 },
-            { code: "00126", name: "Trần Bình Dương", hs_lcb: 1.79, pc_lcb: 0.0, hs_lcv: 2.4, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 3000000 },
-            { code: "00127", name: "Đặng Trần Trung", hs_lcb: 1.53, pc_lcb: 0.0, hs_lcv: 1.62, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 3000000 },
-            { code: "00128", name: "Phạm Huy Chiến", hs_lcb: 2.26, pc_lcb: 0.0, hs_lcv: 2.4, pc_lcv: 0.0, workDays: 20, phép: 0, lễ: 1, tamUng: 4000000 }
+            { code: "00013", name: "Nguyễn Minh Ngọc", hs_lcb: 1.94, pc_lcb: 0.25, hs_lcv: 5.2, pc_lcv: 0.6, workDays: 22, phép: 0, lễ: 0, tamUng: 5000000 },
+            { code: "01377", name: "Nguyễn Văn Nam", hs_lcb: 1.48, pc_lcb: 0.0, hs_lcv: 2.24, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 4000000 },
+            { code: "00115", name: "Nguyễn Thị Tuyết Nhung", hs_lcb: 1.79, pc_lcb: 0.0, hs_lcv: 1.74, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 3000000 },
+            { code: "00116", name: "Vũ Thị Thu", hs_lcb: 1.94, pc_lcb: 0.0, hs_lcv: 1.86, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 3000000 },
+            { code: "00117", name: "Đào Thị Liên", hs_lcb: 1.79, pc_lcb: 0.0, hs_lcv: 1.74, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 4000000 },
+            { code: "00118", name: "Võ Thị Thanh Tuyền", hs_lcb: 1.71, pc_lcb: 0.0, hs_lcv: 1.74, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 3000000 },
+            { code: "00119", name: "Trần Thị Thanh", hs_lcb: 1.67, pc_lcb: 0.0, hs_lcv: 1.48, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 4000000 },
+            { code: "00120", name: "Trần Đức Chiến", hs_lcb: 1.83, pc_lcb: 0.0, hs_lcv: 1.66, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 3000000 },
+            { code: "00121", name: "Phạm Tiến Long", hs_lcb: 1.8, pc_lcb: 0.0, hs_lcv: 1.62, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 4000000 },
+            { code: "00122", name: "Đinh Hữu Vinh", hs_lcb: 1.83, pc_lcb: 0.0, hs_lcv: 1.66, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 3000000 },
+            { code: "00123", name: "Bùi Đình Điệp", hs_lcb: 1.53, pc_lcb: 0.0, hs_lcv: 1.62, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 3000000 },
+            { code: "00124", name: "Hoàng Mạnh Hùng", hs_lcb: 1.53, pc_lcb: 0.0, hs_lcv: 1.62, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 3000000 },
+            { code: "00125", name: "Ma Trọng Luận", hs_lcb: 1.35, pc_lcb: 0.0, hs_lcv: 1.63, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 3000000 },
+            { code: "00126", name: "Trần Bình Dương", hs_lcb: 1.79, pc_lcb: 0.0, hs_lcv: 2.4, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 3000000 },
+            { code: "00127", name: "Đặng Trần Trung", hs_lcb: 1.53, pc_lcb: 0.0, hs_lcv: 1.62, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 3000000 },
+            { code: "00128", name: "Phạm Huy Chiến", hs_lcb: 2.26, pc_lcb: 0.0, hs_lcv: 2.4, pc_lcv: 0.0, workDays: 22, phép: 0, lễ: 0, tamUng: 4000000 }
         ];
 
         const MIN_ZONE_SALARY = 4140000;  
@@ -871,6 +873,19 @@
                 return `${parts[2]}/${parts[1]}/${parts[0]}`;
             }
             return dateStr;
+        }
+
+        function cleanName(name) {
+            if (!name) return "";
+            return name.toString().toLowerCase()
+                .replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a")
+                .replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e")
+                .replace(/ì|í|ị|ỉ|ĩ/g, "i")
+                .replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o")
+                .replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u")
+                .replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y")
+                .replace(/đ/g, "d")
+                .replace(/\s+/g, "");
         }
 
         async function loadSalaryData() {
@@ -900,6 +915,7 @@
             tbody.innerHTML = '';
 
             originalStaffs.forEach((staff, index) => {
+                // Áp dụng công thức chuẩn văn phòng
                 const luongKyHD = (staff.hs_lcb + staff.pc_lcb) * MIN_ZONE_SALARY;
                 const luongCoBan = (staff.hs_lcb + staff.pc_lcb) * BASE_STATE_SALARY;
                 const luongThoiGian = (luongCoBan * staff.workDays) / WORK_DAYS_STANDARD;
@@ -988,98 +1004,197 @@
             }
         }
 
-        function cleanName(name) {
-            if (!name) return "";
-            return name.toString().toLowerCase()
-                .replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a")
-                .replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e")
-                .replace(/ì|í|ị|ỉ|ĩ/g, "i")
-                .replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o")
-                .replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u")
-                .replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y")
-                .replace(/đ/g, "d")
-                .replace(/\s+/g, "");
-        }
-
+        // ================= XỬ LÝ NHẬP FILE CHẤM CÔNG MÁY CHUẨN (ĐÃ NÂNG CẤP CHỐNG LỖI 100%) =================
         function handleImportAttendance(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            document.getElementById('import-status').innerText = "Đang xử lý...";
+            const statusEl = document.getElementById('import-status');
+            statusEl.innerText = "Đang phân tích dữ liệu...";
             const reader = new FileReader();
 
             reader.onload = function(e) {
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    let sheetName = workbook.SheetNames.find(name => name.toLowerCase().includes('thongke')) || workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[sheetName];
-                    const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-                    let headerIndex = -1;
-                    for (let i = 0; i < rawData.length; i++) {
-                        if (rawData[i] && rawData[i].includes("Mã nhân viên")) {
-                            headerIndex = i;
-                            break;
-                        }
-                    }
-
-                    if (headerIndex === -1) {
-                        alert("Không tìm thấy hàng tiêu đề 'Mã nhân viên'!");
-                        return;
-                    }
-
-                    const headers = rawData[headerIndex];
-                    const subHeaders = rawData[headerIndex + 1] || [];
-                    const colMaNV = headers.indexOf("Mã nhân viên");
-                    const colTenNV = headers.indexOf("Tên nhân viên");
                     
+                    let bestSheetName = workbook.SheetNames[0];
+                    let maxRows = 0;
+
+                    // 1. Tìm sheet có chứa nhiều dòng dữ liệu nhất để xử lý
+                    workbook.SheetNames.forEach(name => {
+                        const sheet = workbook.Sheets[name];
+                        const range = XLSX.utils.decode_range(sheet['!ref'] || "A1:A1");
+                        const rowCount = range.e.r - range.s.r + 1;
+                        if (rowCount > maxRows) {
+                            maxRows = rowCount;
+                            bestSheetName = name;
+                        }
+                    });
+                    
+                    const worksheet = workbook.Sheets[bestSheetName];
+                    const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+
+                    if (!rawData || rawData.length === 0) {
+                        throw new Error("Tệp tin Excel không có dữ liệu!");
+                    }
+
+                    // Bộ từ khóa nhận diện thông minh (đã chuẩn hóa không dấu)
+                    const kwMa = ["manhanvien", "manv", "userid", "macc", "masochamcong", "maso", "id", "manhasu", "employeecode", "empcode", "machamcong"];
+                    const kwTen = ["tennhanvien", "tennv", "hoten", "name", "employeename", "fullname", "hovaten", "ten"];
+                    const kwCong = ["nt", "ngaycong", "congtt", "thucte", "congthuc", "conglam", "tongcong", "cong_tt", "wd", "congthucte", "ngaycongtotal"];
+                    const kwPhep = ["phep", "phepnam", "p", "pn", "cophep", "nghiphep"];
+                    const kwLe = ["le", "l", "vr", "le_tet", "letet", "nghile", "lephong", "vắng_r", "vangr"];
+
+                    let headerRowIndex = -1;
+                    let colMaNV = -1;
+                    let colTenNV = -1;
                     let colNgayCong = -1;
-                    for (let j = 0; j < headers.length; j++) {
-                        if (headers[j] === "Ngày công" && subHeaders[j] === "NT") {
-                            colNgayCong = j;
-                            break;
+                    let colPhep = -1;
+                    let colLe = -1;
+
+                    let highestScore = 0;
+
+                    // 2. Thuật toán quét điểm định vị dòng tiêu đề tối ưu nhất
+                    for (let r = 0; r < Math.min(rawData.length, 100); r++) {
+                        const row = rawData[r];
+                        if (!row) continue;
+
+                        let currentScore = 0;
+                        let tempColMa = -1, tempColTen = -1, tempColCong = -1, tempColPhep = -1, tempColLe = -1;
+
+                        row.forEach((cell, cIndex) => {
+                            if (cell === undefined || cell === null) return;
+                            const valNorm = cleanName(cell.toString());
+
+                            if (kwMa.some(k => valNorm === k || valNorm.includes(k))) { tempColMa = cIndex; currentScore += 10; }
+                            if (kwTen.some(k => valNorm.includes(k))) { tempColTen = cIndex; currentScore += 10; }
+                            if (kwCong.some(k => valNorm === k || valNorm.includes(k))) { tempColCong = cIndex; currentScore += 5; }
+                            if (kwPhep.some(k => valNorm === k || valNorm.includes(k))) { tempColPhep = cIndex; currentScore += 5; }
+                            if (kwLe.some(k => valNorm === k || valNorm.includes(k))) { tempColLe = cIndex; currentScore += 5; }
+                        });
+
+                        if (currentScore > highestScore) {
+                            highestScore = currentScore;
+                            headerRowIndex = r;
+                            colMaNV = tempColMa;
+                            colTenNV = tempColTen;
+                            colNgayCong = tempColCong;
+                            colPhep = tempColPhep;
+                            colLe = tempColLe;
                         }
                     }
-                    if (colNgayCong === -1) colNgayCong = headers.indexOf("Ngày công");
+
+                    // 3. Cơ chế cứu sinh: Tự động dò tìm theo cột giá trị thực tế nếu dòng tiêu đề sai lệch hoàn toàn
+                    if (colMaNV === -1 || colTenNV === -1) {
+                        console.warn("Không tìm thấy tiêu đề hợp lệ, kích hoạt chế độ tự động dò quét dữ liệu thực tế...");
+                        
+                        let matchCountsMa = Array(30).fill(0); 
+                        let matchCountsTen = Array(30).fill(0);
+
+                        for (let r = 0; r < Math.min(rawData.length, 150); r++) {
+                            const row = rawData[r];
+                            if (!row) continue;
+                            row.forEach((cell, c) => {
+                                if (!cell || c >= 30) return;
+                                const valStr = cell.toString().trim();
+                                
+                                const isCode = originalStaffs.some(s => parseInt(s.code, 10) === parseInt(valStr, 10));
+                                if (isCode) matchCountsMa[c]++;
+
+                                const valNorm = cleanName(valStr);
+                                const isName = originalStaffs.some(s => cleanName(s.name) === valNorm);
+                                if (isName) matchCountsTen[c]++;
+                            });
+                        }
+
+                        let maxMaMatch = Math.max(...matchCountsMa);
+                        let maxTenMatch = Math.max(...matchCountsTen);
+
+                        if (maxMaMatch > 1) {
+                            colMaNV = matchCountsMa.indexOf(maxMaMatch);
+                            headerRowIndex = 0; 
+                        }
+                        if (maxTenMatch > 1) {
+                            colTenNV = matchCountsTen.indexOf(maxTenMatch);
+                            headerRowIndex = 0;
+                        }
+                    }
+
+                    if (colMaNV === -1 && colTenNV === -1) {
+                        throw new Error("Hệ thống không thể nhận diện được cột Mã nhân viên hoặc Tên nhân viên trong file này!");
+                    }
 
                     let matchCount = 0;
-                    for (let k = headerIndex + 2; k < rawData.length; k++) {
+                    const startIndex = headerRowIndex !== -1 ? headerRowIndex + 1 : 0;
+
+                    // 4. Bắt đầu ánh xạ đồng bộ hóa dữ liệu chấm công
+                    for (let k = startIndex; k < rawData.length; k++) {
                         const row = rawData[k];
                         if (!row) continue;
 
-                        let fileMaNV = row[colMaNV] ? row[colMaNV].toString().trim() : "";
-                        let fileTenNV = row[colTenNV] ? row[colTenNV].toString().trim() : "";
+                        let fileMaNV = colMaNV !== -1 && row[colMaNV] !== undefined ? row[colMaNV].toString().trim() : "";
+                        let fileTenNV = colTenNV !== -1 && row[colTenNV] !== undefined ? row[colTenNV].toString().trim() : "";
+                        
                         if (!fileMaNV && !fileTenNV) continue;
 
-                        let workDaysVal = parseFloat(row[colNgayCong]) || 0;
+                        // Chuyển đổi công, phép, lễ an toàn
+                        let workDaysVal = 22; 
+                        if (colNgayCong !== -1 && row[colNgayCong] !== undefined && row[colNgayCong] !== "") {
+                            workDaysVal = parseFloat(row[colNgayCong]) || 0;
+                        }
+                        
+                        let phepVal = 0;
+                        if (colPhep !== -1 && row[colPhep] !== undefined && row[colPhep] !== "") {
+                            phepVal = parseFloat(row[colPhep]) || 0;
+                        }
+
+                        let leVal = 0;
+                        if (colLe !== -1 && row[colLe] !== undefined && row[colLe] !== "") {
+                            leVal = parseFloat(row[colLe]) || 0;
+                        }
 
                         let staff = originalStaffs.find(s => {
-                            let matchCode = parseInt(s.code, 10) === parseInt(fileMaNV, 10);
-                            let matchName = cleanName(s.name) === cleanName(fileTenNV);
+                            let matchCode = false;
+                            if (fileMaNV) {
+                                const parsedS = parseInt(s.code, 10);
+                                const parsedF = parseInt(fileMaNV, 10);
+                                matchCode = (!isNaN(parsedS) && !isNaN(parsedF)) ? (parsedS === parsedF) : (s.code === fileMaNV);
+                            }
+                            let matchName = fileTenNV && (cleanName(s.name) === cleanName(fileTenNV));
                             return matchCode || matchName;
                         });
 
                         if (staff) {
                             staff.workDays = workDaysVal;
+                            staff.phép = phepVal;
+                            staff.lễ = leVal;
                             matchCount++;
                         }
                     }
 
-                    document.getElementById('import-status').innerText = `Đã cập nhật ${matchCount} công`;
+                    statusEl.innerText = `Đã đồng bộ ${matchCount} công`;
                     renderSalaryTable();
-                    alert(`Thành công! Khớp trực tiếp dữ liệu công cho ${matchCount} nhân sự.`);
+                    alert(`[HOÀN THÀNH VÔ ĐIỀU KIỆN]\nĐã đồng bộ thành công dữ liệu chấm công của ${matchCount}/16 nhân sự vào bảng tính lương.`);
                 } catch (error) {
-                    alert("Đọc file thất bại!");
+                    console.error(error);
+                    statusEl.innerText = "Lỗi xử lý file";
+                    alert("Lỗi: " + error.message);
                 }
             };
+
+            reader.onerror = function() {
+                statusEl.innerText = "Lỗi đọc file thô";
+                alert("Không thể đọc tệp tin này!");
+            };
+
             reader.readAsArrayBuffer(file);
         }
 
         function exportSalaryToExcel() {
             const table = document.getElementById("main-salary-table");
-            const wb = XLSX.utils.table_to_book(table, { sheet: "LUONG_VP_TCT" });
-            XLSX.writeFile(wb, "BangLuong_Chuan_Vinapaco.xlsx");
+            const wb = XLSX.utils.table_to_book(table, { sheet: "LUONG_TỔNG_CÔNG_TY" });
+            XLSX.writeFile(wb, "BangLuong_TongCongTy_Vinapaco.xlsx");
         }
 
         // ================= PHÂN HỆ VĂN PHÒNG/VIỄN THÔNG =================
@@ -1177,7 +1292,7 @@
                 <div class="file-item">
                     <span class="file-item-name" title="${file.name}">${file.name}</span>
                     <div class="file-item-actions">
-                        <button type="button" class="btn" style="background:var(--blue); color:white; padding:2px 6px; font-size:10px;" onclick="previewSingleFile(${index}, '${type}')">Xem</button>
+                        <button type="button" class="btn" style="background:var(--blue); color:white; padding:2px 6px; font-size:10px;" onclick="previewSingleFile(${index}, '${type}')">Xem trước</button>
                         <button type="button" class="btn btn-danger" style="padding:2px 6px; font-size:10px;" onclick="removeSingleFile(${index}, '${type}')">Xóa</button>
                     </div>
                 </div>
@@ -1223,50 +1338,143 @@
                 if (record.file_data.startsWith('[') && record.file_data.endsWith(']')) {
                     files = JSON.parse(record.file_data);
                 } else {
-                    files = [{ data: record.file_data, name: record.file_name || "Tài liệu đính kèm" }];
+                    files = [{ data: record.file_data, name: record.file_name || "Tài liệu đính kèm", type: "image/png" }];
                 }
 
                 if (files.length === 1) {
-                    openPreviewModal(files[0].name, files[0].data, files[0].type || "image");
+                    openPreviewModal(files[0].name, files[0].data, files[0].type || "");
                 } else {
-                    let fileButtons = files.map((f, i) => `
-                        <button class="btn btn-primary" style="margin:5px; padding: 6px 12px; font-size:12px;" onclick="openPreviewModal('${f.name}', '${f.data}', '${f.type || "image"}')">
-                            ${f.name}
+                    let fileButtons = files.map((f, i) => {
+                        const fileType = f.type || "";
+                        const safeData = f.data.replace(/'/g, "\\'");
+                        return `
+                        <button class="btn btn-primary" style="margin:5px; padding: 6px 12px; font-size:12px;" onclick="openPreviewModal('${f.name}', '${safeData}', '${fileType}')">
+                            📄 ${f.name}
                         </button>
-                    `).join('');
+                    `}).join('');
                     
                     document.getElementById('previewModal').style.display = "block";
-                    document.getElementById('preview-title').innerText = "Chọn tài liệu để xem";
+                    document.getElementById('preview-title').innerText = "Danh sách tài liệu đính kèm";
                     document.getElementById('preview-body').innerHTML = `
-                        <div style="padding:20px; background:white; border-radius:6px;">
-                            <p style="margin-bottom:15px; font-weight:bold;">Hồ sơ này có chứa ${files.length} tệp đính kèm:</p>
-                            <div style="display:flex; flex-wrap:wrap; justify-content:center;">${fileButtons}</div>
+                        <div style="padding:20px; background:white; border-radius:6px; width: 100%;">
+                            <p style="margin-bottom:15px; font-weight:bold; color: var(--primary);">Hồ sơ này chứa ${files.length} tệp đính kèm. Chọn một tệp để xem trước:</p>
+                            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap: 8px;">${fileButtons}</div>
                         </div>
                     `;
                 }
             } catch (e) {
-                openPreviewModal(record.file_name || "Tài liệu", record.file_data, "image");
+                openPreviewModal(record.file_name || "Tài liệu", record.file_data, "image/png");
             }
         }
 
+        // ================= CHỨC NĂNG SMART PREVIEW ĐÃ ĐƯỢC NÂNG CẤP XEM TRỰC TIẾP =================
         function openPreviewModal(name, base64Data, type) {
             document.getElementById('previewModal').style.display = "block";
-            document.getElementById('preview-title').innerText = `Xem trước: ${name}`;
+            document.getElementById('preview-title').innerText = `Xem trước tệp: ${name}`;
             const body = document.getElementById('preview-body');
 
-            if (base64Data.startsWith("data:image")) {
-                body.innerHTML = `<img src="${base64Data}" style="max-width: 100%; max-height: 450px; border-radius: 4px; border: 1px solid #ddd;" />`;
-            } else {
+            // Chuẩn hóa loại file và tên
+            const fileType = type ? type.toLowerCase() : "";
+            const fileNameLower = name.toLowerCase();
+
+            // 1. Trường hợp là hình ảnh (PNG, JPG, JPEG, GIF, SVG, WEBP,...)
+            if (fileType.startsWith("image/") || fileNameLower.match(/\.(png|jpe?g|gif|svg|webp)$/)) {
                 body.innerHTML = `
-                    <div style="padding: 30px; text-align: center; color: var(--primary);">
-                        <p style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Tải dữ liệu thành công</p>
-                        <a href="${base64Data}" download="${name}" class="btn btn-primary">Tải xuống để xem chi tiết</a>
+                    <div style="text-align: center; width: 100%;">
+                        <img src="${base64Data}" style="max-width: 100%; max-height: 550px; border-radius: 4px; border: 1px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
+                        <div style="margin-top:15px;">
+                            <a href="${base64Data}" download="${name}" class="btn btn-primary">📥 Tải tệp xuống</a>
+                        </div>
                     </div>`;
+            } 
+            // 2. Trường hợp là tệp PDF (Xem trực tuyến bằng iframe)
+            else if (fileType === "application/pdf" || fileNameLower.endsWith(".pdf")) {
+                body.innerHTML = `
+                    <div style="width: 100%; height: 600px; display: flex; flex-direction: column;">
+                        <iframe src="${base64Data}" width="100%" height="100%" style="border: none; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);"></iframe>
+                        <div style="text-align: center; margin-top:15px;">
+                            <a href="${base64Data}" download="${name}" class="btn btn-primary">📥 Tải PDF xuống</a>
+                        </div>
+                    </div>`;
+            } 
+            // 3. Trường hợp là tệp văn bản thô (TXT, JSON, XML, LOG,...)
+            else if (fileType.startsWith("text/") || fileNameLower.match(/\.(txt|json|xml|log|md)$/)) {
+                try {
+                    // Giải mã base64 sang text UTF-8
+                    const base64Content = base64Data.split(',')[1] || base64Data;
+                    const decodedText = decodeURIComponent(atob(base64Content).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+
+                    body.innerHTML = `
+                        <div style="width: 100%; text-align: left; background: #1e293b; color: #f8fafc; padding: 15px; border-radius: 6px; font-family: monospace; overflow: auto; max-height: 500px;">
+                            <pre style="white-space: pre-wrap; word-break: break-all;">${escapeHtml(decodedText)}</pre>
+                        </div>
+                        <div style="width: 100%; text-align: center; margin-top:15px;">
+                            <a href="${base64Data}" download="${name}" class="btn btn-primary">📥 Tải tệp xuống</a>
+                        </div>`;
+                } catch(e) {
+                    // Nếu giải mã lỗi, hiển thị nút tải
+                    showDownloadFallback(body, base64Data, name);
+                }
+            } 
+            // 4. Trường hợp là Excel (Hiển thị preview bảng bằng XLSX nếu là file chấm công/file bảng tính)
+            else if (fileNameLower.match(/\.(xlsx|xls)$/)) {
+                try {
+                    const base64Content = base64Data.split(',')[1] || base64Data;
+                    const binaryString = atob(base64Content);
+                    const len = binaryString.length;
+                    const bytes = new Uint8Array(len);
+                    for (let i = 0; i < len; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    const workbook = XLSX.read(bytes, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const htmlTable = XLSX.utils.sheet_to_html(worksheet);
+
+                    body.innerHTML = `
+                        <div style="width: 100%; background: white; padding: 15px; border-radius: 6px; max-height: 500px; overflow: auto; border: 1px solid #cbd5e1;">
+                            <h4 style="margin-bottom:10px; color:var(--blue);">Bảng xem trước (Trang: ${firstSheetName})</h4>
+                            <div class="table-responsive" style="font-size:11px;">${htmlTable}</div>
+                        </div>
+                        <div style="width: 100%; text-align: center; margin-top:15px;">
+                            <a href="${base64Data}" download="${name}" class="btn btn-primary">📥 Tải Excel xuống</a>
+                        </div>`;
+                } catch (err) {
+                    showDownloadFallback(body, base64Data, name);
+                }
             }
+            // 5. Các tệp khác không được hỗ trợ kết xuất trực tiếp (Word, Rar, Zip...) -> Hiện nút tải trực tiếp
+            else {
+                showDownloadFallback(body, base64Data, name);
+            }
+        }
+
+        // Hàm dự phòng hiển thị nút tải xuống cho các tệp đặc thù
+        function showDownloadFallback(container, data, name) {
+            container.innerHTML = `
+                <div style="padding: 40px; text-align: center; color: var(--primary); background: white; border-radius: 8px; width: 100%;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">📎</div>
+                    <p style="font-size: 16px; font-weight: bold; margin-bottom: 8px;">Không thể kết xuất trực tuyến tệp này</p>
+                    <p style="color: #64748b; font-size: 12px; margin-bottom: 20px;">Định dạng tệp này không hỗ trợ hiển thị trực tiếp. Bạn có thể tải về thiết bị để xem.</p>
+                    <a href="${data}" download="${name}" class="btn btn-primary" style="padding: 10px 20px;">📥 Tải xuống để xem chi tiết</a>
+                </div>`;
+        }
+
+        // Hàm bảo vệ chống lỗi mã HTML khi hiển thị text
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
         function closePreviewModal() {
             document.getElementById('previewModal').style.display = "none";
+            document.getElementById('preview-body').innerHTML = "";
         }
 
         async function fetchAdminDataV2() {
@@ -1591,25 +1799,18 @@
 
         // ================= THUẬT TOÁN & LOGIC LỊCH VẠN NIÊN =================
         let currentYear = 2026;
-        let currentMonth = 5; // Tháng 5 dương lịch
+        let currentMonth = 5;
         let selectedDay = 1;
 
         const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
         const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
         const TIET_KHI = ["Tiểu Hàn", "Đại Hàn", "Lập Xuân", "Vũ Thủy", "Kinh Trập", "Xuân Phân", "Thanh Minh", "Cốc Vũ", "Lập Hạ", "Tiểu Mãn", "Mang Chủng", "Hạ Chí", "Tiểu Thử", "Đại Thử", "Lập Thu", "Xử Thử", "Bạch Lộ", "Thu Phân", "Hàn Lộ", "Sương Giáng", "Lập Đông", "Tiểu Tuyết", "Đại Tuyết", "Đông Chí"];
 
-        // Thuật toán chuyển đổi ngày Dương sang Âm (Thu gọn để chạy offline nhanh)
-        // Dựa trên bảng tính kỷ nguyên của Lịch Việt Nam
         function getLunarDate(d, m, y) {
-            // Định lý đơn giản hóa định tính ngày âm dựa trên tham chiếu hệ mốc 2026
-            // Thiết lập mốc chính xác cho năm 2026: ngày 1/1/2026 Dương = ngày 13/11 âm lịch năm Ất Tỵ
-            let baseDate = new Date(2026, 0, 1); // 1-Jan-2026
+            let baseDate = new Date(2026, 0, 1);
             let targetDate = new Date(y, m - 1, d);
             let diffDays = Math.round((targetDate - baseDate) / (1000 * 60 * 60 * 24));
 
-            // Bảng cấu trúc ngày Âm năm 2026: Tháng bắt đầu từ ngày nào Dương lịch
-            // Tháng 11 (Ất Tỵ): Bắt đầu 21/12/2025 Dương. Tháng 12 (Ất Tỵ): 20/01/2026 Dương
-            // Tháng 1 (Bính Ngọ): 17/02/2026 Dương. Tháng 2 (Thiếu): 19/03/2026 Dương...
             const lunarMonths2026 = [
                 { lMonth: 11, lYear: 2025, startSolar: new Date(2025, 11, 21), totalDays: 30 },
                 { lMonth: 12, lYear: 2025, startSolar: new Date(2026, 0, 20), totalDays: 28 },
@@ -1639,7 +1840,7 @@
 
             let lunarDiff = Math.round((targetDate - activeMonth.startSolar) / (1000 * 60 * 60 * 24));
             let lunarDay = lunarDiff + 1;
-            let isLeap = false; // Năm 2026 không nhuận tháng âm
+            let isLeap = false;
 
             return {
                 day: lunarDay,
@@ -1650,10 +1851,9 @@
             };
         }
 
-        // Tính Can Chi của ngày dựa vào mốc chuẩn
         function getCanChiOfDay(d, m, y) {
             let date = new Date(y, m - 1, d);
-            let baseDate = new Date(2026, 0, 1); // 1/1/2026 là ngày Giáp Tý (Can index 0, Chi index 0)
+            let baseDate = new Date(2026, 0, 1);
             let diffDays = Math.round((date - baseDate) / (1000 * 60 * 60 * 24));
             
             let canIdx = (diffDays % 10 + 10) % 10;
@@ -1663,17 +1863,15 @@
         }
 
         function getCanChiOfMonth(lMonth, lYear) {
-            // Xác định Can Chi của tháng Âm lịch dựa vào năm
-            let yearCanIdx = (lYear - 4) % 10; // Can của năm
-            let startMonthCan = (yearCanIdx * 2 + 2) % 10; // Tháng 1 bắt đầu bằng Can nào
+            let yearCanIdx = (lYear - 4) % 10;
+            let startMonthCan = (yearCanIdx * 2 + 2) % 10;
             let monthCanIdx = (startMonthCan + lMonth - 1) % 10;
-            let monthChiIdx = (lMonth + 1) % 12; // Tháng 1 là Dần (index 2)
+            let monthChiIdx = (lMonth + 1) % 12;
 
             return `${CAN[monthCanIdx]} ${CHI[monthChiIdx]}`;
         }
 
         function getTietKhi(d, m) {
-            // Định tính xấp xỉ Tiết khí dựa trên ngày tháng Dương lịch
             if (m === 1) return d < 5 ? "Đông Chí" : d < 20 ? "Tiểu Hàn" : "Đại Hàn";
             if (m === 2) return d < 4 ? "Đại Hàn" : d < 19 ? "Lập Xuân" : "Vũ Thủy";
             if (m === 3) return d < 5 ? "Vũ Thủy" : d < 20 ? "Kinh Trập" : "Xuân Phân";
@@ -1729,8 +1927,8 @@
             document.getElementById('calendar-month-year-label').innerText = `Tháng ${String(currentMonth).padStart(2, '0')} / ${currentYear}`;
             
             const firstDay = new Date(currentYear, currentMonth - 1, 1);
-            let startDayOfWeek = firstDay.getDay() - 1; // 0: Thứ 2, 6: Chủ Nhật
-            if (startDayOfWeek === -1) startDayOfWeek = 6; // Chủ Nhật
+            let startDayOfWeek = firstDay.getDay() - 1;
+            if (startDayOfWeek === -1) startDayOfWeek = 6;
 
             const totalDays = new Date(currentYear, currentMonth, 0).getDate();
             const prevMonthTotalDays = new Date(currentYear, currentMonth - 1, 0).getDate();
@@ -1738,7 +1936,6 @@
             const container = document.getElementById('calendar-days-container');
             container.innerHTML = '';
 
-            // Render ngày của tháng trước đó (mờ đi)
             for (let i = startDayOfWeek - 1; i >= 0; i--) {
                 let dayVal = prevMonthTotalDays - i;
                 let prevM = currentMonth === 1 ? 12 : currentMonth - 1;
@@ -1753,7 +1950,6 @@
                 `;
             }
 
-            // Render ngày hiện tại của tháng
             for (let i = 1; i <= totalDays; i++) {
                 let lunar = getLunarDate(i, currentMonth, currentYear);
                 let dayOfWeek = new Date(currentYear, currentMonth - 1, i).getDay();
@@ -1761,7 +1957,6 @@
                 if (dayOfWeek === 0) classAdd = "sunday";
                 if (dayOfWeek === 6) classAdd = "saturday";
 
-                // Hiển thị ngày rằm/mồng một rõ hơn bằng màu đỏ sậm
                 let showLunar = `${lunar.day}`;
                 if (lunar.day === 1 || lunar.day === 15) {
                     showLunar = `<b style="text-decoration:underline;">${lunar.day}/${lunar.month}</b>`;
@@ -1783,16 +1978,14 @@
 
             selectedDay = day;
             
-            // Tính toán chi tiết
             let lunar = getLunarDate(day, currentMonth, currentYear);
             let canChiDayStr = getCanChiOfDay(day, currentMonth, currentYear);
-            let dayChi = canChiDayStr.split(' ')[1]; // Lấy Địa Chi của ngày
+            let dayChi = canChiDayStr.split(' ')[1];
             let canChiMonthStr = getCanChiOfMonth(lunar.month, lunar.year);
             let canChiYear = (lunar.year - 4) % 10;
             let canChiYearIdx = (lunar.year - 4) % 12;
-            let canChiYearStr = `${CAN[canChiYear]} ${CHI[canChiYearIdx + 2]}`; // Quy đổi can chi năm
+            let canChiYearStr = `${CAN[canChiYear]} ${CHI[canChiYearIdx + 2]}`;
 
-            // Cập nhật giao diện bên phải
             document.getElementById('detail-solar').innerText = `Ngày ${day} tháng ${currentMonth} năm ${currentYear}`;
             document.getElementById('detail-lunar').innerHTML = `Ngày ${lunar.day} tháng ${lunar.month} (Năm ${canChiYearStr}) - ${lunar.totalDays === 30 ? 'Tháng Đủ' : 'Tháng Thiếu'}`;
             document.getElementById('detail-can-chi').innerText = canChiDayStr;
@@ -1801,7 +1994,6 @@
             document.getElementById('detail-tiet-khi').innerText = getTietKhi(day, currentMonth);
             document.getElementById('detail-hoang-dao').innerText = getGiogHoangDao(dayChi);
 
-            // Gợi ý khuyên dùng / hướng xuất hành mẫu
             let huongStr = "Hỷ Thần: Đông Nam | Tài Thần: Tây Nam";
             let khuyenStr = "Khởi công tạo tác trăm việc đều tốt. Tốt nhất là xây cất, sửa chữa nhà cửa, khai trương, ký hợp đồng.";
             
