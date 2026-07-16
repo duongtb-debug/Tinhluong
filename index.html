@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TOÀN DIỆN VÀ TÍNH LƯƠNG TỰ ĐỘNG</title>
+    <!-- Thư viện Supabase và Excel -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -290,11 +291,13 @@
 </head>
 <body>
 
+    <!-- THANH TRẠNG THÁI KẾT NỐI SUPABASE -->
     <div class="db-status-bar">
         <span id="conn-status-dot" class="status-dot status-connecting"></span>
         <span id="conn-status-text">Đang kết nối cơ sở dữ liệu...</span>
     </div>
 
+    <!-- SCREEN 1: ĐĂNG NHẬP -->
     <div id="login-screen">
         <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">ĐĂNG NHẬP HỆ THỐNG</h2>
         <div class="form-group" style="margin-bottom: 15px;">
@@ -308,6 +311,7 @@
         <button class="btn btn-primary" style="width: 100%; padding: 10px;" onclick="handleLogin()">ĐĂNG NHẬP</button>
     </div>
 
+    <!-- SCREEN 2: GIAO DIỆN CHÍNH -->
     <div id="main-app" style="display: none;">
         <div class="header">
             <h1>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP TOÀN DIỆN</h1>
@@ -322,6 +326,7 @@
             <button class="nav-tab" onclick="switchTab('admin-finance')">Hành chính - Tác vụ chuyên nghiệp</button>
         </div>
 
+        <!-- ================= TAB 1: LƯƠNG NHÂN VIÊN ================= -->
         <div id="tab-salary" class="tab-content active">
             <div class="main-card">
                 <div class="card-title">Bộ lọc và công cụ dữ liệu</div>
@@ -347,7 +352,9 @@
             <div class="main-card">
                 <div class="card-title">
                     BẢNG TỔNG HỢP THANH TOÁN LƯƠNG CHI TIẾT (16 NHÂN SỰ VĂN PHÒNG TCT)
-                    <div>
+                    <div style="display: flex; gap: 10px;">
+                        <!-- NÚT LƯU CLOUD -->
+                        <button class="btn" style="background: var(--purple); color: white;" onclick="saveSalaryToCloud()">Lưu Lên Cloud (Supabase)</button>
                         <button class="btn btn-success" onclick="exportSalaryToExcel()">Xuất Excel Lương Chuẩn</button>
                     </div>
                 </div>
@@ -392,7 +399,9 @@
             </div>
         </div>
 
+        <!-- ================= TAB 2: HÀNH CHÍNH TÁC VỤ KẾT NỐI SUPABASE ================= -->
         <div id="tab-admin-finance" class="tab-content">
+            <!-- Khu vực thống kê chỉ số trực quan hóa đơn -->
             <div class="stat-grid" id="admin-stats-v2"></div>
 
             <div class="sub-tabs">
@@ -400,6 +409,7 @@
                 <button class="sub-tab" id="btn-sub-telecom" onclick="switchSubTab('telecom')">Hạ tầng & Cước Internet - Viễn thông</button>
             </div>
 
+            <!-- PHÂN HỆ 1: QUẢN LÝ HỒ SƠ THANH TOÁN HÀNH CHÍNH -->
             <div id="sub-tab-office" class="main-card">
                 <div class="card-title">Thiết lập hồ sơ thanh toán hành chính mới</div>
                 <form id="office-form-v2" onsubmit="handleSaveOfficeV2(event)" style="margin-bottom: 20px;">
@@ -486,6 +496,7 @@
                 </div>
             </div>
 
+            <!-- PHÂN HỆ 2: QUẢN LÝ CƯỚC VIỄN THÔNG & INTERNET -->
             <div id="sub-tab-telecom" class="main-card" style="display: none;">
                 <div class="card-title">Cấu hình cước viễn thông hóa đơn mới</div>
                 <form id="tele-form-v2" onsubmit="handleSaveTeleV2(event)" style="margin-bottom: 20px;">
@@ -588,6 +599,7 @@
         </div>
     </div>
 
+    <!-- MODAL PREVIEW TÀI LIỆU -->
     <div id="previewModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
@@ -608,7 +620,7 @@
             const text = document.getElementById('conn-status-text');
             
             try {
-                // Thử query 1 bản ghi từ bảng office_payments để kiểm tra kết nối thực tế
+                // Thử kết nối thực tế
                 const { data, error } = await _supabase.from('office_payments').select('id').limit(1);
                 if (error) throw error;
                 
@@ -697,7 +709,34 @@
             return Math.round(amount).toLocaleString('vi-VN') + " đ";
         }
 
-        function loadSalaryData() {
+        // Tải dữ liệu bảng lương (nếu có dữ liệu trên cloud thì ưu tiên kéo về, ngược lại hiển thị mặc định)
+        async function loadSalaryData() {
+            const selectedMonth = document.getElementById('filter-month').value;
+            const tbody = document.getElementById('tbody-salary');
+            tbody.innerHTML = '<tr><td colspan="22" class="text-center">Đang nạp dữ liệu...</td></tr>';
+
+            try {
+                // Kiểm tra xem tháng này đã được lưu trên Cloud Supabase chưa
+                const { data, error } = await _supabase
+                    .from('salary_sheets')
+                    .select('staff_data')
+                    .eq('month_year', selectedMonth)
+                    .single();
+
+                if (data && data.staff_data) {
+                    originalStaffs = data.staff_data;
+                    console.log(`Đã tải dữ liệu tháng ${selectedMonth} từ Cloud.`);
+                } else {
+                    console.log(`Chưa có dữ liệu trên Cloud cho tháng ${selectedMonth}. Sử dụng cấu trúc mặc định.`);
+                }
+            } catch (err) {
+                console.warn("Không tìm thấy bản ghi cũ trên Cloud, sử dụng dữ liệu mặc định hệ thống.");
+            }
+
+            renderSalaryTable();
+        }
+
+        function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary');
             tbody.innerHTML = '';
 
@@ -758,7 +797,38 @@
             const staff = originalStaffs.find(s => s.code === code);
             if (staff) {
                 staff[field] = parseFloat(value) || 0;
-                loadSalaryData();
+                renderSalaryTable();
+            }
+        }
+
+        // ================= LƯU BẢNG LƯƠNG LÊN CLOUD SUPABASE =================
+        async function saveSalaryToCloud() {
+            const selectedMonth = document.getElementById('filter-month').value;
+            if (!selectedMonth) {
+                alert("Vui lòng chọn tháng lương hợp lệ!");
+                return;
+            }
+
+            if (!confirm(`Bạn chắc chắn muốn LƯU bảng lương tháng ${selectedMonth} lên Cloud Supabase?`)) {
+                return;
+            }
+
+            try {
+                // Upsert (Cập nhật nếu tồn tại tháng cũ, thêm mới nếu chưa có)
+                const { error } = await _supabase
+                    .from('salary_sheets')
+                    .upsert({
+                        month_year: selectedMonth,
+                        staff_data: originalStaffs,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'month_year' });
+
+                if (error) throw error;
+
+                alert(`Đã lưu trữ thành công bảng lương tháng ${selectedMonth} lên Supabase Cloud!`);
+            } catch (err) {
+                console.error("Lỗi khi lưu bảng lương lên Cloud:", err);
+                alert("Lưu trữ đám mây thất bại! Vui lòng kiểm tra lại kết nối cơ sở dữ liệu.");
             }
         }
 
@@ -841,7 +911,7 @@
                     }
 
                     document.getElementById('import-status').innerText = `Đã cập nhật ${matchCount} công`;
-                    loadSalaryData();
+                    renderSalaryTable();
                     alert(`Thành công! Khớp trực tiếp dữ liệu công cho ${matchCount} nhân sự.`);
                 } catch (error) {
                     alert("Đọc file thất bại!");
