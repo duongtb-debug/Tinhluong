@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TOÀN DIỆN VÀ TÍNH LƯƠNG TỰ ĐỘNG</title>
-    <!-- Thư viện Supabase và Excel -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -234,17 +233,39 @@
         .stat-value { font-size: 16px; font-weight: bold; margin-top: 5px; display: flex; flex-direction: column; gap: 2px; }
 
         .file-upload-wrapper {
-            position: relative;
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 8px;
+            background: #f8fafc;
+            padding: 12px;
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+        }
+        .file-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 5px;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-        }
-        .file-status {
+            background: white;
+            padding: 5px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
             font-size: 12px;
-            font-weight: bold;
-            color: var(--green);
         }
-        .file-actions {
+        .file-item-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70%;
+        }
+        .file-item-actions {
             display: flex;
             gap: 5px;
         }
@@ -291,13 +312,11 @@
 </head>
 <body>
 
-    <!-- THANH TRẠNG THÁI KẾT NỐI SUPABASE -->
     <div class="db-status-bar">
         <span id="conn-status-dot" class="status-dot status-connecting"></span>
         <span id="conn-status-text">Đang kết nối cơ sở dữ liệu...</span>
     </div>
 
-    <!-- SCREEN 1: ĐĂNG NHẬP -->
     <div id="login-screen">
         <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary);">ĐĂNG NHẬP HỆ THỐNG</h2>
         <div class="form-group" style="margin-bottom: 15px;">
@@ -311,7 +330,6 @@
         <button class="btn btn-primary" style="width: 100%; padding: 10px;" onclick="handleLogin()">ĐĂNG NHẬP</button>
     </div>
 
-    <!-- SCREEN 2: GIAO DIỆN CHÍNH -->
     <div id="main-app" style="display: none;">
         <div class="header">
             <h1>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP TOÀN DIỆN</h1>
@@ -326,7 +344,6 @@
             <button class="nav-tab" onclick="switchTab('admin-finance')">Hành chính - Tác vụ chuyên nghiệp</button>
         </div>
 
-        <!-- ================= TAB 1: LƯƠNG NHÂN VIÊN ================= -->
         <div id="tab-salary" class="tab-content active">
             <div class="main-card">
                 <div class="card-title">Bộ lọc và công cụ dữ liệu</div>
@@ -398,9 +415,7 @@
             </div>
         </div>
 
-        <!-- ================= TAB 2: HÀNH CHÍNH TÁC VỤ KẾT NỐI SUPABASE ================= -->
         <div id="tab-admin-finance" class="tab-content">
-            <!-- Khu vực thống kê chỉ số hóa đơn -->
             <div class="stat-grid" id="admin-stats-v2"></div>
 
             <div class="sub-tabs">
@@ -408,7 +423,6 @@
                 <button class="sub-tab" id="btn-sub-telecom" onclick="switchSubTab('telecom')">Hạ tầng & Cước Internet - Viễn thông</button>
             </div>
 
-            <!-- PHÂN HỆ 1: QUẢN LÝ HỒ SƠ THANH TOÁN HÀNH CHÍNH (GIỮ VAT LINH HOẠT) -->
             <div id="sub-tab-office" class="main-card">
                 <div class="card-title">Thiết lập hồ sơ thanh toán hành chính mới</div>
                 <form id="office-form-v2" onsubmit="handleSaveOfficeV2(event)" style="margin-bottom: 20px;">
@@ -457,15 +471,14 @@
                             </select>
                         </div>
                         <div class="form-group" style="grid-column: span 2;">
-                            <label>Tài liệu đính kèm (Hóa đơn/Chứng từ)</label>
+                            <label>Tài liệu đính kèm (Có thể chọn nhiều tệp tin)</label>
                             <div class="file-upload-wrapper">
-                                <input type="file" id="office-file-input" style="display: none;" onchange="handleFileChange(event, 'office')">
-                                <button type="button" class="btn" style="background:#475569; color:white; padding: 6px 12px; font-size:12px;" onclick="document.getElementById('office-file-input').click()">Chọn tệp</button>
-                                <span id="office-file-status" class="file-status">Không có tệp đính kèm</span>
-                                <div id="office-file-actions" class="file-actions" style="display:none;">
-                                    <button type="button" class="btn" style="background:var(--blue); color:white; padding:4px 8px; font-size:11px;" onclick="previewAttachedFile('office')">Xem</button>
-                                    <button type="button" class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="removeAttachedFile('office')">Gỡ</button>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <button type="button" class="btn" style="background:#475569; color:white; padding: 6px 12px; font-size:12px;" onclick="document.getElementById('office-file-input').click()">Chọn tệp đính kèm...</button>
+                                    <input type="file" id="office-file-input" style="display: none;" multiple onchange="handleMultipleFilesChange(event, 'office')">
+                                    <button type="button" class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="removeAllFiles('office')">Gỡ tất cả</button>
                                 </div>
+                                <div id="office-file-list" class="file-list-container"></div>
                             </div>
                         </div>
                     </div>
@@ -496,7 +509,6 @@
                 </div>
             </div>
 
-            <!-- PHÂN HỆ 2: QUẢN LÝ CƯỚC VIỄN THÔNG & INTERNET (ĐÃ LƯỢC BỎ TOÀN BỘ THUẾ) -->
             <div id="sub-tab-telecom" class="main-card" style="display: none;">
                 <div class="card-title">Cấu hình cước viễn thông hóa đơn mới</div>
                 <form id="tele-form-v2" onsubmit="handleSaveTeleV2(event)" style="margin-bottom: 20px;">
@@ -540,15 +552,14 @@
                             </select>
                         </div>
                         <div class="form-group" style="grid-column: span 2;">
-                            <label>Hóa đơn điện tử đính kèm</label>
+                            <label>Hóa đơn điện tử đính kèm (Có thể chọn nhiều tệp tin)</label>
                             <div class="file-upload-wrapper">
-                                <input type="file" id="tele-file-input" style="display: none;" onchange="handleFileChange(event, 'tele')">
-                                <button type="button" class="btn" style="background:#475569; color:white; padding: 6px 12px; font-size:12px;" onclick="document.getElementById('tele-file-input').click()">Chọn hóa đơn</button>
-                                <span id="tele-file-status" class="file-status">Không có tệp đính kèm</span>
-                                <div id="tele-file-actions" class="file-actions" style="display:none;">
-                                    <button type="button" class="btn" style="background:var(--blue); color:white; padding:4px 8px; font-size:11px;" onclick="previewAttachedFile('tele')">Xem</button>
-                                    <button type="button" class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="removeAttachedFile('tele')">Gỡ</button>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <button type="button" class="btn" style="background:#475569; color:white; padding: 6px 12px; font-size:12px;" onclick="document.getElementById('tele-file-input').click()">Chọn nhiều hóa đơn...</button>
+                                    <input type="file" id="tele-file-input" style="display: none;" multiple onchange="handleMultipleFilesChange(event, 'tele')">
+                                    <button type="button" class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="removeAllFiles('tele')">Gỡ tất cả</button>
                                 </div>
+                                <div id="tele-file-list" class="file-list-container"></div>
                             </div>
                         </div>
                     </div>
@@ -580,7 +591,6 @@
         </div>
     </div>
 
-    <!-- MODAL PREVIEW TÀI LIỆU -->
     <div id="previewModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
@@ -893,16 +903,14 @@
             XLSX.writeFile(wb, "BangLuong_Chuan_Vinapaco.xlsx");
         }
 
-        // ================= BIẾN TRẠNG THÁI & CHỨC NĂNG PHÂN HỆ VĂN PHÒNG/VIỄN THÔNG =================
+        // ================= BIẾN TRẠNG THÁI & CHỨC NĂNG PHÂN HỆ VĂN PHÒNG/VIỄN THÔNG (NÂNG CẤP CHỌN NHIỀU FILE) =================
         let activeSubTab = "office";
         let officeRecordsV2 = [];
         let telecomRecordsV2 = [];
 
-        let pendingAttachedFile = {
-            data: null,
-            name: "",
-            type: ""
-        };
+        // Lưu trữ danh sách file của hai module dạng mảng
+        let pendingOfficeFiles = [];
+        let pendingTeleFiles = [];
 
         function switchSubTab(subTab) {
             activeSubTab = subTab;
@@ -915,11 +923,9 @@
             renderAdminDataV2();
         }
 
-        // Đã sửa lại lỗi tính toán khi số chứa dấu chấm ngăn cách hàng nghìn
         function getRawNumber(str) {
             if (!str) return 0;
             if (typeof str === 'number') return str;
-            // Loại bỏ tất cả dấu chấm (.) ngăn cách hàng nghìn khỏi chuỗi
             const cleanStr = str.toString().replace(/\./g, "").replace(/[^0-9.-]+/g, "");
             return parseFloat(cleanStr) || 0;
         }
@@ -961,51 +967,113 @@
             document.getElementById('office-tax-value').value = taxVal.toLocaleString('vi-VN');
         }
 
-        // ================= XỬ LÝ FILE ĐÍNH KÈM =================
-        function handleFileChange(event, type) {
-            const file = event.target.files[0];
-            if (!file) return;
+        // ================= XỬ LÝ CHỌN NHIỀU FILE ĐÍNH KÈM (MULTIPLE FILES) =================
+        function handleMultipleFilesChange(event, type) {
+            const files = event.target.files;
+            if (!files.length) return;
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                pendingAttachedFile.data = e.target.result;
-                pendingAttachedFile.name = file.name;
-                pendingAttachedFile.type = file.type;
+            let fileArray = type === 'office' ? pendingOfficeFiles : pendingTeleFiles;
 
-                document.getElementById(`${type}-file-status`).innerText = `Đã đính kèm: ${file.name}`;
-                document.getElementById(`${type}-file-actions`).style.display = 'flex';
-            };
-            reader.readAsDataURL(file);
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fileArray.push({
+                        data: e.target.result,
+                        name: file.name,
+                        type: file.type
+                    });
+                    renderFileList(type);
+                };
+                reader.readAsDataURL(file);
+            });
         }
 
-        function removeAttachedFile(type) {
-            pendingAttachedFile = { data: null, name: "", type: "" };
-            document.getElementById(`${type}-file-input`).value = "";
-            document.getElementById(`${type}-file-status`).innerText = "Không có tệp đính kèm";
-            document.getElementById(`${type}-file-actions`).style.display = 'none';
-        }
-
-        function previewAttachedFile(type) {
-            if (!pendingAttachedFile.data) {
-                alert("Không tìm thấy dữ liệu xem trước!");
+        function renderFileList(type) {
+            const fileArray = type === 'office' ? pendingOfficeFiles : pendingTeleFiles;
+            const listContainer = document.getElementById(`${type}-file-list`);
+            
+            if (fileArray.length === 0) {
+                listContainer.innerHTML = `<span style="color:#94a3b8; font-style:italic; font-size:11px;">Chưa chọn tệp đính kèm nào</span>`;
                 return;
             }
-            openPreviewModal(pendingAttachedFile.name, pendingAttachedFile.data, pendingAttachedFile.type);
+
+            listContainer.innerHTML = fileArray.map((file, index) => `
+                <div class="file-item">
+                    <span class="file-item-name" title="${file.name}">${file.name}</span>
+                    <div class="file-item-actions">
+                        <button type="button" class="btn" style="background:var(--blue); color:white; padding:2px 6px; font-size:10px;" onclick="previewSingleFile(${index}, '${type}')">Xem</button>
+                        <button type="button" class="btn btn-danger" style="padding:2px 6px; font-size:10px;" onclick="removeSingleFile(${index}, '${type}')">Xóa</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function viewSavedFile(id, moduleType) {
-            let record = null;
-            if (moduleType === 'office') {
-                record = officeRecordsV2.find(r => r.id === id);
+        function removeSingleFile(index, type) {
+            if (type === 'office') {
+                pendingOfficeFiles.splice(index, 1);
             } else {
-                record = telecomRecordsV2.find(t => t.id === id);
+                pendingTeleFiles.splice(index, 1);
+            }
+            renderFileList(type);
+        }
+
+        function removeAllFiles(type) {
+            if (type === 'office') {
+                pendingOfficeFiles = [];
+            } else {
+                pendingTeleFiles = [];
+            }
+            document.getElementById(`${type}-file-input`).value = "";
+            renderFileList(type);
+        }
+
+        function previewSingleFile(index, type) {
+            const fileArray = type === 'office' ? pendingOfficeFiles : pendingTeleFiles;
+            const file = fileArray[index];
+            if (file) {
+                openPreviewModal(file.name, file.data, file.type);
+            }
+        }
+
+        // ================= XEM TẬP TIN ĐÃ LƯU TRONG CƠ SỞ DỮ LIỆU =================
+        function viewSavedFiles(id, moduleType) {
+            let record = moduleType === 'office' ? officeRecordsV2.find(r => r.id === id) : telecomRecordsV2.find(t => t.id === id);
+            if (!record || !record.file_data) {
+                alert("Không có tài liệu đính kèm!");
+                return;
             }
 
-            if (record && record.file_data) {
-                let fType = record.file_data.includes("data:image") ? "image" : "pdf";
-                openPreviewModal(record.file_name, record.file_data, fType);
-            } else {
-                alert("Không tìm thấy tệp đính kèm hợp lệ!");
+            try {
+                // Kiểm tra xem trường file_data lưu một danh sách file dạng JSON Array hay chuỗi đơn lẻ
+                let files = [];
+                if (record.file_data.startsWith('[') && record.file_data.endsWith(']')) {
+                    files = JSON.parse(record.file_data);
+                } else {
+                    files = [{ data: record.file_data, name: record.file_name || "Tài liệu đính kèm" }];
+                }
+
+                if (files.length === 1) {
+                    openPreviewModal(files[0].name, files[0].data, files[0].type || "image");
+                } else {
+                    // Nếu có nhiều file, hiển thị một hộp thoại lựa chọn file muốn xem
+                    let fileButtons = files.map((f, i) => `
+                        <button class="btn btn-primary" style="margin:5px; padding: 6px 12px; font-size:12px;" onclick="openPreviewModal('${f.name}', '${f.data}', '${f.type || "image"}')">
+                            ${f.name}
+                        </button>
+                    `).join('');
+                    
+                    document.getElementById('previewModal').style.display = "block";
+                    document.getElementById('preview-title').innerText = "Chọn tài liệu để xem";
+                    document.getElementById('preview-body').innerHTML = `
+                        <div style="padding:20px; background:white; border-radius:6px;">
+                            <p style="margin-bottom:15px; font-weight:bold;">Hồ sơ này có chứa ${files.length} tệp đính kèm:</p>
+                            <div style="display:flex; flex-wrap:wrap; justify-content:center;">${fileButtons}</div>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                // Hỗ trợ trường hợp dữ liệu cũ lưu dạng chuỗi đơn
+                openPreviewModal(record.file_name || "Tài liệu", record.file_data, "image");
             }
         }
 
@@ -1019,7 +1087,7 @@
             } else {
                 body.innerHTML = `
                     <div style="padding: 30px; text-align: center; color: var(--primary);">
-                        <p style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Đã tải tài liệu thành công</p>
+                        <p style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">Tải dữ liệu thành công</p>
                         <a href="${base64Data}" download="${name}" class="btn btn-primary">Tải xuống để xem chi tiết</a>
                     </div>`;
             }
@@ -1080,46 +1148,72 @@
 
             // Render Bảng Hành chính/Mua sắm (định dạng ngày chuẩn Việt Nam DD/MM/YYYY)
             const tbodyOffice = document.getElementById('tbody-office-v2');
-            tbodyOffice.innerHTML = officeRecordsV2.map(r => `
-                <tr>
-                    <td class="font-bold">${r.category}</td>
-                    <td class="text-right">${formatMoney(r.amount_before)}</td>
-                    <td class="text-center font-bold">${r.tax_rate}%</td>
-                    <td class="text-right" style="color: var(--orange);">${formatMoney(r.tax_value)}</td>
-                    <td class="text-right font-bold" style="color: var(--blue);">${formatMoney(r.amount_after)}</td>
-                    <td>${formatDateVN(r.date)}</td>
-                    <td>${formatDateVN(r.due_date)}</td>
-                    <td class="text-center font-bold" style="color: ${r.status === 'Đã thanh toán' ? 'var(--green)' : r.status === 'Đã duyệt' ? 'var(--blue)' : 'var(--orange)'}">${r.status}</td>
-                    <td class="text-center">
-                        ${r.file_data ? `<button class="btn" style="padding: 3px 8px; font-size:10px; background:var(--green); color:white;" onclick="viewSavedFile('${r.id}', 'office')">Xem File</button>` : `<span style="color:#94a3b8;">Không có</span>`}
-                    </td>
-                    <td class="text-center">
-                        <button class="btn" style="padding:4px 8px; font-size:10px; background:var(--blue); color:white;" onclick="editOfficeV2('${r.id}')">Sửa</button>
-                        <button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="deleteOfficeV2('${r.id}')">Xóa</button>
-                    </td>
-                </tr>
-            `).join('');
+            tbodyOffice.innerHTML = officeRecordsV2.map(r => {
+                let fileCount = 0;
+                if (r.file_data) {
+                    try {
+                        if (r.file_data.startsWith('[') && r.file_data.endsWith(']')) {
+                            fileCount = JSON.parse(r.file_data).length;
+                        } else {
+                            fileCount = 1;
+                        }
+                    } catch(e) { fileCount = 1; }
+                }
+
+                return `
+                    <tr>
+                        <td class="font-bold">${r.category}</td>
+                        <td class="text-right">${formatMoney(r.amount_before)}</td>
+                        <td class="text-center font-bold">${r.tax_rate}%</td>
+                        <td class="text-right" style="color: var(--orange);">${formatMoney(r.tax_value)}</td>
+                        <td class="text-right font-bold" style="color: var(--blue);">${formatMoney(r.amount_after)}</td>
+                        <td>${formatDateVN(r.date)}</td>
+                        <td>${formatDateVN(r.due_date)}</td>
+                        <td class="text-center font-bold" style="color: ${r.status === 'Đã thanh toán' ? 'var(--green)' : r.status === 'Đã duyệt' ? 'var(--blue)' : 'var(--orange)'}">${r.status}</td>
+                        <td class="text-center">
+                            ${r.file_data ? `<button class="btn" style="padding: 3px 8px; font-size:10px; background:var(--green); color:white;" onclick="viewSavedFiles('${r.id}', 'office')">Xem File (${fileCount})</button>` : `<span style="color:#94a3b8;">Không có</span>`}
+                        </td>
+                        <td class="text-center">
+                            <button class="btn" style="padding:4px 8px; font-size:10px; background:var(--blue); color:white;" onclick="editOfficeV2('${r.id}')">Sửa</button>
+                            <button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="deleteOfficeV2('${r.id}')">Xóa</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
 
             // Render Bảng Viễn thông (định dạng ngày chuẩn Việt Nam DD/MM/YYYY)
             const tbodyTele = document.getElementById('tbody-telecom-v2');
-            tbodyTele.innerHTML = telecomRecordsV2.map(t => `
-                <tr>
-                    <td class="font-bold">${t.code}</td>
-                    <td>${t.provider}</td>
-                    <td>${t.location}</td>
-                    <td class="text-right font-bold" style="color: var(--purple);">${formatMoney(t.cost_after)}</td>
-                    <td>${formatDateVN(t.invoice_date)}</td>
-                    <td>${formatDateVN(t.due_date)}</td>
-                    <td class="text-center font-bold" style="color: ${t.status === 'Đã thanh toán' ? 'var(--green)' : 'var(--red)'}">${t.status}</td>
-                    <td class="text-center">
-                        ${t.file_data ? `<button class="btn" style="padding: 3px 8px; font-size:10px; background:var(--green); color:white;" onclick="viewSavedFile('${t.id}', 'tele')">Xem File</button>` : `<span style="color:#94a3b8;">Không có</span>`}
-                    </td>
-                    <td class="text-center">
-                        <button class="btn" style="padding:4px 8px; font-size:10px; background:var(--blue); color:white;" onclick="editTeleV2('${t.id}')">Sửa</button>
-                        <button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="deleteTeleV2('${t.id}')">Xóa</button>
-                    </td>
-                </tr>
-            `).join('');
+            tbodyTele.innerHTML = telecomRecordsV2.map(t => {
+                let fileCount = 0;
+                if (t.file_data) {
+                    try {
+                        if (t.file_data.startsWith('[') && t.file_data.endsWith(']')) {
+                            fileCount = JSON.parse(t.file_data).length;
+                        } else {
+                            fileCount = 1;
+                        }
+                    } catch(e) { fileCount = 1; }
+                }
+
+                return `
+                    <tr>
+                        <td class="font-bold">${t.code}</td>
+                        <td>${t.provider}</td>
+                        <td>${t.location}</td>
+                        <td class="text-right font-bold" style="color: var(--purple);">${formatMoney(t.cost_after)}</td>
+                        <td>${formatDateVN(t.invoice_date)}</td>
+                        <td>${formatDateVN(t.due_date)}</td>
+                        <td class="text-center font-bold" style="color: ${t.status === 'Đã thanh toán' ? 'var(--green)' : 'var(--red)'}">${t.status}</td>
+                        <td class="text-center">
+                            ${t.file_data ? `<button class="btn" style="padding: 3px 8px; font-size:10px; background:var(--green); color:white;" onclick="viewSavedFiles('${t.id}', 'tele')">Xem File (${fileCount})</button>` : `<span style="color:#94a3b8;">Không có</span>`}
+                        </td>
+                        <td class="text-center">
+                            <button class="btn" style="padding:4px 8px; font-size:10px; background:var(--blue); color:white;" onclick="editTeleV2('${t.id}')">Sửa</button>
+                            <button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="deleteTeleV2('${t.id}')">Xóa</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         // ================= NGHIỆP VỤ HỒ SƠ VĂN PHÒNG SUPABASE =================
@@ -1146,9 +1240,13 @@
                 status
             };
 
-            if (pendingAttachedFile.data) {
-                payload.file_data = pendingAttachedFile.data;
-                payload.file_name = pendingAttachedFile.name;
+            // Lưu danh sách file dưới dạng JSON String lên DB
+            if (pendingOfficeFiles.length > 0) {
+                payload.file_data = JSON.stringify(pendingOfficeFiles);
+                payload.file_name = pendingOfficeFiles[0].name; // Tên hiển thị đại diện
+            } else {
+                payload.file_data = null;
+                payload.file_name = null;
             }
 
             try {
@@ -1184,13 +1282,21 @@
                 document.getElementById('office-due-date').value = rec.due_date;
                 document.getElementById('office-status').value = rec.status;
 
+                // Nạp lại danh sách file đã lưu
                 if (rec.file_data) {
-                    pendingAttachedFile = { data: rec.file_data, name: rec.file_name, type: "" };
-                    document.getElementById('office-file-status').innerText = `Đã đính kèm: ${rec.file_name}`;
-                    document.getElementById('office-file-actions').style.display = 'flex';
+                    try {
+                        if (rec.file_data.startsWith('[') && rec.file_data.endsWith(']')) {
+                            pendingOfficeFiles = JSON.parse(rec.file_data);
+                        } else {
+                            pendingOfficeFiles = [{ data: rec.file_data, name: rec.file_name || "Tài liệu", type: "" }];
+                        }
+                    } catch(e) {
+                        pendingOfficeFiles = [{ data: rec.file_data, name: rec.file_name || "Tài liệu", type: "" }];
+                    }
                 } else {
-                    removeAttachedFile('office');
+                    pendingOfficeFiles = [];
                 }
+                renderFileList('office');
             }
         }
 
@@ -1212,7 +1318,7 @@
         function resetOfficeFormV2() {
             document.getElementById('office-id').value = '';
             document.getElementById('office-form-v2').reset();
-            removeAttachedFile('office');
+            removeAllFiles('office');
         }
 
         // ================= NGHIỆP VỤ VIỄN THÔNG SUPABASE (KHÔNG THUẾ) =================
@@ -1227,7 +1333,6 @@
             const due = document.getElementById('tele-due').value;
             const status = document.getElementById('tele-status').value;
 
-            // Đồng bộ hoá cấu trúc DB cũ bằng cách lưu giá trị thực không thuế vào cost_before và cost_after
             const payload = {
                 code,
                 provider,
@@ -1241,9 +1346,13 @@
                 status
             };
 
-            if (pendingAttachedFile.data) {
-                payload.file_data = pendingAttachedFile.data;
-                payload.file_name = pendingAttachedFile.name;
+            // Lưu danh sách nhiều file hóa đơn
+            if (pendingTeleFiles.length > 0) {
+                payload.file_data = JSON.stringify(pendingTeleFiles);
+                payload.file_name = pendingTeleFiles[0].name;
+            } else {
+                payload.file_data = null;
+                payload.file_name = null;
             }
 
             try {
@@ -1278,13 +1387,21 @@
                 document.getElementById('tele-due').value = rec.due_date;
                 document.getElementById('tele-status').value = rec.status;
 
+                // Nạp lại danh sách nhiều file viễn thông
                 if (rec.file_data) {
-                    pendingAttachedFile = { data: rec.file_data, name: rec.file_name, type: "" };
-                    document.getElementById('tele-file-status').innerText = `Đã đính kèm: ${rec.file_name}`;
-                    document.getElementById('tele-file-actions').style.display = 'flex';
+                    try {
+                        if (rec.file_data.startsWith('[') && rec.file_data.endsWith(']')) {
+                            pendingTeleFiles = JSON.parse(rec.file_data);
+                        } else {
+                            pendingTeleFiles = [{ data: rec.file_data, name: rec.file_name || "Hóa đơn", type: "" }];
+                        }
+                    } catch(e) {
+                        pendingTeleFiles = [{ data: rec.file_data, name: rec.file_name || "Hóa đơn", type: "" }];
+                    }
                 } else {
-                    removeAttachedFile('tele');
+                    pendingTeleFiles = [];
                 }
+                renderFileList('tele');
             }
         }
 
@@ -1306,7 +1423,7 @@
         function resetTeleFormV2() {
             document.getElementById('tele-id').value = '';
             document.getElementById('tele-form-v2').reset();
-            removeAttachedFile('tele');
+            removeAllFiles('tele');
         }
     </script>
 </body>
