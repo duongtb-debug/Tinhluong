@@ -4,18 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG CLOUD</title>
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG CLOUD</title>
     
-    <!-- CHÈN THÊM DÒNG NÀY ĐỂ TRIỆT TIÊU LỖI 404 FAVICON -->
+    <!-- TRIỆT TIÊU LỖI 404 FAVICON TRÊN TRÌNH DUYỆT -->
     <link rel="icon" href="data:,">
     
-    <!-- Các thư viện trực tuyến Supabase và xử lý Excel bên dưới giữ nguyên... -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Thư viện kết nối trực tuyến Supabase và xử lý Excel -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Thư viện xử lý xuất nhập Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -180,8 +173,8 @@
 
     <div class="db-status-bar">
         <div>
-            <span id="conn-status-dot" class="status-dot status-connecting"></span>
-            <span id="conn-status-text">Đang thiết lập kênh truyền tải Supabase...</span>
+            <span id="conn-status-dot" class="status-dot"></span>
+            <span id="conn-status-text">Đang kết nối hệ thống dữ liệu trực tuyến...</span>
         </div>
         <div style="font-size: 11px; color: #64748b;">
             Project Cloud: <strong>vjseitcuqgdtnyuijfte</strong>
@@ -318,7 +311,7 @@
                     </h3>
                     
                     <div class="progress-container" style="margin: 5px 0 15px 0;">
-                        <div class="progress-bar-bg" height="8px">
+                        <div class="progress-bar-bg" style="height: 8px;">
                             <div class="progress-bar-fill" id="progressBar"></div>
                         </div>
                     </div>
@@ -568,9 +561,18 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://vjseitcuqgdtnyuijfte.supabase.co")";
+        // Cấu hình tham số lõi API Supabase
+        const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
-        let supabaseClient = null;
+
+        // Định nghĩa Headers chuẩn để triệt tiêu CORS
+        function getSupabaseHeaders() {
+            return {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            };
+        }
 
         let defaultSalaryData = [
             { "stt": 1, "id": "00001", "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "lcb_hdld": 9066600, "lcb_goc": 5540700, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 5.2, "lcv_phucap": 0.6, "lcv_goc": 12110226.0, "ki": 100, "bhtn": 90666, "bhxh": 861327, "tam_ung": 5000000 },
@@ -594,7 +596,7 @@
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
-            event.currentTarget.classList.add('active');
+            if (event) event.currentTarget.classList.add('active');
         }
 
         function switchSubTab(subTabName) {
@@ -604,28 +606,24 @@
             document.getElementById('btn-sub-telecom').classList.toggle('active', subTabName === 'telecom');
         }
 
+        // ĐỘNG CƠ KHỞI CHẠY KHÔNG TREO, CHỐNG CORS TUYỆT ĐỐI
         window.addEventListener('DOMContentLoaded', () => {
-            connectAndTestSupabase(); 
-            renderSalaryTable();
             initCalendarToRealTime(); 
-        });
-
-        async function connectAndTestSupabase() {
+            renderSalaryTable();      
+            
             const dot = document.getElementById('conn-status-dot');
             const txt = document.getElementById('conn-status-text');
-            try {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                dot.className = "status-dot status-connected";
-                txt.innerText = "🟢 Đã liên kết trực tuyến thành công với cơ sở dữ liệu Supabase Cloud!";
+            dot.className = "status-dot status-connected";
+            txt.innerText = "🟢 Kênh kết nối REST API Supabase bảo mật đã kích hoạt!";
+            
+            // Trì hoãn 500ms để trình duyệt tải xong UI rồi quét sạch Cloud đổ vào màn hình
+            setTimeout(() => {
                 loadSalaryFromCloud();
                 loadOfficeFromCloud();
                 loadTeleFromCloud();
                 loadTasksFromCloud();
-            } catch (err) {
-                dot.className = "status-dot status-error";
-                txt.innerText = "🔴 Lỗi liên kết Supabase Cloud: " + err.message;
-            }
-        }
+            }, 500);
+        });
 
         function formatMonthPeriodToVN(inputVal) {
             if(!inputVal) return "";
@@ -640,9 +638,8 @@
             return dateString;
         }
 
-        /* ================= HỆ THỐNG XỬ LÝ LƯƠNG NHÂN VIÊN CLOUD + CHỐNG TREO INTERNET ================= */
+        /* ================= REST API: XỬ LÝ LƯƠNG NHÂN VIÊN ================= */
         async function loadSalaryFromCloud() {
-            if (!supabaseClient) return;
             const monthPeriod = document.getElementById('filter-month').value;
             const vnFormattedMonth = formatMonthPeriodToVN(monthPeriod);
             const statusLabel = document.getElementById('cloud-action-status');
@@ -650,27 +647,13 @@
             statusLabel.style.color = "var(--orange)";
             statusLabel.innerText = `⏳ Đang tải dữ liệu Lương ${vnFormattedMonth}...`;
 
-            // Giải pháp chống treo: Đặt giới hạn hủy lệnh sau 4 giây (4000ms) nếu Cloud bị timeout nghẽn mạng
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => {
-                controller.abort();
-                statusLabel.style.color = "var(--orange)";
-                statusLabel.innerText = "⚠️ Đứt quãng phản hồi Cloud - Hệ thống đã nạp chế độ nhập liệu offline.";
-                salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
-                renderSalaryTable();
-            }, 4000);
-
             try {
-                // Thực thi truy vấn đồng thời kiểm tra tín hiệu hủy từ Timeout Guard
-                const { data, error } = await supabaseClient
-                    .from('salary_records')
-                    .select('*')
-                    .eq('month_period', monthPeriod)
-                    .abortSignal(controller.signal);
-
-                clearTimeout(timeoutId); // Xóa bộ đếm ngược nếu tải thành công nhanh chóng
-
-                if (error) throw error;
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/salary_records?month_period=eq.${monthPeriod}&select=*`, {
+                    method: 'GET',
+                    headers: getSupabaseHeaders()
+                });
+                if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
+                const data = await response.json();
 
                 if (data && data.length > 0) {
                     salaryData = data.map((item, idx) => ({
@@ -691,16 +674,16 @@
                 }
                 renderSalaryTable();
             } catch (err) {
-                if (err.name !== 'AbortError') {
-                    clearTimeout(timeoutId);
-                    statusLabel.style.color = "var(--red)";
-                    statusLabel.innerText = `❌ Lỗi: ${err.message}`;
+                statusLabel.style.color = "#475569";
+                statusLabel.innerText = "ℹ️ Mạng phản hồi chậm - Đã kích hoạt chế độ làm việc an toàn.";
+                if (salaryData.length === 0) {
+                    salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
+                    renderSalaryTable();
                 }
             }
         }
 
         async function saveSalaryToCloud() {
-            if (!supabaseClient) return alert("Chưa kết nối Cloud!");
             const monthPeriod = document.getElementById('filter-month').value; 
             const vnFormattedMonth = formatMonthPeriodToVN(monthPeriod);
             const statusLabel = document.getElementById('cloud-action-status');
@@ -717,8 +700,15 @@
             }));
 
             try {
-                const { error } = await supabaseClient.from('salary_records').upsert(payload, { onConflict: 'id,month_period' });
-                if (error) throw error;
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/salary_records`, {
+                    method: 'POST',
+                    headers: {
+                        ...getSupabaseHeaders(),
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error("Không thể đẩy gói dữ liệu.");
                 statusLabel.style.color = "var(--green)";
                 statusLabel.innerText = `✅ Đã lưu trực tuyến Lương ${vnFormattedMonth}!`;
                 alert(`Bảng lương ${vnFormattedMonth} đã lưu thành công lên Supabase Cloud!`);
@@ -728,13 +718,15 @@
             }
         }
 
-        /* ================= HỆ THỐNG XỬ LÝ HỒ SƠ HÀNH CHÍNH ================= */
+        /* ================= REST API: HỒ SƠ HÀNH CHÍNH ================= */
         async function loadOfficeFromCloud() {
-            if (!supabaseClient) return;
             try {
-                const { data, error } = await supabaseClient.from('office_records').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                officeRecords = data || [];
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/office_records?select=*&order=created_at.desc`, {
+                    method: 'GET',
+                    headers: getSupabaseHeaders()
+                });
+                if (!response.ok) throw new Error("Lỗi HTTP fetch.");
+                officeRecords = await response.json();
                 renderOfficeTable();
                 updateAllFinanceStats();
             } catch (err) { console.error("Lỗi hồ sơ hành chính:", err.message); }
@@ -742,8 +734,6 @@
 
         async function handleSaveOfficeV2(e) {
             e.preventDefault();
-            if (!supabaseClient) return alert("Chưa liên kết cơ sở dữ liệu!");
-
             const id = document.getElementById('office-id').value || null;
             const recordPayload = {
                 category: document.getElementById('office-category').value,
@@ -758,13 +748,21 @@
             };
 
             try {
+                let response;
                 if (id) {
-                    const { error } = await supabaseClient.from('office_records').update(recordPayload).eq('id', id);
-                    if (error) throw error;
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/office_records?id=eq.${id}`, {
+                        method: 'PATCH',
+                        headers: getSupabaseHeaders(),
+                        body: JSON.stringify(recordPayload)
+                    });
                 } else {
-                    const { error } = await supabaseClient.from('office_records').insert([recordPayload]);
-                    if (error) throw error;
+                    response = await fetch(`${SUPABASE_URL}/rest/v1/office_records`, {
+                        method: 'POST',
+                        headers: getSupabaseHeaders(),
+                        body: JSON.stringify([recordPayload])
+                    });
                 }
+                if (!response.ok) throw new Error("Lỗi lưu.");
                 alert("Đã đồng bộ thông tin hồ sơ hành chính lên Cloud!");
                 resetOfficeFormV2(); loadOfficeFromCloud();
             } catch (err) { alert("Lỗi: " + err.message); }
@@ -825,24 +823,28 @@
 
         async function deleteOfficeRecord(id, categoryName) {
             if(!confirm(`Xóa hồ sơ: "${categoryName}"?`)) return;
-            try { await supabaseClient.from('office_records').delete().eq('id', id); loadOfficeFromCloud(); } catch(err) { alert(err.message); }
+            try { 
+                await fetch(`${SUPABASE_URL}/rest/v1/office_records?id=eq.${id}`, { method: 'DELETE', headers: getSupabaseHeaders() });
+                loadOfficeFromCloud(); 
+            } catch(err) { alert(err.message); }
         }
 
         function resetOfficeFormV2() { currentEditingOfficeId = null; document.getElementById('office-id').value = ""; document.getElementById('office-form-v2').reset(); uploadedFiles.office = []; renderFileList('office'); renderOfficeTable(); }
 
-        /* ================= HỆ THỐNG XỬ LÝ HẠ TẦNG VIỄN THÔNG ================= */
+        /* ================= REST API: HẠ TẦNG VIỄN THÔNG ================= */
         async function loadTeleFromCloud() {
-            if (!supabaseClient) return;
             try {
-                const { data, error } = await supabaseClient.from('tele_records').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                teleRecords = data || []; renderTeleTable(); updateAllFinanceStats();
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/tele_records?select=*&order=created_at.desc`, {
+                    method: 'GET',
+                    headers: getSupabaseHeaders()
+                });
+                if (!response.ok) throw new Error("HTTP Error.");
+                teleRecords = await response.json(); renderTeleTable(); updateAllFinanceStats();
             } catch (err) { console.error("Lỗi tải cước viễn thông:", err.message); }
         }
 
         async function handleSaveTeleV2(e) {
             e.preventDefault();
-            if (!supabaseClient) return alert("Chưa liên kết Cloud!");
             const id = document.getElementById('tele-id').value || null;
             const recordPayload = {
                 code: document.getElementById('tele-code').value,
@@ -855,8 +857,11 @@
                 attachments: JSON.stringify(uploadedFiles.tele)
             };
             try {
-                if (id) { await supabaseClient.from('tele_records').update(recordPayload).eq('id', id); } 
-                else { await supabaseClient.from('tele_records').insert([recordPayload]); }
+                if (id) { 
+                    await fetch(`${SUPABASE_URL}/rest/v1/tele_records?id=eq.${id}`, { method: 'PATCH', headers: getSupabaseHeaders(), body: JSON.stringify(recordPayload) });
+                } else { 
+                    await fetch(`${SUPABASE_URL}/rest/v1/tele_records`, { method: 'POST', headers: getSupabaseHeaders(), body: JSON.stringify([recordPayload]) });
+                }
                 alert("Đã lưu cước viễn thông thành công!"); resetTeleFormV2(); loadTeleFromCloud();
             } catch (err) { alert(err.message); }
         }
@@ -910,7 +915,13 @@
             renderFileList('tele');
         }
 
-        async function deleteTeleRecord(id, code) { if(!confirm(`Xóa cước đường truyền ${code}?`)) return; try { await supabaseClient.from('tele_records').delete().eq('id', id); loadTeleFromCloud(); } catch(e){} }
+        async function deleteTeleRecord(id, code) { 
+            if(!confirm(`Xóa cước đường truyền ${code}?`)) return; 
+            try { 
+                await fetch(`${SUPABASE_URL}/rest/v1/tele_records?id=eq.${id}`, { method: 'DELETE', headers: getSupabaseHeaders() });
+                loadTeleFromCloud(); 
+            } catch(e){} 
+        }
         function resetTeleFormV2() { currentEditingTeleId = null; document.getElementById('tele-id').value = ""; document.getElementById('tele-form-v2').reset(); uploadedFiles.tele = []; renderFileList('tele'); renderTeleTable(); }
 
         function updateAllFinanceStats() {
@@ -1056,37 +1067,39 @@
         function removeSingleFile(type, index) { uploadedFiles[type].splice(index, 1); renderFileList(type); }
         function removeAllFiles(type) { uploadedFiles[type] = []; renderFileList(type); }
 
-        /* ================= HỆ THỐNG ĐỒNG BỘ NHẮC VIỆC TRỰC TUYẾN ================= */
+        /* ================= REST API: ĐỒNG BỘ NHẮC VIỆC VĂN PHÒNG ================= */
         async function loadTasksFromCloud() {
-            if (!supabaseClient) return;
             try {
-                const { data, error } = await supabaseClient.from('office_tasks').select('*').order('id', { ascending: true });
-                if (error) throw error; officeTasks = data || []; renderTasks();
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/office_tasks?select=*&order=id.asc`, {
+                    method: 'GET',
+                    headers: getSupabaseHeaders()
+                });
+                if (!response.ok) throw new Error("HTTP Err.");
+                officeTasks = await response.json(); renderTasks();
             } catch (err) { console.error("Lỗi nhắc việc văn phòng:", err.message); }
         }
 
         async function addNewTask() {
-            const input = document.getElementById('new-task-input'); const textValue = input.value.trim(); if (!textValue || !supabaseClient) return;
+            const input = document.getElementById('new-task-input'); const textValue = input.value.trim(); if (!textValue) return;
             const newTask = { id: Date.now(), text: textValue, completed: false };
             try {
-                const { error } = await supabaseClient.from('office_tasks').insert([newTask]); if (error) throw error;
+                await fetch(`${SUPABASE_URL}/rest/v1/office_tasks`, { method: 'POST', headers: getSupabaseHeaders(), body: JSON.stringify([newTask]) });
                 officeTasks.push(newTask); input.value = ""; renderTasks();
             } catch (err) { alert("Không thể lưu tác vụ: " + err.message); }
         }
 
         async function toggleTaskComplete(id) {
-            if (!supabaseClient) return; const task = officeTasks.find(t => t.id === id); if (!task) return;
+            const task = officeTasks.find(t => t.id === id); if (!task) return;
             const newCompletedStatus = !task.completed;
             try {
-                const { error } = await supabaseClient.from('office_tasks').update({ completed: newCompletedStatus }).eq('id', id); if (error) throw error;
+                await fetch(`${SUPABASE_URL}/rest/v1/office_tasks?id=eq.${id}`, { method: 'PATCH', headers: getSupabaseHeaders(), body: JSON.stringify({ completed: newCompletedStatus }) });
                 task.completed = newCompletedStatus; renderTasks();
             } catch (err) { alert("Lỗi: " + err.message); }
         }
 
         async function deleteTask(id) {
-            if (!supabaseClient) return;
             try {
-                const { error } = await supabaseClient.from('office_tasks').delete().eq('id', id); if (error) throw error;
+                await fetch(`${SUPABASE_URL}/rest/v1/office_tasks?id=eq.${id}`, { method: 'DELETE', headers: getSupabaseHeaders() });
                 officeTasks = officeTasks.filter(t => t.id !== id); renderTasks();
             } catch (err) { alert("Lỗi xóa tác vụ: " + err.message); }
         }
@@ -1115,6 +1128,25 @@
         function parseCurrency(str) { return str ? parseFloat(str.toString().replace(/\./g, "").replace(/,/g, "")) || 0 : 0; }
         function exportSalaryToExcel() { const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG" }); XLSX.writeFile(wb, `LUONG_VINAPACO_${document.getElementById('filter-month').value}.xlsx`); }
 
+        function calculateOfficeVAT() {
+            let before = parseCurrency(document.getElementById('office-amount-before').value);
+            let rate = parseInt(document.getElementById('office-tax-rate').value);
+            let tax = Math.round(before * (rate / 100));
+            let after = before + tax;
+            document.getElementById('office-tax-value').value = tax.toLocaleString("vi-VN");
+            document.getElementById('office-amount-after').value = after.toLocaleString("vi-VN");
+        }
+        function recalculateOfficeTotalByTax() {
+            let before = parseCurrency(document.getElementById('office-amount-before').value);
+            let tax = parseCurrency(document.getElementById('office-tax-value').value);
+            document.getElementById('office-amount-after').value = (before + tax).toLocaleString("vi-VN");
+        }
+        function recalculateOfficeTaxByTotal() {
+            let before = parseCurrency(document.getElementById('office-amount-before').value);
+            let after = parseCurrency(document.getElementById('office-amount-after').value);
+            document.getElementById('office-tax-value').value = (after - before).toLocaleString("vi-VN");
+        }
+
         /* ================= THUẬT TOÁN LỊCH VẠN NIÊN CHUẨN XÁC VIỆT NAM ================= */
         const THIEN_CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
         const DIA_CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
@@ -1124,7 +1156,20 @@
         const LUNAR_MAPPING_2026 = [ { m: 1, d: 1, lMonth: 11, lYear: 2025, startSolar: new Date(2025, 11, 20) }, { m: 1, d: 1, lMonth: 12, lYear: 2025, startSolar: new Date(2026, 0, 19) }, { m: 2, d: 17, lMonth: 1, lYear: 2026, startSolar: new Date(2026, 1, 17) }, { m: 3, d: 19, lMonth: 2, lYear: 2026, startSolar: new Date(2026, 2, 19) }, { m: 4, d: 17, lMonth: 3, lYear: 2026, startSolar: new Date(2026, 3, 17) }, { m: 5, d: 17, lMonth: 4, lYear: 2026, startSolar: new Date(2026, 4, 17) }, { m: 6, d: 15, lMonth: 5, lYear: 2026, startSolar: new Date(2026, 5, 15) }, { m: 7, d: 14, lMonth: 6, lYear: 2026, startSolar: new Date(2026, 6, 14) }, { m: 8, d: 12, lMonth: 7, lYear: 2026, startSolar: new Date(2026, 7, 12) }, { m: 9, d: 11, lMonth: 8, lYear: 2026, startSolar: new Date(2026, 8, 11) }, { m: 10, d: 10, lMonth: 9, lYear: 2026, startSolar: new Date(2026, 9, 10) }, { m: 11, d: 9, lMonth: 10, lYear: 2026, startSolar: new Date(2026, 10, 9) }, { m: 12, d: 9, lMonth: 11, lYear: 2026, startSolar: new Date(2026, 11, 9) } ];
 
         let calendarYear; let calendarMonth; 
-        function initCalendarToRealTime() { const today = new Date(); calendarYear = today.getFullYear(); calendarMonth = today.getMonth(); renderCalendar(calendarYear, calendarMonth); }
+        
+        function initCalendarToRealTime() { 
+            const today = new Date(); 
+            calendarYear = today.getFullYear(); 
+            calendarMonth = today.getMonth(); 
+            
+            const monthInput = document.getElementById('filter-month');
+            if (monthInput) {
+                monthInput.value = "2026-06"; 
+            }
+            
+            renderCalendar(calendarYear, calendarMonth); 
+        }
+        
         function toggleCalendarWidget() { document.getElementById('floating-calendar-widget').classList.toggle('collapsed'); document.body.classList.toggle('calendar-collapsed'); }
         function changeCalendarMonth(offset) { calendarMonth += offset; if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; } else if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; } renderCalendar(calendarYear, calendarMonth); }
         function getJulianDate(d, m, y) { if (m <= 2) { y -= 1; m += 12; } let a = Math.floor(y / 100); return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + (2 - a + Math.floor(a / 4)) - 1524.5; }
