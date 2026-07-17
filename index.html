@@ -159,7 +159,7 @@
         </div>
     </div>
 
-    <!-- HỆ THỐNG GIAO DIỆN CHÍNH (Vào thẳng, không cần đăng nhập) -->
+    <!-- HỆ THỐNG GIAO DIỆN CHÍNH -->
     <div id="main-app">
         <div class="header">
             <h1>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP TOÀN DIỆN</h1>
@@ -180,7 +180,7 @@
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
                     <div class="form-group" style="min-width: 150px;">
                         <label>Tháng lương</label>
-                        <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
+                        <input type="month" id="filter-month" value="2026-06" onchange="loadSalaryFromCloud()">
                     </div>
                     
                     <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Lương Tháng Đã Chọn</button>
@@ -566,7 +566,6 @@
             document.getElementById('btn-sub-telecom').classList.toggle('active', subTabName === 'telecom');
         }
 
-        // TỰ ĐỘNG KHỞI CHẠY KẾT NỐI KHI TẢI TRANG
         window.addEventListener('DOMContentLoaded', () => {
             connectAndTestSupabase(); 
             renderSalaryTable();
@@ -590,12 +589,23 @@
             }
         }
 
+        // HÀM CHUYỂN ĐỔI CHUỖI ĐỊNH DẠNG "YYYY-MM" SANG ĐỊNH DẠNG VIỆT NAM "tháng MM năm YYYY"
+        function formatMonthPeriodToVN(inputVal) {
+            if(!inputVal) return "";
+            const parts = inputVal.split('-');
+            if(parts.length === 2) {
+                return `tháng ${parts[1]} năm ${parts[0]}`;
+            }
+            return inputVal;
+        }
+
         async function loadSalaryFromCloud() {
             if (!supabaseClient) return;
             const monthPeriod = document.getElementById('filter-month').value;
+            const vnFormattedMonth = formatMonthPeriodToVN(monthPeriod); // Định dạng tiếng Việt
             const statusLabel = document.getElementById('cloud-action-status');
             statusLabel.style.color = "var(--orange)";
-            statusLabel.innerText = `⏳ Đang tải dữ liệu tháng ${monthPeriod}...`;
+            statusLabel.innerText = `⏳ Đang tải dữ liệu ${vnFormattedMonth}...`;
 
             try {
                 const { data, error } = await supabaseClient
@@ -616,11 +626,11 @@
                         tam_ung: item.tam_ung, thuc_linh: item.thuc_linh
                     }));
                     statusLabel.style.color = "var(--green)";
-                    statusLabel.innerText = `✅ Đã nhận dữ liệu tháng ${monthPeriod}!`;
+                    statusLabel.innerText = `✅ Đã nhận dữ liệu ${vnFormattedMonth}!`;
                 } else {
                     salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
                     statusLabel.style.color = "var(--blue)";
-                    statusLabel.innerText = `🆕 Chưa có dữ liệu tháng ${monthPeriod} (Dùng mặc định)`;
+                    statusLabel.innerText = `🆕 Chưa có dữ liệu ${vnFormattedMonth} (Dùng mặc định)`;
                 }
                 renderSalaryTable();
             } catch (err) {
@@ -632,6 +642,7 @@
         async function saveSalaryToCloud() {
             if (!supabaseClient) return alert("Hệ thống chưa kết nối Cloud!");
             const monthPeriod = document.getElementById('filter-month').value; 
+            const vnFormattedMonth = formatMonthPeriodToVN(monthPeriod);
             const statusLabel = document.getElementById('cloud-action-status');
             statusLabel.innerText = "⏳ Đang đồng bộ dữ liệu...";
 
@@ -649,8 +660,8 @@
                 const { error } = await supabaseClient.from('salary_records').upsert(payload, { onConflict: 'id,month_period' });
                 if (error) throw error;
                 statusLabel.style.color = "var(--green)";
-                statusLabel.innerText = `✅ Đã lưu dữ liệu & KI tháng ${monthPeriod}!`;
-                alert(`Bảng lương tháng ${monthPeriod} đã được khóa lưu trữ an toàn trên Cloud!`);
+                statusLabel.innerText = `✅ Đã lưu dữ liệu & KI ${vnFormattedMonth}!`;
+                alert(`Bảng lương ${vnFormattedMonth} đã được khóa lưu trữ an toàn trên Cloud!`);
             } catch (err) {
                 statusLabel.style.color = "var(--red)";
                 statusLabel.innerText = "❌ Lỗi: " + err.message;
@@ -860,7 +871,6 @@
             renderCalendar(currentYear, currentMonth); 
         }
 
-        // Chuyển đổi ngày dương lịch sang ngày Julius
         function getJulianDate(d, m, y) {
             if (m <= 2) {
                 y = y - 1;
@@ -872,17 +882,15 @@
             return jd;
         }
 
-        // Tính toán các kỳ trăng non (New Moon) dựa trên công thức thiên văn học Meeus múi giờ GMT+7
         function getNewMoon(k) {
             let T = k / 1236.85;
             let jd = 2451550.09765 + 29.530588853 * k
                 + 0.0001337 * T * T
                 - 0.00015 * Math.sin((359.2242 + 29.105356 * k) * Math.PI / 180)
                 + 0.00033 * Math.sin((306.0253 + 385.816918 * k) * Math.PI / 180);
-            return jd + 7 / 24; // Đồng bộ múi giờ Việt Nam GMT+7
+            return jd + 7 / 24; 
         }
 
-        // Chuyển đổi dương lịch sang âm lịch có tính đến các tháng nhuận thực tế theo múi giờ Việt Nam
         function getLunarDate(dd, mm, yy) {
             let jd = getJulianDate(dd, mm, yy);
             let k = Math.floor((yy - 1900) * 12.3685);
@@ -900,7 +908,6 @@
                 lunarDay = lunarDay - 30;
             }
 
-            // Tính tháng âm và năm âm tương đối chính xác cho giai đoạn hiện tại
             let lunarMonth = mm - 1;
             if (lunarDay > dd) {
                 lunarMonth = mm - 2;
@@ -909,11 +916,10 @@
                 lunarMonth += 12;
             }
 
-            // Đồng bộ chuẩn xác thời gian tháng 7 dương lịch năm 2026 chính là tháng 6 âm lịch
             if (yy === 2026) {
                 if (mm === 7) {
                     lunarMonth = 6;
-                    lunarDay = dd - 13; // Ngày 17/7/2026 DL ứng với ngày 04/6 AL
+                    lunarDay = dd - 13; 
                     if (lunarDay <= 0) {
                         lunarMonth = 5;
                         lunarDay = 30 + lunarDay; 
@@ -935,7 +941,6 @@
 
             let lunarYear = (mm < lunarMonth) ? yy - 1 : yy;
 
-            // Tính Can Chi chính xác
             let jdOffset = Math.floor(jd + 1.5) % 60;
             let canDay = THIEN_CAN[(jdOffset + 29) % 10];
             let chiDay = DIA_CHI[(jdOffset + 17) % 12];
@@ -943,7 +948,6 @@
             let canYear = THIEN_CAN[(lunarYear - 4) % 10];
             let chiYear = DIA_CHI[(lunarYear - 4) % 12];
 
-            // Xác định tiết khí tương đối dựa trên góc Trái Đất quanh Mặt Trời
             let tietKhia = "Bình thường";
             if (mm === 7) tietKhia = (dd < 7) ? "Hạ Chí" : (dd < 23 ? "Tiểu Thử" : "Đại Thử");
             else if (mm === 5) tietKhia = (dd < 5) ? "Cốc Vũ" : (dd < 21 ? "Lập Hạ" : "Tiểu Mãn");
