@@ -567,7 +567,7 @@
     </div>
 
     <script>
-        // CẤU HÌNH THÔNG TIN KẾT NỐI SUPABASE ĐÃ ĐIỀN SẴN THEO YÊU CẦU
+        // CẤU HÌNH THÔNG TIN KẾT NỐI SUPABASE ĐÃ ĐIỀN SẴN
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
         let supabaseClient = null;
@@ -581,9 +581,7 @@
         let uploadedFiles = { office: [], tele: [] };
         let officeRecords = [];
         let teleRecords = [];
-        let officeTasks = [
-            { id: 1, text: "Kiểm tra & đối chiếu bảng công máy vân tay", completed: false }
-        ];
+        let officeTasks = []; // Dữ liệu sẽ tự động tải trực tiếp từ Supabase công cộng
 
         let currentEditingOfficeId = null;
         let currentEditingTeleId = null;
@@ -609,7 +607,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             connectAndTestSupabase(); 
             renderSalaryTable();
-            renderTasks(); 
             initCalendarToRealTime(); 
         });
 
@@ -623,6 +620,7 @@
                 loadSalaryFromCloud();
                 loadOfficeFromCloud();
                 loadTeleFromCloud();
+                loadTasksFromCloud(); // TỰ ĐỘNG TẢI NHẮC VIỆC TỪ SUPABASE
             } catch (err) {
                 dot.className = "status-dot status-error";
                 txt.innerText = "🔴 Lỗi liên kết Supabase Cloud: " + err.message;
@@ -1154,7 +1152,7 @@
             });
         }
 
-        /* TRÌNH XEM TRƯỚC LỘC FILE KHÔNG TRẮNG TRANG TRÊN TRÌNH DUYỆT */
+        /* TRÌNH XEM TRƯỚC LỌC FILE KHÔNG TRẮNG TRANG TRÊN TRÌNH DUYỆT */
         function previewFileDirect(fileName, fileData, mimeType) {
             const modal = document.getElementById('preview-modal');
             const container = document.getElementById('preview-container');
@@ -1251,12 +1249,86 @@
             document.getElementById('office-tax-value').value = (after - before).toLocaleString("vi-VN");
         }
 
-        /* RENDERING TASK DANH SÁCH NHẮC VIỆC VĂN PHÒNG - ĐÃ LOẠI BỎ GẠCH NGANG CHỮ */
+        /* ================= HỆ THỐNG ĐỒNG BỘ NHẮC VIỆC TRỰC TUYẾN (SUPABASE CLOUD) ================= */
+        
+        // 1. Tải danh sách nhắc việc từ Supabase
+        async function loadTasksFromCloud() {
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient.from('office_tasks').select('*').order('id', { ascending: true });
+                if (error) throw error;
+                officeTasks = data || [];
+                renderTasks();
+            } catch (err) {
+                console.error("Lỗi tải nhắc việc văn phòng:", err.message);
+            }
+        }
+
+        // 2. Thêm nhắc việc mới trực tiếp lên Cloud
+        async function addNewTask() {
+            const input = document.getElementById('new-task-input');
+            const textValue = input.value.trim();
+            if (!textValue || !supabaseClient) return;
+
+            const newTask = {
+                id: Date.now(), // ID dạng timestamp duy nhất
+                text: textValue,
+                completed: false
+            };
+
+            try {
+                // Đẩy tác vụ lên Cloud
+                const { error } = await supabaseClient.from('office_tasks').insert([newTask]);
+                if (error) throw error;
+                
+                officeTasks.push(newTask);
+                input.value = "";
+                renderTasks();
+            } catch (err) {
+                alert("Không thể lưu tác vụ lên Cloud: " + err.message);
+            }
+        }
+
+        // 3. Đánh dấu Đã xong / Chưa làm và tự động cập nhật lên Cloud
+        async function toggleTaskComplete(id) {
+            if (!supabaseClient) return;
+            const task = officeTasks.find(t => t.id === id);
+            if (!task) return;
+
+            const newCompletedStatus = !task.completed;
+
+            try {
+                // Cập nhật lên Supabase
+                const { error } = await supabaseClient.from('office_tasks').update({ completed: newCompletedStatus }).eq('id', id);
+                if (error) throw error;
+
+                task.completed = newCompletedStatus;
+                renderTasks();
+            } catch (err) {
+                alert("Lỗi cập nhật trạng thái: " + err.message);
+            }
+        }
+
+        // 4. Xóa nhắc việc khỏi Cloud
+        async function deleteTask(id) {
+            if (!supabaseClient) return;
+            try {
+                // Xóa trực tiếp khỏi Supabase
+                const { error } = await supabaseClient.from('office_tasks').delete().eq('id', id);
+                if (error) throw error;
+
+                officeTasks = officeTasks.filter(t => t.id !== id);
+                renderTasks();
+            } catch (err) {
+                alert("Không thể xóa tác vụ trên Cloud: " + err.message);
+            }
+        }
+
+        /* RENDERING TASK DANH SÁCH NHẮC VIỆC VĂN PHÒNG - KHÔNG GẠCH NGANG CHỮ */
         function renderTasks() {
             const container = document.getElementById('todo-list-container'); 
             container.innerHTML = "";
             officeTasks.forEach((task) => {
-                // Xác định class và nội dung hiển thị trạng thái động
                 const statusClass = task.completed ? "status-done" : "status-todo";
                 const statusText = task.completed ? "Đã xong" : "Chưa làm";
 
@@ -1264,7 +1336,6 @@
                     <li class="todo-item">
                         <div style="display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden;">
                             <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete(${task.id})">
-                            <!-- ĐÃ LOẠI BỎ HOÀN TOÀN LOGIC GẠCH NGANG CHỮ (text-decoration) -->
                             <label for="task-${task.id}" style="${task.completed ? 'color: #64748b; font-weight: bold;' : ''}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
                                 ${task.text}
                             </label>
@@ -1277,10 +1348,7 @@
             updateTodoProgressFill();
         }
 
-        function addNewTask() { const input = document.getElementById('new-task-input'); if (!input.value.trim()) return; officeTasks.push({ id: Date.now(), text: input.value.trim(), completed: false }); input.value = ""; renderTasks(); }
         function checkTaskEnter(event) { if (event.key === 'Enter') { event.preventDefault(); addNewTask(); } }
-        function toggleTaskComplete(id) { const task = officeTasks.find(t => t.id === id); if (task) task.completed = !task.completed; renderTasks(); }
-        function deleteTask(id) { officeTasks = officeTasks.filter(t => t.id !== id); renderTasks(); }
         function updateTodoProgressFill() { const total = officeTasks.length, checked = officeTasks.filter(t => t.completed).length, pct = total > 0 ? Math.round((checked / total) * 100) : 0; document.getElementById('progressBar').style.width = pct + '%'; document.getElementById('progressText').innerText = pct + '% hoàn thành'; }
         
         function formatCurrencyInput(input) { let val = input.value.replace(/\D/g, ""); input.value = val === "" ? "" : parseInt(val).toLocaleString("vi-VN"); }
