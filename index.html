@@ -393,7 +393,7 @@
 
             <!-- PHÂN HỆ VIỄN THÔNG & HẠ TẦNG -->
             <div id="sub-tab-telecom" class="main-card" style="display: none;">
-                <div class="card-title" id="tele-card-title">Cấu hình cước viễn thông hóa đơn mới</div>
+                <div class="card-title" id="tele-card-title">Cước viễn thông đường truyền</div>
                 <form id="tele-form-v2" onsubmit="handleSaveTeleV2(event)" style="margin-bottom: 20px;">
                     <input type="hidden" id="tele-id">
                     <div class="grid-form">
@@ -603,6 +603,16 @@
             return parts.length === 2 ? `tháng ${parts[1]} năm ${parts[0]}` : inputVal;
         }
 
+        // CHUYỂN ĐỔI YYYY-MM-DD THÀNH DD/MM/YYYY CHUẨN VIỆT NAM
+        function formatVNDate(dateString) {
+            if (!dateString) return "-";
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateString;
+        }
+
         /* ================= HỆ THỐNG XỬ LÝ LƯƠNG NHÂN VIÊN CLOUD ================= */
         async function loadSalaryFromCloud() {
             if (!supabaseClient) return;
@@ -669,7 +679,7 @@
             }
         }
 
-        /* ================= HỆ THỐNG XỬ LÝ HỒ SƠ HÀNH CHÍNH (GỘP ĐÍNH KÈM THÔNG MINH) ================= */
+        /* ================= HỆ THỐNG XỬ LÝ HỒ SƠ HÀNH CHÍNH ================= */
         async function loadOfficeFromCloud() {
             if (!supabaseClient) return;
             try {
@@ -721,7 +731,6 @@
             const tbody = document.getElementById('tbody-office-v2');
             tbody.innerHTML = "";
             officeRecords.forEach((rec) => {
-                // --- XỬ LÝ GỘP ĐÍNH KÈM THÔNG MINH ---
                 let fileBadges = "<i>Không có file</i>";
                 let filesArray = [];
 
@@ -740,12 +749,10 @@
 
                 if (filesArray.length > 0) {
                     if (filesArray.length === 1) {
-                        // 1 file duy nhất: Hiển thị nút xem nhanh tên file
                         const f = filesArray[0];
                         const safeName = f.name.replace(/'/g, "\\'");
                         fileBadges = `<button type="button" class="btn-action-edit" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe; font-size:11px;" onclick="previewFileDirect('${safeName}', '${f.data}', '${f.type}')">📎 ${f.name.substring(0, 15)}...</button>`;
                     } else {
-                        // Nhiều file: Gộp lại thành một nút bấm xem gộp popup thông minh
                         const totalFiles = filesArray.length;
                         const safeFilesData = btoa(unescape(encodeURIComponent(JSON.stringify(filesArray))));
                         fileBadges = `<button type="button" class="btn-action-edit" style="background:#f3e8ff; color:#7c3aed; border-color:#e9d5ff; font-size:11px;" onclick="showMultipleAttachmentsModal('${rec.category}', '${safeFilesData}')">📎 Xem (${totalFiles} file)</button>`;
@@ -761,8 +768,8 @@
                         <td class="text-center">${rec.tax_rate}%</td>
                         <td class="text-right">${rec.tax_value.toLocaleString()}</td>
                         <td class="text-right font-bold" style="color:var(--blue);">${rec.amount_after.toLocaleString()}</td>
-                        <td>${rec.request_date}</td>
-                        <td>${rec.due_date}</td>
+                        <td>${formatVNDate(rec.request_date)}</td>
+                        <td>${formatVNDate(rec.due_date)}</td>
                         <td class="text-center font-bold">${rec.status}</td>
                         <td class="text-center">${fileBadges}</td>
                         <td class="text-center">
@@ -825,7 +832,7 @@
             renderOfficeTable();
         }
 
-        /* ================= HỆ THỐNG XỬ LÝ HẠ TẦNG VIỄN THÔNG (GỘP ĐÍNH KÈM THÔNG MINH) ================= */
+        /* ================= HỆ THỐNG XỬ LÝ HẠ TẦNG VIỄN THÔNG ================= */
         async function loadTeleFromCloud() {
             if (!supabaseClient) return;
             try {
@@ -872,7 +879,6 @@
             const tbody = document.getElementById('tbody-telecom-v2');
             tbody.innerHTML = "";
             teleRecords.forEach((rec) => {
-                // --- XỬ LÝ GỘP ĐÍNH KÈM THÔNG MINH ---
                 let fileBadges = "<i>Không có hóa đơn</i>";
                 let filesArray = [];
 
@@ -909,8 +915,8 @@
                         <td>${rec.provider}</td>
                         <td>${rec.location}</td>
                         <td class="text-right font-bold" style="color:var(--purple);">${rec.cost_after.toLocaleString()}</td>
-                        <td>${rec.invoice_date}</td>
-                        <td>${rec.due_date}</td>
+                        <td>${formatVNDate(rec.invoice_date)}</td>
+                        <td>${formatVNDate(rec.due_date)}</td>
                         <td class="text-center font-bold">${rec.status}</td>
                         <td class="text-center">${fileBadges}</td>
                         <td class="text-center">
@@ -1119,24 +1125,58 @@
             });
         }
 
-        /* ================= HỆ THỐNG XEM TRƯỚC ĐẦY ĐỦ / POPUP GỘP CHI TIẾT FILE ================= */
-        function previewFileDirect(fileName, fileUrl, mimeType) {
+        /* ================= HỆ THỐNG XEM TRƯỚC ĐẦY ĐỦ NỘI DUNG TÀI LIỆU (ĐÃ KHẮC PHỤC LỖI TRẮNG TRANG BẰNG BLOB EMBED) ================= */
+        function previewFileDirect(fileName, fileData, mimeType) {
             const modal = document.getElementById('preview-modal');
             const container = document.getElementById('preview-container');
             document.getElementById('preview-modal-title').innerText = `Xem Trước Tài Liệu: ${fileName}`;
             container.innerHTML = "";
             
-            if (mimeType.startsWith('image/')) {
-                container.innerHTML = `<img src="${fileUrl}" class="preview-img">`;
-            } else if (mimeType === 'application/pdf') {
-                container.innerHTML = `<iframe src="${fileUrl}" class="preview-iframe"></iframe>`;
-            } else {
-                container.innerHTML = `<div style="padding:30px; text-align:center;"><p>Định dạng tệp tin này cần tải về máy để xem.</p><a href="${fileUrl}" download="${fileName}" class="btn btn-success" style="text-decoration:none; padding:8px 16px; margin-top:10px; display:inline-block;">📥 Tải tệp xuống</a></div>`;
+            // 1. Xử lý tệp tin là hình ảnh
+            if (mimeType.startsWith('image/') || fileData.startsWith('data:image')) {
+                container.innerHTML = `<img src="${fileData}" class="preview-img" style="max-width:100%; max-height:100%; object-fit:contain;">`;
+            } 
+            // 2. Xử lý tệp tin là tài liệu PDF (Đã tối ưu hóa, loại bỏ khung trắng)
+            else if (mimeType === 'application/pdf' || fileName.toLowerCase().endsWith('.pdf') || fileData.startsWith('data:application/pdf')) {
+                try {
+                    // Tạo một blob URL ảo từ chuỗi Base64
+                    const blob = dataURLtoBlob(fileData);
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    // Thẻ embed hỗ trợ xem tài liệu PDF mượt mà và trực tiếp không bị sandbox trình duyệt chặn trắng
+                    container.innerHTML = `<embed src="${blobUrl}" type="application/pdf" width="100%" height="100%" style="border: none;" />`;
+                } catch (e) {
+                    // Dự phòng nếu trình duyệt không hỗ trợ Blob
+                    container.innerHTML = `<object data="${fileData}" type="application/pdf" width="100%" height="100%"><iframe src="${fileData}" width="100%" height="100%"></iframe></object>`;
+                }
+            } 
+            // 3. Xử lý tệp tin là Word (.docx) hoặc Excel (.xlsx)
+            else if (mimeType.includes('officedocument') || fileName.endsWith('.docx') || fileName.endsWith('.xlsx')) {
+                try {
+                    const blob = dataURLtoBlob(fileData);
+                    const blobUrl = URL.createObjectURL(blob);
+                    container.innerHTML = `<iframe src="https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(blobUrl)}" class="preview-iframe" style="width:100%; height:100%; border:none;"></iframe>`;
+                } catch (e) {
+                    container.innerHTML = `<div style="padding:30px; text-align:center;"><p>Không thể xem trực tuyến tài liệu Office này. Bạn hãy nhấn nút tải xuống dưới đây để xem:</p><a href="${fileData}" download="${fileName}" class="btn btn-success" style="text-decoration:none; padding:8px 16px; margin-top:10px; display:inline-block;">📥 Tải tệp xuống máy</a></div>`;
+                }
+            } 
+            // 4. Các tệp định dạng khác không hỗ trợ render trực tiếp
+            else {
+                container.innerHTML = `<div style="padding:30px; text-align:center;"><p>Định dạng tệp tin này cần tải về máy để xem.</p><a href="${fileData}" download="${fileName}" class="btn btn-success" style="text-decoration:none; padding:8px 16px; margin-top:10px; display:inline-block;">📥 Tải tệp xuống máy</a></div>`;
             }
             modal.style.display = "block";
         }
 
-        // --- HÀM BỔ SUNG: POPUP XEM CHI TIẾT KHI CLICK NÚT GỘP FILE ---
+        // Hàm phụ trợ chuyển đổi chuỗi Base64 (DataURL) sang Blob nhị phân
+        function dataURLtoBlob(dataurl) {
+            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type:mime});
+        }
+
         function showMultipleAttachmentsModal(titleName, base64Files) {
             const modal = document.getElementById('preview-modal');
             const container = document.getElementById('preview-container');
@@ -1145,7 +1185,7 @@
 
             try {
                 const decodedFiles = JSON.parse(decodeURIComponent(escape(atob(base64Files))));
-                let html = `<div style="width:100%; max-width:550px; background:white; padding:20px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">`;
+                let html = `<div style="width:100%; max-width:550px; background:white; padding:20px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15); margin:auto;">`;
                 html += `<h4 style="margin-bottom:12px; color:var(--primary); font-weight:bold; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">Lựa chọn tệp tin để xem:</h4>`;
                 html += `<ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;">`;
 
@@ -1155,7 +1195,7 @@
                         <li style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border:1px solid #cbd5e1; border-radius:6px; background:#f8fafc;">
                             <span style="font-weight:bold; font-size:12px; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:280px;">📄 ${file.name}</span>
                             <div style="display:flex; gap:6px;">
-                                <button type="button" class="btn-action-edit" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe;" onclick="previewFileDirect('${safeName}', '${file.data}', '${file.type}')">Xem trước</button>
+                                <button type="button" class="btn-action-edit" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe;" onclick="previewFileDirect('${safeName}', '${file.data}', '${file.type}')">Xem trực tiếp</button>
                                 <a href="${file.data}" download="${safeName}" class="btn-action-edit" style="background:#d1fae5; color:#065f46; border-color:#a7f3d0; text-decoration:none; display:inline-flex; align-items:center;">Tải về</a>
                             </div>
                         </li>
@@ -1245,12 +1285,11 @@
             "Hỷ Thần: Hướng Tây Bắc, Tài Thần: Hướng Tây Nam",
             "Hỷ Thần: Hướng Nam, Tài Thần: Hướng Tây",
             "Hỷ Thần: Hướng Đông Sỹ, Tài Thần: Hướng Bắc",
-            "Hỷ Thần: Hướng Tây Nam, Tài Thần: Hướng Đông"
+            "Hỷ Thần: Hướng Tây Southwest, Tài Thần: Hướng Đông"
         ];
 
         const TUOI_XUNG = ["Mậu Ngọ, Nhâm Ngọ", "Kỷ Mùi, Đinh Mùi", "Canh Thân, Giáp Thân", "Tân Dậu, Ất Dậu", "Nhâm Tuất, Bính Tuất", "Quý Hợi, Đinh Hợi"];
 
-        // BẢNG MỐC SÓC NĂM 2026 ĐÃ HIỆU CHỈNH
         const LUNAR_MAPPING_2026 = [
             { m: 1, d: 1, lMonth: 11, lYear: 2025, startSolar: new Date(2025, 11, 20) }, 
             { m: 1, d: 1, lMonth: 12, lYear: 2025, startSolar: new Date(2026, 0, 19) },  
@@ -1258,7 +1297,7 @@
             { m: 3, d: 19, lMonth: 2, lYear: 2026, startSolar: new Date(2026, 2, 19) },  
             { m: 4, d: 17, lMonth: 3, lYear: 2026, startSolar: new Date(2026, 3, 17) },  
             { m: 5, d: 17, lMonth: 4, lYear: 2026, startSolar: new Date(2026, 4, 17) },  
-            { m: 6, d: 15, lMonth: 5, lYear: 2026, startSolar: new Date(2026, 5, 15) },  // 15/06/2026 Dương là 1/5 Âm (Tháng 5 thiếu có 29 ngày)
+            { m: 6, d: 15, lMonth: 5, lYear: 2026, startSolar: new Date(2026, 5, 15) },  // Tháng 5 thiếu có 29 ngày
             { m: 7, d: 14, lMonth: 6, lYear: 2026, startSolar: new Date(2026, 6, 14) },  
             { m: 8, d: 12, lMonth: 7, lYear: 2026, startSolar: new Date(2026, 7, 12) },  
             { m: 9, d: 11, lMonth: 8, lYear: 2026, startSolar: new Date(2026, 8, 11) },  
@@ -1417,6 +1456,7 @@
             document.getElementById('detail-xungkhac').innerText = TUOI_XUNG[lunar.jdIndex % TUOI_XUNG.length];
         }
 
+        function closePreviewModal() { document.getElementById('preview-modal').style.display = "none"; }
         window.onclick = function(event) { if (event.target == document.getElementById('preview-modal')) closePreviewModal(); }
     </script>
 </body>
