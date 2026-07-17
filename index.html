@@ -102,12 +102,26 @@
         .progress-container { margin: 15px 0 20px 0; }
         .progress-bar-bg { background-color: #e2e8f0; border-radius: 10px; height: 8px; overflow: hidden; width: 100%; }
         .progress-bar-fill { background: linear-gradient(90deg, #34d399, #10b981); height: 100%; width: 0%; transition: width 0.3s ease; }
+        
+        /* TODO LIST */
         .todo-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
-        .todo-item { display: flex; align-items: center; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; transition: all 0.2s; }
+        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; transition: all 0.2s; }
         .todo-item:hover { background: #f1f5f9; }
         .todo-item input[type="checkbox"] { width: 16px; height: 16px; margin-right: 12px; cursor: pointer; accent-color: #10b981; }
         .todo-item label { font-size: 13px; color: #334155; cursor: pointer; user-select: none; font-weight: 500; }
-        .todo-item input[type="checkbox"]:checked + label { text-decoration: line-through; color: #94a3b8; }
+        
+        /* TAG TRẠNG THÁI NHẮC VIỆC */
+        .task-status-tag {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            margin-left: 8px;
+            display: inline-block;
+        }
+        .status-todo { background-color: #ffedd5; color: #d97706; border: 1px solid #fed7aa; }
+        .status-done { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
 
         .file-upload-wrapper { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; border: 1px dashed var(--border-color); border-radius: 6px; }
         .file-list-container { display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; margin-top: 5px; }
@@ -260,9 +274,9 @@
 
         <!-- ================= TAB 2: HÀNH CHÍNH & NHẮC VIỆC ================= -->
         <div id="tab-admin-finance" class="tab-content">
-            <div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: 2.2fr 1.2fr; gap: 20px; margin-bottom: 20px;">
                 <div>
-                    <!-- KHU VỰC THỐNG KÊ HỒ SƠ HÀNH CHÍNH & MỚI: CƯỚC VIỄN THÔNG INTERNET -->
+                    <!-- KHU VỰC THỐNG KÊ HỒ SƠ HÀNH CHÍNH & CƯỚC VIỄN THÔNG -->
                     <div class="stat-grid">
                         <div class="stat-box" style="border-left-color: var(--blue);">
                             <div class="stat-title">Đề xuất hành chính</div>
@@ -293,6 +307,7 @@
                     </div>
                 </div>
 
+                <!-- CARD CÔNG VIỆC: KHÔNG GẠCH NGANG CHỮ KHI HOÀN THÀNH -->
                 <div class="main-card" style="margin-bottom: 0; padding: 15px; border-left: 5px solid var(--green);">
                     <h3 style="font-size: 14px; font-weight: bold; color: var(--primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <span>📋 NHẮC VIỆC VĂN PHÒNG</span>
@@ -552,7 +567,7 @@
     </div>
 
     <script>
-        // CẤU HÌNH THÔNG TIN KẾT NỐI SUPABASE
+        // CẤU HÌNH THÔNG TIN KẾT NỐI SUPABASE ĐÃ ĐIỀN SẴN THEO YÊU CẦU
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
         let supabaseClient = null;
@@ -983,7 +998,6 @@
 
         /* TỔNG HỢP & PHÂN TÍCH THỐNG KÊ TOÀN DIỆN CẢ HÀNH CHÍNH + CƯỚC VIỄN THÔNG MẠNG */
         function updateAllFinanceStats() {
-            // 1. Thống kê phần hồ sơ hành chính
             let totalOffice = 0, pendingOffice = 0, paidOffice = 0;
             officeRecords.forEach(r => {
                 totalOffice += r.amount_after;
@@ -994,7 +1008,6 @@
             document.getElementById('stat-pending-office').innerText = pendingOffice + " hồ sơ";
             document.getElementById('stat-paid-office').innerText = paidOffice.toLocaleString() + " đ";
 
-            // 2. Thống kê phần hạ tầng & cước mạng internet
             let totalTele = 0, unpaidLines = 0, paidTele = 0;
             teleRecords.forEach(t => {
                 totalTele += t.cost_after;
@@ -1238,21 +1251,32 @@
             document.getElementById('office-tax-value').value = (after - before).toLocaleString("vi-VN");
         }
 
+        /* RENDERING TASK DANH SÁCH NHẮC VIỆC VĂN PHÒNG - ĐÃ LOẠI BỎ GẠCH NGANG CHỮ */
         function renderTasks() {
-            const container = document.getElementById('todo-list-container'); container.innerHTML = "";
+            const container = document.getElementById('todo-list-container'); 
+            container.innerHTML = "";
             officeTasks.forEach((task) => {
+                // Xác định class và nội dung hiển thị trạng thái động
+                const statusClass = task.completed ? "status-done" : "status-todo";
+                const statusText = task.completed ? "Đã xong" : "Chưa làm";
+
                 container.innerHTML += `
                     <li class="todo-item">
-                        <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden;">
                             <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete(${task.id})">
-                            <label for="task-${task.id}" style="${task.completed ? 'text-decoration: line-through; color: #94a3b8;' : ''}">${task.text}</label>
+                            <!-- ĐÃ LOẠI BỎ HOÀN TOÀN LOGIC GẠCH NGANG CHỮ (text-decoration) -->
+                            <label for="task-${task.id}" style="${task.completed ? 'color: #64748b; font-weight: bold;' : ''}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
+                                ${task.text}
+                            </label>
+                            <span class="task-status-tag ${statusClass}">${statusText}</span>
                         </div>
-                        <button type="button" onclick="deleteTask(${task.id})" style="background:none; border:none; color:var(--red); font-weight:bold; cursor:pointer;">×</button>
+                        <button type="button" onclick="deleteTask(${task.id})" style="background:none; border:none; color:var(--red); font-weight:bold; cursor:pointer; font-size: 16px; padding: 0 5px;">×</button>
                     </li>
                 `;
             });
             updateTodoProgressFill();
         }
+
         function addNewTask() { const input = document.getElementById('new-task-input'); if (!input.value.trim()) return; officeTasks.push({ id: Date.now(), text: input.value.trim(), completed: false }); input.value = ""; renderTasks(); }
         function checkTaskEnter(event) { if (event.key === 'Enter') { event.preventDefault(); addNewTask(); } }
         function toggleTaskComplete(id) { const task = officeTasks.find(t => t.id === id); if (task) task.completed = !task.completed; renderTasks(); }
