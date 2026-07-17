@@ -94,10 +94,10 @@
         .input-ki:focus { border: 1px solid var(--purple); background: #fff; }
         .ki-multiplier { font-size: 10px; color: #7c3aed; font-weight: bold; }
 
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: white; padding: 15px; border-radius: 6px; border-left: 5px solid var(--blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .stat-box { background: white; padding: 12px; border-radius: 6px; border-left: 5px solid var(--blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .stat-title { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold; }
-        .stat-value { font-size: 16px; font-weight: bold; margin-top: 5px; display: flex; flex-direction: column; gap: 2px; }
+        .stat-value { font-size: 15px; font-weight: bold; margin-top: 5px; display: flex; flex-direction: column; gap: 2px; }
 
         .progress-container { margin: 15px 0 20px 0; }
         .progress-bar-bg { background-color: #e2e8f0; border-radius: 10px; height: 8px; overflow: hidden; width: 100%; }
@@ -260,28 +260,43 @@
 
         <!-- ================= TAB 2: HÀNH CHÍNH & NHẮC VIỆC ================= -->
         <div id="tab-admin-finance" class="tab-content">
-            <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 20px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div>
+                    <!-- KHU VỰC THỐNG KÊ HỒ SƠ HÀNH CHÍNH & MỚI: CƯỚC VIỄN THÔNG INTERNET -->
                     <div class="stat-grid">
                         <div class="stat-box" style="border-left-color: var(--blue);">
-                            <div class="stat-title">Tổng tiền đề xuất hành chính</div>
-                            <div class="stat-value" id="stat-total-office" style="color: var(--blue);">0</div>
+                            <div class="stat-title">Đề xuất hành chính</div>
+                            <div class="stat-value" id="stat-total-office" style="color: var(--blue);">0 đ</div>
                         </div>
                         <div class="stat-box" style="border-left-color: var(--orange);">
-                            <div class="stat-title">Hồ sơ chờ duyệt</div>
-                            <div class="stat-value" id="stat-pending-office" style="color: var(--orange);">0</div>
+                            <div class="stat-title">Hồ sơ hành chính chờ duyệt</div>
+                            <div class="stat-value" id="stat-pending-office" style="color: var(--orange);">0 hồ sơ</div>
                         </div>
                         <div class="stat-box" style="border-left-color: var(--green);">
-                            <div class="stat-title">Tổng tiền đã chi</div>
-                            <div class="stat-value" id="stat-paid-office" style="color: var(--green);">0</div>
+                            <div class="stat-title">Hành chính đã chi</div>
+                            <div class="stat-value" id="stat-paid-office" style="color: var(--green);">0 đ</div>
+                        </div>
+                    </div>
+                    <div class="stat-grid">
+                        <div class="stat-box" style="border-left-color: var(--purple);">
+                            <div class="stat-title">Tổng cước viễn thông/internet</div>
+                            <div class="stat-value" id="stat-total-telecom" style="color: var(--purple);">0 đ</div>
+                        </div>
+                        <div class="stat-box" style="border-left-color: var(--red);">
+                            <div class="stat-title">Cước mạng chưa chi</div>
+                            <div class="stat-value" id="stat-unpaid-telecom" style="color: var(--red);">0 đường truyền</div>
+                        </div>
+                        <div class="stat-box" style="border-left-color: #0284c7;">
+                            <div class="stat-title">Cước mạng đã thanh toán</div>
+                            <div class="stat-value" id="stat-paid-telecom" style="color: #0284c7;">0 đ</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="main-card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid var(--green);">
-                    <h3 style="font-size: 15px; font-weight: bold; color: var(--primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span>📋 NHẮC VIỆC VĂN PHÒNG HÀNG NGÀY</span>
-                        <span id="progressText" style="font-size: 13px; color: var(--green);">0% hoàn thành</span>
+                <div class="main-card" style="margin-bottom: 0; padding: 15px; border-left: 5px solid var(--green);">
+                    <h3 style="font-size: 14px; font-weight: bold; color: var(--primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span>📋 NHẮC VIỆC VĂN PHÒNG</span>
+                        <span id="progressText" style="font-size: 12px; color: var(--green);">0% hoàn thành</span>
                     </h3>
                     
                     <div class="progress-container" style="margin: 5px 0 15px 0;">
@@ -291,11 +306,11 @@
                     </div>
 
                     <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                        <input type="text" id="new-task-input" placeholder="Nhập công việc văn phòng cần xử lý..." style="flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; outline: none;" onkeydown="checkTaskEnter(event)">
+                        <input type="text" id="new-task-input" placeholder="Nhập việc văn phòng cần làm..." style="flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; outline: none;" onkeydown="checkTaskEnter(event)">
                         <button type="button" class="btn btn-success" style="padding: 8px 12px; font-size: 12px;" onclick="addNewTask()">➕ Thêm</button>
                     </div>
 
-                    <div style="max-height: 230px; overflow-y: auto; padding-right: 2px;">
+                    <div style="max-height: 140px; overflow-y: auto; padding-right: 2px;">
                         <ul class="todo-list" id="todo-list-container"></ul>
                     </div>
                 </div>
@@ -537,7 +552,7 @@
     </div>
 
     <script>
-        // ĐIỀN THÀNH CÔNG THÔNG TIN KẾT NỐI SUPABASE CLOUD THỰC TẾ CỦA BẠN
+        // CẤU HÌNH THÔNG TIN KẾT NỐI SUPABASE
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
         let supabaseClient = null;
@@ -605,7 +620,6 @@
             return parts.length === 2 ? `tháng ${parts[1]} năm ${parts[0]}` : inputVal;
         }
 
-        // CHUYỂN ĐỔI YYYY-MM-DD THÀNH DD/MM/YYYY CHUẨN VIỆT NAM
         function formatVNDate(dateString) {
             if (!dateString) return "-";
             const parts = dateString.split('-');
@@ -689,7 +703,7 @@
                 if (error) throw error;
                 officeRecords = data || [];
                 renderOfficeTable();
-                updateAdminStats();
+                updateAllFinanceStats();
             } catch (err) { console.error("Lỗi tải hồ sơ hành chính:", err.message); }
         }
 
@@ -724,9 +738,7 @@
                 alert("Đã đồng bộ thông tin hồ sơ lên cơ sở dữ liệu Cloud!");
                 resetOfficeFormV2();
                 loadOfficeFromCloud();
-            } catch (err) {
-                alert("Lỗi lưu dữ liệu: " + err.message);
-            }
+            } catch (err) { alert("Lỗi lưu dữ liệu: " + err.message); }
         }
 
         function renderOfficeTable() {
@@ -739,14 +751,9 @@
                 if(rec.attachments) {
                     try {
                         const parsed = JSON.parse(rec.attachments);
-                        if (Array.isArray(parsed)) {
-                            filesArray = parsed;
-                        } else if (parsed) {
-                            filesArray = [parsed];
-                        }
-                    } catch(e) {
-                        filesArray = [rec.attachments];
-                    }
+                        if (Array.isArray(parsed)) { filesArray = parsed; } 
+                        else if (parsed) { filesArray = [parsed]; }
+                    } catch(e) { filesArray = [rec.attachments]; }
                 }
 
                 if (filesArray.length > 0) {
@@ -804,16 +811,15 @@
             document.getElementById('btn-submit-office').innerText = "Cập nhật thay đổi";
             document.getElementById('btn-submit-office').style.backgroundColor = "var(--orange)";
 
-            try {
-                uploadedFiles.office = rec.attachments ? JSON.parse(rec.attachments) : [];
-            } catch(e) { uploadedFiles.office = []; }
+            try { uploadedFiles.office = rec.attachments ? JSON.parse(rec.attachments) : []; } 
+            catch(e) { uploadedFiles.office = []; }
             renderFileList('office');
 
             document.getElementById('sub-tab-office').scrollIntoView({ behavior: 'smooth' });
         }
 
         async function deleteOfficeRecord(id, categoryName) {
-            if(!confirm(`⚠️ BẠN CÓ CHẮC CHẮN MUỐN XÓA HỒ SƠ HÀNH CHÍNH?\n\nHồ sơ: "${categoryName}"\nThao tác này sẽ xóa vĩnh viễn dữ liệu trên Cloud.`)) return;
+            if(!confirm(`⚠️ BẠN CÓ CHẮC CHẮN MUỐN XÓA HỒ SƠ HÀNH CHÍNH?\n\nHồ sơ: "${categoryName}"`)) return;
             try {
                 const { error } = await supabaseClient.from('office_records').delete().eq('id', id);
                 if (error) throw error;
@@ -842,6 +848,7 @@
                 if (error) throw error;
                 teleRecords = data || [];
                 renderTeleTable();
+                updateAllFinanceStats();
             } catch (err) { console.error("Lỗi tải hạ tầng viễn thông:", err.message); }
         }
 
@@ -887,14 +894,9 @@
                 if(rec.attachments) {
                     try {
                         const parsed = JSON.parse(rec.attachments);
-                        if (Array.isArray(parsed)) {
-                            filesArray = parsed;
-                        } else if (parsed) {
-                            filesArray = [parsed];
-                        }
-                    } catch(e) {
-                        filesArray = [rec.attachments];
-                    }
+                        if (Array.isArray(parsed)) { filesArray = parsed; } 
+                        else if (parsed) { filesArray = [parsed]; }
+                    } catch(e) { filesArray = [rec.attachments]; }
                 }
 
                 if (filesArray.length > 0) {
@@ -950,16 +952,15 @@
             document.getElementById('btn-submit-tele').innerText = "Cập nhật thay đổi";
             document.getElementById('btn-submit-tele').style.backgroundColor = "var(--orange)";
 
-            try {
-                uploadedFiles.tele = rec.attachments ? JSON.parse(rec.attachments) : [];
-            } catch(e) { uploadedFiles.tele = []; }
+            try { uploadedFiles.tele = rec.attachments ? JSON.parse(rec.attachments) : []; } 
+            catch(e) { uploadedFiles.tele = []; }
             renderFileList('tele');
 
             document.getElementById('sub-tab-telecom').scrollIntoView({ behavior: 'smooth' });
         }
 
         async function deleteTeleRecord(id, code) {
-            if(!confirm(`⚠️ BẠN CÓ CHẮC CHẮN MUỐN XÓA THÔNG TIN CƯỚC VÀ ĐƯỜNG TRUYỀN?\n\nMã đường truyền: "${code}"\nHành động này không thể hoàn tác.`)) return;
+            if(!confirm(`⚠️ BẠN CÓ CHẮC CHẮN MUỐN XÓA THÔNG TIN CƯỚC VÀ ĐƯỜNG TRUYỀN?\n\nMã đường truyền: "${code}"`)) return;
             try {
                 const { error } = await supabaseClient.from('tele_records').delete().eq('id', id);
                 if (error) throw error;
@@ -980,16 +981,29 @@
             renderTeleTable();
         }
 
-        function updateAdminStats() {
-            let total = 0, pending = 0, paid = 0;
+        /* TỔNG HỢP & PHÂN TÍCH THỐNG KÊ TOÀN DIỆN CẢ HÀNH CHÍNH + CƯỚC VIỄN THÔNG MẠNG */
+        function updateAllFinanceStats() {
+            // 1. Thống kê phần hồ sơ hành chính
+            let totalOffice = 0, pendingOffice = 0, paidOffice = 0;
             officeRecords.forEach(r => {
-                total += r.amount_after;
-                if(r.status === 'Chờ duyệt') pending++;
-                if(r.status === 'Đã thanh toán') paid += r.amount_after;
+                totalOffice += r.amount_after;
+                if(r.status === 'Chờ duyệt') pendingOffice++;
+                if(r.status === 'Đã thanh toán') paidOffice += r.amount_after;
             });
-            document.getElementById('stat-total-office').innerText = total.toLocaleString() + " đ";
-            document.getElementById('stat-pending-office').innerText = pending + " hồ sơ";
-            document.getElementById('stat-paid-office').innerText = paid.toLocaleString() + " đ";
+            document.getElementById('stat-total-office').innerText = totalOffice.toLocaleString() + " đ";
+            document.getElementById('stat-pending-office').innerText = pendingOffice + " hồ sơ";
+            document.getElementById('stat-paid-office').innerText = paidOffice.toLocaleString() + " đ";
+
+            // 2. Thống kê phần hạ tầng & cước mạng internet
+            let totalTele = 0, unpaidLines = 0, paidTele = 0;
+            teleRecords.forEach(t => {
+                totalTele += t.cost_after;
+                if(t.status === 'Chưa thanh toán') unpaidLines++;
+                if(t.status === 'Đã thanh toán') paidTele += t.cost_after;
+            });
+            document.getElementById('stat-total-telecom').innerText = totalTele.toLocaleString() + " đ";
+            document.getElementById('stat-unpaid-telecom').innerText = unpaidLines + " đường truyền";
+            document.getElementById('stat-paid-telecom').innerText = paidTele.toLocaleString() + " đ";
         }
 
         function updateEmployeeData(index, field, value) {
@@ -1127,53 +1141,44 @@
             });
         }
 
-        /* ================= HỆ THỐNG XEM TRƯỚC ĐẦY ĐỦ NỘI DUNG TÀI LIỆU (ĐÃ FIX LỖI KHUNG TRẮNG) ================= */
+        /* TRÌNH XEM TRƯỚC LỘC FILE KHÔNG TRẮNG TRANG TRÊN TRÌNH DUYỆT */
         function previewFileDirect(fileName, fileData, mimeType) {
             const modal = document.getElementById('preview-modal');
             const container = document.getElementById('preview-container');
             document.getElementById('preview-modal-title').innerText = `Xem Trước Tài Liệu: ${fileName}`;
             container.innerHTML = "";
             
-            // 1. Xử lý tệp tin là hình ảnh
             if (mimeType.startsWith('image/') || fileData.startsWith('data:image')) {
                 container.innerHTML = `<img src="${fileData}" class="preview-img" style="max-width:100%; max-height:100%; object-fit:contain;">`;
             } 
-            // 2. Xử lý tệp tin là tài liệu PDF (Sử dụng thẻ embed kết hợp Blob URL động)
             else if (mimeType === 'application/pdf' || fileName.toLowerCase().endsWith('.pdf') || fileData.startsWith('data:application/pdf')) {
                 try {
                     const blob = dataURLtoBlob(fileData);
                     const blobUrl = URL.createObjectURL(blob);
-                    
-                    // Nhúng trực tiếp tài liệu PDF thông qua thẻ embed hỗ trợ hiển thị gốc từ trình duyệt
                     container.innerHTML = `<embed src="${blobUrl}" type="application/pdf" width="100%" height="100%" style="border: none;" />`;
                 } catch (e) {
                     container.innerHTML = `<object data="${fileData}" type="application/pdf" width="100%" height="100%"><iframe src="${fileData}" width="100%" height="100%"></iframe></object>`;
                 }
             } 
-            // 3. Xử lý tệp tin là Word (.docx) hoặc Excel (.xlsx)
             else if (mimeType.includes('officedocument') || fileName.endsWith('.docx') || fileName.endsWith('.xlsx')) {
                 try {
                     const blob = dataURLtoBlob(fileData);
                     const blobUrl = URL.createObjectURL(blob);
                     container.innerHTML = `<iframe src="https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(blobUrl)}" class="preview-iframe" style="width:100%; height:100%; border:none;"></iframe>`;
                 } catch (e) {
-                    container.innerHTML = `<div style="padding:30px; text-align:center;"><p>Không thể xem trực tuyến tài liệu Office này. Bạn hãy nhấn nút tải xuống dưới đây để xem:</p><a href="${fileData}" download="${fileName}" class="btn btn-success" style="text-decoration:none; padding:8px 16px; margin-top:10px; display:inline-block;">📥 Tải tệp xuống máy</a></div>`;
+                    container.innerHTML = `<div style="padding:30px; text-align:center;"><p>Không thể xem trực tuyến. Bạn hãy nhấn tải file:</p><a href="${fileData}" download="${fileName}" class="btn btn-success" style="text-decoration:none; padding:8px 16px; margin-top:10px; display:inline-block;">📥 Tải tệp xuống máy</a></div>`;
                 }
             } 
-            // 4. Các tệp định dạng khác không hỗ trợ render trực tiếp
             else {
                 container.innerHTML = `<div style="padding:30px; text-align:center;"><p>Định dạng tệp tin này cần tải về máy để xem.</p><a href="${fileData}" download="${fileName}" class="btn btn-success" style="text-decoration:none; padding:8px 16px; margin-top:10px; display:inline-block;">📥 Tải tệp xuống máy</a></div>`;
             }
             modal.style.display = "block";
         }
 
-        // Hàm phụ trợ chuyển đổi chuỗi Base64 (DataURL) sang Blob nhị phân
         function dataURLtoBlob(dataurl) {
             var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
                 bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-            while(n--){
-                u8arr[n] = bstr.charCodeAt(n);
-            }
+            while(n--){ u8arr[n] = bstr.charCodeAt(n); }
             return new Blob([u8arr], {type:mime});
         }
 
@@ -1205,9 +1210,7 @@
                 html += `</ul></div>`;
                 container.innerHTML = html;
                 modal.style.display = "block";
-            } catch(e) {
-                container.innerHTML = `<div style="color:var(--red); font-weight:bold; padding:20px;">Lỗi giải mã tài liệu!</div>`;
-            }
+            } catch(e) { container.innerHTML = `<div style="color:var(--red); font-weight:bold; padding:20px;">Lỗi giải mã tài liệu!</div>`; }
         }
 
         function previewSingleFile(type, index) { const file = uploadedFiles[type][index]; if (file) previewFileDirect(file.name, file.data, file.type); }
@@ -1261,7 +1264,7 @@
         function exportSalaryToExcel() { const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG" }); XLSX.writeFile(wb, `LUONG_VINAPACO_${document.getElementById('filter-month').value}.xlsx`); }
 
 
-        /* ================= THUẬT TOÁN LỊCH VẠN NIÊN CHUẨN XÁC VIỆT NAM (HIỆU CHỈNH 2026 THÁNG 5 THIẾU) ================= */
+        /* ================= THUẬT TOÁN LỊCH VẠN NIÊN CHUẨN XÁC VIỆT NAM ================= */
         const THIEN_CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
         const DIA_CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
         
@@ -1297,7 +1300,7 @@
             { m: 3, d: 19, lMonth: 2, lYear: 2026, startSolar: new Date(2026, 2, 19) },  
             { m: 4, d: 17, lMonth: 3, lYear: 2026, startSolar: new Date(2026, 3, 17) },  
             { m: 5, d: 17, lMonth: 4, lYear: 2026, startSolar: new Date(2026, 4, 17) },  
-            { m: 6, d: 15, lMonth: 5, lYear: 2026, startSolar: new Date(2026, 5, 15) },  // Tháng 5 thiếu có 29 ngày
+            { m: 6, d: 15, lMonth: 5, lYear: 2026, startSolar: new Date(2026, 5, 15) }, 
             { m: 7, d: 14, lMonth: 6, lYear: 2026, startSolar: new Date(2026, 6, 14) },  
             { m: 8, d: 12, lMonth: 7, lYear: 2026, startSolar: new Date(2026, 7, 12) },  
             { m: 9, d: 11, lMonth: 8, lYear: 2026, startSolar: new Date(2026, 8, 11) },  
@@ -1306,13 +1309,10 @@
             { m: 12, d: 9, lMonth: 11, lYear: 2026, startSolar: new Date(2026, 11, 9) }  
         ];
 
-        let calendarYear;
-        let calendarMonth; 
+        let calendarYear; let calendarMonth; 
 
         function initCalendarToRealTime() {
-            const today = new Date();
-            calendarYear = today.getFullYear();
-            calendarMonth = today.getMonth(); 
+            const today = new Date(); calendarYear = today.getFullYear(); calendarMonth = today.getMonth(); 
             renderCalendar(calendarYear, calendarMonth);
         }
 
@@ -1335,125 +1335,60 @@
         }
 
         function getLunarDate(dd, mm, yy) {
-            const targetDate = new Date(yy, mm - 1, dd);
-            let matched = LUNAR_MAPPING_2026[0];
-            
+            const targetDate = new Date(yy, mm - 1, dd); let matched = LUNAR_MAPPING_2026[0];
             for (let i = 0; i < LUNAR_MAPPING_2026.length; i++) {
-                if (targetDate >= LUNAR_MAPPING_2026[i].startSolar) {
-                    matched = LUNAR_MAPPING_2026[i];
-                }
+                if (targetDate >= LUNAR_MAPPING_2026[i].startSolar) { matched = LUNAR_MAPPING_2026[i]; }
             }
-
             const diffTime = Math.abs(targetDate - matched.startSolar);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            let lunarDay = diffDays + 1;
-            let lunarMonth = matched.lMonth;
-            let lunarYear = matched.lYear;
+            let lunarDay = diffDays + 1; let lunarMonth = matched.lMonth; let lunarYear = matched.lYear;
 
-            let jd = getJulianDate(dd, mm, yy);
-            let jdOffset = Math.floor(jd + 1.5) % 60;
-            let canDay = THIEN_CAN[(jdOffset + 29) % 10];
-            let chiDay = DIA_CHI[(jdOffset + 17) % 12];
-
-            let canYear = THIEN_CAN[(lunarYear - 4) % 10];
-            let chiYear = DIA_CHI[(lunarYear - 4) % 12];
-
-            let canMonth = THIEN_CAN[(lunarYear * 12 + lunarMonth + 3) % 10];
-            let chiMonth = DIA_CHI[(lunarMonth + 1) % 12];
+            let jd = getJulianDate(dd, mm, yy); let jdOffset = Math.floor(jd + 1.5) % 60;
+            let canDay = THIEN_CAN[(jdOffset + 29) % 10]; let chiDay = DIA_CHI[(jdOffset + 17) % 12];
+            let canYear = THIEN_CAN[(lunarYear - 4) % 10]; let chiYear = DIA_CHI[(lunarYear - 4) % 12];
+            let canMonth = THIEN_CAN[(lunarYear * 12 + lunarMonth + 3) % 10]; let chiMonth = DIA_CHI[(lunarMonth + 1) % 12];
 
             let tietKhiVal = "Bình thường";
             const tkMapping = {
-                1: [5, "Tiểu Hàn", 20, "Đại Hàn"],
-                2: [4, "Lập Xuân", 19, "Vũ Thủy"],
-                3: [5, "Kinh Trập", 20, "Xuân Phân"],
-                4: [5, "Thanh Minh", 20, "Cốc Vũ"],
-                5: [5, "Lập Hạ", 21, "Tiểu Mãn"],
-                6: [5, "Mang Chủng", 21, "Hạ Chí"],
-                7: [7, "Tiểu Thử", 23, "Đại Thử"],
-                8: [7, "Lập Thu", 23, "Xử Thử"],
-                9: [7, "Bạch Lộ", 23, "Thu Phân"],
-                10: [8, "Hàn Lộ", 23, "Sương Giáng"],
-                11: [7, "Lập Đông", 22, "Tiểu Tuyết"],
-                12: [7, "Đại Tuyết", 21, "Đông Chí"]
+                1: [5, "Tiểu Hàn", 20, "Đại Hàn"], 2: [4, "Lập Xuân", 19, "Vũ Thủy"], 3: [5, "Kinh Trập", 20, "Xuân Phân"],
+                4: [5, "Thanh Minh", 20, "Cốc Vũ"], 5: [5, "Lập Hạ", 21, "Tiểu Mãn"], 6: [5, "Mang Chủng", 21, "Hạ Chí"],
+                7: [7, "Tiểu Thử", 23, "Đại Thử"], 8: [7, "Lập Thu", 23, "Xử Thử"], 9: [7, "Bạch Lộ", 23, "Thu Phân"],
+                10: [8, "Hàn Lộ", 23, "Sương Giáng"], 11: [7, "Lập Đông", 22, "Tiểu Tuyết"], 12: [7, "Đại Tuyết", 21, "Đông Chí"]
             };
             if(tkMapping[mm]) {
                 const dates = tkMapping[mm];
                 tietKhiVal = (dd < dates[0]) ? tkMapping[mm === 1 ? 12 : mm - 1][3] : (dd < dates[2] ? dates[1] : dates[3]);
             }
-
-            return {
-                day: lunarDay,
-                month: lunarMonth,
-                year: lunarYear,
-                canchiDay: `${canDay} ${chiDay}`,
-                canchiMonth: `${canMonth} ${chiMonth}`,
-                canchiYear: `${canYear} ${chiYear}`,
-                tietKhi: tietKhiVal,
-                chiDayRaw: chiDay,
-                jdIndex: jdOffset
-            };
+            return { day: lunarDay, month: lunarMonth, year: lunarYear, canchiDay: `${canDay} ${chiDay}`, canchiMonth: `${canMonth} ${chiMonth}`, canchiYear: `${canYear} ${chiYear}`, tietKhi: tietKhiVal, chiDayRaw: chiDay, jdIndex: jdOffset };
         }
 
         function renderCalendar(year, month) {
             const monthsText = ["Tháng 01", "Tháng 02", "Tháng 03", "Tháng 04", "Tháng 05", "Tháng 06", "Tháng 07", "Tháng 08", "Tháng 09", "Tháng 10", "Tháng 11", "Tháng 12"];
             document.getElementById('calendar-month-year-label').innerText = `${monthsText[month]} / ${year}`;
+            const container = document.getElementById('calendar-days-container'); container.innerHTML = "";
             
-            const container = document.getElementById('calendar-days-container'); 
-            container.innerHTML = "";
-            
-            const firstDayIndex = new Date(year, month, 1).getDay();
-            const totalDays = new Date(year, month + 1, 0).getDate();
-            const prevMonthTotalDays = new Date(year, month, 0).getDate();
-            
+            const firstDayIndex = new Date(year, month, 1).getDay(); const totalDays = new Date(year, month + 1, 0).getDate(); const prevMonthTotalDays = new Date(year, month, 0).getDate();
             let startOffset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+            for (let i = startOffset - 1; i >= 0; i--) { container.innerHTML += `<div class="calendar-day-cell other-month"><span class="solar-day">${prevMonthTotalDays - i}</span></div>`; }
 
-            for (let i = startOffset - 1; i >= 0; i--) {
-                container.innerHTML += `<div class="calendar-day-cell other-month"><span class="solar-day">${prevMonthTotalDays - i}</span></div>`;
-            }
-
-            const today = new Date();
-            let focusDay = 1;
-
+            const today = new Date(); let focusDay = 1;
             for (let day = 1; day <= totalDays; day++) {
-                const dayOfWeek = new Date(year, month, day).getDay();
-                let dayClass = dayOfWeek === 0 ? "sunday" : (dayOfWeek === 6 ? "saturday" : "");
-                
-                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) { 
-                    dayClass += " today-highlight"; 
-                    focusDay = day; 
-                }
-                
+                const dayOfWeek = new Date(year, month, day).getDay(); let dayClass = dayOfWeek === 0 ? "sunday" : (dayOfWeek === 6 ? "saturday" : "");
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) { dayClass += " today-highlight"; focusDay = day; }
                 const lunar = getLunarDate(day, month + 1, year);
-                container.innerHTML += `
-                    <div id="cal-day-${day}" class="calendar-day-cell ${dayClass}" onclick="selectCalendarDate(${day}, ${month}, ${year}, this)">
-                        <span class="solar-day">${day}</span>
-                        <span class="lunar-day">${lunar.day}</span>
-                    </div>
-                `;
+                container.innerHTML += `<div id="cal-day-${day}" class="calendar-day-cell ${dayClass}" onclick="selectCalendarDate(${day}, ${month}, ${year}, this)"><span class="solar-day">${day}</span><span class="lunar-day">${lunar.day}</span></div>`;
             }
-
-            setTimeout(() => {
-                const cell = document.getElementById(`cal-day-${focusDay}`);
-                if (cell) selectCalendarDate(focusDay, month, year, cell);
-            }, 60);
+            setTimeout(() => { const cell = document.getElementById(`cal-day-${focusDay}`); if (cell) selectCalendarDate(focusDay, month, year, cell); }, 60);
         }
 
         function selectCalendarDate(day, month, year, element) {
-            document.querySelectorAll('.calendar-day-cell').forEach(c => c.classList.remove('active')); 
-            element.classList.add('active');
-            
-            const lunar = getLunarDate(day, month + 1, year);
-            const monthsText = ["tháng 1", "tháng 2", "tháng 3", "tháng 4", "tháng 5", "tháng 6", "tháng 7", "tháng 8", "tháng 9", "tháng 10", "tháng 11", "tháng 12"];
-            
+            document.querySelectorAll('.calendar-day-cell').forEach(c => c.classList.remove('active')); element.classList.add('active');
+            const lunar = getLunarDate(day, month + 1, year); const monthsText = ["tháng 1", "tháng 2", "tháng 3", "tháng 4", "tháng 5", "tháng 6", "tháng 7", "tháng 8", "tháng 9", "tháng 10", "tháng 11", "tháng 12"];
             document.getElementById('detail-solar').innerText = `Ngày ${day} ${monthsText[month]} năm ${year}`; 
             document.getElementById('detail-lunar').innerText = `Ngày ${lunar.day} tháng ${lunar.month} âm lịch (Năm ${lunar.canchiYear})`;
-            document.getElementById('detail-canchi-day').innerText = `Ngày ${lunar.canchiDay}, Tháng ${lunar.canchiMonth}`; 
-            document.getElementById('detail-tietkhi').innerText = lunar.tietKhi;
-            
+            document.getElementById('detail-canchi-day').innerText = `Ngày ${lunar.canchiDay}, Tháng ${lunar.canchiMonth}`; document.getElementById('detail-tietkhi').innerText = lunar.tietKhi;
             document.getElementById('detail-hoangdao').innerText = GIỜ_HOANG_DAO[lunar.chiDayRaw] || "Không khả dụng";
-            document.getElementById('detail-huongtot').innerText = HUONG_TOT[lunar.jdIndex % HUONG_TOT.length];
-            document.getElementById('detail-xungkhac').innerText = TUOI_XUNG[lunar.jdIndex % TUOI_XUNG.length];
+            document.getElementById('detail-huongtot').innerText = HUONG_TOT[lunar.jdIndex % HUONG_TOT.length]; document.getElementById('detail-xungkhac').innerText = TUOI_XUNG[lunar.jdIndex % TUOI_XUNG.length];
         }
 
         function closePreviewModal() { document.getElementById('preview-modal').style.display = "none"; }
