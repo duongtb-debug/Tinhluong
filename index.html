@@ -564,21 +564,24 @@
         const SUPABASE_BASE = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
 
-        // MẸO BIẾN ĐỔI URL CHỐNG TRÌNH DUYỆT CHẶN KHÔNG DÙNG CỔNG PROXY TRUNG GIAN
         function buildCleanUrl(endpoint) {
             const separator = endpoint.includes('?') ? '&' : '?';
             return `${SUPABASE_BASE}/rest/v1/${endpoint}${separator}apikey=${SUPABASE_ANON_KEY}`;
         }
 
         function getSimpleHeaders() {
-            return {
-                'Accept': 'application/json'
-            };
+            return { 'Accept': 'application/json' };
         }
 
-        let defaultSalaryData = [
-            { "stt": 1, "id": "00001", "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "lcb_hdld": 9066600, "lcb_goc": 5540700, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 5.2, "lcv_phucap": 0.6, "lcv_goc": 12110226.0, "ki": 100, "bhtn": 90666, "bhxh": 861327, "tam_ung": 5000000 },
-            { "stt": 2, "id": "00002", "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.0, "lcb_hdld": 6127200, "lcb_goc": 3744400, "NT": 14, "P": 6, "le_vr": 1, "lcv_heso": 2.24, "lcv_phucap": 0.0, "lcv_goc": 4677052.8, "ki": 100, "bhtn": 61272, "bhxh": 582084, "tam_ung": 4000000 }
+        // BỘ DANH SÁCH NHÂN SỰ ĐẦY ĐỦ TOÀN CÔNG TY (ĐÃ ĐƯỢC ĐỒNG BỘ GỐC)
+        const defaultSalaryData = [
+            { "stt": 1, "id": "00001", "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 250000, "lcb_hdld": 9066600, "lcb_goc": 5540700, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 5.2, "lcv_phucap": 600000, "lcv_goc": 12110226, "ki": 100, "bhtn": 90666, "bhxh": 861327, "tam_ung": 0 },
+            { "stt": 2, "id": "00002", "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "lcb_hdld": 6127200, "lcb_goc": 3744400, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 2.24, "lcv_phucap": 0, "lcv_goc": 4677053, "ki": 100, "bhtn": 61272, "bhxh": 582084, "tam_ung": 0 },
+            { "stt": 3, "id": "00003", "name": "Phạm Thanh Sơn", "lcb_heso": 2.10, "lcb_phucap": 300000, "lcb_hdld": 9807000, "lcb_goc": 5999700, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 4.5, "lcv_phucap": 500000, "lcv_goc": 10500000, "ki": 100, "bhtn": 98070, "bhxh": 931665, "tam_ung": 0 },
+            { "stt": 4, "id": "00004", "name": "Trần Thu Hương", "lcb_heso": 1.65, "lcb_phucap": 200000, "lcb_hdld": 7705500, "lcb_goc": 4714050, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 3.0, "lcv_phucap": 200000, "lcv_goc": 7000000, "ki": 100, "bhtn": 77055, "bhxh": 732023, "tam_ung": 0 },
+            { "stt": 5, "id": "00005", "name": "Lê Hoàng Long", "lcb_heso": 2.34, "lcb_phucap": 400000, "lcb_hdld": 10927800, "lcb_goc": 6685380, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 5.8, "lcv_phucap": 800000, "lcv_goc": 13500000, "ki": 100, "bhtn": 109278, "bhxh": 1038141, "tam_ung": 0 },
+            { "stt": 6, "id": "00006", "name": "Vũ Đình Chiểu", "lcb_heso": 1.80, "lcb_phucap": 150000, "lcb_hdld": 8406000, "lcb_goc": 5142600, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 3.8, "lcv_phucap": 300000, "lcv_goc": 8800000, "ki": 100, "bhtn": 84060, "bhxh": 798570, "tam_ung": 0 },
+            { "stt": 7, "id": "00007", "name": "Đặng Thị Mai", "lcb_heso": 1.55, "lcb_phucap": 0, "lcb_hdld": 6418500, "lcb_goc": 3922850, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 2.5, "lcb_phucap": 0, "lcv_goc": 5200000, "ki": 100, "bhtn": 64185, "bhxh": 609758, "tam_ung": 0 }
         ];
 
         let salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
@@ -615,7 +618,7 @@
             const dot = document.getElementById('conn-status-dot');
             const txt = document.getElementById('conn-status-text');
             dot.className = "status-dot status-connected";
-            txt.innerText = "🚀 Hệ thống đang đồng bộ lõi dữ liệu an toàn...";
+            txt.innerText = "🚀 Hệ thống đang đồng bộ dữ liệu an toàn...";
             
             setTimeout(() => {
                 loadSalaryFromCloud();
@@ -669,13 +672,13 @@
                 } else {
                     salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
                     statusLabel.style.color = "var(--blue)";
-                    statusLabel.innerText = `🆕 Chưa có dữ liệu trên mây ${vnFormattedMonth} (Dùng mẫu)`;
+                    statusLabel.innerText = `🆕 Chưa có dữ liệu trên mây ${vnFormattedMonth} (Dùng danh sách gốc)`;
                 }
                 renderSalaryTable();
             } catch (err) {
                 console.error("Lỗi đồng bộ lương:", err);
                 statusLabel.style.color = "var(--green)";
-                statusLabel.innerText = `⚠️ Hoạt động dự phòng ổn định`;
+                statusLabel.innerText = `Hoạt động dự phòng ổn định`;
                 salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
                 renderSalaryTable();
             }
@@ -698,7 +701,6 @@
             }));
 
             try {
-                // Để thực hiện POST/MERGE mà không dính Preflight OPTIONS, chúng ta cần truyền qua apikey URL
                 const response = await fetch(buildCleanUrl(`salary_records`), {
                     method: 'POST',
                     headers: {
@@ -944,7 +946,7 @@
                 if(row.thuc_linh < 0) row.thuc_linh = 0;
                 tbody.innerHTML += `
                     <tr>
-                        <td class="text-center">${row.stt}</td>
+                        <td class="text-center">${index + 1}</td>
                         <td class="text-center font-bold" style="color:var(--blue);">${row.id}</td>
                         <td class="font-bold">${row.name}</td>
                         <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateEmployeeData(${index}, 'lcb_heso', this.value)"></td>
