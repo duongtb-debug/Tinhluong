@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG CLOUD</title>
-    <!-- Thư viện Supabase SDK và SheetJS (XLSX) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -29,549 +28,122 @@
             padding: 15px; 
             background: #f8fafc; 
             color: var(--text-main);
-            padding-right: 380px; /* Chừa diện tích bên phải cho Lịch Vạn Niên */
+            padding-right: 380px; 
             transition: padding-right 0.3s ease;
         }
 
-        body.calendar-collapsed {
-            padding-right: 15px;
-        }
+        body.calendar-collapsed { padding-right: 15px; }
 
-        /* DB Connection Status Bar */
         .db-status-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 15px;
-            background: #e2e8f0;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 6px;
-            margin-bottom: 10px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 15px; background: #e2e8f0; border-bottom: 1px solid var(--border-color);
+            font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px;
         }
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
-        }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
         .status-connecting { background-color: var(--orange); animation: blink 1s infinite; }
         .status-connected { background-color: var(--green); }
         .status-error { background-color: var(--red); }
+        @keyframes blink { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
 
-        @keyframes blink {
-            0% { opacity: 0.3; }
-            50% { opacity: 1; }
-            100% { opacity: 0.3; }
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--primary);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
         .header h1 { font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
 
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 5px;
-            flex-wrap: wrap;
-        }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; flex-wrap: wrap; }
+        .nav-tab { padding: 10px 20px; border: none; background: none; font-weight: bold; color: #64748b; cursor: pointer; transition: 0.3s; font-size: 14px; }
+        .nav-tab.active { color: var(--blue); border-bottom: 3px solid var(--blue); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .nav-tab {
-            padding: 10px 20px;
-            border: none;
-            background: none;
-            font-weight: bold;
-            color: #64748b;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 14px;
-        }
+        .main-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .card-title { font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--blue); padding-left: 10px; display: flex; justify-content: space-between; align-items: center; }
 
-        .nav-tab.active {
-            color: var(--blue);
-            border-bottom: 3px solid var(--blue);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .main-card {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            margin-bottom: 20px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 15px;
-            border-left: 4px solid var(--blue);
-            padding-left: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .grid-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
         .form-group label { font-weight: bold; color: #475569; }
+        .form-group input, .form-group select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; outline: none; }
 
-        .form-group input, .form-group select, .form-group textarea {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 13px;
-            outline: none;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background: var(--blue); color: white; }
         .btn-success { background: var(--green); color: white; }
         .btn-danger { background: var(--red); color: white; }
 
-        .table-responsive {
-            overflow-x: auto;
-            margin-top: 15px;
-        }
-
-        .main-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        .main-table th {
-            background: #f1f5f9;
-            color: var(--primary);
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            font-weight: bold;
-        }
-
-        .main-table td {
-            padding: 8px 10px;
-            border: 1px solid var(--border-color);
-        }
-
-        .main-table tbody tr:hover {
-            background-color: #f8fafc;
-        }
-
+        .table-responsive { overflow-x: auto; margin-top: 15px; }
+        .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        .main-table th { background: #f1f5f9; color: var(--primary); padding: 10px; border: 1px solid var(--border-color); font-weight: bold; }
+        .main-table td { padding: 8px 10px; border: 1px solid var(--border-color); }
+        .main-table tbody tr:hover { background-color: #f8fafc; }
+        
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         .font-bold { font-weight: bold; }
 
-        .input-salary-day {
-            width: 55px;
-            padding: 4px 6px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 13px;
-            color: var(--primary);
-        }
+        /* Ô nhập liệu ngày công / tiền tệ */
+        .input-salary-day { width: 55px; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-weight: bold; font-size: 13px; color: var(--primary); }
+        .input-edit { width: 65px; padding: 4px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; font-size: 13px; color: var(--blue); background: #eff6ff; outline: none; transition: 0.2s; }
+        .input-edit:focus { border: 1px solid var(--blue); background: #fff; }
+        .input-edit-money { width: 80px; text-align: right; }
 
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .stat-box {
-            background: white;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 5px solid var(--blue);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-box { background: white; padding: 15px; border-radius: 6px; border-left: 5px solid var(--blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .stat-title { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold; }
         .stat-value { font-size: 16px; font-weight: bold; margin-top: 5px; display: flex; flex-direction: column; gap: 2px; }
 
-        /* Nhắc việc hằng ngày & Thanh tiến độ */
-        .progress-container {
-            margin: 15px 0 20px 0;
-        }
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #475569;
-            margin-bottom: 6px;
-            font-weight: bold;
-        }
-        .progress-bar-bg {
-            background-color: #e2e8f0;
-            border-radius: 10px;
-            height: 10px;
-            overflow: hidden;
-            width: 100%;
-        }
-        .progress-bar-fill {
-            background: linear-gradient(90deg, #34d399, #10b981);
-            height: 100%;
-            width: 0%;
-            transition: width 0.4s ease-in-out;
-        }
-        .todo-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .todo-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 12px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .todo-item:hover {
-            background: #f1f5f9;
-        }
-        .todo-item input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            margin-right: 12px;
-            cursor: pointer;
-            accent-color: #10b981;
-        }
-        .todo-item label {
-            font-size: 13px;
-            color: #334155;
-            cursor: pointer;
-            user-select: none;
-            font-weight: 500;
-        }
-        .todo-item input[type="checkbox"]:checked + label {
-            text-decoration: line-through;
-            color: #94a3b8;
-        }
+        .progress-container { margin: 15px 0 20px 0; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 13px; color: #475569; margin-bottom: 6px; font-weight: bold; }
+        .progress-bar-bg { background-color: #e2e8f0; border-radius: 10px; height: 10px; overflow: hidden; width: 100%; }
+        .progress-bar-fill { background: linear-gradient(90deg, #34d399, #10b981); height: 100%; width: 0%; transition: width 0.4s ease-in-out; }
+        .todo-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+        .todo-item { display: flex; align-items: center; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; transition: all 0.2s; }
+        .todo-item:hover { background: #f1f5f9; }
+        .todo-item input[type="checkbox"] { width: 16px; height: 16px; margin-right: 12px; cursor: pointer; accent-color: #10b981; }
+        .todo-item label { font-size: 13px; color: #334155; cursor: pointer; user-select: none; font-weight: 500; }
+        .todo-item input[type="checkbox"]:checked + label { text-decoration: line-through; color: #94a3b8; }
 
-        /* Quản lý tệp đa tệp */
-        .file-upload-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: #f8fafc;
-            padding: 12px;
-            border: 1px dashed var(--border-color);
-            border-radius: 6px;
-        }
-        .file-list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 150px;
-            overflow-y: auto;
-            margin-top: 5px;
-        }
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-            padding: 5px 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-        .file-item-name {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 70%;
-        }
-        .file-item-actions {
-            display: flex;
-            gap: 5px;
-        }
+        .file-upload-wrapper { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; border: 1px dashed var(--border-color); border-radius: 6px; }
+        .file-list-container { display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; margin-top: 5px; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 5px 10px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px; }
+        .file-item-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
+        .file-item-actions { display: flex; gap: 5px; }
 
-        /* Floating Lịch vạn niên */
-        .floating-calendar {
-            position: fixed;
-            right: 15px;
-            top: 50px;
-            width: 350px;
-            background: #ffffff;
-            border-radius: 14px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
-            border: 2px solid #e2e8f0;
-            z-index: 999;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            overflow: hidden;
-        }
-
-        .floating-calendar.collapsed {
-            transform: translateX(330px);
-        }
-
-        .calendar-toggle-btn {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 24px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--blue), var(--purple));
-            color: white;
-            border: none;
-            border-radius: 6px 0 0 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 11px;
-            writing-mode: vertical-rl;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-        }
-
-        .calendar-inner-content {
-            margin-left: 24px;
-            padding: 15px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 8px;
-        }
-        .calendar-header h3 {
-            font-size: 15px;
-            color: var(--primary);
-            font-weight: bold;
-        }
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            text-align: center;
-        }
-        .calendar-day-name {
-            font-weight: bold;
-            padding: 6px 0;
-            background: #f8fafc;
-            border-radius: 4px;
-            color: #475569;
-            font-size: 11px;
-        }
-        .calendar-day-cell {
-            aspect-ratio: 1.1;
-            border: 1px solid #f1f5f9;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            background: white;
-            transition: all 0.2s;
-            position: relative;
-        }
-        .calendar-day-cell:hover {
-            background-color: #eff6ff;
-            border-color: var(--blue);
-            transform: translateY(-1px);
-        }
-        .calendar-day-cell.active {
-            background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
-            color: white !important;
-            border-color: #1e40af !important;
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-        }
-        .calendar-day-cell.active .lunar-day {
-            color: #fef08a !important;
-        }
-
-        .calendar-day-cell.today-highlight {
-            border: 2px solid var(--green) !important;
-            background-color: #f0fdf4;
-        }
-        .calendar-day-cell.today-highlight::after {
-            content: "H.nay";
-            position: absolute;
-            top: 1px;
-            font-size: 6px;
-            background: var(--green);
-            color: white;
-            padding: 1px 3px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-
-        .calendar-day-cell.other-month {
-            opacity: 0.25;
-            background: #f8fafc;
-            pointer-events: none;
-        }
-        .solar-day {
-            font-size: 14px;
-            font-weight: bold;
-        }
-        .lunar-day {
-            font-size: 9px;
-            color: var(--red);
-            margin-top: 2px;
-            font-weight: bold;
-        }
+        .floating-calendar { position: fixed; right: 15px; top: 50px; width: 350px; background: #ffffff; border-radius: 14px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18); border: 2px solid #e2e8f0; z-index: 999; transition: transform 0.3s ease, opacity 0.3s ease; overflow: hidden; }
+        .floating-calendar.collapsed { transform: translateX(330px); }
+        .calendar-toggle-btn { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 24px; height: 80px; background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; border: none; border-radius: 6px 0 0 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; writing-mode: vertical-rl; text-transform: uppercase; letter-spacing: 1px; box-shadow: -2px 0 10px rgba(0,0,0,0.1); }
+        .calendar-inner-content { margin-left: 24px; padding: 15px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; }
+        .calendar-header h3 { font-size: 15px; color: var(--primary); font-weight: bold; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+        .calendar-day-name { font-weight: bold; padding: 6px 0; background: #f8fafc; border-radius: 4px; color: #475569; font-size: 11px; }
+        .calendar-day-cell { aspect-ratio: 1.1; border: 1px solid #f1f5f9; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; background: white; transition: all 0.2s; position: relative; }
+        .calendar-day-cell:hover { background-color: #eff6ff; border-color: var(--blue); transform: translateY(-1px); }
+        .calendar-day-cell.active { background: linear-gradient(135deg, #1d4ed8, #2563eb) !important; color: white !important; border-color: #1e40af !important; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); }
+        .calendar-day-cell.active .lunar-day { color: #fef08a !important; }
+        .calendar-day-cell.today-highlight { border: 2px solid var(--green) !important; background-color: #f0fdf4; }
+        .calendar-day-cell.today-highlight::after { content: "H.nay"; position: absolute; top: 1px; font-size: 6px; background: var(--green); color: white; padding: 1px 3px; border-radius: 3px; font-weight: bold; }
+        .calendar-day-cell.other-month { opacity: 0.25; background: #f8fafc; pointer-events: none; }
+        .solar-day { font-size: 14px; font-weight: bold; }
+        .lunar-day { font-size: 9px; color: var(--red); margin-top: 2px; font-weight: bold; }
         .calendar-day-cell.sunday .solar-day { color: var(--red); }
         .calendar-day-cell.saturday .solar-day { color: var(--blue); }
 
-        .details-panel {
-            background: linear-gradient(to bottom, #ffffff, #f8fafc);
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 12px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px dashed #e2e8f0;
-            align-items: center;
-        }
+        .details-panel { background: linear-gradient(to bottom, #ffffff, #f8fafc); border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 12px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02); }
+        .detail-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; align-items: center; }
         .detail-row:last-child { border-bottom: none; }
         .detail-label { font-weight: bold; color: #475569; font-size: 11px; }
         .detail-value { font-weight: bold; color: var(--primary); font-size: 12px; text-align: right; }
 
-        .sub-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .sub-tab {
-            padding: 8px 16px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 12px;
-        }
-        .sub-tab.active {
-            background: var(--blue);
-            color: white;
-        }
+        .sub-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .sub-tab { padding: 8px 16px; background: #e2e8f0; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .sub-tab.active { background: var(--blue); color: white; }
 
-        /* Modal preview */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.65);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 2% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 85%;
-            max-width: 1000px;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        .close-modal {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.65); }
+        .modal-content { background-color: #fefefe; margin: 2% auto; padding: 20px; border: 1px solid #888; width: 85%; max-width: 1000px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .close-modal { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
         .close-modal:hover { color: black; }
+        .preview-container { width: 100%; height: 65vh; border: 1px solid var(--border-color); border-radius: 6px; overflow: auto; margin-top: 15px; background-color: #f1f5f9; display: flex; justify-content: center; align-items: center; }
+        .preview-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .preview-iframe { width: 100%; height: 100%; border: none; }
 
-        .preview-container {
-            width: 100%;
-            height: 65vh;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            overflow: auto;
-            margin-top: 15px;
-            background-color: #f1f5f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .preview-img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .preview-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        #login-screen {
-            max-width: 400px;
-            margin: 100px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            border: 1px solid #e2e8f0;
-        }
+        #login-screen { max-width: 400px; margin: 100px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
@@ -642,7 +214,7 @@
 
             <div class="main-card">
                 <div class="card-title">
-                    BẢNG TỔNG HỢP THANH TOÁN LƯƠNG TỔNG CÔNG TY (LÀM TRÒN LỄ PHÉP CHUẨN - SỐ THUẦN)
+                    BẢNG TỔNG HỢP THANH TOÁN LƯƠNG TỔNG CÔNG TY
                     <div style="display: flex; gap: 10px;">
                         <button class="btn" id="btn-cloud-save" style="background: var(--purple); color: white;" onclick="saveSalaryToCloud()">☁️ LƯU LÊN CLOUD (SUPABASE)</button>
                         <button class="btn btn-primary" onclick="exportSalaryToExcel()">Xuất Excel Lương Chuẩn</button>
@@ -655,28 +227,28 @@
                                 <th rowspan="2" class="text-center">STT</th>
                                 <th rowspan="2" class="text-center">Mã NV</th>
                                 <th rowspan="2">Họ và tên</th>
-                                <th colspan="4" class="text-center">Lương Cơ Bản HĐLĐ</th>
+                                <th colspan="4" class="text-center">Lương Cơ Bản HĐLĐ (Nhập để sửa)</th>
                                 <th colspan="3" class="text-center" style="background-color: #e0f2fe;">Mở Khóa Ngày Công</th>
                                 <th colspan="3" class="text-center">Chi Tiết Lương CB Thực Nhận</th>
-                                <th colspan="4" class="text-center">Cơ cấu Lương Công Việc (CV)</th>
+                                <th colspan="4" class="text-center">Cơ cấu Lương Công Việc (Nhập để sửa)</th>
                                 <th rowspan="2" class="text-right">Tổng LCB + LCV</th>
                                 <th colspan="2" class="text-center">Khoản Trừ Bảo Hiểm (10.5%)</th>
-                                <th rowspan="2" class="text-right" style="background-color: #fee2e2;">Tạm Ứng (Cố định)</th>
+                                <th rowspan="2" class="text-right" style="background-color: #fee2e2;">Tạm Ứng</th>
                                 <th rowspan="2" class="text-right" style="background-color: #fef08a;">Thực Lĩnh Cuối Cùng</th>
                             </tr>
                             <tr style="background-color: #f1f5f9;">
-                                <th>Hệ số LCB</th>
-                                <th>Phụ cấp LCB</th>
+                                <th style="color:var(--blue);">Hệ số LCB</th>
+                                <th style="color:var(--blue);">Phụ cấp LCB</th>
                                 <th>Lương Ký HĐLĐ</th>
-                                <th>Lương cơ bản</th>
+                                <th>Lương cơ bản Gốc</th>
                                 <th style="background-color: #e0f2fe; color: var(--blue);">Thời gian (NT)</th>
                                 <th style="background-color: #e0f2fe; color: var(--blue);">Phép (P)</th>
                                 <th style="background-color: #e0f2fe; color: var(--blue);">Lễ, VR</th>
                                 <th>Lương Thời Gian</th>
                                 <th>Lương Lễ, Phép</th>
                                 <th>Tổng Lương CB</th>
-                                <th>Hệ số LCV</th>
-                                <th>Phụ cấp LCV</th>
+                                <th style="color:var(--blue);">Hệ số LCV</th>
+                                <th style="color:var(--blue);">Phụ cấp LCV</th>
                                 <th>Lương CV Gốc</th>
                                 <th>Lương CV Thực Tế</th>
                                 <th>BHTN (1%)</th>
@@ -716,24 +288,19 @@
                         <span id="progressText" style="font-size: 13px; color: var(--green);">0% hoàn thành</span>
                     </h3>
                     
-                    <!-- Thanh tiến độ -->
                     <div class="progress-container" style="margin: 5px 0 15px 0;">
                         <div class="progress-bar-bg" style="background-color: #e2e8f0; border-radius: 10px; height: 8px; overflow: hidden; width: 100%;">
                             <div class="progress-bar-fill" id="progressBar" style="background: linear-gradient(90deg, #34d399, #10b981); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
                         </div>
                     </div>
 
-                    <!-- Khung nhập công việc mới -->
                     <div style="display: flex; gap: 8px; margin-bottom: 15px;">
                         <input type="text" id="new-task-input" placeholder="Nhập công việc văn phòng cần xử lý..." style="flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; outline: none;" onkeydown="checkTaskEnter(event)">
                         <button class="btn btn-success" style="padding: 8px 12px; font-size: 12px;" onclick="addNewTask()">➕ Thêm</button>
                     </div>
 
-                    <!-- Danh sách công việc cuộn mượt -->
                     <div style="max-height: 230px; overflow-y: auto; padding-right: 2px;">
-                        <ul class="todo-list" id="todo-list-container">
-                            <!-- Render động bằng Javascript -->
-                        </ul>
+                        <ul class="todo-list" id="todo-list-container"></ul>
                     </div>
                 </div>
             </div>
@@ -932,7 +499,6 @@
             </div>
             <div class="calendar-grid" id="calendar-days-container" style="margin-top: 5px;"></div>
 
-            <!-- Chi tiết thông tin cuốn lịch Block -->
             <div class="details-panel">
                 <div class="detail-row">
                     <span class="detail-label">Dương Lịch:</span>
@@ -1013,7 +579,6 @@
             { id: 1, code: "FTTH-VNP-VPP", provider: "VNPT", location: "Phòng Văn thư", costAfter: 650000, invoiceDate: "2026-05-01", due: "2026-05-15", status: "Đã thanh toán", files: [] }
         ];
 
-        // DANH SÁCH CÔNG VIỆC MẪU BAN ĐẦU CỦA VĂN PHÒNG
         let officeTasks = [
             { id: 1, text: "Kiểm tra & đối chiếu bảng công máy vân tay T5", completed: false },
             { id: 2, text: "Trình ký phê duyệt tờ trình mua sắm Văn phòng phẩm", completed: false },
@@ -1023,7 +588,6 @@
             { id: 6, text: "Đồng bộ dữ liệu bảng lương tháng mới lên Cloud", completed: false }
         ];
 
-        // ĐĂNG NHẬP NHANH ENTER
         function checkEnter(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
@@ -1042,12 +606,12 @@
                 document.getElementById('main-app').style.display = 'block';
                 document.getElementById('user-display').innerText = "Chào, " + user;
                 
-                connectAndTestSupabase(); // Kiểm tra ping kết nối thật đến Supabase
+                connectAndTestSupabase(); 
                 renderSalaryTable();
                 renderOfficeTable();
                 renderTeleTable();
                 updateAdminStats();
-                renderTasks(); // Hiển thị danh sách nhắc việc
+                renderTasks(); 
             }
         }
 
@@ -1070,23 +634,15 @@
             document.getElementById('btn-sub-telecom').classList.toggle('active', subTabName === 'telecom');
         }
 
-        // ================= THÔNG BÁO KẾT NỐI THẬT ĐẾN CLOUD =================
         async function connectAndTestSupabase() {
             const dot = document.getElementById('conn-status-dot');
             const txt = document.getElementById('conn-status-text');
-            
             dot.className = "status-dot status-connecting";
             txt.innerText = "⏳ Đang kết nối và xác thực với Supabase Cloud...";
 
             try {
-                // Khởi tạo Supabase client thực tế từ thông số hardcode
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                
-                // Thực hiện select thử xem bảng salary_records có kết nối được không
-                const { data, error } = await supabaseClient
-                    .from('salary_records')
-                    .select('id')
-                    .limit(1);
+                const { data, error } = await supabaseClient.from('salary_records').select('id').limit(1);
 
                 if (error) {
                     if (error.code === "PGRST116" || error.message.includes("does not exist")) {
@@ -1106,7 +662,6 @@
             }
         }
 
-        // HÀM LƯU LÊN MÂY CLOUD THỰC TẾ
         async function saveSalaryToCloud() {
             if (!supabaseClient) {
                 alert("Hệ thống chưa kết nối được Supabase Cloud!");
@@ -1122,36 +677,19 @@
             btn.disabled = true;
 
             const payload = salaryData.map(row => ({
-                id: row.id,
-                month_period: monthPeriod,
-                name: row.name,
-                lcb_heso: row.lcb_heso,
-                lcb_phucap: row.lcb_phucap,
-                lcb_hdld: row.lcb_hdld,
-                lcb_goc: row.lcb_goc,
-                nt: row.NT,
-                p: row.P,
-                le_vr: row.le_vr,
-                l_thoigian: row.l_thoigian,
-                l_lephep: row.l_lephep,
-                l_tong: row.l_tong,
-                lcv_heso: row.lcv_heso,
-                lcv_phucap: row.lcv_phucap,
-                lcv_goc: row.lcv_goc,
-                lcv_thucte: row.lcv_thucte,
-                bhtn: row.bhtn,
-                bhxh: row.bhxh,
-                tam_ung: row.tam_ung,
-                thuc_linh: row.thuc_linh
+                id: row.id, month_period: monthPeriod, name: row.name,
+                lcb_heso: row.lcb_heso, lcb_phucap: row.lcb_phucap,
+                lcb_hdld: row.lcb_hdld, lcb_goc: row.lcb_goc,
+                nt: row.NT, p: row.P, le_vr: row.le_vr,
+                l_thoigian: row.l_thoigian, l_lephep: row.l_lephep, l_tong: row.l_tong,
+                lcv_heso: row.lcv_heso, lcv_phucap: row.lcv_phucap, lcv_goc: row.lcv_goc,
+                lcv_thucte: row.lcv_thucte, bhtn: row.bhtn, bhxh: row.bhxh,
+                tam_ung: row.tam_ung, thuc_linh: row.thuc_linh
             }));
 
             try {
-                const { error } = await supabaseClient
-                    .from('salary_records')
-                    .upsert(payload, { onConflict: 'id,month_period' });
-
+                const { error } = await supabaseClient.from('salary_records').upsert(payload, { onConflict: 'id,month_period' });
                 if (error) throw error;
-
                 statusLabel.style.color = "var(--green)";
                 statusLabel.innerText = `✅ Đã lưu thành công lên Supabase Cloud tháng ${monthPeriod}!`;
                 alert(`Thành công: Toàn bộ bảng lương tháng ${monthPeriod} đã được đồng bộ lên Cloud!`);
@@ -1159,21 +697,40 @@
                 console.error(err);
                 statusLabel.style.color = "var(--red)";
                 statusLabel.innerText = "❌ Lỗi: " + err.message;
-                alert("Lỗi lưu Cloud: Hãy chắc chắn bạn đã chạy đoạn mã SQL tạo bảng 'salary_records' trên Supabase Dashboard!");
+                alert("Lỗi lưu Cloud: Hãy chắc chắn bạn đã chạy đoạn mã SQL tạo bảng 'salary_records' với khóa chính gộp (id, month_period)!");
             } finally {
                 btn.disabled = false;
             }
         }
 
-        // ================= TÍNH TOÁN LƯƠNG NHÂN VIÊN CHUẨN =================
+        // ================= TÍNH TOÁN VÀ CẬP NHẬT LƯƠNG ĐỘNG =================
+        function updateEmployeeData(index, field, value) {
+            let num = parseFloat(value);
+            if (isNaN(num) || num < 0) num = 0;
+            salaryData[index][field] = num;
+            
+            // Tính lại lương Gốc và HĐLĐ nếu sửa Hệ số LCB
+            if (field === 'lcb_heso') {
+                salaryData[index].lcb_hdld = Math.round(num * 4670000);
+                salaryData[index].lcb_goc = Math.round(num * 2857000);
+                salaryData[index].bhtn = Math.round(salaryData[index].lcb_hdld * 0.01);
+                salaryData[index].bhxh = Math.round(salaryData[index].lcb_hdld * 0.095);
+            }
+            
+            // Tính lại lương gốc CV nếu sửa Hệ số LCV (Hệ số x mức cơ sở 2,087,970)
+            if (field === 'lcv_heso') {
+                salaryData[index].lcv_goc = Math.round(num * 2087970);
+            }
+
+            renderSalaryTable();
+        }
+
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary');
             tbody.innerHTML = "";
             salaryData.forEach((row, index) => {
                 const luong_1_ngay = row.lcb_goc / 22;
                 row.l_thoigian = Math.round(row.NT * luong_1_ngay);
-                
-                // CÔNG THỨC LÀM TRÒN LỄ PHÉP CHUẨN SỐ THUẦN
                 row.l_lephep = Math.round(row.lcb_hdld / 22) * (row.P + row.le_vr);
                 
                 row.l_tong = row.l_thoigian + row.l_lephep;
@@ -1188,24 +745,26 @@
                         <td class="text-center">${row.stt}</td>
                         <td class="text-center font-bold" style="color:var(--blue);">${row.id}</td>
                         <td class="font-bold">${row.name}</td>
-                        <td class="text-center">${row.lcb_heso}</td>
-                        <td class="text-right">${row.lcb_phucap.toLocaleString()}</td>
+                        
+                        <!-- CÁC Ô NHẬP HỆ SỐ MỚI ĐƯỢC MỞ KHÓA -->
+                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateEmployeeData(${index}, 'lcb_heso', this.value)"></td>
+                        <td class="text-right"><input type="number" step="1000" class="input-edit input-edit-money" value="${row.lcb_phucap}" onchange="updateEmployeeData(${index}, 'lcb_phucap', this.value)"></td>
+                        
                         <td class="text-right">${row.lcb_hdld.toLocaleString()}</td>
                         <td class="text-right">${row.lcb_goc.toLocaleString()}</td>
-                        <td style="background-color: #f0fdf4;" class="text-center">
-                            <input type="number" min="0" max="31" class="input-salary-day" value="${row.NT}" onchange="updateEmployeeDays(${index}, 'NT', this.value)">
-                        </td>
-                        <td style="background-color: #f0fdf4;" class="text-center">
-                            <input type="number" min="0" max="31" class="input-salary-day" value="${row.P}" onchange="updateEmployeeDays(${index}, 'P', this.value)">
-                        </td>
-                        <td style="background-color: #f0fdf4;" class="text-center">
-                            <input type="number" min="0" max="31" class="input-salary-day" value="${row.le_vr}" onchange="updateEmployeeDays(${index}, 'le_vr', this.value)">
-                        </td>
+                        
+                        <td style="background-color: #f0fdf4;" class="text-center"><input type="number" min="0" max="31" class="input-salary-day" value="${row.NT}" onchange="updateEmployeeData(${index}, 'NT', this.value)"></td>
+                        <td style="background-color: #f0fdf4;" class="text-center"><input type="number" min="0" max="31" class="input-salary-day" value="${row.P}" onchange="updateEmployeeData(${index}, 'P', this.value)"></td>
+                        <td style="background-color: #f0fdf4;" class="text-center"><input type="number" min="0" max="31" class="input-salary-day" value="${row.le_vr}" onchange="updateEmployeeData(${index}, 'le_vr', this.value)"></td>
+                        
                         <td class="text-right">${row.l_thoigian.toLocaleString()}</td>
                         <td class="text-right">${row.l_lephep.toLocaleString()}</td>
                         <td class="text-right font-bold" style="color:var(--blue);">${row.l_tong.toLocaleString()}</td>
-                        <td class="text-center">${row.lcv_heso}</td>
-                        <td class="text-right">${row.lcv_phucap.toLocaleString()}</td>
+                        
+                        <!-- CÁC Ô NHẬP HỆ SỐ CV MỚI ĐƯỢC MỞ KHÓA -->
+                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcv_heso}" onchange="updateEmployeeData(${index}, 'lcv_heso', this.value)"></td>
+                        <td class="text-right"><input type="number" step="1000" class="input-edit input-edit-money" value="${row.lcv_phucap}" onchange="updateEmployeeData(${index}, 'lcv_phucap', this.value)"></td>
+                        
                         <td class="text-right">${row.lcv_goc.toLocaleString()}</td>
                         <td class="text-right" style="color: var(--purple); font-weight:bold;">${row.lcv_thucte.toLocaleString()}</td>
                         <td class="text-right font-bold">${row.tong_lcb_lcv.toLocaleString()}</td>
@@ -1218,14 +777,6 @@
             });
         }
 
-        function updateEmployeeDays(index, field, value) {
-            let num = parseFloat(value);
-            if (isNaN(num) || num < 0) num = 0;
-            salaryData[index][field] = num;
-            renderSalaryTable();
-        }
-
-        // TẢI FILE EXCEL NGOÀI VÀO HỆ THỐNG
         function handleImportAttendance(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1294,7 +845,7 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // ================= ĐỊNH NGHĨA KHUNG NHẮC VIỆC VÀ CÔNG VIỆC ĐỘNG =================
+        // ================= NHẮC VIỆC =================
         function renderTasks() {
             const container = document.getElementById('todo-list-container');
             container.innerHTML = "";
@@ -1359,18 +910,13 @@
             document.getElementById('progressText').innerText = pct + '% hoàn thành';
         }
 
-        // ================= ĐÍNH KÈM TỆP HÀNH CHÍNH & PREVIEW TỨC THÌ =================
+        // ================= HÀNH CHÍNH =================
         function handleMultipleFilesChange(event, type) {
             const files = event.target.files;
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const objectUrl = URL.createObjectURL(file);
-                uploadedFiles[type].push({
-                    name: file.name,
-                    type: file.type,
-                    data: objectUrl,
-                    rawFile: file
-                });
+                uploadedFiles[type].push({ name: file.name, type: file.type, data: objectUrl, rawFile: file });
             }
             renderFileList(type);
             event.target.value = "";
@@ -1393,19 +939,13 @@
         }
 
         function removeSingleFile(type, index) {
-            if (uploadedFiles[type][index].data.startsWith('blob:')) {
-                URL.revokeObjectURL(uploadedFiles[type][index].data);
-            }
+            if (uploadedFiles[type][index].data.startsWith('blob:')) URL.revokeObjectURL(uploadedFiles[type][index].data);
             uploadedFiles[type].splice(index, 1);
             renderFileList(type);
         }
 
         function removeAllFiles(type) {
-            uploadedFiles[type].forEach(file => {
-                if (file.data.startsWith('blob:')) {
-                    URL.revokeObjectURL(file.data);
-                }
-            });
+            uploadedFiles[type].forEach(file => { if (file.data.startsWith('blob:')) URL.revokeObjectURL(file.data); });
             uploadedFiles[type] = [];
             renderFileList(type);
         }
@@ -1414,7 +954,6 @@
             const modal = document.getElementById('preview-modal');
             const container = document.getElementById('preview-container');
             const title = document.getElementById('preview-modal-title');
-
             title.innerText = `Đang Xem Trước: ${fileName}`;
             container.innerHTML = "";
 
@@ -1442,18 +981,13 @@
             document.getElementById('preview-modal').style.display = "none";
         }
 
-        // ================= PHÂN HỆ HÀNH CHÍNH & BIỂU ĐỒ KPI TÀI CHÍNH =================
         function updateAdminStats() {
-            let totalOffice = 0;
-            let pendingOffice = 0;
-            let paidOffice = 0;
-
+            let totalOffice = 0, pendingOffice = 0, paidOffice = 0;
             officeRecords.forEach(r => {
                 totalOffice += r.amountAfter;
                 if (r.status === 'Chờ duyệt') pendingOffice++;
                 else if (r.status === 'Đã thanh toán') paidOffice += r.amountAfter;
             });
-
             document.getElementById('stat-total-office').innerText = totalOffice.toLocaleString("vi-VN");
             document.getElementById('stat-pending-office').innerText = pendingOffice;
             document.getElementById('stat-paid-office').innerText = paidOffice.toLocaleString("vi-VN");
@@ -1474,14 +1008,10 @@
                 status: document.getElementById('office-status').value,
                 files: [...uploadedFiles.office]
             };
-
             if (idInput) {
                 const index = officeRecords.findIndex(r => r.id === record.id);
                 if (index !== -1) officeRecords[index] = record;
-            } else {
-                officeRecords.push(record);
-            }
-
+            } else { officeRecords.push(record); }
             resetOfficeFormV2();
             renderOfficeTable();
             updateAdminStats();
@@ -1495,13 +1025,7 @@
                 if (record.files && record.files.length > 0) {
                     filesHtml = `<div style="display:flex; flex-direction:column; gap:4px;">`;
                     record.files.forEach((file, idx) => {
-                        filesHtml += `
-                            <button type="button" class="btn" style="background:#e0f2fe; color:#0369a1; padding:2px 6px; font-size:10px; border: 1px solid #bae6fd; justify-content:space-between;" 
-                                onclick="previewRecordFile('office', ${record.id}, ${idx})">
-                                <span style="max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📄 ${file.name}</span>
-                                <span style="font-weight:bold; margin-left:5px;">👁️ Xem</span>
-                            </button>
-                        `;
+                        filesHtml += `<button type="button" class="btn" style="background:#e0f2fe; color:#0369a1; padding:2px 6px; font-size:10px; border: 1px solid #bae6fd; justify-content:space-between;" onclick="previewRecordFile('office', ${record.id}, ${idx})"><span style="max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📄 ${file.name}</span><span style="font-weight:bold; margin-left:5px;">👁️ Xem</span></button>`;
                     });
                     filesHtml += `</div>`;
                 }
@@ -1529,69 +1053,42 @@
         window.previewRecordFile = function(type, recordId, fileIndex) {
             const arr = type === 'office' ? officeRecords : teleRecords;
             const rec = arr.find(r => r.id === recordId);
-            if (rec && rec.files && rec.files[fileIndex]) {
-                const file = rec.files[fileIndex];
-                previewFileDirect(file.name, file.data, file.type);
-            }
+            if (rec && rec.files && rec.files[fileIndex]) previewFileDirect(rec.files[fileIndex].name, rec.files[fileIndex].data, rec.files[fileIndex].type);
         };
 
         function editOfficeRecord(id) {
             const record = officeRecords.find(r => r.id === id);
             if (record) {
-                document.getElementById('office-id').value = record.id;
-                document.getElementById('office-category').value = record.category;
+                document.getElementById('office-id').value = record.id; document.getElementById('office-category').value = record.category;
                 document.getElementById('office-amount-before').value = record.amountBefore.toLocaleString("vi-VN");
                 document.getElementById('office-tax-rate').value = record.taxRate;
                 document.getElementById('office-tax-value').value = record.taxValue.toLocaleString("vi-VN");
                 document.getElementById('office-amount-after').value = record.amountAfter.toLocaleString("vi-VN");
-                document.getElementById('office-date').value = record.date;
-                document.getElementById('office-due-date').value = record.dueDate;
+                document.getElementById('office-date').value = record.date; document.getElementById('office-due-date').value = record.dueDate;
                 document.getElementById('office-status').value = record.status;
-                
                 uploadedFiles.office = [...(record.files || [])];
                 renderFileList('office');
             }
         }
 
-        function deleteOfficeRecord(id) {
-            if(confirm("Bạn có chắc muốn xóa hồ sơ hành chính này?")) {
-                officeRecords = officeRecords.filter(r => r.id !== id);
-                renderOfficeTable();
-                updateAdminStats();
-            }
-        }
+        function deleteOfficeRecord(id) { if(confirm("Bạn có chắc muốn xóa hồ sơ này?")) { officeRecords = officeRecords.filter(r => r.id !== id); renderOfficeTable(); updateAdminStats(); } }
+        function resetOfficeFormV2() { document.getElementById('office-id').value = ""; document.getElementById('office-form-v2').reset(); uploadedFiles.office = []; renderFileList('office'); }
 
-        function resetOfficeFormV2() {
-            document.getElementById('office-id').value = "";
-            document.getElementById('office-form-v2').reset();
-            uploadedFiles.office = [];
-            renderFileList('office');
-        }
-
-        // ================= PHÂN HỆ INTERNET - HẠ TẦNG VIỄN THÔNG =================
         function handleSaveTeleV2(e) {
             e.preventDefault();
             const idInput = document.getElementById('tele-id').value;
             const record = {
                 id: idInput ? parseInt(idInput) : Date.now(),
-                code: document.getElementById('tele-code').value,
-                provider: document.getElementById('tele-provider').value,
-                location: document.getElementById('tele-location').value,
-                costAfter: parseCurrency(document.getElementById('tele-cost-after').value),
-                invoiceDate: document.getElementById('tele-invoice-date').value,
-                due: document.getElementById('tele-due').value,
-                status: document.getElementById('tele-status').value,
-                files: [...uploadedFiles.tele]
+                code: document.getElementById('tele-code').value, provider: document.getElementById('tele-provider').value,
+                location: document.getElementById('tele-location').value, costAfter: parseCurrency(document.getElementById('tele-cost-after').value),
+                invoiceDate: document.getElementById('tele-invoice-date').value, due: document.getElementById('tele-due').value,
+                status: document.getElementById('tele-status').value, files: [...uploadedFiles.tele]
             };
-
             if (idInput) {
                 const index = teleRecords.findIndex(r => r.id === record.id);
                 if (index !== -1) teleRecords[index] = record;
-            } else {
-                teleRecords.push(record);
-            }
-            resetTeleFormV2();
-            renderTeleTable();
+            } else { teleRecords.push(record); }
+            resetTeleFormV2(); renderTeleTable();
         }
 
         function renderTeleTable() {
@@ -1602,25 +1099,16 @@
                 if (record.files && record.files.length > 0) {
                     filesHtml = `<div style="display:flex; flex-direction:column; gap:4px;">`;
                     record.files.forEach((file, idx) => {
-                        filesHtml += `
-                            <button type="button" class="btn" style="background:#f3e8ff; color:#6b21a8; padding:2px 6px; font-size:10px; border: 1px solid #e9d5ff; justify-content:space-between;" 
-                                onclick="previewRecordFile('tele', ${record.id}, ${idx})">
-                                <span style="max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📄 ${file.name}</span>
-                                <span style="font-weight:bold; margin-left:5px;">👁️ Xem</span>
-                            </button>
-                        `;
+                        filesHtml += `<button type="button" class="btn" style="background:#f3e8ff; color:#6b21a8; padding:2px 6px; font-size:10px; border: 1px solid #e9d5ff; justify-content:space-between;" onclick="previewRecordFile('tele', ${record.id}, ${idx})"><span style="max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📄 ${file.name}</span><span style="font-weight:bold; margin-left:5px;">👁️ Xem</span></button>`;
                     });
                     filesHtml += `</div>`;
                 }
-
                 tbody.innerHTML += `
                     <tr>
                         <td class="font-bold" style="color:var(--blue);">${record.code}</td>
-                        <td>${record.provider}</td>
-                        <td>${record.location}</td>
+                        <td>${record.provider}</td><td>${record.location}</td>
                         <td class="text-right font-bold" style="color:var(--purple);">${record.costAfter.toLocaleString("vi-VN")}</td>
-                        <td>${record.invoiceDate}</td>
-                        <td>${record.due}</td>
+                        <td>${record.invoiceDate}</td><td>${record.due}</td>
                         <td class="text-center"><span style="padding:2px 6px; border-radius:4px; font-weight:bold; background-color:${record.status === 'Đã thanh toán' ? '#d1fae5; color:#065f46;' : '#fee2e2; color:#991b1b;'};">${record.status}</span></td>
                         <td>${filesHtml}</td>
                         <td class="text-center">
@@ -1635,218 +1123,75 @@
         function editTeleRecord(id) {
             const record = teleRecords.find(r => r.id === id);
             if (record) {
-                document.getElementById('tele-id').value = record.id;
-                document.getElementById('tele-code').value = record.code;
-                document.getElementById('tele-provider').value = record.provider;
-                document.getElementById('tele-location').value = record.location;
+                document.getElementById('tele-id').value = record.id; document.getElementById('tele-code').value = record.code;
+                document.getElementById('tele-provider').value = record.provider; document.getElementById('tele-location').value = record.location;
                 document.getElementById('tele-cost-after').value = record.costAfter.toLocaleString("vi-VN");
-                document.getElementById('tele-invoice-date').value = record.invoiceDate;
-                document.getElementById('tele-due').value = record.due;
+                document.getElementById('tele-invoice-date').value = record.invoiceDate; document.getElementById('tele-due').value = record.due;
                 document.getElementById('tele-status').value = record.status;
-                
                 uploadedFiles.tele = [...(record.files || [])];
                 renderFileList('tele');
             }
         }
 
-        function deleteTeleRecord(id) {
-            if(confirm("Bạn có chắc muốn xóa hạ tầng cước này?")) {
-                teleRecords = teleRecords.filter(r => r.id !== id);
-                renderTeleTable();
-            }
-        }
+        function deleteTeleRecord(id) { if(confirm("Xóa hạ tầng cước này?")) { teleRecords = teleRecords.filter(r => r.id !== id); renderTeleTable(); } }
+        function resetTeleFormV2() { document.getElementById('tele-id').value = ""; document.getElementById('tele-form-v2').reset(); uploadedFiles.tele = []; renderFileList('tele'); }
+        function formatCurrencyInput(input) { let val = input.value.replace(/\D/g, ""); if (val === "") { input.value = ""; return; } input.value = parseInt(val).toLocaleString("vi-VN"); }
+        function parseCurrency(str) { if(!str) return 0; return parseFloat(str.toString().replace(/\./g, "").replace(/,/g, "")) || 0; }
+        function calculateOfficeVAT() { let before = parseCurrency(document.getElementById('office-amount-before').value); let rate = parseFloat(document.getElementById('office-tax-rate').value) / 100; let taxValue = before * rate; let after = before + taxValue; document.getElementById('office-tax-value').value = Math.round(taxValue).toLocaleString("vi-VN"); document.getElementById('office-amount-after').value = Math.round(after).toLocaleString("vi-VN"); }
+        function recalculateOfficeTotalByTax() { let before = parseCurrency(document.getElementById('office-amount-before').value); let taxValue = parseCurrency(document.getElementById('office-tax-value').value); document.getElementById('office-amount-after').value = (before + taxValue).toLocaleString("vi-VN"); }
+        function recalculateOfficeTaxByTotal() { let before = parseCurrency(document.getElementById('office-amount-before').value); let after = parseCurrency(document.getElementById('office-amount-after').value); document.getElementById('office-tax-value').value = (after - before).toLocaleString("vi-VN"); }
 
-        function resetTeleFormV2() {
-            document.getElementById('tele-id').value = "";
-            document.getElementById('tele-form-v2').reset();
-            uploadedFiles.tele = [];
-            renderFileList('tele');
-        }
-
-        function formatCurrencyInput(input) {
-            let val = input.value.replace(/\D/g, "");
-            if (val === "") {
-                input.value = "";
-                return;
-            }
-            input.value = parseInt(val).toLocaleString("vi-VN");
-        }
-
-        function parseCurrency(str) {
-            if(!str) return 0;
-            return parseFloat(str.toString().replace(/\./g, "").replace(/,/g, "")) || 0;
-        }
-
-        function calculateOfficeVAT() {
-            let before = parseCurrency(document.getElementById('office-amount-before').value);
-            let rate = parseFloat(document.getElementById('office-tax-rate').value) / 100;
-            let taxValue = before * rate;
-            let after = before + taxValue;
-
-            document.getElementById('office-tax-value').value = Math.round(taxValue).toLocaleString("vi-VN");
-            document.getElementById('office-amount-after').value = Math.round(after).toLocaleString("vi-VN");
-        }
-
-        function recalculateOfficeTotalByTax() {
-            let before = parseCurrency(document.getElementById('office-amount-before').value);
-            let taxValue = parseCurrency(document.getElementById('office-tax-value').value);
-            document.getElementById('office-amount-after').value = (before + taxValue).toLocaleString("vi-VN");
-        }
-
-        function recalculateOfficeTaxByTotal() {
-            let before = parseCurrency(document.getElementById('office-amount-before').value);
-            let after = parseCurrency(document.getElementById('office-amount-after').value);
-            document.getElementById('office-tax-value').value = (after - before).toLocaleString("vi-VN");
-        }
-
-        // ================= THUẬT TOÁN LỊCH VẠN NIÊN BLOCK =================
-        let currentYear = 2026;
-        let currentMonth = 4; // Tháng 5 (0-index)
-
+        // ================= LỊCH VẠN NIÊN =================
+        let currentYear = 2026, currentMonth = 4;
         const THIEN_CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
         const DIA_CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
+        const HUONG_XUAT_HANH = { "Giáp": "Hỷ Thần: Đông Bắc - Tài Thần: Đông Nam", "Ất": "Hỷ Thần: Tây Bắc - Tài Thần: Đông Nam", "Bính": "Hỷ Thần: Tây Nam - Tài Thần: Chính Đông", "Đinh": "Hỷ Thần: Chính Nam - Tài Thần: Chính Đông", "Mậu": "Hỷ Thần: Đông Nam - Tài Thần: Chính Bắc", "Kỷ": "Hỷ Thần: Đông Bắc - Tài Thần: Chính Nam", "Canh": "Hỷ Thần: Tây Bắc - Tài Thần: Tây Nam", "Tân": "Hỷ Thần: Tây Nam - Tài Thần: Tây Nam", "Nhâm": "Hỷ Thần: Chính Nam - Tài Thần: Tây Bắc", "Quý": "Hỷ Thần: Đông Nam - Tài Thần: Chính Tây" };
+        const GIO_HOANG_DAO = { "Tý": "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)", "Sửu": "Dần (3-5), Mão (5-7), Tỵ (9-11), Thân (15-17), Tuất (19-21), Hợi (21-23)", "Dần": "Tý (23-1), Sửu (1-3), Thìn (7-9), Tỵ (9-11), Mùi (13-15), Tuất (19-21)", "Mão": "Tý (23-1), Dần (3-5), Mão (5-7), Ngọ (11-13), Mùi (13-15), Dậu (17-19)", "Thìn": "Dần (3-5), Thìn (7-9), Tỵ (9-11), Thân (15-17), Dậu (17-19), Hợi (21-23)", "Tỵ": "Sửu (1-3), Thìn (7-9), Ngọ (11-13), Mùi (13-15), Tuất (19-21), Hợi (21-23)" };
 
-        const HUONG_XUAT_HANH = {
-            "Giáp": "Hỷ Thần: Đông Bắc - Tài Thần: Đông Nam", "Ất": "Hỷ Thần: Tây Bắc - Tài Thần: Đông Nam",
-            "Bính": "Hỷ Thần: Tây Nam - Tài Thần: Chính Đông", "Đinh": "Hỷ Thần: Chính Nam - Tài Thần: Chính Đông",
-            "Mậu": "Hỷ Thần: Đông Nam - Tài Thần: Chính Bắc", "Kỷ": "Hỷ Thần: Đông Bắc - Tài Thần: Chính Nam",
-            "Canh": "Hỷ Thần: Tây Bắc - Tài Thần: Tây Nam", "Tân": "Hỷ Thần: Tây Nam - Tài Thần: Tây Nam",
-            "Nhâm": "Hỷ Thần: Chính Nam - Tài Thần: Tây Bắc", "Quý": "Hỷ Thần: Đông Nam - Tài Thần: Chính Tây"
-        };
-
-        const GIO_HOANG_DAO = {
-            "Tý": "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)",
-            "Sửu": "Dần (3-5), Mão (5-7), Tỵ (9-11), Thân (15-17), Tuất (19-21), Hợi (21-23)",
-            "Dần": "Tý (23-1), Sửu (1-3), Thìn (7-9), Tỵ (9-11), Mùi (13-15), Tuất (19-21)",
-            "Mão": "Tý (23-1), Dần (3-5), Mão (5-7), Ngọ (11-13), Mùi (13-15), Dậu (17-19)",
-            "Thìn": "Dần (3-5), Thìn (7-9), Tỵ (9-11), Thân (15-17), Dậu (17-19), Hợi (21-23)",
-            "Tỵ": "Sửu (1-3), Thìn (7-9), Ngọ (11-13), Mùi (13-15), Tuất (19-21), Hợi (21-23)"
-        };
-
-        function toggleCalendarWidget() {
-            const widget = document.getElementById('floating-calendar-widget');
-            widget.classList.toggle('collapsed');
-            document.body.classList.toggle('calendar-collapsed');
-        }
-
-        function changeCalendarMonth(offset) {
-            currentMonth += offset;
-            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-            else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-            renderCalendar(currentYear, currentMonth);
-        }
+        function toggleCalendarWidget() { document.getElementById('floating-calendar-widget').classList.toggle('collapsed'); document.body.classList.toggle('calendar-collapsed'); }
+        function changeCalendarMonth(offset) { currentMonth += offset; if (currentMonth > 11) { currentMonth = 0; currentYear++; } else if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar(currentYear, currentMonth); }
 
         function getLunarDateFull(day, month, year) {
-            const baseSolar = new Date(2026, 4, 1);
-            const targetSolar = new Date(year, month, day);
-            const diffTime = targetSolar - baseSolar;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            let baseLunarDay = 15;
-            let targetLunarDay = (baseLunarDay + diffDays) % 30;
-            if (targetLunarDay <= 0) targetLunarDay += 30;
-            
-            let lunarMonth = targetSolar.getMonth() + 1;
-            if (targetSolar.getDate() < 15) lunarMonth = targetSolar.getMonth();
-            if (lunarMonth === 0) lunarMonth = 12;
-
+            const baseSolar = new Date(2026, 4, 1), targetSolar = new Date(year, month, day), diffDays = Math.ceil((targetSolar - baseSolar) / (1000 * 60 * 60 * 24));
+            let targetLunarDay = (15 + diffDays) % 30; if (targetLunarDay <= 0) targetLunarDay += 30;
+            let lunarMonth = targetSolar.getMonth() + 1; if (targetSolar.getDate() < 15) lunarMonth = targetSolar.getMonth(); if (lunarMonth === 0) lunarMonth = 12;
             let jdOffset = diffDays % 60; if (jdOffset < 0) jdOffset += 60;
-            const canDay = THIEN_CAN[(0 + jdOffset) % 10];
-            const chiDay = DIA_CHI[(0 + jdOffset) % 12];
-
-            let tietKhi = month === 4 ? (day < 21 ? "Lập Hạ" : "Tiểu Mãn") : "Mang Chủng";
-
-            return {
-                day: targetLunarDay, month: lunarMonth,
-                canchiDay: `${canDay} ${chiDay}`, canchiMonth: `Bính Ngọ`, canchiYear: `Bính Ngọ`,
-                tietKhi: tietKhi, hoangDao: GIO_HOANG_DAO[chiDay] || GIO_HOANG_DAO["Tý"],
-                xuathanh: HUONG_XUAT_HANH[canDay] || HUONG_XUAT_HANH["Giáp"]
-            };
+            const canDay = THIEN_CAN[(0 + jdOffset) % 10], chiDay = DIA_CHI[(0 + jdOffset) % 12];
+            return { day: targetLunarDay, month: lunarMonth, canchiDay: `${canDay} ${chiDay}`, canchiMonth: `Bính Ngọ`, canchiYear: `Bính Ngọ`, tietKhi: month === 4 ? (day < 21 ? "Lập Hạ" : "Tiểu Mãn") : "Mang Chủng", hoangDao: GIO_HOANG_DAO[chiDay] || GIO_HOANG_DAO["Tý"], xuathanh: HUONG_XUAT_HANH[canDay] || HUONG_XUAT_HANH["Giáp"] };
         }
 
         function renderCalendar(year, month) {
             const monthsText = ["Tháng 01", "Tháng 02", "Tháng 03", "Tháng 04", "Tháng 05", "Tháng 06", "Tháng 07", "Tháng 08", "Tháng 09", "Tháng 10", "Tháng 11", "Tháng 12"];
             document.getElementById('calendar-month-year-label').innerText = `${monthsText[month]} / ${year}`;
-
-            const container = document.getElementById('calendar-days-container');
-            container.innerHTML = "";
-
-            const firstDayIndex = new Date(year, month, 1).getDay();
+            const container = document.getElementById('calendar-days-container'); container.innerHTML = "";
+            const firstDayIndex = new Date(year, month, 1).getDay(), totalDays = new Date(year, month + 1, 0).getDate(), prevMonthTotalDays = new Date(year, month, 0).getDate();
             let startOffset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
 
-            const totalDays = new Date(year, month + 1, 0).getDate();
-            const prevMonthTotalDays = new Date(year, month, 0).getDate();
-
-            for (let i = startOffset - 1; i >= 0; i--) {
-                const day = prevMonthTotalDays - i;
-                container.innerHTML += `<div class="calendar-day-cell other-month"><span class="solar-day">${day}</span></div>`;
-            }
-
+            for (let i = startOffset - 1; i >= 0; i--) container.innerHTML += `<div class="calendar-day-cell other-month"><span class="solar-day">${prevMonthTotalDays - i}</span></div>`;
             const today = new Date();
             for (let day = 1; day <= totalDays; day++) {
-                const solarDate = new Date(year, month, day);
-                const dayOfWeek = solarDate.getDay();
-                
-                let dayClass = "";
-                if (dayOfWeek === 0) dayClass = "sunday";
-                else if (dayOfWeek === 6) dayClass = "saturday";
-
-                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                    dayClass += " today-highlight";
-                }
-
+                const dayOfWeek = new Date(year, month, day).getDay();
+                let dayClass = dayOfWeek === 0 ? "sunday" : (dayOfWeek === 6 ? "saturday" : "");
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) dayClass += " today-highlight";
                 const lunar = getLunarDateFull(day, month, year);
-                container.innerHTML += `
-                    <div id="cal-day-${day}" class="calendar-day-cell ${dayClass}" onclick="selectCalendarDate(${day}, ${month}, ${year}, this)">
-                        <span class="solar-day">${day}</span>
-                        <span class="lunar-day">${lunar.day}</span>
-                    </div>
-                `;
+                container.innerHTML += `<div id="cal-day-${day}" class="calendar-day-cell ${dayClass}" onclick="selectCalendarDate(${day}, ${month}, ${year}, this)"><span class="solar-day">${day}</span><span class="lunar-day">${lunar.day}</span></div>`;
             }
-
-            setTimeout(() => {
-                let tgt = (month === today.getMonth() && year === today.getFullYear()) ? today.getDate() : 1;
-                const cell = document.getElementById(`cal-day-${tgt}`);
-                if (cell) selectCalendarDate(tgt, month, year, cell);
-            }, 50);
+            setTimeout(() => { let tgt = (month === today.getMonth() && year === today.getFullYear()) ? today.getDate() : 1; const cell = document.getElementById(`cal-day-${tgt}`); if (cell) selectCalendarDate(tgt, month, year, cell); }, 50);
         }
 
         function selectCalendarDate(day, month, year, element) {
-            document.querySelectorAll('.calendar-day-cell').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-
-            const lunar = getLunarDateFull(day, month, year);
-            const monthsText = ["tháng 1", "tháng 2", "tháng 3", "tháng 4", "tháng 5", "tháng 6", "tháng 7", "tháng 8", "tháng 9", "tháng 10", "tháng 11", "tháng 12"];
-            
-            document.getElementById('detail-solar').innerText = `Ngày ${day} ${monthsText[month]} năm ${year}`;
-            document.getElementById('detail-lunar').innerText = `Ngày ${lunar.day} tháng ${lunar.month} âm lịch`;
-            document.getElementById('detail-canchi-day').innerText = lunar.canchiDay;
-            document.getElementById('detail-canchi-month').innerText = lunar.canchiMonth;
-            document.getElementById('detail-canchi-year').innerText = lunar.canchiYear;
-            document.getElementById('detail-tietkhi').innerText = lunar.tietKhi;
-            document.getElementById('detail-hoangdao').innerText = lunar.hoangDao;
-            document.getElementById('detail-xuathanh').innerText = lunar.xuathanh;
+            document.querySelectorAll('.calendar-day-cell').forEach(c => c.classList.remove('active')); element.classList.add('active');
+            const lunar = getLunarDateFull(day, month, year), monthsText = ["tháng 1", "tháng 2", "tháng 3", "tháng 4", "tháng 5", "tháng 6", "tháng 7", "tháng 8", "tháng 9", "tháng 10", "tháng 11", "tháng 12"];
+            document.getElementById('detail-solar').innerText = `Ngày ${day} ${monthsText[month]} năm ${year}`; document.getElementById('detail-lunar').innerText = `Ngày ${lunar.day} tháng ${lunar.month} âm lịch`;
+            document.getElementById('detail-canchi-day').innerText = lunar.canchiDay; document.getElementById('detail-canchi-month').innerText = lunar.canchiMonth; document.getElementById('detail-canchi-year').innerText = lunar.canchiYear;
+            document.getElementById('detail-tietkhi').innerText = lunar.tietKhi; document.getElementById('detail-hoangdao').innerText = lunar.hoangDao; document.getElementById('detail-xuathanh').innerText = lunar.xuathanh;
         }
 
-        window.onclick = function(event) {
-            const previewModal = document.getElementById('preview-modal');
-            if (event.target == previewModal) closePreviewModal();
-        }
-
-        function exportSalaryToExcel() {
-            const table = document.getElementById("main-salary-table");
-            const wb = XLSX.utils.table_to_book(table, { sheet: "LUONG_T5" });
-            XLSX.writeFile(wb, `LUONG_VINAPACO_THANH_TOAN_${document.getElementById('filter-month').value}.xlsx`);
-        }
+        window.onclick = function(event) { if (event.target == document.getElementById('preview-modal')) closePreviewModal(); }
+        function exportSalaryToExcel() { const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG_T5" }); XLSX.writeFile(wb, `LUONG_VINAPACO_THANH_TOAN_${document.getElementById('filter-month').value}.xlsx`); }
 
         // Khởi động lịch
-        initCalendar = function() {
-            const today = new Date();
-            currentYear = today.getFullYear();
-            currentMonth = today.getMonth();
-            renderCalendar(currentYear, currentMonth);
-        };
-        initCalendar();
+        const today = new Date(); currentYear = today.getFullYear(); currentMonth = today.getMonth(); renderCalendar(currentYear, currentMonth);
     </script>
 </body>
 </html>
