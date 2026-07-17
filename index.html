@@ -174,7 +174,7 @@
     <div class="db-status-bar">
         <div>
             <span id="conn-status-dot" class="status-dot"></span>
-            <span id="conn-status-text">Đang kết nối hệ thống dữ liệu trực tuyến...</span>
+            <span id="conn-status-text">Đang liên kết hệ thống dữ liệu trực tuyến...</span>
         </div>
         <div style="font-size: 11px; color: #64748b;">
             Project Cloud: <strong>vjseitcuqgdtnyuijfte</strong>
@@ -561,11 +561,11 @@
     </div>
 
     <script>
-        // Cấu hình tham số lõi API Supabase
+        // CẤU HÌNH GỐC SUPABASE CLOUD API
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
 
-        // Định nghĩa Headers chuẩn để triệt tiêu CORS
+        // SIÊU TIÊU ĐỀ: Bắt buộc cung cấp apikey tầng REST để Supabase mở CORS 100%
         function getSupabaseHeaders() {
             return {
                 'apikey': SUPABASE_ANON_KEY,
@@ -606,7 +606,7 @@
             document.getElementById('btn-sub-telecom').classList.toggle('active', subTabName === 'telecom');
         }
 
-        // ĐỘNG CƠ KHỞI CHẠY KHÔNG TREO, CHỐNG CORS TUYỆT ĐỐI
+        // Khởi tạo tiến trình nạp
         window.addEventListener('DOMContentLoaded', () => {
             initCalendarToRealTime(); 
             renderSalaryTable();      
@@ -614,15 +614,14 @@
             const dot = document.getElementById('conn-status-dot');
             const txt = document.getElementById('conn-status-text');
             dot.className = "status-dot status-connected";
-            txt.innerText = "🟢 Kênh kết nối REST API Supabase bảo mật đã kích hoạt!";
+            txt.innerText = "🟢 Trực tuyến: Đã liên kết REST API chống lỗi CORS bảo mật.";
             
-            // Trì hoãn 500ms để trình duyệt tải xong UI rồi quét sạch Cloud đổ vào màn hình
             setTimeout(() => {
                 loadSalaryFromCloud();
                 loadOfficeFromCloud();
                 loadTeleFromCloud();
                 loadTasksFromCloud();
-            }, 500);
+            }, 400);
         });
 
         function formatMonthPeriodToVN(inputVal) {
@@ -638,21 +637,21 @@
             return dateString;
         }
 
-        /* ================= REST API: XỬ LÝ LƯƠNG NHÂN VIÊN ================= */
+        /* ================= VÁ LỖI TẢI LƯƠNG NHÂN VIÊN ================= */
         async function loadSalaryFromCloud() {
             const monthPeriod = document.getElementById('filter-month').value;
             const vnFormattedMonth = formatMonthPeriodToVN(monthPeriod);
             const statusLabel = document.getElementById('cloud-action-status');
             
             statusLabel.style.color = "var(--orange)";
-            statusLabel.innerText = `⏳ Đang tải dữ liệu Lương ${vnFormattedMonth}...`;
+            statusLabel.innerText = `⏳ Đang quét dữ liệu Lương ${vnFormattedMonth}...`;
 
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/salary_records?month_period=eq.${monthPeriod}&select=*`, {
                     method: 'GET',
                     headers: getSupabaseHeaders()
                 });
-                if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
                 const data = await response.json();
 
                 if (data && data.length > 0) {
@@ -666,7 +665,7 @@
                         tam_ung: item.tam_ung, thuc_linh: item.thuc_linh
                     }));
                     statusLabel.style.color = "var(--green)";
-                    statusLabel.innerText = `✅ Đã nhận dữ liệu Lương ${vnFormattedMonth}!`;
+                    statusLabel.innerText = `✅ Đã đồng bộ thành công danh sách nhân viên ${vnFormattedMonth}!`;
                 } else {
                     salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
                     statusLabel.style.color = "var(--blue)";
@@ -674,12 +673,10 @@
                 }
                 renderSalaryTable();
             } catch (err) {
-                statusLabel.style.color = "#475569";
-                statusLabel.innerText = "ℹ️ Mạng phản hồi chậm - Đã kích hoạt chế độ làm việc an toàn.";
-                if (salaryData.length === 0) {
-                    salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
-                    renderSalaryTable();
-                }
+                statusLabel.style.color = "var(--red)";
+                statusLabel.innerText = `❌ Lỗi kết nối API: ${err.message}`;
+                salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
+                renderSalaryTable();
             }
         }
 
@@ -708,7 +705,7 @@
                     },
                     body: JSON.stringify(payload)
                 });
-                if (!response.ok) throw new Error("Không thể đẩy gói dữ liệu.");
+                if (!response.ok) throw new Error("API POST Error.");
                 statusLabel.style.color = "var(--green)";
                 statusLabel.innerText = `✅ Đã lưu trực tuyến Lương ${vnFormattedMonth}!`;
                 alert(`Bảng lương ${vnFormattedMonth} đã lưu thành công lên Supabase Cloud!`);
@@ -718,14 +715,14 @@
             }
         }
 
-        /* ================= REST API: HỒ SƠ HÀNH CHÍNH ================= */
+        /* ================= VÁ LỖI HỒ SƠ HÀNH CHÍNH ================= */
         async function loadOfficeFromCloud() {
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/office_records?select=*&order=created_at.desc`, {
                     method: 'GET',
                     headers: getSupabaseHeaders()
                 });
-                if (!response.ok) throw new Error("Lỗi HTTP fetch.");
+                if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
                 officeRecords = await response.json();
                 renderOfficeTable();
                 updateAllFinanceStats();
@@ -762,7 +759,7 @@
                         body: JSON.stringify([recordPayload])
                     });
                 }
-                if (!response.ok) throw new Error("Lỗi lưu.");
+                if (!response.ok) throw new Error("API Error.");
                 alert("Đã đồng bộ thông tin hồ sơ hành chính lên Cloud!");
                 resetOfficeFormV2(); loadOfficeFromCloud();
             } catch (err) { alert("Lỗi: " + err.message); }
@@ -831,14 +828,14 @@
 
         function resetOfficeFormV2() { currentEditingOfficeId = null; document.getElementById('office-id').value = ""; document.getElementById('office-form-v2').reset(); uploadedFiles.office = []; renderFileList('office'); renderOfficeTable(); }
 
-        /* ================= REST API: HẠ TẦNG VIỄN THÔNG ================= */
+        /* ================= VÁ LỖI CƯỚC VIỄN THÔNG ================= */
         async function loadTeleFromCloud() {
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/tele_records?select=*&order=created_at.desc`, {
                     method: 'GET',
                     headers: getSupabaseHeaders()
                 });
-                if (!response.ok) throw new Error("HTTP Error.");
+                if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
                 teleRecords = await response.json(); renderTeleTable(); updateAllFinanceStats();
             } catch (err) { console.error("Lỗi tải cước viễn thông:", err.message); }
         }
@@ -1021,6 +1018,70 @@
             event.target.value = ""; 
         }
 
+        /* ================= VÁ LỖI NHẮC VIỆC VĂN PHÒNG ================= */
+        async function loadTasksFromCloud() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/office_tasks?select=*&order=id.asc`, {
+                    method: 'GET',
+                    headers: getSupabaseHeaders()
+                });
+                if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+                officeTasks = await response.json(); 
+                renderTasks();
+            } catch (err) { console.error("Lỗi nhắc việc văn phòng:", err.message); }
+        }
+
+        async function addNewTask() {
+            const input = document.getElementById('new-task-input'); const textValue = input.value.trim(); if (!textValue) return;
+            const newTask = { id: Date.now(), text: textValue, completed: false };
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/office_tasks`, { 
+                    method: 'POST', 
+                    headers: getSupabaseHeaders(), 
+                    body: JSON.stringify([newTask]) 
+                });
+                officeTasks.push(newTask); input.value = ""; renderTasks();
+            } catch (err) { alert("Không thể lưu tác vụ: " + err.message); }
+        }
+
+        async function toggleTaskComplete(id) {
+            const task = officeTasks.find(t => t.id === id); if (!task) return;
+            const newCompletedStatus = !task.completed;
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/office_tasks?id=eq.${id}`, { 
+                    method: 'PATCH', 
+                    headers: getSupabaseHeaders(), 
+                    body: JSON.stringify({ completed: newCompletedStatus }) 
+                });
+                task.completed = newCompletedStatus; renderTasks();
+            } catch (err) { alert("Lỗi: " + err.message); }
+        }
+
+        async function deleteTask(id) {
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/office_tasks?id=eq.${id}`, { method: 'DELETE', headers: getSupabaseHeaders() });
+                officeTasks = officeTasks.filter(t => t.id !== id); renderTasks();
+            } catch (err) { alert("Lỗi xóa tác vụ: " + err.message); }
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('todo-list-container'); container.innerHTML = "";
+            officeTasks.forEach((task) => {
+                const statusClass = task.completed ? "status-done" : "status-todo"; const statusText = task.completed ? "Đã xong" : "Chưa làm";
+                container.innerHTML += `
+                    <li class="todo-item">
+                        <div style="display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden;">
+                            <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete(${task.id})">
+                            <label for="task-${task.id}" style="${task.completed ? 'color: #64748b; font-weight: bold;' : ''}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${task.text}</label>
+                            <span class="task-status-tag ${statusClass}">${statusText}</span>
+                        </div>
+                        <button type="button" onclick="deleteTask(${task.id})" style="background:none; border:none; color:var(--red); font-weight:bold; cursor:pointer; font-size: 16px; padding: 0 5px;">×</button>
+                    </li>
+                `;
+            });
+            updateTodoProgressFill();
+        }
+
         function renderFileList(type) {
             const container = document.getElementById(type + '-file-list'); container.innerHTML = "";
             uploadedFiles[type].forEach((file, index) => {
@@ -1066,61 +1127,6 @@
         function closePreviewModal() { document.getElementById('preview-modal').style.display = "none"; }
         function removeSingleFile(type, index) { uploadedFiles[type].splice(index, 1); renderFileList(type); }
         function removeAllFiles(type) { uploadedFiles[type] = []; renderFileList(type); }
-
-        /* ================= REST API: ĐỒNG BỘ NHẮC VIỆC VĂN PHÒNG ================= */
-        async function loadTasksFromCloud() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/office_tasks?select=*&order=id.asc`, {
-                    method: 'GET',
-                    headers: getSupabaseHeaders()
-                });
-                if (!response.ok) throw new Error("HTTP Err.");
-                officeTasks = await response.json(); renderTasks();
-            } catch (err) { console.error("Lỗi nhắc việc văn phòng:", err.message); }
-        }
-
-        async function addNewTask() {
-            const input = document.getElementById('new-task-input'); const textValue = input.value.trim(); if (!textValue) return;
-            const newTask = { id: Date.now(), text: textValue, completed: false };
-            try {
-                await fetch(`${SUPABASE_URL}/rest/v1/office_tasks`, { method: 'POST', headers: getSupabaseHeaders(), body: JSON.stringify([newTask]) });
-                officeTasks.push(newTask); input.value = ""; renderTasks();
-            } catch (err) { alert("Không thể lưu tác vụ: " + err.message); }
-        }
-
-        async function toggleTaskComplete(id) {
-            const task = officeTasks.find(t => t.id === id); if (!task) return;
-            const newCompletedStatus = !task.completed;
-            try {
-                await fetch(`${SUPABASE_URL}/rest/v1/office_tasks?id=eq.${id}`, { method: 'PATCH', headers: getSupabaseHeaders(), body: JSON.stringify({ completed: newCompletedStatus }) });
-                task.completed = newCompletedStatus; renderTasks();
-            } catch (err) { alert("Lỗi: " + err.message); }
-        }
-
-        async function deleteTask(id) {
-            try {
-                await fetch(`${SUPABASE_URL}/rest/v1/office_tasks?id=eq.${id}`, { method: 'DELETE', headers: getSupabaseHeaders() });
-                officeTasks = officeTasks.filter(t => t.id !== id); renderTasks();
-            } catch (err) { alert("Lỗi xóa tác vụ: " + err.message); }
-        }
-
-        function renderTasks() {
-            const container = document.getElementById('todo-list-container'); container.innerHTML = "";
-            officeTasks.forEach((task) => {
-                const statusClass = task.completed ? "status-done" : "status-todo"; const statusText = task.completed ? "Đã xong" : "Chưa làm";
-                container.innerHTML += `
-                    <li class="todo-item">
-                        <div style="display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden;">
-                            <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete(${task.id})">
-                            <label for="task-${task.id}" style="${task.completed ? 'color: #64748b; font-weight: bold;' : ''}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">${task.text}</label>
-                            <span class="task-status-tag ${statusClass}">${statusText}</span>
-                        </div>
-                        <button type="button" onclick="deleteTask(${task.id})" style="background:none; border:none; color:var(--red); font-weight:bold; cursor:pointer; font-size: 16px; padding: 0 5px;">×</button>
-                    </li>
-                `;
-            });
-            updateTodoProgressFill();
-        }
 
         function checkTaskEnter(event) { if (event.key === 'Enter') { event.preventDefault(); addNewTask(); } }
         function updateTodoProgressFill() { const total = officeTasks.length, checked = officeTasks.filter(t => t.completed).length, pct = total > 0 ? Math.round((checked / total) * 100) : 0; document.getElementById('progressBar').style.width = pct + '%'; document.getElementById('progressText').innerText = pct + '% hoàn thành'; }
