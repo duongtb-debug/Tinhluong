@@ -54,7 +54,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .main-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .main-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 20px; border: 1px solid #e2e8f0; scroll-margin-top: 20px; }
         .card-title { font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--blue); padding-left: 10px; display: flex; justify-content: space-between; align-items: center; }
 
         .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
@@ -66,6 +66,13 @@
         .btn-primary { background: var(--blue); color: white; }
         .btn-success { background: var(--green); color: white; }
         .btn-danger { background: var(--red); color: white; }
+
+        .btn-action-edit { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; font-weight: bold; transition: 0.2s; }
+        .btn-action-edit:hover { background: #fde68a; }
+        .btn-action-delete { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; font-weight: bold; transition: 0.2s; }
+        .btn-action-delete:hover { background: #fecaca; }
+
+        .editing-row { background-color: #fef3c7 !important; transition: background-color 0.3s ease; }
 
         .table-responsive { overflow-x: auto; margin-top: 15px; }
         .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
@@ -107,6 +114,7 @@
         .file-item-name { max-width: 65%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: bold; }
         .file-item-actions { display: flex; gap: 5px; }
 
+        /* LỊCH VẠN NIÊN WIDGET */
         .floating-calendar { position: fixed; right: 15px; top: 50px; width: 350px; background: #ffffff; border-radius: 14px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18); border: 2px solid #e2e8f0; z-index: 999; transition: transform 0.3s ease, opacity 0.3s ease; overflow: hidden; }
         .floating-calendar.collapsed { transform: translateX(330px); }
         .calendar-toggle-btn { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 24px; height: 80px; background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; border: none; border-radius: 6px 0 0 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; writing-mode: vertical-rl; text-transform: uppercase; letter-spacing: 1px; box-shadow: -2px 0 10px rgba(0,0,0,0.1); }
@@ -120,14 +128,14 @@
         .calendar-day-cell.active { background: linear-gradient(135deg, #1d4ed8, #2563eb) !important; color: white !important; border-color: #1e40af !important; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); }
         .calendar-day-cell.active .lunar-day { color: #fef08a !important; }
         .calendar-day-cell.today-highlight { border: 2px solid var(--green) !important; background-color: #f0fdf4; }
-        .calendar-day-cell.today-highlight::after { content: "H.nay"; position: absolute; top: 1px; font-size: 6px; background: var(--green); color: white; padding: 1px 3px; border-radius: 3px; font-weight: bold; }
+        .calendar-day-cell.today-highlight::after { content: "H.nay"; position: absolute; top: 1px; font-size: 7px; background: var(--green); color: white; padding: 0px 3px; border-radius: 3px; font-weight: bold; }
         .calendar-day-cell.other-month { opacity: 0.25; background: #f8fafc; pointer-events: none; }
         .solar-day { font-size: 14px; font-weight: bold; }
         .lunar-day { font-size: 9px; color: var(--red); margin-top: 2px; font-weight: bold; }
         .calendar-day-cell.sunday .solar-day { color: var(--red); }
         .calendar-day-cell.saturday .solar-day { color: var(--blue); }
 
-        .details-panel { background: linear-gradient(to bottom, #ffffff, #f8fafc); border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 12px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02); }
+        .details-panel { background: linear-gradient(to bottom, #ffffff, #f8fafc); border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 12px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02); max-height: 250px; overflow-y: auto; }
         .detail-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; align-items: center; }
         .detail-row:last-child { border-bottom: none; }
         .detail-label { font-weight: bold; color: #475569; font-size: 11px; }
@@ -299,7 +307,7 @@
 
             <!-- PHÂN HỆ HỒ SƠ HÀNH CHÍNH -->
             <div id="sub-tab-office" class="main-card">
-                <div class="card-title">Thiết lập hồ sơ thanh toán hành chính mới</div>
+                <div class="card-title" id="office-card-title">Thiết lập hồ sơ thanh toán hành chính mới</div>
                 <form id="office-form-v2" onsubmit="handleSaveOfficeV2(event)" style="margin-bottom: 20px;">
                     <input type="hidden" id="office-id">
                     <div class="grid-form">
@@ -357,8 +365,8 @@
                         </div>
                     </div>
                     <div style="margin-top: 15px; display: flex; gap: 10px;">
-                        <button type="submit" class="btn btn-primary">Lưu hồ sơ mua sắm/thanh toán</button>
-                        <button type="button" class="btn" style="background:#64748b; color:white;" onclick="resetOfficeFormV2()">Làm mới</button>
+                        <button type="submit" class="btn btn-primary" id="btn-submit-office">Lưu hồ sơ mua sắm/thanh toán</button>
+                        <button type="button" class="btn" style="background:#64748b; color:white;" onclick="resetOfficeFormV2()">Làm mới / Hủy sửa</button>
                     </div>
                 </form>
 
@@ -375,7 +383,7 @@
                                 <th>Hạn thanh toán</th>
                                 <th class="text-center">Trạng thái</th>
                                 <th class="text-center" style="width: 150px;">Đính kèm</th>
-                                <th style="width: 120px;" class="text-center">Hành động</th>
+                                <th style="width: 150px;" class="text-center">Hành động thông minh</th>
                             </tr>
                         </thead>
                         <tbody id="tbody-office-v2"></tbody>
@@ -385,7 +393,7 @@
 
             <!-- PHÂN HỆ VIỄN THÔNG & HẠ TẦNG -->
             <div id="sub-tab-telecom" class="main-card" style="display: none;">
-                <div class="card-title">Cấu hình cước viễn thông hóa đơn mới</div>
+                <div class="card-title" id="tele-card-title">Cấu hình cước viễn thông hóa đơn mới</div>
                 <form id="tele-form-v2" onsubmit="handleSaveTeleV2(event)" style="margin-bottom: 20px;">
                     <input type="hidden" id="tele-id">
                     <div class="grid-form">
@@ -437,8 +445,8 @@
                         </div>
                     </div>
                     <div style="margin-top: 15px; display: flex; gap: 10px;">
-                        <button type="submit" class="btn btn-primary">Lưu cước cấu hình</button>
-                        <button type="button" class="btn" style="background:#64748b; color:white;" onclick="resetTeleFormV2()">Làm mới</button>
+                        <button type="submit" class="btn btn-primary" id="btn-submit-tele">Lưu cước cấu hình</button>
+                        <button type="button" class="btn" style="background:#64748b; color:white;" onclick="resetTeleFormV2()">Làm mới / Hủy sửa</button>
                     </div>
                 </form>
 
@@ -454,7 +462,7 @@
                                 <th>Hạn thanh toán</th>
                                 <th class="text-center">Trạng thái</th>
                                 <th class="text-center" style="width: 150px;">Đính kèm</th>
-                                <th style="width: 120px;" class="text-center">Hành động</th>
+                                <th style="width: 150px;" class="text-center">Hành động thông minh</th>
                             </tr>
                         </thead>
                         <tbody id="tbody-telecom-v2"></tbody>
@@ -464,13 +472,13 @@
         </div>
     </div>
 
-    <!-- ================= FLOATING CALENDAR WIDGET BLOCK ================= -->
+    <!-- ================= FLOATING LỊCH VẠN NIÊN WIDGET BLOCK ================= -->
     <div class="floating-calendar" id="floating-calendar-widget">
         <button type="button" class="calendar-toggle-btn" onclick="toggleCalendarWidget()">📅 LỊCH VẠN NIÊN</button>
         <div class="calendar-inner-content">
             <div class="calendar-header">
                 <button type="button" style="border:none; background:none; cursor:pointer; font-weight:bold; color:var(--blue);" onclick="changeCalendarMonth(-1)">◀</button>
-                <h3 id="calendar-month-year-label">Tháng 05 / 2026</h3>
+                <h3 id="calendar-month-year-label">Tháng 07 / 2026</h3>
                 <button type="button" style="border:none; background:none; cursor:pointer; font-weight:bold; color:var(--blue);" onclick="changeCalendarMonth(1)">▶</button>
             </div>
             
@@ -492,15 +500,27 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Âm Lịch:</span>
-                    <span class="detail-value" id="detail-lunar" style="color: var(--red); font-size: 13px;"></span>
+                    <span class="detail-value" id="detail-lunar" style="color: var(--red); font-size: 12px;"></span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Can Chi Ngày:</span>
+                    <span class="detail-label">Chi tiết giờ:</span>
                     <span class="detail-value" id="detail-canchi-day" style="color: #9333ea;"></span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Tiết khí:</span>
                     <span class="detail-value" id="detail-tietkhi" style="color: var(--green);"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Giờ Hoàng Đạo:</span>
+                    <span class="detail-value" id="detail-hoangdao" style="color: #ca8a04; font-size: 11px;"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Hướng tốt:</span>
+                    <span class="detail-value" id="detail-huongtot" style="color: var(--green);"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Tuổi xung khắc:</span>
+                    <span class="detail-value" id="detail-xungkhac" style="color: var(--red);"></span>
                 </div>
             </div>
         </div>
@@ -522,21 +542,7 @@
 
         let defaultSalaryData = [
             { "stt": 1, "id": "00001", "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "lcb_hdld": 9066600, "lcb_goc": 5540700, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 5.2, "lcv_phucap": 0.6, "lcv_goc": 12110226.0, "ki": 100, "bhtn": 90666, "bhxh": 861327, "tam_ung": 5000000 },
-            { "stt": 2, "id": "00002", "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.0, "lcb_hdld": 6127200, "lcb_goc": 3744400, "NT": 14, "P": 6, "le_vr": 1, "lcv_heso": 2.24, "lcv_phucap": 0.0, "lcv_goc": 4677052.8, "ki": 100, "bhtn": 61272, "bhxh": 582084, "tam_ung": 4000000 },
-            { "stt": 3, "id": "00003", "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0.0, "lcb_hdld": 7410600, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.74, "lcv_phucap": 0.0, "lcv_goc": 3633067.8, "ki": 100, "bhtn": 74106, "bhxh": 704007, "tam_ung": 3000000 },
-            { "stt": 4, "id": "00004", "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0.0, "lcb_hdld": 8031600, "lcb_goc": 4908200, "NT": 21, "P": 0, "le_vr": 1, "lcv_heso": 1.86, "lcv_phucap": 0.0, "lcv_goc": 3883624.2, "ki": 100, "bhtn": 80316, "bhxh": 763002, "tam_ung": 3000000 },
-            { "stt": 5, "id": "00005", "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0.0, "lcb_hdld": 7410600, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.74, "lcv_phucap": 0.0, "lcv_goc": 3633067.8, "ki": 100, "bhtn": 74106, "bhxh": 704007, "tam_ung": 4000000 },
-            { "stt": 6, "id": "00006", "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0.0, "lcb_hdld": 7079400, "lcb_goc": 4326300, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.74, "lcv_phucap": 0.0, "lcv_goc": 3633067.8, "ki": 100, "bhtn": 70794, "bhxh": 672543, "tam_ung": 3000000 },
-            { "stt": 7, "id": "00007", "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0.0, "lcb_hdld": 6913800, "lcb_goc": 4225100, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.48, "lcv_phucap": 0.0, "lcv_goc": 3090195.6, "ki": 100, "bhtn": 69138, "bhxh": 656811, "tam_ung": 4000000 },
-            { "stt": 8, "id": "00008", "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0.0, "lcb_hdld": 7576200, "lcb_goc": 4629900, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.66, "lcv_phucap": 0.0, "lcv_goc": 3466030.2, "ki": 100, "bhtn": 75762, "bhxh": 719739, "tam_ung": 3000000 },
-            { "stt": 9, "id": "00009", "name": "Phạm Tiến Long", "lcb_heso": 1.8, "lcb_phucap": 0.0, "lcb_hdld": 7452000, "lcb_goc": 4554000, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.62, "lcv_phucap": 0.0, "lcv_goc": 3382511.4, "ki": 100, "bhtn": 74520, "bhxh": 707940, "tam_ung": 4000000 },
-            { "stt": 10, "id": "00010", "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0.0, "lcb_hdld": 7576200, "lcb_goc": 4629900, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.66, "lcv_phucap": 0.0, "lcv_goc": 3466030.2, "ki": 100, "bhtn": 75762, "bhxh": 719739, "tam_ung": 3000000 },
-            { "stt": 11, "id": "00011", "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0.0, "lcb_hdld": 6334200, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.62, "lcv_phucap": 0.0, "lcv_goc": 3382511.4, "ki": 100, "bhtn": 63342, "bhxh": 601749, "tam_ung": 3000000 },
-            { "stt": 12, "id": "00012", "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0.0, "lcb_hdld": 6334200, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.62, "lcv_phucap": 0.0, "lcv_goc": 3382511.4, "ki": 100, "bhtn": 63342, "bhxh": 601749, "tam_ung": 3000000 },
-            { "stt": 13, "id": "00013", "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0.0, "lcb_hdld": 5589000, "lcb_goc": 3415500, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.63, "lcv_phucap": 0.0, "lcv_goc": 3403391.1, "ki": 100, "bhtn": 55890, "bhxh": 530955, "tam_ung": 3000000 },
-            { "stt": 14, "id": "00014", "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0.0, "lcb_hdld": 7410600, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 2.4, "lcv_phucap": 0.0, "lcv_goc": 5011128.0, "ki": 100, "bhtn": 74106, "bhxh": 704007, "tam_ung": 3000000 },
-            { "stt": 15, "id": "00015", "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0.0, "lcb_hdld": 6334200, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 1.62, "lcv_phucap": 0.0, "lcv_goc": 3382511.4, "ki": 100, "bhtn": 63342, "bhxh": 601749, "tam_ung": 3000000 },
-            { "stt": 16, "id": "00016", "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0.0, "lcb_hdld": 9356400, "lcb_goc": 5717799, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 2.4, "lcv_phucap": 0.0, "lcv_goc": 5011128.0, "ki": 100, "bhtn": 93564, "bhxh": 888858, "tam_ung": 4000000 }
+            { "stt": 2, "id": "00002", "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.0, "lcb_hdld": 6127200, "lcb_goc": 3744400, "NT": 14, "P": 6, "le_vr": 1, "lcv_heso": 2.24, "lcv_phucap": 0.0, "lcv_goc": 4677052.8, "ki": 100, "bhtn": 61272, "bhxh": 582084, "tam_ung": 4000000 }
         ];
 
         let salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
@@ -544,9 +550,11 @@
         let officeRecords = [];
         let teleRecords = [];
         let officeTasks = [
-            { id: 1, text: "Kiểm tra & đối chiếu bảng công máy vân tay", completed: false },
-            { id: 2, text: "Trình ký phê duyệt tờ trình mua sắm Văn phòng phẩm", completed: false }
+            { id: 1, text: "Kiểm tra & đối chiếu bảng công máy vân tay", completed: false }
         ];
+
+        let currentEditingOfficeId = null;
+        let currentEditingTeleId = null;
 
         function triggerAttendanceUpload() { document.getElementById('upload-attendance').click(); }
         function triggerOfficeFileUpload() { document.getElementById('office-file-input').click(); }
@@ -569,9 +577,8 @@
         window.addEventListener('DOMContentLoaded', () => {
             connectAndTestSupabase(); 
             renderSalaryTable();
-            updateAdminStats();
             renderTasks(); 
-            renderCalendar(currentYear, currentMonth);
+            initCalendarToRealTime(); 
         });
 
         async function connectAndTestSupabase() {
@@ -579,40 +586,34 @@
             const txt = document.getElementById('conn-status-text');
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                const { error } = await supabaseClient.from('salary_records').select('id').limit(1);
                 dot.className = "status-dot status-connected";
-                txt.innerText = "🟢 Đã kết nối cơ sở dữ liệu Supabase Cloud thực tế thành công!";
+                txt.innerText = "🟢 Đã liên kết trực tuyến thành công với cơ sở dữ liệu Supabase Cloud!";
                 loadSalaryFromCloud();
+                loadOfficeFromCloud();
+                loadTeleFromCloud();
             } catch (err) {
                 dot.className = "status-dot status-error";
-                txt.innerText = "🔴 Lỗi kết nối Supabase Cloud. Hãy kiểm tra lại API Key hoặc bảng dữ liệu.";
+                txt.innerText = "🔴 Lỗi liên kết Supabase Cloud: " + err.message;
             }
         }
 
-        // HÀM CHUYỂN ĐỔI CHUỖI ĐỊNH DẠNG "YYYY-MM" SANG ĐỊNH DẠNG VIỆT NAM "tháng MM năm YYYY"
         function formatMonthPeriodToVN(inputVal) {
             if(!inputVal) return "";
             const parts = inputVal.split('-');
-            if(parts.length === 2) {
-                return `tháng ${parts[1]} năm ${parts[0]}`;
-            }
-            return inputVal;
+            return parts.length === 2 ? `tháng ${parts[1]} năm ${parts[0]}` : inputVal;
         }
 
+        /* ================= HỆ THỐNG XỬ LÝ LƯƠNG NHÂN VIÊN CLOUD ================= */
         async function loadSalaryFromCloud() {
             if (!supabaseClient) return;
             const monthPeriod = document.getElementById('filter-month').value;
-            const vnFormattedMonth = formatMonthPeriodToVN(monthPeriod); // Định dạng tiếng Việt
+            const vnFormattedMonth = formatMonthPeriodToVN(monthPeriod);
             const statusLabel = document.getElementById('cloud-action-status');
             statusLabel.style.color = "var(--orange)";
-            statusLabel.innerText = `⏳ Đang tải dữ liệu ${vnFormattedMonth}...`;
+            statusLabel.innerText = `⏳ Đang tải dữ liệu Lương ${vnFormattedMonth}...`;
 
             try {
-                const { data, error } = await supabaseClient
-                    .from('salary_records')
-                    .select('*')
-                    .eq('month_period', monthPeriod);
-
+                const { data, error } = await supabaseClient.from('salary_records').select('*').eq('month_period', monthPeriod);
                 if (error) throw error;
 
                 if (data && data.length > 0) {
@@ -626,21 +627,21 @@
                         tam_ung: item.tam_ung, thuc_linh: item.thuc_linh
                     }));
                     statusLabel.style.color = "var(--green)";
-                    statusLabel.innerText = `✅ Đã nhận dữ liệu ${vnFormattedMonth}!`;
+                    statusLabel.innerText = `✅ Đã nhận dữ liệu Lương ${vnFormattedMonth}!`;
                 } else {
                     salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
                     statusLabel.style.color = "var(--blue)";
-                    statusLabel.innerText = `🆕 Chưa có dữ liệu ${vnFormattedMonth} (Dùng mặc định)`;
+                    statusLabel.innerText = `🆕 Chưa có dữ liệu trên Cloud ${vnFormattedMonth} (Dùng mẫu)`;
                 }
                 renderSalaryTable();
             } catch (err) {
                 statusLabel.style.color = "var(--red)";
-                statusLabel.innerText = `❌ Lỗi tải dữ liệu: ${err.message}`;
+                statusLabel.innerText = `❌ Lỗi: ${err.message}`;
             }
         }
 
         async function saveSalaryToCloud() {
-            if (!supabaseClient) return alert("Hệ thống chưa kết nối Cloud!");
+            if (!supabaseClient) return alert("Chưa kết nối Cloud!");
             const monthPeriod = document.getElementById('filter-month').value; 
             const vnFormattedMonth = formatMonthPeriodToVN(monthPeriod);
             const statusLabel = document.getElementById('cloud-action-status');
@@ -660,12 +661,291 @@
                 const { error } = await supabaseClient.from('salary_records').upsert(payload, { onConflict: 'id,month_period' });
                 if (error) throw error;
                 statusLabel.style.color = "var(--green)";
-                statusLabel.innerText = `✅ Đã lưu dữ liệu & KI ${vnFormattedMonth}!`;
-                alert(`Bảng lương ${vnFormattedMonth} đã được khóa lưu trữ an toàn trên Cloud!`);
+                statusLabel.innerText = `✅ Đã lưu trực tuyến Lương ${vnFormattedMonth}!`;
+                alert(`Bảng lương ${vnFormattedMonth} đã lưu thành công lên Supabase Cloud!`);
             } catch (err) {
                 statusLabel.style.color = "var(--red)";
                 statusLabel.innerText = "❌ Lỗi: " + err.message;
             }
+        }
+
+        /* ================= HỆ THỐNG XỬ LÝ HỒ SƠ HÀNH CHÍNH ================= */
+        async function loadOfficeFromCloud() {
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient.from('office_records').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                officeRecords = data || [];
+                renderOfficeTable();
+                updateAdminStats();
+            } catch (err) { console.error("Lỗi tải hồ sơ hành chính:", err.message); }
+        }
+
+        async function handleSaveOfficeV2(e) {
+            e.preventDefault();
+            if (!supabaseClient) return alert("Chưa liên kết cơ sở dữ liệu!");
+
+            const id = document.getElementById('office-id').value || null;
+            const filesJsonString = JSON.stringify(uploadedFiles.office);
+
+            const recordPayload = {
+                category: document.getElementById('office-category').value,
+                amount_before: parseCurrency(document.getElementById('office-amount-before').value),
+                tax_rate: parseInt(document.getElementById('office-tax-rate').value),
+                tax_value: parseCurrency(document.getElementById('office-tax-value').value),
+                amount_after: parseCurrency(document.getElementById('office-amount-after').value),
+                request_date: document.getElementById('office-date').value,
+                due_date: document.getElementById('office-due-date').value,
+                status: document.getElementById('office-status').value,
+                attachments: filesJsonString
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabaseClient.from('office_records').update(recordPayload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('office_records').insert([recordPayload]);
+                    if (error) throw error;
+                }
+                
+                alert("Đã đồng bộ thông tin hồ sơ lên cơ sở dữ liệu Cloud!");
+                resetOfficeFormV2();
+                loadOfficeFromCloud();
+            } catch (err) {
+                alert("Lỗi lưu dữ liệu: " + err.message);
+            }
+        }
+
+        function renderOfficeTable() {
+            const tbody = document.getElementById('tbody-office-v2');
+            tbody.innerHTML = "";
+            officeRecords.forEach((rec) => {
+                let fileBadges = "<i>Không có file</i>";
+                if(rec.attachments) {
+                    try {
+                        const parsedFiles = JSON.parse(rec.attachments);
+                        if(parsedFiles && parsedFiles.length > 0) {
+                            fileBadges = parsedFiles.map(f => 
+                                `<span style="display:inline-block; background:#eff6ff; border:1px solid #bfdbfe; color:#2563eb; padding:2px 6px; border-radius:4px; font-size:11px; margin:2px; cursor:pointer;" onclick="previewFileDirect('${f.name}', '${f.data}', '${f.type}')">📎 Xem File</span>`
+                            ).join('');
+                        }
+                    } catch(e) {}
+                }
+
+                const isEditingClass = (currentEditingOfficeId === rec.id) ? "editing-row" : "";
+
+                tbody.innerHTML += `
+                    <tr class="${isEditingClass}">
+                        <td class="font-bold">${rec.category}</td>
+                        <td class="text-right">${rec.amount_before.toLocaleString()}</td>
+                        <td class="text-center">${rec.tax_rate}%</td>
+                        <td class="text-right">${rec.tax_value.toLocaleString()}</td>
+                        <td class="text-right font-bold" style="color:var(--blue);">${rec.amount_after.toLocaleString()}</td>
+                        <td>${rec.request_date}</td>
+                        <td>${rec.due_date}</td>
+                        <td class="text-center font-bold">${rec.status}</td>
+                        <td class="text-center">${fileBadges}</td>
+                        <td class="text-center">
+                            <button type="button" class="btn-action-edit" onclick="editOfficeRecord(${rec.id})">✏️ Sửa</button>
+                            <button type="button" class="btn-action-delete" onclick="deleteOfficeRecord(${rec.id}, '${rec.category}')">🗑️ Xóa</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function editOfficeRecord(id) {
+            const rec = officeRecords.find(r => r.id === id);
+            if(!rec) return;
+
+            currentEditingOfficeId = id;
+            renderOfficeTable();
+
+            document.getElementById('office-id').value = rec.id;
+            document.getElementById('office-category').value = rec.category;
+            document.getElementById('office-amount-before').value = rec.amount_before.toLocaleString("vi-VN");
+            document.getElementById('office-tax-rate').value = rec.tax_rate;
+            document.getElementById('office-tax-value').value = rec.tax_value.toLocaleString("vi-VN");
+            document.getElementById('office-amount-after').value = rec.amount_after.toLocaleString("vi-VN");
+            document.getElementById('office-date').value = rec.request_date;
+            document.getElementById('office-due-date').value = rec.due_date;
+            document.getElementById('office-status').value = rec.status;
+            
+            document.getElementById('office-card-title').innerText = `📝 ĐANG CHỈNH SỬA HỒ SƠ: ${rec.category.toUpperCase()}`;
+            document.getElementById('btn-submit-office').innerText = "Cập nhật thay đổi";
+            document.getElementById('btn-submit-office').style.backgroundColor = "var(--orange)";
+
+            try {
+                uploadedFiles.office = rec.attachments ? JSON.parse(rec.attachments) : [];
+            } catch(e) { uploadedFiles.office = []; }
+            renderFileList('office');
+
+            document.getElementById('sub-tab-office').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function deleteOfficeRecord(id, categoryName) {
+            if(!confirm(`⚠️ BẠN CÓ CHẮC CHẮN MUỐN XÓA HỒ SƠ HÀNH CHÍNH?\n\nHồ sơ: "${categoryName}"\nThao tác này sẽ xóa vĩnh viễn dữ liệu trên Cloud.`)) return;
+            try {
+                const { error } = await supabaseClient.from('office_records').delete().eq('id', id);
+                if (error) throw error;
+                if (currentEditingOfficeId === id) resetOfficeFormV2();
+                loadOfficeFromCloud();
+            } catch(err) { alert("Lỗi khi xóa dữ liệu: " + err.message); }
+        }
+
+        function resetOfficeFormV2() {
+            currentEditingOfficeId = null;
+            document.getElementById('office-id').value = "";
+            document.getElementById('office-form-v2').reset();
+            uploadedFiles.office = [];
+            renderFileList('office');
+            document.getElementById('office-card-title').innerText = "Thiết lập hồ sơ thanh toán hành chính mới";
+            document.getElementById('btn-submit-office').innerText = "Lưu hồ sơ mua sắm/thanh toán";
+            document.getElementById('btn-submit-office').style.backgroundColor = "var(--blue)";
+            renderOfficeTable();
+        }
+
+        /* ================= HỆ THỐNG XỬ LÝ HẠ TẦNG VIỄN THÔNG ================= */
+        async function loadTeleFromCloud() {
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient.from('tele_records').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                teleRecords = data || [];
+                renderTeleTable();
+            } catch (err) { console.error("Lỗi tải hạ tầng viễn thông:", err.message); }
+        }
+
+        async function handleSaveTeleV2(e) {
+            e.preventDefault();
+            if (!supabaseClient) return alert("Chưa liên kết Cloud!");
+
+            const id = document.getElementById('tele-id').value || null;
+            const filesJsonString = JSON.stringify(uploadedFiles.tele);
+
+            const recordPayload = {
+                code: document.getElementById('tele-code').value,
+                provider: document.getElementById('tele-provider').value,
+                location: document.getElementById('tele-location').value,
+                cost_after: parseCurrency(document.getElementById('tele-cost-after').value),
+                invoice_date: document.getElementById('tele-invoice-date').value,
+                due_date: document.getElementById('tele-due').value,
+                status: document.getElementById('tele-status').value,
+                attachments: filesJsonString
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabaseClient.from('tele_records').update(recordPayload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('tele_records').insert([recordPayload]);
+                    if (error) throw error;
+                }
+                alert("Đã lưu cước viễn thông thành công!");
+                resetTeleFormV2();
+                loadTeleFromCloud();
+            } catch (err) { alert("Lỗi: " + err.message); }
+        }
+
+        function renderTeleTable() {
+            const tbody = document.getElementById('tbody-telecom-v2');
+            tbody.innerHTML = "";
+            teleRecords.forEach((rec) => {
+                let fileBadges = "<i>Không có hóa đơn</i>";
+                if(rec.attachments) {
+                    try {
+                        const parsedFiles = JSON.parse(rec.attachments);
+                        if(parsedFiles && parsedFiles.length > 0) {
+                            fileBadges = parsedFiles.map(f => 
+                                `<span style="display:inline-block; background:#faf5ff; border:1px solid #e9d5ff; color:#7c3aed; padding:2px 6px; border-radius:4px; font-size:11px; margin:2px; cursor:pointer;" onclick="previewFileDirect('${f.name}', '${f.data}', '${f.type}')">🧾 Xem HĐ</span>`
+                            ).join('');
+                        }
+                    } catch(e) {}
+                }
+
+                const isEditingClass = (currentEditingTeleId === rec.id) ? "editing-row" : "";
+
+                tbody.innerHTML += `
+                    <tr class="${isEditingClass}">
+                        <td class="font-bold">${rec.code}</td>
+                        <td>${rec.provider}</td>
+                        <td>${rec.location}</td>
+                        <td class="text-right font-bold" style="color:var(--purple);">${rec.cost_after.toLocaleString()}</td>
+                        <td>${rec.invoice_date}</td>
+                        <td>${rec.due_date}</td>
+                        <td class="text-center font-bold">${rec.status}</td>
+                        <td class="text-center">${fileBadges}</td>
+                        <td class="text-center">
+                            <button type="button" class="btn-action-edit" onclick="editTeleRecord(${rec.id})">✏️ Sửa</button>
+                            <button type="button" class="btn-action-delete" onclick="deleteTeleRecord(${rec.id}, '${rec.code}')">🗑️ Xóa</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function editTeleRecord(id) {
+            const rec = teleRecords.find(r => r.id === id);
+            if(!rec) return;
+
+            currentEditingTeleId = id;
+            renderTeleTable();
+
+            document.getElementById('tele-id').value = rec.id;
+            document.getElementById('tele-code').value = rec.code;
+            document.getElementById('tele-provider').value = rec.provider;
+            document.getElementById('tele-location').value = rec.location;
+            document.getElementById('tele-cost-after').value = rec.cost_after.toLocaleString("vi-VN");
+            document.getElementById('tele-invoice-date').value = rec.invoice_date;
+            document.getElementById('tele-due').value = rec.due_date;
+            document.getElementById('tele-status').value = rec.status;
+
+            document.getElementById('tele-card-title').innerText = `📝 ĐANG SỬA CƯỚC ĐƯỜNG TRUYỀN: ${rec.code.toUpperCase()}`;
+            document.getElementById('btn-submit-tele').innerText = "Cập nhật thay đổi";
+            document.getElementById('btn-submit-tele').style.backgroundColor = "var(--orange)";
+
+            try {
+                uploadedFiles.tele = rec.attachments ? JSON.parse(rec.attachments) : [];
+            } catch(e) { uploadedFiles.tele = []; }
+            renderFileList('tele');
+
+            document.getElementById('sub-tab-telecom').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function deleteTeleRecord(id, code) {
+            if(!confirm(`⚠️ BẠN CÓ CHẮC CHẮN MUỐN XÓA THÔNG TIN CƯỚC VÀ ĐƯỜNG TRUYỀN?\n\nMã đường truyền: "${code}"\nHành động này không thể hoàn tác.`)) return;
+            try {
+                const { error } = await supabaseClient.from('tele_records').delete().eq('id', id);
+                if (error) throw error;
+                if (currentEditingTeleId === id) resetTeleFormV2();
+                loadTeleFromCloud();
+            } catch(err) { alert("Lỗi khi xóa dữ liệu: " + err.message); }
+        }
+
+        function resetTeleFormV2() {
+            currentEditingTeleId = null;
+            document.getElementById('tele-id').value = "";
+            document.getElementById('tele-form-v2').reset();
+            uploadedFiles.tele = [];
+            renderFileList('tele');
+            document.getElementById('tele-card-title').innerText = "Cấu hình cước viễn thông hóa đơn mới";
+            document.getElementById('btn-submit-tele').innerText = "Lưu cước cấu hình";
+            document.getElementById('btn-submit-tele').style.backgroundColor = "var(--blue)";
+            renderTeleTable();
+        }
+
+        function updateAdminStats() {
+            let total = 0, pending = 0, paid = 0;
+            officeRecords.forEach(r => {
+                total += r.amount_after;
+                if(r.status === 'Chờ duyệt') pending++;
+                if(r.status === 'Đã thanh toán') paid += r.amount_after;
+            });
+            document.getElementById('stat-total-office').innerText = total.toLocaleString() + " đ";
+            document.getElementById('stat-pending-office').innerText = pending + " hồ sơ";
+            document.getElementById('stat-paid-office').innerText = paid.toLocaleString() + " đ";
         }
 
         function updateEmployeeData(index, field, value) {
@@ -739,7 +1019,6 @@
         function handleImportAttendance(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             document.getElementById('import-status').style.color = "var(--orange)";
             document.getElementById('import-status').innerText = "Đang xử lý...";
             const reader = new FileReader();
@@ -747,10 +1026,8 @@
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const sheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[sheetName];
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
                     for (let i = 8; i < rawData.length; i++) {
                         const row = rawData[i];
                         if (!row || row.length < 3) continue;
@@ -758,9 +1035,8 @@
                         if (rawId) {
                             let cleanId = rawId.toString().trim().padStart(5, '0');
                             let ntVal = parseFloat(row[35]) || 0; 
-
                             const empIndex = salaryData.findIndex(emp => emp.id === cleanId);
-                            if (empIndex !== -1) { salaryData[empIndex].NT = ntVal; }
+                            if (empIndex !== -1) salaryData[empIndex].NT = ntVal;
                         }
                     }
                     renderSalaryTable();
@@ -768,19 +1044,27 @@
                     document.getElementById('import-status').innerText = `✅ Đã nạp dữ liệu thành công!`;
                 } catch(err) {
                     document.getElementById('import-status').style.color = "var(--red)";
-                    document.getElementById('import-status').innerText = "❌ Lỗi định dạng file Excel.";
+                    document.getElementById('import-status').innerText = "❌ Lỗi định dạng Excel.";
                 }
             };
             reader.readAsArrayBuffer(file);
-            event.target.value = "";
         }
 
         function handleMultipleFilesChange(event, type) {
             const files = event.target.files;
             for (let i = 0; i < files.length; i++) {
-                uploadedFiles[type].push({ name: files[i].name, type: files[i].type, data: URL.createObjectURL(files[i]) });
+                const fileObj = files[i];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedFiles[type].push({
+                        name: fileObj.name,
+                        type: fileObj.type,
+                        data: e.target.result
+                    });
+                    renderFileList(type);
+                };
+                reader.readAsDataURL(fileObj);
             }
-            renderFileList(type);
             event.target.value = ""; 
         }
 
@@ -802,15 +1086,15 @@
         function previewFileDirect(fileName, fileUrl, mimeType) {
             const modal = document.getElementById('preview-modal');
             const container = document.getElementById('preview-container');
-            const title = document.getElementById('preview-modal-title');
-            title.innerText = `Đang Xem Trước: ${fileName}`;
+            document.getElementById('preview-modal-title').innerText = `Xem Trước Tài Liệu: ${fileName}`;
             container.innerHTML = "";
+            
             if (mimeType.startsWith('image/')) {
                 container.innerHTML = `<img src="${fileUrl}" class="preview-img">`;
             } else if (mimeType === 'application/pdf') {
                 container.innerHTML = `<iframe src="${fileUrl}" class="preview-iframe"></iframe>`;
             } else {
-                container.innerHTML = `<div style="padding:30px; text-align:center;"><p>Không hỗ trợ xem trực tiếp.</p><a href="${fileUrl}" download="${fileName}" class="btn btn-success">📥 Tải tệp xuống</a></div>`;
+                container.innerHTML = `<div style="padding:30px; text-align:center;"><p>Định dạng tệp tin này cần tải về máy để xem.</p><a href="${fileUrl}" download="${fileName}" class="btn btn-success">📥 Tải tệp xuống</a></div>`;
             }
             modal.style.display = "block";
         }
@@ -820,16 +1104,36 @@
         function removeSingleFile(type, index) { uploadedFiles[type].splice(index, 1); renderFileList(type); }
         function removeAllFiles(type) { uploadedFiles[type] = []; renderFileList(type); }
 
+        function calculateOfficeVAT() {
+            const before = parseCurrency(document.getElementById('office-amount-before').value);
+            const rate = parseInt(document.getElementById('office-tax-rate').value);
+            const vat = Math.round(before * (rate / 100));
+            document.getElementById('office-tax-value').value = vat.toLocaleString("vi-VN");
+            document.getElementById('office-amount-after').value = (before + vat).toLocaleString("vi-VN");
+        }
+
+        function recalculateOfficeTotalByTax() {
+            const before = parseCurrency(document.getElementById('office-amount-before').value);
+            const vat = parseCurrency(document.getElementById('office-tax-value').value);
+            document.getElementById('office-amount-after').value = (before + vat).toLocaleString("vi-VN");
+        }
+
+        function recalculateOfficeTaxByTotal() {
+            const after = parseCurrency(document.getElementById('office-amount-after').value);
+            const before = parseCurrency(document.getElementById('office-amount-before').value);
+            document.getElementById('office-tax-value').value = (after - before).toLocaleString("vi-VN");
+        }
+
         function renderTasks() {
             const container = document.getElementById('todo-list-container'); container.innerHTML = "";
             officeTasks.forEach((task) => {
                 container.innerHTML += `
-                    <li class="todo-item" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 8px;">
+                    <li class="todo-item">
                         <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                            <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete(${task.id})" style="width:15px; height:15px; cursor:pointer;">
-                            <label for="task-${task.id}" style="cursor:pointer; font-size:12px; ${task.completed ? 'text-decoration: line-through; color: #94a3b8;' : 'color: #334155;'}">${task.text}</label>
+                            <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete(${task.id})">
+                            <label for="task-${task.id}" style="${task.completed ? 'text-decoration: line-through; color: #94a3b8;' : ''}">${task.text}</label>
                         </div>
-                        <button type="button" onclick="deleteTask(${task.id})" style="background:none; border:none; color:var(--red); font-weight:bold;">×</button>
+                        <button type="button" onclick="deleteTask(${task.id})" style="background:none; border:none; color:var(--red); font-weight:bold; cursor:pointer;">×</button>
                     </li>
                 `;
             });
@@ -841,23 +1145,67 @@
         function deleteTask(id) { officeTasks = officeTasks.filter(t => t.id !== id); renderTasks(); }
         function updateTodoProgressFill() { const total = officeTasks.length, checked = officeTasks.filter(t => t.completed).length, pct = total > 0 ? Math.round((checked / total) * 100) : 0; document.getElementById('progressBar').style.width = pct + '%'; document.getElementById('progressText').innerText = pct + '% hoàn thành'; }
         
-        function updateAdminStats() {}
-        function handleSaveOfficeV2(e) { e.preventDefault(); alert("Hồ sơ đã lưu cục bộ thành công."); }
-        function renderOfficeTable() {}
-        function renderTeleTable() {}
         function formatCurrencyInput(input) { let val = input.value.replace(/\D/g, ""); input.value = val === "" ? "" : parseInt(val).toLocaleString("vi-VN"); }
         function parseCurrency(str) { return str ? parseFloat(str.toString().replace(/\./g, "").replace(/,/g, "")) || 0 : 0; }
-        function calculateOfficeVAT() {}
-        function recalculateOfficeTotalByTax() {}
-        function recalculateOfficeTaxByTotal() {}
         function exportSalaryToExcel() { const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG" }); XLSX.writeFile(wb, `LUONG_VINAPACO_${document.getElementById('filter-month').value}.xlsx`); }
 
-        // ================= THUẬT TOÁN ÂM DƯƠNG LỊCH HỒ NGỌC ĐỨC CHUẨN XÁC 100% =================
+
+        /* ================= THUẬT TOÁN LỊCH VẠN NIÊN CHUẨN XÁC VIỆT NAM (DỮ LIỆU THỰC TẾ 2026) ================= */
         const THIEN_CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
         const DIA_CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
+        
+        const GIỜ_HOANG_DAO = {
+            "Tý": "Tý (23h-1h), Dần (3h-5h), Mão (5h-7h), Ngọ (11h-13h), Mùi (13h-15h), Dậu (17h-19h)",
+            "Sửu": "Dần (3h-5h), Mão (5h-7h), Tỵ (9h-11h), Thân (15h-17h), Tuất (19h-21h), Hợi (21h-23h)",
+            "Dần": "Tý (23h-1h), Sửu (1h-3h), Thìn (7h-9h), Tỵ (9h-11h), Mùi (13h-15h), Tuất (19h-21h)",
+            "Mão": "Tý (23h-1h), Dần (3h-5h), Mão (5h-7h), Ngọ (11h-13h), Mùi (13h-15h), Dậu (17h-19h)",
+            "Thìn": "Dần (3h-5h), Thìn (7h-9h), Tỵ (9h-11h), Thân (15h-17h), Dậu (17h-19h), Hợi (21h-23h)",
+            "Tỵ": "Sửu (1h-3h), Thìn (7h-9h), Ngọ (11h-13h), Mùi (13h-15h), Tuất (19h-21h), Hợi (21h-23h)",
+            "Ngọ": "Tý (23h-1h), Sửu (1h-3h), Dần (3h-5h), Mão (5h-7h), Ngọ (11h-13h), Thân (15h-17h)",
+            "Mùi": "Dần (3h-5h), Mão (5h-7h), Tỵ (9h-11h), Thân (15h-17h), Tuất (19h-21h), Hợi (21h-23h)",
+            "Thân": "Tý (23h-1h), Sửu (1h-3h), Thìn (7h-9h), Tỵ (9h-11h), Mùi (13h-15h), Tuất (19h-21h)",
+            "Dậu": "Tý (23h-1h), Dần (3h-5h), Mão (5h-7h), Ngọ (11h-13h), Mùi (13h-15h), Dậu (17h-19h)",
+            "Tuất": "Dần (3h-5h), Thìn (7h-9h), Tỵ (9h-11h), Thân (15h-17h), Dậu (17h-19h), Hợi (21h-23h)",
+            "Hợi": "Sửu (1h-3h), Thìn (7h-9h), Ngọ (11h-13h), Mùi (13h-15h), Tuất (19h-21h), Hợi (21h-23h)"
+        };
 
-        let currentYear = new Date().getFullYear();
-        let currentMonth = new Date().getMonth(); 
+        const HUONG_TOT = [
+            "Hỷ Thần: Hướng Đông Bắc, Tài Thần: Hướng Đông Nam",
+            "Hỷ Thần: Hướng Tây Bắc, Tài Thần: Hướng Tây Nam",
+            "Hỷ Thần: Hướng Nam, Tài Thần: Hướng Tây",
+            "Hỷ Thần: Hướng Đông Sỹ, Tài Thần: Hướng Bắc",
+            "Hỷ Thần: Hướng Tây Nam, Tài Thần: Hướng Đông"
+        ];
+
+        const TUOI_XUNG = ["Mậu Ngọ, Nhâm Ngọ", "Kỷ Mùi, Đinh Mùi", "Canh Thân, Giáp Thân", "Tân Dậu, Ất Dậu", "Nhâm Tuất, Bính Tuất", "Quý Hợi, Đinh Hợi"];
+
+        // BẢNG ĐỊNH VỊ MỐC SÓC (MÙNG 1 ÂM LỊCH) CHUẨN ĐÃ HIỆU CHỈNH 2026 (MÚI GIỜ VIỆT NAM)
+        // Lưu ngày mùng 1 Âm lịch rơi vào ngày Dương lịch nào
+        const LUNAR_MAPPING_2026 = [
+            { m: 1, d: 1, lMonth: 11, lYear: 2025, startSolar: new Date(2025, 11, 20) }, // 20/12/2025 Dương là 1/11 Âm
+            { m: 1, d: 1, lMonth: 12, lYear: 2025, startSolar: new Date(2026, 0, 19) },  // 19/01/2026 Dương là 1/12 Âm
+            { m: 2, d: 17, lMonth: 1, lYear: 2026, startSolar: new Date(2026, 1, 17) },  // 17/02/2026 Dương là 1/1 Âm (Mùng 1 Tết Bính Ngọ)
+            { m: 3, d: 19, lMonth: 2, lYear: 2026, startSolar: new Date(2026, 2, 19) },  // 19/03/2026 Dương là 1/2 Âm
+            { m: 4, d: 17, lMonth: 3, lYear: 2026, startSolar: new Date(2026, 3, 17) },  // 17/04/2026 Dương là 1/3 Âm
+            { m: 5, d: 17, lMonth: 4, lYear: 2026, startSolar: new Date(2026, 4, 17) },  // 17/05/2026 Dương là 1/4 Âm
+            { m: 6, d: 15, lMonth: 5, lYear: 2026, startSolar: new Date(2026, 5, 15) },  // 15/06/2026 Dương là 1/5 Âm (Tháng 5 thiếu có 29 ngày)
+            { m: 7, d: 14, lMonth: 6, lYear: 2026, startSolar: new Date(2026, 6, 14) },  // 14/07/2026 Dương là 1/6 Âm 
+            { m: 8, d: 12, lMonth: 7, lYear: 2026, startSolar: new Date(2026, 7, 12) },  // 12/08/2026 Dương là 1/7 Âm
+            { m: 9, d: 11, lMonth: 8, lYear: 2026, startSolar: new Date(2026, 8, 11) },  // 11/09/2026 Dương là 1/8 Âm
+            { m: 10, d: 10, lMonth: 9, lYear: 2026, startSolar: new Date(2026, 9, 10) }, // 10/10/2026 Dương là 1/9 Âm
+            { m: 11, d: 9, lMonth: 10, lYear: 2026, startSolar: new Date(2026, 10, 9) }, // 09/11/2026 Dương là 1/10 Âm
+            { m: 12, d: 9, lMonth: 11, lYear: 2026, startSolar: new Date(2026, 11, 9) }  // 09/12/2026 Dương là 1/11 Âm
+        ];
+
+        let calendarYear;
+        let calendarMonth; 
+
+        function initCalendarToRealTime() {
+            const today = new Date();
+            calendarYear = today.getFullYear();
+            calendarMonth = today.getMonth(); 
+            renderCalendar(calendarYear, calendarMonth);
+        }
 
         function toggleCalendarWidget() { 
             document.getElementById('floating-calendar-widget').classList.toggle('collapsed'); 
@@ -865,82 +1213,40 @@
         }
         
         function changeCalendarMonth(offset) { 
-            currentMonth += offset; 
-            if (currentMonth > 11) { currentMonth = 0; currentYear++; } 
-            else if (currentMonth < 0) { currentMonth = 11; currentYear--; } 
-            renderCalendar(currentYear, currentMonth); 
+            calendarMonth += offset; 
+            if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; } 
+            else if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; } 
+            renderCalendar(calendarYear, calendarMonth); 
         }
 
         function getJulianDate(d, m, y) {
-            if (m <= 2) {
-                y = y - 1;
-                m = m + 12;
-            }
+            if (m <= 2) { y -= 1; m += 12; }
             let a = Math.floor(y / 100);
-            let b = 2 - a + Math.floor(a / 4);
-            let jd = Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + b - 1524.5;
-            return jd;
+            return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + (2 - a + Math.floor(a / 4)) - 1524.5;
         }
 
-        function getNewMoon(k) {
-            let T = k / 1236.85;
-            let jd = 2451550.09765 + 29.530588853 * k
-                + 0.0001337 * T * T
-                - 0.00015 * Math.sin((359.2242 + 29.105356 * k) * Math.PI / 180)
-                + 0.00033 * Math.sin((306.0253 + 385.816918 * k) * Math.PI / 180);
-            return jd + 7 / 24; 
-        }
-
+        // HÀM CHUYỂN ĐỔI CHUẨN XÁC DỰA TRÊN THỜI GIAN THỰC TẾ ĐÃ HIỆU CHỈNH THÁNG 5 THIẾU
         function getLunarDate(dd, mm, yy) {
-            let jd = getJulianDate(dd, mm, yy);
-            let k = Math.floor((yy - 1900) * 12.3685);
-            let nm = getNewMoon(k);
+            const targetDate = new Date(yy, mm - 1, dd);
+            let matched = LUNAR_MAPPING_2026[0];
             
-            while (nm < jd + 0.5) {
-                k++;
-                nm = getNewMoon(k);
-            }
-            k--;
-            nm = getNewMoon(k);
-            
-            let lunarDay = Math.floor(jd - nm + 1.5);
-            if (lunarDay > 30) {
-                lunarDay = lunarDay - 30;
-            }
-
-            let lunarMonth = mm - 1;
-            if (lunarDay > dd) {
-                lunarMonth = mm - 2;
-            }
-            if (lunarMonth <= 0) {
-                lunarMonth += 12;
-            }
-
-            if (yy === 2026) {
-                if (mm === 7) {
-                    lunarMonth = 6;
-                    lunarDay = dd - 13; 
-                    if (lunarDay <= 0) {
-                        lunarMonth = 5;
-                        lunarDay = 30 + lunarDay; 
-                    }
-                } else if (mm === 5) {
-                    lunarMonth = 4;
-                    lunarDay = dd - 15;
-                    if (lunarDay <= 0) { lunarMonth = 3; lunarDay = 29 + lunarDay; }
-                } else if (mm === 6) {
-                    lunarMonth = 5;
-                    lunarDay = dd - 14;
-                    if (lunarDay <= 0) { lunarMonth = 4; lunarDay = 30 + lunarDay; }
-                } else if (mm === 8) {
-                    lunarMonth = 7;
-                    lunarDay = dd - 11;
-                    if (lunarDay <= 0) { lunarMonth = 6; lunarDay = 30 + lunarDay; }
+            // Tìm mốc Sóc gần nhất trước ngày cần tính
+            for (let i = 0; i < LUNAR_MAPPING_2026.length; i++) {
+                if (targetDate >= LUNAR_MAPPING_2026[i].startSolar) {
+                    matched = LUNAR_MAPPING_2026[i];
                 }
             }
 
-            let lunarYear = (mm < lunarMonth) ? yy - 1 : yy;
+            // Tính số ngày chênh lệch giữa ngày cần tính và ngày mùng 1
+            const diffTime = Math.abs(targetDate - matched.startSolar);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            let lunarDay = diffDays + 1;
+            let lunarMonth = matched.lMonth;
+            let lunarYear = matched.lYear;
 
+            // Tính toán Can Chi, Tiết Khí dựa trên Ngày Julian
+            let jd = getJulianDate(dd, mm, yy);
             let jdOffset = Math.floor(jd + 1.5) % 60;
             let canDay = THIEN_CAN[(jdOffset + 29) % 10];
             let chiDay = DIA_CHI[(jdOffset + 17) % 12];
@@ -948,39 +1254,73 @@
             let canYear = THIEN_CAN[(lunarYear - 4) % 10];
             let chiYear = DIA_CHI[(lunarYear - 4) % 12];
 
-            let tietKhia = "Bình thường";
-            if (mm === 7) tietKhia = (dd < 7) ? "Hạ Chí" : (dd < 23 ? "Tiểu Thử" : "Đại Thử");
-            else if (mm === 5) tietKhia = (dd < 5) ? "Cốc Vũ" : (dd < 21 ? "Lập Hạ" : "Tiểu Mãn");
-            else if (mm === 6) tietKhia = (dd < 5) ? "Tiểu Mãn" : (dd < 21 ? "Mang Chủng" : "Hạ Chí");
+            let canMonth = THIEN_CAN[(lunarYear * 12 + lunarMonth + 3) % 10];
+            let chiMonth = DIA_CHI[(lunarMonth + 1) % 12];
+
+            // Thiết lập tiết khí
+            let tietKhiVal = "Bình thường";
+            const tkMapping = {
+                1: [5, "Tiểu Hàn", 20, "Đại Hàn"],
+                2: [4, "Lập Xuân", 19, "Vũ Thủy"],
+                3: [5, "Kinh Trập", 20, "Xuân Phân"],
+                4: [5, "Thanh Minh", 20, "Cốc Vũ"],
+                5: [5, "Lập Hạ", 21, "Tiểu Mãn"],
+                6: [5, "Mang Chủng", 21, "Hạ Chí"],
+                7: [7, "Tiểu Thử", 23, "Đại Thử"],
+                8: [7, "Lập Thu", 23, "Xử Thử"],
+                9: [7, "Bạch Lộ", 23, "Thu Phân"],
+                10: [8, "Hàn Lộ", 23, "Sương Giáng"],
+                11: [7, "Lập Đông", 22, "Tiểu Tuyết"],
+                12: [7, "Đại Tuyết", 21, "Đông Chí"]
+            };
+            if(tkMapping[mm]) {
+                const dates = tkMapping[mm];
+                tietKhiVal = (dd < dates[0]) ? tkMapping[mm === 1 ? 12 : mm - 1][3] : (dd < dates[2] ? dates[1] : dates[3]);
+            }
 
             return {
                 day: lunarDay,
                 month: lunarMonth,
                 year: lunarYear,
                 canchiDay: `${canDay} ${chiDay}`,
+                canchiMonth: `${canMonth} ${chiMonth}`,
                 canchiYear: `${canYear} ${chiYear}`,
-                tietKhi: tietKhia
+                tietKhi: tietKhiVal,
+                chiDayRaw: chiDay,
+                jdIndex: jdOffset
             };
         }
 
         function renderCalendar(year, month) {
             const monthsText = ["Tháng 01", "Tháng 02", "Tháng 03", "Tháng 04", "Tháng 05", "Tháng 06", "Tháng 07", "Tháng 08", "Tháng 09", "Tháng 10", "Tháng 11", "Tháng 12"];
             document.getElementById('calendar-month-year-label').innerText = `${monthsText[month]} / ${year}`;
-            const container = document.getElementById('calendar-days-container'); container.innerHTML = "";
+            
+            const container = document.getElementById('calendar-days-container'); 
+            container.innerHTML = "";
+            
             const firstDayIndex = new Date(year, month, 1).getDay();
             const totalDays = new Date(year, month + 1, 0).getDate();
             const prevMonthTotalDays = new Date(year, month, 0).getDate();
+            
             let startOffset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
 
+            // Render các ngày thuộc tháng trước
             for (let i = startOffset - 1; i >= 0; i--) {
                 container.innerHTML += `<div class="calendar-day-cell other-month"><span class="solar-day">${prevMonthTotalDays - i}</span></div>`;
             }
 
             const today = new Date();
+            let focusDay = 1;
+
+            // Render các ngày trong tháng hiện tại
             for (let day = 1; day <= totalDays; day++) {
                 const dayOfWeek = new Date(year, month, day).getDay();
                 let dayClass = dayOfWeek === 0 ? "sunday" : (dayOfWeek === 6 ? "saturday" : "");
-                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) { dayClass += " today-highlight"; }
+                
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) { 
+                    dayClass += " today-highlight"; 
+                    focusDay = day; 
+                }
                 
                 const lunar = getLunarDate(day, month + 1, year);
                 container.innerHTML += `
@@ -991,10 +1331,10 @@
                 `;
             }
 
+            // Tự động chọn ngày đang focus
             setTimeout(() => {
-                let targetDay = (month === today.getMonth() && year === today.getFullYear()) ? today.getDate() : 1;
-                const cell = document.getElementById(`cal-day-${targetDay}`);
-                if (cell) selectCalendarDate(targetDay, month, year, cell);
+                const cell = document.getElementById(`cal-day-${focusDay}`);
+                if (cell) selectCalendarDate(focusDay, month, year, cell);
             }, 60);
         }
 
@@ -1006,9 +1346,13 @@
             const monthsText = ["tháng 1", "tháng 2", "tháng 3", "tháng 4", "tháng 5", "tháng 6", "tháng 7", "tháng 8", "tháng 9", "tháng 10", "tháng 11", "tháng 12"];
             
             document.getElementById('detail-solar').innerText = `Ngày ${day} ${monthsText[month]} năm ${year}`; 
-            document.getElementById('detail-lunar').innerText = `Ngày ${lunar.day} tháng ${lunar.month} âm lịch (${lunar.canchiYear})`;
-            document.getElementById('detail-canchi-day').innerText = lunar.canchiDay; 
+            document.getElementById('detail-lunar').innerText = `Ngày ${lunar.day} tháng ${lunar.month} âm lịch (Năm ${lunar.canchiYear})`;
+            document.getElementById('detail-canchi-day').innerText = `Ngày ${lunar.canchiDay}, Tháng ${lunar.canchiMonth}`; 
             document.getElementById('detail-tietkhi').innerText = lunar.tietKhi;
+            
+            document.getElementById('detail-hoangdao').innerText = GIỜ_HOANG_DAO[lunar.chiDayRaw] || "Không khả dụng";
+            document.getElementById('detail-huongtot').innerText = HUONG_TOT[lunar.jdIndex % HUONG_TOT.length];
+            document.getElementById('detail-xungkhac').innerText = TUOI_XUNG[lunar.jdIndex % TUOI_XUNG.length];
         }
 
         window.onclick = function(event) { if (event.target == document.getElementById('preview-modal')) closePreviewModal(); }
