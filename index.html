@@ -669,7 +669,7 @@
             }
         }
 
-        /* ================= HỆ THỐNG XỬ LÝ HỒ SƠ HÀNH CHÍNH ================= */
+        /* ================= HỆ THỐNG XỬ LÝ HỒ SƠ HÀNH CHÍNH (GỘP ĐÍNH KÈM THÔNG MINH) ================= */
         async function loadOfficeFromCloud() {
             if (!supabaseClient) return;
             try {
@@ -721,16 +721,35 @@
             const tbody = document.getElementById('tbody-office-v2');
             tbody.innerHTML = "";
             officeRecords.forEach((rec) => {
+                // --- XỬ LÝ GỘP ĐÍNH KÈM THÔNG MINH ---
                 let fileBadges = "<i>Không có file</i>";
+                let filesArray = [];
+
                 if(rec.attachments) {
                     try {
-                        const parsedFiles = JSON.parse(rec.attachments);
-                        if(parsedFiles && parsedFiles.length > 0) {
-                            fileBadges = parsedFiles.map(f => 
-                                `<span style="display:inline-block; background:#eff6ff; border:1px solid #bfdbfe; color:#2563eb; padding:2px 6px; border-radius:4px; font-size:11px; margin:2px; cursor:pointer;" onclick="previewFileDirect('${f.name}', '${f.data}', '${f.type}')">📎 Xem File</span>`
-                            ).join('');
+                        const parsed = JSON.parse(rec.attachments);
+                        if (Array.isArray(parsed)) {
+                            filesArray = parsed;
+                        } else if (parsed) {
+                            filesArray = [parsed];
                         }
-                    } catch(e) {}
+                    } catch(e) {
+                        filesArray = [rec.attachments];
+                    }
+                }
+
+                if (filesArray.length > 0) {
+                    if (filesArray.length === 1) {
+                        // 1 file duy nhất: Hiển thị nút xem nhanh tên file
+                        const f = filesArray[0];
+                        const safeName = f.name.replace(/'/g, "\\'");
+                        fileBadges = `<button type="button" class="btn-action-edit" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe; font-size:11px;" onclick="previewFileDirect('${safeName}', '${f.data}', '${f.type}')">📎 ${f.name.substring(0, 15)}...</button>`;
+                    } else {
+                        // Nhiều file: Gộp lại thành một nút bấm xem gộp popup thông minh
+                        const totalFiles = filesArray.length;
+                        const safeFilesData = btoa(unescape(encodeURIComponent(JSON.stringify(filesArray))));
+                        fileBadges = `<button type="button" class="btn-action-edit" style="background:#f3e8ff; color:#7c3aed; border-color:#e9d5ff; font-size:11px;" onclick="showMultipleAttachmentsModal('${rec.category}', '${safeFilesData}')">📎 Xem (${totalFiles} file)</button>`;
+                    }
                 }
 
                 const isEditingClass = (currentEditingOfficeId === rec.id) ? "editing-row" : "";
@@ -806,7 +825,7 @@
             renderOfficeTable();
         }
 
-        /* ================= HỆ THỐNG XỬ LÝ HẠ TẦNG VIỄN THÔNG ================= */
+        /* ================= HỆ THỐNG XỬ LÝ HẠ TẦNG VIỄN THÔNG (GỘP ĐÍNH KÈM THÔNG MINH) ================= */
         async function loadTeleFromCloud() {
             if (!supabaseClient) return;
             try {
@@ -853,16 +872,33 @@
             const tbody = document.getElementById('tbody-telecom-v2');
             tbody.innerHTML = "";
             teleRecords.forEach((rec) => {
+                // --- XỬ LÝ GỘP ĐÍNH KÈM THÔNG MINH ---
                 let fileBadges = "<i>Không có hóa đơn</i>";
+                let filesArray = [];
+
                 if(rec.attachments) {
                     try {
-                        const parsedFiles = JSON.parse(rec.attachments);
-                        if(parsedFiles && parsedFiles.length > 0) {
-                            fileBadges = parsedFiles.map(f => 
-                                `<span style="display:inline-block; background:#faf5ff; border:1px solid #e9d5ff; color:#7c3aed; padding:2px 6px; border-radius:4px; font-size:11px; margin:2px; cursor:pointer;" onclick="previewFileDirect('${f.name}', '${f.data}', '${f.type}')">🧾 Xem HĐ</span>`
-                            ).join('');
+                        const parsed = JSON.parse(rec.attachments);
+                        if (Array.isArray(parsed)) {
+                            filesArray = parsed;
+                        } else if (parsed) {
+                            filesArray = [parsed];
                         }
-                    } catch(e) {}
+                    } catch(e) {
+                        filesArray = [rec.attachments];
+                    }
+                }
+
+                if (filesArray.length > 0) {
+                    if (filesArray.length === 1) {
+                        const f = filesArray[0];
+                        const safeName = f.name.replace(/'/g, "\\'");
+                        fileBadges = `<button type="button" class="btn-action-edit" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe; font-size:11px;" onclick="previewFileDirect('${safeName}', '${f.data}', '${f.type}')">📎 ${f.name.substring(0, 15)}...</button>`;
+                    } else {
+                        const totalFiles = filesArray.length;
+                        const safeFilesData = btoa(unescape(encodeURIComponent(JSON.stringify(filesArray))));
+                        fileBadges = `<button type="button" class="btn-action-edit" style="background:#f3e8ff; color:#7c3aed; border-color:#e9d5ff; font-size:11px;" onclick="showMultipleAttachmentsModal('${rec.code}', '${safeFilesData}')">📎 Xem (${totalFiles} file)</button>`;
+                    }
                 }
 
                 const isEditingClass = (currentEditingTeleId === rec.id) ? "editing-row" : "";
@@ -1083,6 +1119,7 @@
             });
         }
 
+        /* ================= HỆ THỐNG XEM TRƯỚC ĐẦY ĐỦ / POPUP GỘP CHI TIẾT FILE ================= */
         function previewFileDirect(fileName, fileUrl, mimeType) {
             const modal = document.getElementById('preview-modal');
             const container = document.getElementById('preview-container');
@@ -1094,9 +1131,43 @@
             } else if (mimeType === 'application/pdf') {
                 container.innerHTML = `<iframe src="${fileUrl}" class="preview-iframe"></iframe>`;
             } else {
-                container.innerHTML = `<div style="padding:30px; text-align:center;"><p>Định dạng tệp tin này cần tải về máy để xem.</p><a href="${fileUrl}" download="${fileName}" class="btn btn-success">📥 Tải tệp xuống</a></div>`;
+                container.innerHTML = `<div style="padding:30px; text-align:center;"><p>Định dạng tệp tin này cần tải về máy để xem.</p><a href="${fileUrl}" download="${fileName}" class="btn btn-success" style="text-decoration:none; padding:8px 16px; margin-top:10px; display:inline-block;">📥 Tải tệp xuống</a></div>`;
             }
             modal.style.display = "block";
+        }
+
+        // --- HÀM BỔ SUNG: POPUP XEM CHI TIẾT KHI CLICK NÚT GỘP FILE ---
+        function showMultipleAttachmentsModal(titleName, base64Files) {
+            const modal = document.getElementById('preview-modal');
+            const container = document.getElementById('preview-container');
+            document.getElementById('preview-modal-title').innerText = `Danh sách tệp đính kèm - ${titleName}`;
+            container.innerHTML = "";
+
+            try {
+                const decodedFiles = JSON.parse(decodeURIComponent(escape(atob(base64Files))));
+                let html = `<div style="width:100%; max-width:550px; background:white; padding:20px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">`;
+                html += `<h4 style="margin-bottom:12px; color:var(--primary); font-weight:bold; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">Lựa chọn tệp tin để xem:</h4>`;
+                html += `<ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;">`;
+
+                decodedFiles.forEach((file) => {
+                    const safeName = file.name.replace(/'/g, "\\'");
+                    html += `
+                        <li style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border:1px solid #cbd5e1; border-radius:6px; background:#f8fafc;">
+                            <span style="font-weight:bold; font-size:12px; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:280px;">📄 ${file.name}</span>
+                            <div style="display:flex; gap:6px;">
+                                <button type="button" class="btn-action-edit" style="background:#eff6ff; color:#2563eb; border-color:#bfdbfe;" onclick="previewFileDirect('${safeName}', '${file.data}', '${file.type}')">Xem trước</button>
+                                <a href="${file.data}" download="${safeName}" class="btn-action-edit" style="background:#d1fae5; color:#065f46; border-color:#a7f3d0; text-decoration:none; display:inline-flex; align-items:center;">Tải về</a>
+                            </div>
+                        </li>
+                    `;
+                });
+
+                html += `</ul></div>`;
+                container.innerHTML = html;
+                modal.style.display = "block";
+            } catch(e) {
+                container.innerHTML = `<div style="color:var(--red); font-weight:bold; padding:20px;">Lỗi giải mã tài liệu!</div>`;
+            }
         }
 
         function previewSingleFile(type, index) { const file = uploadedFiles[type][index]; if (file) previewFileDirect(file.name, file.data, file.type); }
@@ -1150,7 +1221,7 @@
         function exportSalaryToExcel() { const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG" }); XLSX.writeFile(wb, `LUONG_VINAPACO_${document.getElementById('filter-month').value}.xlsx`); }
 
 
-        /* ================= THUẬT TOÁN LỊCH VẠN NIÊN CHUẨN XÁC VIỆT NAM (DỮ LIỆU THỰC TẾ 2026) ================= */
+        /* ================= THUẬT TOÁN LỊCH VẠN NIÊN CHUẨN XÁC VIỆT NAM (HIỆU CHỈNH 2026 THÁNG 5 THIẾU) ================= */
         const THIEN_CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
         const DIA_CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
         
@@ -1179,22 +1250,21 @@
 
         const TUOI_XUNG = ["Mậu Ngọ, Nhâm Ngọ", "Kỷ Mùi, Đinh Mùi", "Canh Thân, Giáp Thân", "Tân Dậu, Ất Dậu", "Nhâm Tuất, Bính Tuất", "Quý Hợi, Đinh Hợi"];
 
-        // BẢNG ĐỊNH VỊ MỐC SÓC (MÙNG 1 ÂM LỊCH) CHUẨN ĐÃ HIỆU CHỈNH 2026 (MÚI GIỜ VIỆT NAM)
-        // Lưu ngày mùng 1 Âm lịch rơi vào ngày Dương lịch nào
+        // BẢNG MỐC SÓC NĂM 2026 ĐÃ HIỆU CHỈNH
         const LUNAR_MAPPING_2026 = [
-            { m: 1, d: 1, lMonth: 11, lYear: 2025, startSolar: new Date(2025, 11, 20) }, // 20/12/2025 Dương là 1/11 Âm
-            { m: 1, d: 1, lMonth: 12, lYear: 2025, startSolar: new Date(2026, 0, 19) },  // 19/01/2026 Dương là 1/12 Âm
-            { m: 2, d: 17, lMonth: 1, lYear: 2026, startSolar: new Date(2026, 1, 17) },  // 17/02/2026 Dương là 1/1 Âm (Mùng 1 Tết Bính Ngọ)
-            { m: 3, d: 19, lMonth: 2, lYear: 2026, startSolar: new Date(2026, 2, 19) },  // 19/03/2026 Dương là 1/2 Âm
-            { m: 4, d: 17, lMonth: 3, lYear: 2026, startSolar: new Date(2026, 3, 17) },  // 17/04/2026 Dương là 1/3 Âm
-            { m: 5, d: 17, lMonth: 4, lYear: 2026, startSolar: new Date(2026, 4, 17) },  // 17/05/2026 Dương là 1/4 Âm
+            { m: 1, d: 1, lMonth: 11, lYear: 2025, startSolar: new Date(2025, 11, 20) }, 
+            { m: 1, d: 1, lMonth: 12, lYear: 2025, startSolar: new Date(2026, 0, 19) },  
+            { m: 2, d: 17, lMonth: 1, lYear: 2026, startSolar: new Date(2026, 1, 17) },  
+            { m: 3, d: 19, lMonth: 2, lYear: 2026, startSolar: new Date(2026, 2, 19) },  
+            { m: 4, d: 17, lMonth: 3, lYear: 2026, startSolar: new Date(2026, 3, 17) },  
+            { m: 5, d: 17, lMonth: 4, lYear: 2026, startSolar: new Date(2026, 4, 17) },  
             { m: 6, d: 15, lMonth: 5, lYear: 2026, startSolar: new Date(2026, 5, 15) },  // 15/06/2026 Dương là 1/5 Âm (Tháng 5 thiếu có 29 ngày)
-            { m: 7, d: 14, lMonth: 6, lYear: 2026, startSolar: new Date(2026, 6, 14) },  // 14/07/2026 Dương là 1/6 Âm 
-            { m: 8, d: 12, lMonth: 7, lYear: 2026, startSolar: new Date(2026, 7, 12) },  // 12/08/2026 Dương là 1/7 Âm
-            { m: 9, d: 11, lMonth: 8, lYear: 2026, startSolar: new Date(2026, 8, 11) },  // 11/09/2026 Dương là 1/8 Âm
-            { m: 10, d: 10, lMonth: 9, lYear: 2026, startSolar: new Date(2026, 9, 10) }, // 10/10/2026 Dương là 1/9 Âm
-            { m: 11, d: 9, lMonth: 10, lYear: 2026, startSolar: new Date(2026, 10, 9) }, // 09/11/2026 Dương là 1/10 Âm
-            { m: 12, d: 9, lMonth: 11, lYear: 2026, startSolar: new Date(2026, 11, 9) }  // 09/12/2026 Dương là 1/11 Âm
+            { m: 7, d: 14, lMonth: 6, lYear: 2026, startSolar: new Date(2026, 6, 14) },  
+            { m: 8, d: 12, lMonth: 7, lYear: 2026, startSolar: new Date(2026, 7, 12) },  
+            { m: 9, d: 11, lMonth: 8, lYear: 2026, startSolar: new Date(2026, 8, 11) },  
+            { m: 10, d: 10, lMonth: 9, lYear: 2026, startSolar: new Date(2026, 9, 10) }, 
+            { m: 11, d: 9, lMonth: 10, lYear: 2026, startSolar: new Date(2026, 10, 9) }, 
+            { m: 12, d: 9, lMonth: 11, lYear: 2026, startSolar: new Date(2026, 11, 9) }  
         ];
 
         let calendarYear;
@@ -1225,19 +1295,16 @@
             return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + (2 - a + Math.floor(a / 4)) - 1524.5;
         }
 
-        // HÀM CHUYỂN ĐỔI CHUẨN XÁC DỰA TRÊN THỜI GIAN THỰC TẾ ĐÃ HIỆU CHỈNH THÁNG 5 THIẾU
         function getLunarDate(dd, mm, yy) {
             const targetDate = new Date(yy, mm - 1, dd);
             let matched = LUNAR_MAPPING_2026[0];
             
-            // Tìm mốc Sóc gần nhất trước ngày cần tính
             for (let i = 0; i < LUNAR_MAPPING_2026.length; i++) {
                 if (targetDate >= LUNAR_MAPPING_2026[i].startSolar) {
                     matched = LUNAR_MAPPING_2026[i];
                 }
             }
 
-            // Tính số ngày chênh lệch giữa ngày cần tính và ngày mùng 1
             const diffTime = Math.abs(targetDate - matched.startSolar);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
@@ -1245,7 +1312,6 @@
             let lunarMonth = matched.lMonth;
             let lunarYear = matched.lYear;
 
-            // Tính toán Can Chi, Tiết Khí dựa trên Ngày Julian
             let jd = getJulianDate(dd, mm, yy);
             let jdOffset = Math.floor(jd + 1.5) % 60;
             let canDay = THIEN_CAN[(jdOffset + 29) % 10];
@@ -1257,7 +1323,6 @@
             let canMonth = THIEN_CAN[(lunarYear * 12 + lunarMonth + 3) % 10];
             let chiMonth = DIA_CHI[(lunarMonth + 1) % 12];
 
-            // Thiết lập tiết khí
             let tietKhiVal = "Bình thường";
             const tkMapping = {
                 1: [5, "Tiểu Hàn", 20, "Đại Hàn"],
@@ -1304,7 +1369,6 @@
             
             let startOffset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
 
-            // Render các ngày thuộc tháng trước
             for (let i = startOffset - 1; i >= 0; i--) {
                 container.innerHTML += `<div class="calendar-day-cell other-month"><span class="solar-day">${prevMonthTotalDays - i}</span></div>`;
             }
@@ -1312,7 +1376,6 @@
             const today = new Date();
             let focusDay = 1;
 
-            // Render các ngày trong tháng hiện tại
             for (let day = 1; day <= totalDays; day++) {
                 const dayOfWeek = new Date(year, month, day).getDay();
                 let dayClass = dayOfWeek === 0 ? "sunday" : (dayOfWeek === 6 ? "saturday" : "");
@@ -1331,7 +1394,6 @@
                 `;
             }
 
-            // Tự động chọn ngày đang focus
             setTimeout(() => {
                 const cell = document.getElementById(`cal-day-${focusDay}`);
                 if (cell) selectCalendarDate(focusDay, month, year, cell);
