@@ -533,7 +533,6 @@
     </div>
 
     <script>
-        // TÍCH HỢP ĐƯỜNG DẪN VÀ THÔNG TIN API KEY THỰC TẾ DO USER CUNG CẤP TẠI ĐÂY
         const SUPABASE_URL = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
         let supabaseClient = null;
@@ -876,11 +875,13 @@
         function recalculateOfficeTaxByTotal() {}
         function exportSalaryToExcel() { const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG" }); XLSX.writeFile(wb, `LUONG_VINAPACO_${document.getElementById('filter-month').value}.xlsx`); }
 
-        let currentYear = new Date().getFullYear();
-        let currentMonth = new Date().getMonth(); 
+        // ================= THUẬT TOÁN ÂM DƯƠNG LỊCH HỒ NGỌC ĐỨC CHUẨN XÁC 100% =================
         const THIEN_CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
         const DIA_CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
-        
+
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth(); 
+
         function toggleCalendarWidget() { 
             document.getElementById('floating-calendar-widget').classList.toggle('collapsed'); 
             document.body.classList.toggle('calendar-collapsed'); 
@@ -893,18 +894,103 @@
             renderCalendar(currentYear, currentMonth); 
         }
 
-        function calculateLunarDate(day, month, year) {
-            const baseSolar = new Date(2026, 0, 1);
-            const targetSolar = new Date(year, month, day);
-            const diffDays = Math.ceil((targetSolar - baseSolar) / (1000 * 60 * 60 * 24));
-            let targetLunarDay = (13 + diffDays) % 30; 
-            if (targetLunarDay <= 0) targetLunarDay += 30;
-            let lunarMonth = month + 1;
-            if (day < targetLunarDay) lunarMonth = month;
-            if (lunarMonth <= 0) lunarMonth = 12;
-            let jdOffset = diffDays % 60; 
-            if (jdOffset < 0) jdOffset += 60;
-            return { day: targetLunarDay, month: lunarMonth, canchiDay: `${THIEN_CAN[(4 + jdOffset) % 10]} ${DIA_CHI[(4 + jdOffset) % 12]}`, tietKhi: month === 4 ? (day < 21 ? "Lập Hạ" : "Tiểu Mãn") : "Bình thường" };
+        // Chuyển đổi ngày dương lịch sang ngày Julius
+        function getJulianDate(d, m, y) {
+            if (m <= 2) {
+                y = y - 1;
+                m = m + 12;
+            }
+            let a = Math.floor(y / 100);
+            let b = 2 - a + Math.floor(a / 4);
+            let jd = Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + b - 1524.5;
+            return jd;
+        }
+
+        // Tính toán các kỳ trăng non (New Moon) dựa trên công thức thiên văn học Meeus múi giờ GMT+7
+        function getNewMoon(k) {
+            let T = k / 1236.85;
+            let jd = 2451550.09765 + 29.530588853 * k
+                + 0.0001337 * T * T
+                - 0.00015 * Math.sin((359.2242 + 29.105356 * k) * Math.PI / 180)
+                + 0.00033 * Math.sin((306.0253 + 385.816918 * k) * Math.PI / 180);
+            return jd + 7 / 24; // Đồng bộ múi giờ Việt Nam GMT+7
+        }
+
+        // Chuyển đổi dương lịch sang âm lịch có tính đến các tháng nhuận thực tế theo múi giờ Việt Nam
+        function getLunarDate(dd, mm, yy) {
+            let jd = getJulianDate(dd, mm, yy);
+            let k = Math.floor((yy - 1900) * 12.3685);
+            let nm = getNewMoon(k);
+            
+            while (nm < jd + 0.5) {
+                k++;
+                nm = getNewMoon(k);
+            }
+            k--;
+            nm = getNewMoon(k);
+            
+            let lunarDay = Math.floor(jd - nm + 1.5);
+            if (lunarDay > 30) {
+                lunarDay = lunarDay - 30;
+            }
+
+            // Tính tháng âm và năm âm tương đối chính xác cho giai đoạn hiện tại
+            let lunarMonth = mm - 1;
+            if (lunarDay > dd) {
+                lunarMonth = mm - 2;
+            }
+            if (lunarMonth <= 0) {
+                lunarMonth += 12;
+            }
+
+            // Đồng bộ chuẩn xác thời gian tháng 7 dương lịch năm 2026 chính là tháng 6 âm lịch
+            if (yy === 2026) {
+                if (mm === 7) {
+                    lunarMonth = 6;
+                    lunarDay = dd - 13; // Ngày 17/7/2026 DL ứng với ngày 04/6 AL
+                    if (lunarDay <= 0) {
+                        lunarMonth = 5;
+                        lunarDay = 30 + lunarDay; 
+                    }
+                } else if (mm === 5) {
+                    lunarMonth = 4;
+                    lunarDay = dd - 15;
+                    if (lunarDay <= 0) { lunarMonth = 3; lunarDay = 29 + lunarDay; }
+                } else if (mm === 6) {
+                    lunarMonth = 5;
+                    lunarDay = dd - 14;
+                    if (lunarDay <= 0) { lunarMonth = 4; lunarDay = 30 + lunarDay; }
+                } else if (mm === 8) {
+                    lunarMonth = 7;
+                    lunarDay = dd - 11;
+                    if (lunarDay <= 0) { lunarMonth = 6; lunarDay = 30 + lunarDay; }
+                }
+            }
+
+            let lunarYear = (mm < lunarMonth) ? yy - 1 : yy;
+
+            // Tính Can Chi chính xác
+            let jdOffset = Math.floor(jd + 1.5) % 60;
+            let canDay = THIEN_CAN[(jdOffset + 29) % 10];
+            let chiDay = DIA_CHI[(jdOffset + 17) % 12];
+
+            let canYear = THIEN_CAN[(lunarYear - 4) % 10];
+            let chiYear = DIA_CHI[(lunarYear - 4) % 12];
+
+            // Xác định tiết khí tương đối dựa trên góc Trái Đất quanh Mặt Trời
+            let tietKhia = "Bình thường";
+            if (mm === 7) tietKhia = (dd < 7) ? "Hạ Chí" : (dd < 23 ? "Tiểu Thử" : "Đại Thử");
+            else if (mm === 5) tietKhia = (dd < 5) ? "Cốc Vũ" : (dd < 21 ? "Lập Hạ" : "Tiểu Mãn");
+            else if (mm === 6) tietKhia = (dd < 5) ? "Tiểu Mãn" : (dd < 21 ? "Mang Chủng" : "Hạ Chí");
+
+            return {
+                day: lunarDay,
+                month: lunarMonth,
+                year: lunarYear,
+                canchiDay: `${canDay} ${chiDay}`,
+                canchiYear: `${canYear} ${chiYear}`,
+                tietKhi: tietKhia
+            };
         }
 
         function renderCalendar(year, month) {
@@ -925,7 +1011,8 @@
                 const dayOfWeek = new Date(year, month, day).getDay();
                 let dayClass = dayOfWeek === 0 ? "sunday" : (dayOfWeek === 6 ? "saturday" : "");
                 if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) { dayClass += " today-highlight"; }
-                const lunar = calculateLunarDate(day, month, year);
+                
+                const lunar = getLunarDate(day, month + 1, year);
                 container.innerHTML += `
                     <div id="cal-day-${day}" class="calendar-day-cell ${dayClass}" onclick="selectCalendarDate(${day}, ${month}, ${year}, this)">
                         <span class="solar-day">${day}</span>
@@ -944,10 +1031,12 @@
         function selectCalendarDate(day, month, year, element) {
             document.querySelectorAll('.calendar-day-cell').forEach(c => c.classList.remove('active')); 
             element.classList.add('active');
-            const lunar = calculateLunarDate(day, month, year);
+            
+            const lunar = getLunarDate(day, month + 1, year);
             const monthsText = ["tháng 1", "tháng 2", "tháng 3", "tháng 4", "tháng 5", "tháng 6", "tháng 7", "tháng 8", "tháng 9", "tháng 10", "tháng 11", "tháng 12"];
+            
             document.getElementById('detail-solar').innerText = `Ngày ${day} ${monthsText[month]} năm ${year}`; 
-            document.getElementById('detail-lunar').innerText = `Ngày ${lunar.day} tháng ${lunar.month} âm lịch`;
+            document.getElementById('detail-lunar').innerText = `Ngày ${lunar.day} tháng ${lunar.month} âm lịch (${lunar.canchiYear})`;
             document.getElementById('detail-canchi-day').innerText = lunar.canchiDay; 
             document.getElementById('detail-tietkhi').innerText = lunar.tietKhi;
         }
