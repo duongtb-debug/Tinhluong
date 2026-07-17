@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Lý & Tính Lương Nội Bộ</title>
+    
+    <!-- ĐOẠN CODE TRIỆT TIÊU LỖI 404 FAVICON TRÊN TRÌNH DUYỆT -->
+    <link rel="icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAIwA3V0gAAAAnRSTlMAAQGUvWsAAAARSURBVDjLY2AYBaNgFIwCEgAAArAAATH89RIAAAAASUVORK5CYII=">
+    
+    <!-- Thư viện xử lý xuất nhập Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
             --bg-main: #f4f6f9;
@@ -231,23 +237,19 @@
 
     <!-- APP SCRIPT CONTROLLER LOGIC -->
     <script>
-        // Cấu hình thông số API kết nối Supabase Cloud trực tiếp
         const SUPABASE_BASE = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
 
-        // GIẢI PHÁP ĐỘT PHÁ CỦA PHIÊN BẢN MỚI:
-        // Đưa apikey thành tham số trong chuỗi truy vấn URL giúp Request trở thành "Simple Request", Triệt tiêu hoàn toàn Preflight OPTIONS CORS!
+        // Query Param URL builder to remove Preflight options
         function buildCleanUrl(endpoint) {
             const separator = endpoint.includes('?') ? '&' : '?';
             return `${SUPABASE_BASE}/rest/v1/${endpoint}${separator}apikey=${SUPABASE_ANON_KEY}`;
         }
 
-        // Loại bỏ hoàn toàn Custom Headers tùy chỉnh, chỉ giữ lại header chuẩn hóa để an toàn đi qua trình duyệt
         function getSimpleHeaders() {
             return { 'Accept': 'application/json' };
         }
 
-        // BỘ DỮ LIỆU DỰ PHÒNG CHUẨN HOÀN TOÀN KHÔNG SỢ MẤT KẾT NỐI MẠNG (OFFLINE DATA SAFE)
         const defaultSalaryData = [
             { stt: 1, id: 101, name: "Nguyễn Văn Thắng", lcb_heso: 2.34, lcb_phucap: 400000, lcb_hdld: 4500000, lcb_goc: 10930000, NT: 22, P: 2, le_vr: 0, l_thoigian: 9108333, l_lephep: 828030, l_tong: 9936364, lcv_heso: 3.5, lcv_phucap: 1200000, lcv_goc: 15200000, ki: 1.1, lcv_thucte: 16720000, bhtn: 109300, bhxh: 874400, tam_ung: 2000000, thuc_linh: 23672664 },
             { stt: 2, id: 102, name: "Trần Thị Hồng Nhung", lcb_heso: 1.86, lcb_phucap: 300000, lcb_hdld: 4000000, lcb_goc: 8464000, NT: 24, P: 0, le_vr: 1, l_thoigian: 8138462, l_lephep: 0, l_tong: 8464000, lcv_heso: 2.8, lcv_phucap: 800000, lcv_goc: 12000000, ki: 0.95, lcv_thucte: 11400000, bhtn: 84640, bhxh: 677120, tam_ung: 0, thuc_linh: 19102240 },
@@ -259,7 +261,6 @@
         let teleRecords = [];
         let officeTasks = [];
 
-        // HÀM 1: ĐỌC LƯƠNG TỪ CLOUD (ÁP DỤNG SIMPLE REQUEST URL CÓ APIKEY)
         async function loadSalaryFromCloud() {
             const monthPeriod = document.getElementById('filter-month').value;
             const statusLabel = document.getElementById('cloud-action-status');
@@ -302,7 +303,6 @@
             }
         }
 
-        // HÀM 2: ĐỌC DỮ LIỆU HÀNH CHÍNH (SIMPLE REQUEST)
         async function loadOfficeFromCloud() {
             try {
                 const response = await fetch(buildCleanUrl(`office_records?select=*&order=created_at.desc`), {
@@ -313,7 +313,7 @@
                 officeRecords = await response.json();
                 renderOfficeTable();
             } catch (err) { 
-                console.error("Bỏ qua lỗi chặn mạng hồ sơ hành chính.", err.message);
+                console.error("Mạng offline hồ sơ hành chính.");
                 officeRecords = [
                     { id: "HD-001", title: "Hợp đồng thuê mặt bằng văn phòng tầng 5", dept: "Hành chính", cost: 15000000, status: "Đã hoàn thành", date: "2026-06-01" },
                     { id: "HD-002", title: "Hóa đơn mua sắm trang thiết bị máy in, mực in", dept: "Kế toán", cost: 4200000, status: "Chờ phê duyệt", date: "2026-06-12" }
@@ -322,7 +322,6 @@
             }
         }
 
-        // HÀM 3: ĐỌC CƯỚC VIỄN THÔNG (SIMPLE REQUEST)
         async function loadTeleFromCloud() {
             try {
                 const response = await fetch(buildCleanUrl(`tele_records?select=*&order=created_at.desc`), {
@@ -333,7 +332,7 @@
                 teleRecords = await response.json(); 
                 renderTeleTable(); 
             } catch (err) { 
-                console.error("Bỏ qua lỗi chặn mạng hạ tầng cước mạng.", err.message);
+                console.error("Mạng offline hạ tầng cước mạng.");
                 teleRecords = [
                     { station_id: "HANOI-01", station_name: "Trạm trung tâm IDC Keangnam", provider: "Viettel Hạ Tầng", cost: 8500000, is_paid: true, period: "2026-06" },
                     { station_id: "HP-03", station_name: "Trạm phát sóng phụ trợ Lê Chân", provider: "VNPT Hải Phòng", cost: 3200000, is_paid: false, period: "2026-06" }
@@ -342,7 +341,6 @@
             }
         }
 
-        // HÀM 4: ĐỌC DANH SÁCH NHẮC VIỆC (SIMPLE REQUEST)
         async function loadTasksFromCloud() {
             try {
                 const response = await fetch(buildCleanUrl(`office_tasks?select=*&order=id.asc`), {
@@ -353,7 +351,7 @@
                 officeTasks = await response.json(); 
                 renderTasks();
             } catch (err) { 
-                console.error("Bỏ qua lỗi chặn mạng danh sách nhắc việc văn phòng.", err.message);
+                console.error("Mạng offline danh sách tác vụ.");
                 officeTasks = [
                     { id: 1, content: "Kiểm tra toàn bộ bảng chấm công của phòng kỹ thuật phần mềm trước ngày 25", done: false },
                     { id: 2, content: "Thanh toán hóa đơn điện, nước và cước mạng Internet phòng máy chủ", done: true }
@@ -362,33 +360,24 @@
             }
         }
 
-        // BIỂU DIỄN DỮ LIỆU LÊN BẢNG LƯƠNG & TÍNH TOÁN TOÀN DIỆN
         function renderSalaryTable() {
             const tbody = document.getElementById('salary-tbody');
             tbody.innerHTML = '';
-            
             let totalGoc = 0, totalLinh = 0, totalNT = 0, totalBH = 0;
 
             salaryData.forEach((row) => {
-                // Toàn bộ logic tính toán tài chính tự động đồng bộ theo thời gian thực
                 row.lcb_goc = (row.lcb_heso * 4500000) + row.lcb_phucap;
                 const totalWorkingDays = 26; 
                 row.l_thoigian = Math.round((row.lcb_goc / totalWorkingDays) * row.NT);
                 row.l_lephep = Math.round((row.lcb_goc / totalWorkingDays) * row.P);
                 row.l_tong = row.l_thoigian + row.l_lephep;
-                
                 row.lcv_goc = (row.lcv_heso * 3500000) + row.lcv_phucap;
                 row.lcv_thucte = Math.round(row.lcv_goc * row.ki);
-                
                 row.bhtn = Math.round(row.lcb_goc * 0.01);
                 row.bhxh = Math.round(row.lcb_goc * 0.08);
-                const totalKhauTru = row.bhtn + row.bhxh + row.tam_ung;
-                row.thuc_linh = (row.l_tong + row.lcv_thucte) - totalKhauTru;
+                row.thuc_linh = (row.l_tong + row.lcv_thucte) - (row.bhtn + row.bhxh + row.tam_ung);
 
-                totalGoc += row.lcb_goc;
-                totalLinh += row.thuc_linh;
-                totalNT += row.NT;
-                totalBH += (row.bhtn + row.bhxh);
+                totalGoc += row.lcb_goc; totalLinh += row.thuc_linh; totalNT += row.NT; totalBH += (row.bhtn + row.bhxh);
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -417,7 +406,6 @@
                 tbody.appendChild(tr);
             });
 
-            // Ghi giá trị vào bảng thống kê trên Dashboard
             document.getElementById('stat-total-goc').innerText = totalGoc.toLocaleString() + " ₫";
             document.getElementById('stat-total-linh').innerText = totalLinh.toLocaleString() + " ₫";
             document.getElementById('stat-total-nt').innerText = totalNT + " ngày công";
@@ -426,16 +414,11 @@
 
         function updateCell(id, field, value) {
             const item = salaryData.find(x => x.id === id);
-            if (item) {
-                item[field] = parseFloat(value) || 0;
-                renderSalaryTable();
-            }
+            if (item) { item[field] = parseFloat(value) || 0; renderSalaryTable(); }
         }
 
-        // BIỂU DIỄN BẢNG HỒ SƠ HÀNH CHÍNH
         function renderOfficeTable() {
-            const tbody = document.getElementById('office-tbody');
-            tbody.innerHTML = '';
+            const tbody = document.getElementById('office-tbody'); tbody.innerHTML = '';
             officeRecords.forEach(rec => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -457,14 +440,11 @@
             if(!title) return alert("Vui lòng nhập tên tài liệu!");
             officeRecords.unshift({ id: "HD-" + Math.floor(Math.random()*900+100), title, dept, cost, status: "Chờ phê duyệt", date: "2026-06-18" });
             renderOfficeTable();
-            document.getElementById('office-title').value = '';
-            document.getElementById('office-cost').value = '';
+            document.getElementById('office-title').value = ''; document.getElementById('office-cost').value = '';
         }
 
-        // BIỂU DIỄN BẢNG CƯỚC PHÍ VIỄN THÔNG
         function renderTeleTable() {
-            const tbody = document.getElementById('tele-tbody');
-            tbody.innerHTML = '';
+            const tbody = document.getElementById('tele-tbody'); tbody.innerHTML = '';
             teleRecords.forEach(rec => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -485,21 +465,17 @@
             if(!name) return alert("Vui lòng nhập tên trạm viễn thông!");
             teleRecords.unshift({ station_id: "BTS-" + Math.floor(Math.random()*90+10), station_name: name, provider: "Viettel Đối Soát", cost, is_paid: false, period: "2026-06" });
             renderTeleTable();
-            document.getElementById('tele-node').value = '';
-            document.getElementById('tele-amount').value = '';
+            document.getElementById('tele-node').value = ''; document.getElementById('tele-amount').value = '';
         }
 
-        // BIỂU DIỄN KHU VỰC NHẮC VIỆC VĂN PHÒNG
         function renderTasks() {
-            const container = document.getElementById('tasks-list-container');
-            container.innerHTML = '';
+            const container = document.getElementById('tasks-list-container'); container.innerHTML = '';
             if(officeTasks.length === 0) {
                 container.innerHTML = `<p style="color:var(--text-muted); font-style:italic;">Không có tác vụ nào cần xử lý.</p>`;
                 return;
             }
             officeTasks.forEach(t => {
-                const div = document.createElement('div');
-                div.className = `todo-item ${t.done ? 'done' : ''}`;
+                const div = document.createElement('div'); div.className = `todo-item ${t.done ? 'done' : ''}`;
                 div.innerHTML = `
                     <span>📌 ${t.content || t.task_description}</span>
                     <div>
@@ -519,30 +495,17 @@
             document.getElementById('task-content').value = '';
         }
 
-        function toggleTask(id) {
-            const t = officeTasks.find(x => x.id === id);
-            if(t) { t.done = !t.done; renderTasks(); }
-        }
+        function toggleTask(id) { const t = officeTasks.find(x => x.id === id); if(t) { t.done = !t.done; renderTasks(); } }
+        function deleteTask(id) { officeTasks = officeTasks.filter(x => x.id !== id); renderTasks(); }
 
-        function deleteTask(id) {
-            officeTasks = officeTasks.filter(x => x.id !== id);
-            renderTasks();
-        }
-
-        // CHUYỂN ĐỔI QUA LẠI GIỮA CÁC TAB CHỨC NĂNG TRÊN MÀN HÌNH
         function switchTab(evt, tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active'); evt.currentTarget.classList.add('active');
         }
 
-        // KHỞI ĐỘNG LIÊN HOÀN TOÀN BỘ KHI TẢI TRANG
         window.onload = function() {
-            loadSalaryFromCloud();
-            loadOfficeFromCloud();
-            loadTeleFromCloud();
-            loadTasksFromCloud();
+            loadSalaryFromCloud(); loadOfficeFromCloud(); loadTeleFromCloud(); loadTasksFromCloud();
         };
     </script>
 </body>
