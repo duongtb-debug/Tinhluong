@@ -224,7 +224,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: HỒ SƠ THANH TOÁN -->
+            <!-- TAB 2: HỒ SƠ THANH TOÁN (ĐÃ LOẠI BỎ VAT) -->
             <div id="tab-payment" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" id="payment-form-title">Tạo mới Đề nghị / Hồ sơ Thanh toán Văn phòng</div>
@@ -236,21 +236,19 @@
                             <div class="form-group"><label>Số tài khoản thụ hưởng</label><input type="text" id="pay-account" required></div>
                             <div class="form-group"><label>Tại Ngân hàng</label><input type="text" id="pay-bank" required></div>
                         </div>
-                        <div class="grid-form" style="grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));">
+                        <div class="grid-form" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
                             <div class="form-group"><label>ĐVT</label><input type="text" id="pay-unit" value="Bộ" required></div>
                             <div class="form-group"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" required oninput="calculatePaymentTax()"></div>
-                            <div class="form-group"><label>Đơn giá trước thuế (đ)</label><input type="number" id="pay-price" value="0" min="0" required oninput="calculatePaymentTax()"></div>
-                            <div class="form-group"><label>Thuế suất (%)</label><select id="pay-tax-rate" onchange="calculatePaymentTax()"><option value="0">0%</option><option value="5">5%</option><option value="8" selected>8%</option><option value="10">10%</option></select></div>
-                            <div class="form-group"><label>Tiền thuế VAT (đ)</label><input type="text" id="pay-tax-amount" readonly style="background:#f1f5f9; font-weight:bold;"></div>
-                            <div class="form-group"><label>Tổng sau thuế (đ)</label><input type="text" id="pay-total" readonly style="background:#fef08a; font-weight:bold;"></div>
+                            <div class="form-group"><label>Đơn giá chi tiết (đ)</label><input type="number" id="pay-price" value="0" min="0" required oninput="calculatePaymentTax()"></div>
+                            <div class="form-group"><label>Tổng thành tiền (đ)</label><input type="text" id="pay-total" readonly style="background:#fef08a; font-weight:bold;"></div>
                             <div class="form-group"><label>Trạng thái</label><select id="pay-status"><option value="Chưa duyệt">❌ Chưa phê duyệt</option><option value="Đã duyệt chi">✅ Đã giải ngân chi</option></select></div>
                         </div>
                         <div style="display: flex; gap: 10px;"><button type="submit" class="btn btn-primary">💾 Lưu Hồ Sơ</button><button type="button" class="btn btn-danger" onclick="resetPaymentForm()">Hủy</button></div>
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">DANH SÁCH TỔNG HỢP HỒ SƠ THANH TOÁN</div>
-                    <div class="table-responsive"><table class="main-table"><thead><tr style="background:#e2e8f0;"><th class="text-center">STT</th><th>Nội dung thanh toán</th><th>Đơn vị thụ hưởng</th><th>Tài khoản / Ngân hàng</th><th class="text-center">Số lượng</th><th class="text-right">Tiền trước thuế</th><th class="text-right">Thuế VAT</th><th class="text-right">Tổng thanh toán</th><th class="text-center">Trạng thái</th><th class="text-center">Hành động</th></tr></thead><tbody id="tbody-payment"></tbody></table></div>
+                    <div class="card-title">DANH SÁCH TỔNG HỢP HỒ SƠ THANH TOÁN Văn Phòng</div>
+                    <div class="table-responsive"><table class="main-table"><thead><tr style="background:#e2e8f0;"><th class="text-center">STT</th><th>Nội dung thanh toán</th><th>Đơn vị thụ hưởng</th><th>Tài khoản / Ngân hàng</th><th class="text-center">Số lượng</th><th class="text-right">Đơn giá</th><th class="text-right">Tổng thành tiền</th><th class="text-center">Trạng thái</th><th class="text-center">Hành động</th></tr></thead><tbody id="tbody-payment"></tbody></table></div>
                 </div>
             </div>
 
@@ -459,7 +457,7 @@
             document.getElementById('tab-' + tabName).classList.add('active');
         }
 
-        // ĐỒNG BỘ TRỰC TUYẾN LIVE (GET & POST) VỚI ĐƯỜNG DẪN CỦA BẠN
+        // ĐỒNG BỘ TRỰC TUYẾN LIVE (GET & POST)
         async function loadSalaryFromCloud() {
             const currentMonthKey = document.getElementById('filter-month').value;
             const dot = document.getElementById('cloud-status-dot');
@@ -538,29 +536,52 @@
         function updateSalaryCell(idx, field, val) { salaryData[idx][field] = parseFloat(val) || 0; renderSalaryTable(); }
         function deleteSalary(i) { salaryData.splice(i,1); renderSalaryTable(); }
 
-        // MỤC THANH TOÁN VÀ VIỄN THÔNG
+        // LOGIC THANH TOÁN SẠCH (KHÔNG VAT)
         function calculatePaymentTax() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = parseFloat(document.getElementById('pay-price').value) || 0;
-            document.getElementById('pay-tax-amount').value = Math.round(qty * price * 0.08).toLocaleString('vi-VN');
-            document.getElementById('pay-total').value = Math.round(qty * price * 1.08).toLocaleString('vi-VN');
+            document.getElementById('pay-total').value = Math.round(qty * price).toLocaleString('vi-VN');
         }
         function savePaymentRecord(e) {
             e.preventDefault(); let idx = parseInt(document.getElementById('payment-edit-index').value);
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0; let price = parseFloat(document.getElementById('pay-price').value) || 0;
-            let obj = { content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value, account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value, qty: qty, unit: document.getElementById('pay-unit').value, price: price, tax: qty*price*0.08, total: qty*price*1.08, status: document.getElementById('pay-status').value };
+            let obj = { content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value, account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value, qty: qty, unit: document.getElementById('pay-unit').value, price: price, total: qty*price, status: document.getElementById('pay-status').value };
             if(idx === -1) paymentRecords.push(obj); else paymentRecords[idx] = obj;
             resetPaymentForm(); renderPaymentTable();
         }
         function renderPaymentTable() {
             const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = ""; let sum = 0;
-            paymentRecords.forEach((rec, i) => { sum += rec.total; tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td><b>${rec.content}</b></td><td>${rec.beneficiary}</td><td>${rec.account}</td><td class="text-center">${rec.qty}</td><td class="text-right">${rec.price.toLocaleString()} đ</td><td class="text-right">${rec.tax.toLocaleString()} đ</td><td class="text-right font-bold">${rec.total.toLocaleString()} đ</td><td class="text-center">${rec.status}</td><td class="text-center"><button type="button" class="btn-action-edit" onclick="editPayment(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button></td></tr>`; });
+            paymentRecords.forEach((rec, i) => { 
+                sum += rec.total; 
+                tbody.innerHTML += `<tr>
+                    <td class="text-center">${i+1}</td>
+                    <td><b>${rec.content}</b></td>
+                    <td>${rec.beneficiary}</td>
+                    <td>${rec.account} / ${rec.bank}</td>
+                    <td class="text-center">${rec.qty} ${rec.unit}</td>
+                    <td class="text-right">${rec.price.toLocaleString()} đ</td>
+                    <td class="text-right font-bold">${rec.total.toLocaleString()} đ</td>
+                    <td class="text-center">${rec.status}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn-action-edit" onclick="editPayment(${i})">Sửa</button> 
+                        <button type="button" class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button>
+                    </td>
+                </tr>`; 
+            });
             document.getElementById('dash-paid-pay').innerText = sum.toLocaleString() + " đ";
         }
-        function editPayment(i) { let rec = paymentRecords[i]; document.getElementById('payment-edit-index').value = i; document.getElementById('pay-content').value = rec.content; document.getElementById('pay-beneficiary').value = rec.beneficiary; document.getElementById('pay-account').value = rec.account; document.getElementById('pay-bank').value = rec.bank; document.getElementById('pay-qty').value = rec.qty; document.getElementById('pay-price').value = rec.price; }
+        function editPayment(i) { 
+            let rec = paymentRecords[i]; document.getElementById('payment-edit-index').value = i; 
+            document.getElementById('pay-content').value = rec.content; document.getElementById('pay-beneficiary').value = rec.beneficiary; 
+            document.getElementById('pay-account').value = rec.account; document.getElementById('pay-bank').value = rec.bank; 
+            document.getElementById('pay-qty').value = rec.qty; document.getElementById('pay-unit').value = rec.unit; 
+            document.getElementById('pay-price').value = rec.price; document.getElementById('pay-total').value = rec.total.toLocaleString('vi-VN');
+            document.getElementById('pay-status').value = rec.status;
+        }
         function deletePayment(i) { paymentRecords.splice(i,1); renderPaymentTable(); }
         function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; }
 
+        // VIỄN THÔNG
         function saveTelecomRecord(e) {
             e.preventDefault(); let idx = parseInt(document.getElementById('telecom-edit-index').value);
             let obj = { id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value)||0, status: document.getElementById('tel-status').value };
@@ -576,7 +597,7 @@
         function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; }
 
-        // PHÂN HỆ THIẾT BỊ CNTT & TẠO QR ĐỘNG CHUẨN
+        // THIẾT BỊ CNTT & Tem QR
         function handleSoftwareSelectChange(val) {
             const customInput = document.getElementById('it-software-custom');
             if (val === "Tự nhập phần mềm khác") { customInput.value = ""; customInput.disabled = false; customInput.focus(); }
@@ -611,7 +632,7 @@
         function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
         function updateDashboardStats() { document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị"; }
 
-        // BIÊN DỊCH LỊCH VẠN NIÊN WIDGET
+        // LỊCH WIDGET
         function buildWidgetCalendar(month, year) {
             const container = document.getElementById('calendar-body-days'); container.innerHTML = "";
             document.getElementById('calendar-view-label').innerText = `Tháng ${String(month + 1).padStart(2,'0')} / ${year}`;
@@ -630,7 +651,7 @@
             document.getElementById('van-nien-live-data').innerHTML = `<div class="vannien-section"><div class="vannien-row"><span>Dương lịch</span><span style="color:var(--blue);">${d}/${m}/${y}</span></div><div class="vannien-row"><span>Âm lịch</span><span style="color:var(--red);">${info.lunarDay}/${info.lunarMonth}</span></div><div class="vannien-row"><span>Ngày</span><span>${info.canChiDay}</span></div><div class="vannien-row"><span>Giờ tốt</span><span>${info.gioHoangDao}</span></div></div>`;
         }
 
-        // BIÊN DỊCH EXCELJS CHO BẢNG LƯƠNG
+        // EXCEL
         function exportSalaryToExcelJSStandard() {
             let workbook = new ExcelJS.Workbook(); let sheet = workbook.addWorksheet('Bảng Lương');
             sheet.views = [{ showGridLines: true }];
