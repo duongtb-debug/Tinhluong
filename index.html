@@ -119,7 +119,6 @@
         .vannien-row span:first-child { color: #64748b; font-weight: bold; }
         .vannien-row span:last-child { font-weight: bold; text-align: right; }
 
-        /* LỚP MODAL XEM TRƯỚC HỒ SƠ CHUYÊN NGHIỆP KHÔNG BỊ KHUẤT */
         .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 900px; height: 80vh; overflow-y: auto; position: relative; color: var(--text-main); }
         .close-modal { position: absolute; right: 15px; top: 15px; font-size: 24px; cursor: pointer; color: #64748b; }
@@ -308,9 +307,8 @@
     </div>
 
     <script>
-        // ================= CẤU HÌNH LIÊN KẾT ĐƯỜNG TRUYỀN GOOGLE SHEETS LIVE CLOUD =================
-        // HÃY ĐỔI ĐƯỜNG LINK CỦA BẠN VÀO GIỮA HAI DẤU NGOẶC KÉP NÀY
-        const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfmjniTP_fhbm_bgiRfqgra8CVkf1Lt8yUyWwfXcl2R3_6YqB0hF4MCIgW-ga43_TXxA/exec";
+        // ================= CẤU HÌNH LINK APPS SCRIPT CLOUD =================
+        const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzL_WwY8AEXv9Vl68V_vjBv_W8dIXSzAJvG8/exec";
 
         function getComprehensiveLunarDetails(d, m, y) {
             let canChiDay = ["Giáp Tý", "Ất Sửu", "Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tỵ", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu", "Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu", "Mậu Dần", "Kỷ Mão", "Canh Thìn", "Tân Tỵ", "Nhâm Ngọ", "Quý Mùi", "Giáp Thân", "Ất Dậu", "Bính Tuất", "Đinh Hợi", "Mậu Tý", "Kỷ Sửu", "Canh Dần", "Tân Mão", "Nhâm Thìn", "Quý Tỵ", "Giáp Ngọ", "Ất Mùi", "Bính Thân", "Đinh Dậu", "Mậu Tuất", "Kỷ Hợi", "Canh Tý", "Tân Sửu", "Nhâm Dần", "Quý Mão", "Giáp Thìn", "Ất Tỵ", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu", "Giáp Dần", "Ất Mão", "Bính Thìn", "Đinh Tỵ", "Mậu Ngọ", "Kỷ Mùi", "Canh Thân", "Tân Dậu", "Nhâm Tuất", "Quý Hợi"];
@@ -327,8 +325,9 @@
             document.getElementById('live-system-clock').innerText = `${daysArr[d.getDay()]} , ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${currentYear} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
         }, 1000);
 
+        // BỘ CƠ SỞ DỮ LIỆU GỐC BẤT BIẾN - ĐÃ CẬP NHẬT 0.6 CHO CHỊ NGỌC
         const defaultSalaryData = [
-          {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0, "lcv_goc": 12110226, "lcv_thucte": 11009296, "bao_hiem": 951993, "tam_ung": 5000000, "account": "105005712499"},
+          {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "lcv_goc": 12110226, "lcv_thucte": 11009296, "bao_hiem": 951993, "tam_ung": 5000000, "account": "105005712499"},
           {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "lcv_goc": 4677052, "lcv_thucte": 2976306, "bao_hiem": 643356, "tam_ung": 4000000, "account": "105004242307"},
           {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "bao_hiem": 778113, "tam_ung": 3000000, "account": "102005035542"},
           {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0, "lcv_goc": 3883624, "lcv_thucte": 3707096, "bao_hiem": 843318, "tam_ung": 3000000, "account": "106004294441"},
@@ -384,32 +383,32 @@
             txt.innerText = text;
         }
 
-        // BIẾN THAY ĐỔI THEO THÁNG - FIX LỖI KHÔNG ĐỔI NGÀY CÔNG KHI CHUYỂN THÁNG
+        // ĐỒNG BỘ THEO THÁNG MỚI - TỰ ĐỘNG GIỮ NGUYÊN HỆ SỐ CỦA TỪNG THÁNG ĐỘC LẬP
         async function loadSalaryFromCloud() {
             const currentMonthKey = document.getElementById('filter-month').value;
-            updateCloudStatus('sync', `Đang kết nối Google Sheets...`);
+            updateCloudStatus('sync', `Đang kiểm tra dữ liệu Tháng ${currentMonthKey}...`);
             
             if (GOOGLE_WEB_APP_URL.includes("DÁN_URL")) {
                 salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
                 renderSalaryTable();
-                updateCloudStatus('success', `Đã hiển thị dữ liệu gốc cố định cứu hộ của 16 nhân viên.`);
+                updateCloudStatus('success', `Đã hiển thị dữ liệu gốc cứu hộ của 16 nhân viên.`);
                 return;
             }
             
             try {
                 let response = await fetch(`${GOOGLE_WEB_APP_URL}?month=${currentMonthKey}`);
                 let resData = await response.json();
-                if(resData.status === 'success') {
+                if(resData.status === 'success' && resData.salary && resData.salary.length > 0) {
                     salaryData = resData.salary;
                     updateCloudStatus('success', `Đã đồng bộ trực tuyến thành công dữ liệu Tháng ${currentMonthKey}.`);
                 } else {
-                    // Nếu chưa có dữ liệu online của tháng này, tự động clone bộ mẫu chuẩn để người dùng nhập mới
+                    // Nếu là một tháng hoàn toàn mới, nhân bản bộ dữ liệu gốc để giữ nguyên hệ số và mở khóa nhập mới số công
                     salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
-                    updateCloudStatus('success', `Khởi tạo dữ liệu tháng mới ${currentMonthKey} từ bộ nhớ dự phòng.`);
+                    updateCloudStatus('success', `Khởi tạo phân hệ lương mới cho Tháng ${currentMonthKey} thành công.`);
                 }
             } catch(e) {
                 salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
-                updateCloudStatus('success', `Chế độ cục bộ: Đã tải dữ liệu 16 nhân viên.`);
+                updateCloudStatus('success', `Đang chạy ở chế độ dự phòng thông minh.`);
             }
             renderSalaryTable();
         }
@@ -424,7 +423,6 @@
             try {
                 await fetch(GOOGLE_WEB_APP_URL, { 
                     method: 'POST', 
-                    mode: 'no-cors',
                     body: JSON.stringify({ month: currentMonthKey, salary: salaryData }) 
                 });
                 updateCloudStatus('success', `Đã đồng bộ lưu trữ cấu trúc bảng lương lên Google Drive.`);
@@ -446,6 +444,7 @@
                 const o_tong_lcb_lcv = l_tong_cb + parseFloat(row.lcv_thucte); 
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung);
 
+                // THAY THẾ step="0.01" CHO PHÉP NHẬP KHÔNG PHẨY CHO CỘT PHU_CAP_LCV
                 tbody.innerHTML += `
                     <tr>
                         <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td class="text-center">${row.account}</td>
@@ -457,7 +456,7 @@
                         <td style="background-color: #e0f2fe;"><input type="number" class="input-salary-day" value="${row.le_vr}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td>
                         <td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold" style="color:var(--blue);">${l_tong_cb.toLocaleString()}</td>
                         <td><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td>
-                        <td><input type="number" class="input-edit" value="${row.phu_cap_lcv}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td>
+                        <td><input type="number" step="0.01" class="input-edit" value="${row.phu_cap_lcv}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td>
                         <td class="text-right">${row.lcv_goc.toLocaleString()}</td><td class="text-right font-bold" style="color: var(--purple);">${row.lcv_thucte.toLocaleString()}</td>
                         <td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right" style="color: var(--red);">${row.bao_hiem.toLocaleString()}</td>
                         <td class="text-center" style="background-color:#fee2e2;"><input type="text" class="input-edit input-edit-money" value="${row.tam_ung.toLocaleString('vi-VN')}" onblur="updateSalaryCell(${index}, 'tam_ung', this.value)"></td>
@@ -468,7 +467,7 @@
         }
         function updateSalaryCell(idx, field, val) { let n = parseFloat(val.toString().replace(/\./g, "").replace(/,/g, "")); if (isNaN(n)) n = 0; salaryData[idx][field] = n; renderSalaryTable(); }
 
-        // ================= XỬ LÝ PHẦN HỒ SƠ THANH TOÁN VÀ XEM TRƯỚC TÀI LIỆU =================
+        // ================= XỬ LÝ PHẦN HỒ SƠ THANH TOÁN =================
         function calculatePaymentTax() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = parseFloat(document.getElementById('pay-price').value) || 0;
@@ -506,7 +505,6 @@
             renderFileBadges(type);
         }
 
-        // TÍNH NĂNG XEM TRƯỚC BẬT MODAL CHUYÊN NGHIỆP HIỂN THỊ NỘI DUNG ĐẦY ĐỦ KHÔNG BỊ KHUẤT
         function openPreviewModal(fileName, fileData) {
             document.getElementById('document-preview-modal').style.display = 'flex';
             document.getElementById('modal-preview-title').innerText = "Xem trước tài liệu: " + fileName;
@@ -517,7 +515,7 @@
             } else if (fileData.startsWith('data:application/pdf')) {
                 viewport.innerHTML = `<iframe src="${fileData}"></iframe>`;
             } else {
-                viewport.innerHTML = `<div style='text-align:center;color:#64748b'><i class='fa-solid fa-file-prescription' style='font-size:48px;'></i><p style='margin-top:10px;'>Tài liệu định dạng văn bản nâng cao. Tự động mã hóa lưu trữ.</p></div>`;
+                viewport.innerHTML = `<div style='text-align:center;color:#64748b'><i class='fa-solid fa-file-prescription' style='font-size:48px;'></i><p style='margin-top:10px;'>Tài liệu định dạng nâng cao.</p></div>`;
             }
         }
 
@@ -580,7 +578,7 @@
         function deletePayment(i) { paymentRecords.splice(i,1); renderPaymentTable(); updateDashboardStats(); }
         function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; paymentFilesMap = []; renderFileBadges('payment'); document.getElementById('payment-form-title').innerText = "Tạo mới Đề nghị / Hồ sơ Thanh toán Văn phòng"; }
 
-        // ================= XỬ LÝ PHẦN CƯỚC VIỄN THÔNG INTERNET =================
+        // ================= XỬ LÝ PHẦN CƯỚC VIỄN THÔNG =================
         function handleTelecomFiles(files) {
             for(let f of files) {
                 let r = new FileReader(); r.onload = function(e) {
@@ -632,7 +630,6 @@
         function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); updateDashboardStats(); }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; telecomFilesMap = []; renderFileBadges('telecom'); }
 
-        // ================= CẬP NHẬT TRẠNG THÁI DASHBOARD BÁO CÁO =================
         function updateDashboardStats() {
             let totalPay = 0; let paidPay = 0; let pendingPay = 0; let pendingCount = 0;
             paymentRecords.forEach(r => {
@@ -658,12 +655,11 @@
             document.getElementById('dash-paid-progress').style.width = pct + "%";
         }
 
-        // ================= XUẤT EXCEL CHUYÊN NGHIỆP EXCELJS (CĂN CỘT AUTO-FIT) =================
         function exportSalaryToExcelJSStandard() {
             let workbook = new ExcelJS.Workbook();
             let sheet = workbook.addWorksheet('Bảng Tính Lương');
-            
             sheet.views = [{ showGridLines: true }];
+            
             sheet.getCell('A1').value = "TỔNG CÔNG TY GIẤY VIỆT NAM"; sheet.getCell('A1').font = { name: 'Times New Roman', size: 11, bold: true };
             sheet.getCell('A2').value = "VĂN PHÒNG TỔNG HỢP"; sheet.getCell('A2').font = { name: 'Times New Roman', size: 11, bold: true };
             
@@ -676,15 +672,11 @@
             let headersRow1 = ["STT", "HỌ VÀ TÊN", "Số tài khoản", "Lương Cơ Bản HĐLĐ", "", "", "", "Số Ngày Công Thực Tế", "", "", "Chi Tiết Lương Thực Nhận", "", "", "Cơ cấu Lương Công Việc (CV)", "", "", "", "Tổng LCB + LCV", "BHTN+BHXH+BHYT", "Tạm Ứng", "Thực Lĩnh CB+CV"];
             let headersRow2 = ["", "", "", "Hệ số LCB", "Phụ cấp LCB", "Lương Ký HĐLĐ", "Lương cơ bản", "Thời gian (NT)", "Phép (P)", "Lễ, VR", "Lương Thời Gian", "Lương Lễ, Phép", "Tổng Lương CB", "Hệ số LCV", "Phụ cấp LCV", "Lương CV Gốc", "Lương CV Thực Tế", "", "", "", ""];
             
-            sheet.getRow(6).values = headersRow1;
-            sheet.getRow(7).values = headersRow2;
-
-            // Merge Headers dọc và ngang
+            sheet.getRow(6).values = headersRow1; sheet.getRow(7).values = headersRow2;
             sheet.mergeCells('A6:A7'); sheet.mergeCells('B6:B7'); sheet.mergeCells('C6:C7');
             sheet.mergeCells('D6:G6'); sheet.mergeCells('H6:J6'); sheet.mergeCells('K6:M6'); sheet.mergeCells('N6:Q6');
             sheet.mergeCells('R6:R7'); sheet.mergeCells('S6:S7'); sheet.mergeCells('T6:T7'); sheet.mergeCells('U6:U7');
 
-            // Style Headers
             for(let r of [6,7]) {
                 sheet.getRow(r).eachCell(c => {
                     c.font = { name: 'Times New Roman', size: 10, bold: true };
@@ -694,7 +686,6 @@
                 });
             }
 
-            // Đổ dữ liệu 16 nhân viên
             salaryData.forEach((row, idx) => {
                 let rNum = 8 + idx;
                 const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
@@ -717,14 +708,13 @@
                     cell.font = { name: 'Times New Roman', size: 10 };
                     cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
                     if([1,3,4,5,8,9,10,14,15].includes(colIndex)) cell.alignment = { horizontal: 'center' };
+                    if([4,5,14,15].includes(colIndex)) cell.numberFormat = '0.00';
                     if([6,7,11,12,13,16,17,18,19,20,21].includes(colIndex)) {
-                        cell.numberFormat = '#,##0';
-                        cell.alignment = { horizontal: 'right' };
+                        cell.numberFormat = '#,##0'; cell.alignment = { horizontal: 'right' };
                     }
                 });
             });
 
-            // TỰ ĐỘNG CĂN CHỈNH ĐỘ RỘNG CỘT CHỐNG RỘNG QUÁ MỨC
             sheet.columns.forEach(column => {
                 let maxLen = 0;
                 column.eachCell({ includeEmpty: true }, cell => {
