@@ -337,7 +337,7 @@
                 <form id="office-form-v2" onsubmit="handleSaveOfficeV2(event)" style="margin-bottom: 20px;">
                     <input type="hidden" id="office-id">
                     <div class="grid-form">
-                        <div class="form-group" style="grid-column: span 2;">
+                        <div class="form-row" style="grid-column: span 2;">
                             <label>Nội dung thanh toán / Mua sắm</label>
                             <input type="text" id="office-category" required placeholder="Văn phòng phẩm...">
                         </div>
@@ -346,7 +346,7 @@
                             <input type="text" id="office-amount-before" required onkeyup="formatCurrencyInput(this); calculateOfficeVAT();" placeholder="Nhập số tiền">
                         </div>
                         <div class="form-group">
-                            <label>Thuế suất VAT</label>
+                            <label>Thuếu suất VAT</label>
                             <select id="office-tax-rate" onchange="calculateOfficeVAT()">
                                 <option value="0">0%</option>
                                 <option value="5">5%</option>
@@ -564,16 +564,19 @@
         const SUPABASE_BASE = "https://vjseitcuqgdtnyuijfte.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_gwOddWvCDRntBvAoqgW7Sg_nuZyH_jG";
 
+        // Vừa giữ tham số URL vừa bổ sung Header apikey để kích hoạt kết nối Online thành công
         function buildCleanUrl(endpoint) {
             const separator = endpoint.includes('?') ? '&' : '?';
             return `${SUPABASE_BASE}/rest/v1/${endpoint}${separator}apikey=${SUPABASE_ANON_KEY}`;
         }
 
         function getSimpleHeaders() {
-            return { 'Accept': 'application/json' };
+            return { 
+                'Accept': 'application/json',
+                'apikey': SUPABASE_ANON_KEY
+            };
         }
 
-        // BỘ DANH SÁCH NHÂN SỰ ĐẦY ĐỦ TOÀN CÔNG TY (ĐÃ ĐƯỢC ĐỒNG BỘ GỐC)
         const defaultSalaryData = [
             { "stt": 1, "id": "00001", "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 250000, "lcb_hdld": 9066600, "lcb_goc": 5540700, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 5.2, "lcv_phucap": 600000, "lcv_goc": 12110226, "ki": 100, "bhtn": 90666, "bhxh": 861327, "tam_ung": 0 },
             { "stt": 2, "id": "00002", "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "lcb_hdld": 6127200, "lcb_goc": 3744400, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 2.24, "lcv_phucap": 0, "lcv_goc": 4677053, "ki": 100, "bhtn": 61272, "bhxh": 582084, "tam_ung": 0 },
@@ -615,11 +618,6 @@
             initCalendarToRealTime(); 
             renderSalaryTable();      
             
-            const dot = document.getElementById('conn-status-dot');
-            const txt = document.getElementById('conn-status-text');
-            dot.className = "status-dot status-connected";
-            txt.innerText = "🚀 Hệ thống đang đồng bộ dữ liệu an toàn...";
-            
             setTimeout(() => {
                 loadSalaryFromCloud();
                 loadOfficeFromCloud();
@@ -645,6 +643,8 @@
             const monthPeriod = document.getElementById('filter-month').value;
             const vnFormattedMonth = formatMonthPeriodToVN(monthPeriod);
             const statusLabel = document.getElementById('cloud-action-status');
+            const dot = document.getElementById('conn-status-dot');
+            const txt = document.getElementById('conn-status-text');
             
             statusLabel.style.color = "var(--orange)";
             statusLabel.innerText = `⏳ Đang đọc bảng lương ${vnFormattedMonth}...`;
@@ -654,7 +654,7 @@
                     method: 'GET',
                     headers: getSimpleHeaders()
                 });
-                if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP Status: ${response.status}`);
                 const data = await response.json();
 
                 if (data && data.length > 0) {
@@ -668,7 +668,9 @@
                         tam_ung: item.tam_ung, thuc_linh: item.thuc_linh
                     }));
                     statusLabel.style.color = "var(--green)";
-                    statusLabel.innerText = `✅ Đã mở bảng lương ${vnFormattedMonth}!`;
+                    statusLabel.innerText = `✅ Đã đồng bộ dữ liệu đám mây (${vnFormattedMonth})`;
+                    dot.className = "status-dot status-connected";
+                    txt.innerText = "🚀 Hệ thống Trực Tuyến (Online) - Đồng bộ Supabase hoàn hảo!";
                 } else {
                     salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
                     statusLabel.style.color = "var(--blue)";
@@ -679,6 +681,8 @@
                 console.error("Lỗi đồng bộ lương:", err);
                 statusLabel.style.color = "var(--green)";
                 statusLabel.innerText = `Hoạt động dự phòng ổn định`;
+                dot.className = "status-dot status-connecting";
+                txt.innerText = "⚠️ Chế độ bảo vệ ngoại tuyến (Offline) được kích hoạt.";
                 salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
                 renderSalaryTable();
             }
@@ -706,7 +710,8 @@
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
-                        'Prefer': 'resolution=merge-duplicates'
+                        'Prefer': 'resolution=merge-duplicates',
+                        'apikey': SUPABASE_ANON_KEY
                     },
                     body: JSON.stringify(payload)
                 });
@@ -752,7 +757,7 @@
                 let url = id ? buildCleanUrl(`office_records?id=eq.${id}`) : buildCleanUrl(`office_records`);
                 let response = await fetch(url, {
                     method: id ? 'PATCH' : 'POST',
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
                     body: JSON.stringify(id ? recordPayload : [recordPayload])
                 });
                 if (!response.ok) throw new Error("Error Cloud update.");
@@ -850,7 +855,7 @@
             };
             try {
                 let url = id ? buildCleanUrl(`tele_records?id=eq.${id}`) : buildCleanUrl(`tele_records`);
-                await fetch(url, { method: id ? 'PATCH' : 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(id ? recordPayload : [recordPayload]) });
+                await fetch(url, { method: id ? 'PATCH' : 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY }, body: JSON.stringify(id ? recordPayload : [recordPayload]) });
                 alert("Đã cấu hình cước viễn thông!"); resetTeleFormV2(); loadTeleFromCloud();
             } catch (err) { alert(err.message); }
         }
@@ -1028,7 +1033,7 @@
             try {
                 await fetch(buildCleanUrl(`office_tasks`), { 
                     method: 'POST', 
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, 
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY }, 
                     body: JSON.stringify([newTask]) 
                 });
                 officeTasks.push(newTask); input.value = ""; renderTasks();
@@ -1041,7 +1046,7 @@
             try {
                 await fetch(buildCleanUrl(`office_tasks?id=eq.${id}`), { 
                     method: 'PATCH', 
-                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, 
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY }, 
                     body: JSON.stringify({ completed: newCompletedStatus }) 
                 });
                 task.completed = newCompletedStatus; renderTasks();
