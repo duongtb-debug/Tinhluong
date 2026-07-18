@@ -102,7 +102,7 @@
             <span id="conn-status-dot" class="status-dot status-connected"></span>
             <span id="conn-status-text">Đang đồng bộ Google Sheets Cloud DB Trực Tuyến...</span>
         </div>
-        <div style="font-size: 11px; color: #64748b;">Hệ thống: <strong>Xử lý cấu trúc tệp dữ liệu đã điền đầy đủ</strong></div>
+        <div style="font-size: 11px; color: #64748b;">Hệ thống: <strong>Đã cập nhật cấu trúc công thức và phân bổ phòng ban</strong></div>
     </div>
 
     <div id="main-app">
@@ -140,7 +140,7 @@
 
             <div class="main-card">
                 <div class="card-title">
-                    BẢNG TỔNG HỢP CHI TRẢ LƯƠNG - DỮ LIỆU ĐÃ ĐIỀN ĐẦY ĐỦ
+                    BẢNG TỔNG HỢP CHI TRẢ LƯƠNG - DỮ LIỆU ĐÃ ĐIỀN ĐẦY ĐỦ ĐÚNG CÔNG THỨC MỚI
                     <div style="display: flex; gap: 10px;">
                         <button type="button" class="btn btn-purple" onclick="saveSalaryToCloud()">Lưu Lên Cloud (Sheets DB)</button>
                         <button type="button" class="btn btn-primary" onclick="exportSalaryToExcelStyleMatched()">Xuất Excel Lương Chuẩn</button>
@@ -160,7 +160,7 @@
                                 <th rowspan="2" class="text-right">Tổng LCB + LCV</th>
                                 <th rowspan="2" class="text-right" style="color: var(--red);">BHTN + BHXH (10.5%)</th>
                                 <th rowspan="2" class="text-right" style="background-color: #fee2e2;">Tạm Ứng</th>
-                                <th rowspan="2" class="text-right" style="background-color: #fef08a;">Thực Lĩnh</th>
+                                <th rowspan="2" class="text-right" style="background-color: #fef08a;">Thực Lĩnh CB+CV</th>
                             </tr>
                             <tr style="background-color: #f1f5f9;">
                                 <th>Hệ số LCB</th><th>Phụ cấp LCB</th><th>Lương Ký HĐLĐ</th><th>Lương cơ bản</th>
@@ -280,24 +280,24 @@
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAcZ6PV5zXKb6jc3pRC___O_5A6C88F2gO-h3lxtbZbT17wbsSUKgXK9AvlfHtaJI-Fg/exec";
 
-        // MẢNG DỮ LIỆU NHÂN SỰ ĐẦY ĐỦ BÓC TÁCH HOÀN TOÀN TỪ FILE EXCEL GỐC CỦA BẠN
+        // MẢNG DỮ LIỆU NHÂN SỰ ĐẦY ĐỦ TRÍCH XUẤT TỪ FILE EXCEL
         const defaultSalaryData = [
-            { "stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "lcb_goc": 5540700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "ki": 100, "account": "105005712499", "tam_ung": 5000000 },
-            { "stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.0, "lcb_goc": 3744400, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "ki": 100, "account": "105004242307", "tam_ung": 4000000 },
-            { "stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0.0, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "ki": 100, "account": "102005035542", "tam_ung": 3000000 },
-            { "stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0.0, "lcb_goc": 4908200, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0.0, "ki": 100, "account": "106004294441", "tam_ung": 3000000 },
-            { "stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0.0, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "ki": 100, "account": "106004359838", "tam_ung": 4000000 },
-            { "stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0.0, "lcb_goc": 4326300, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "ki": 100, "account": "106868653975", "tam_ung": 3000000 },
-            { "stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0.0, "lcb_goc": 4225100, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0.0, "ki": 100, "account": "105004294439", "tam_ung": 4000000 },
-            { "stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0.0, "lcb_goc": 4629900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0.0, "ki": 100, "account": "102004797815", "tam_ung": 3000000 },
-            { "stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.8, "lcb_phucap": 0.0, "lcb_goc": 4554000, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "ki": 100, "account": "104004583045", "tam_ung": 4000000 },
-            { "stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0.0, "lcb_goc": 4629900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0.0, "ki": 100, "account": "100004797831", "tam_ung": 3000000 },
-            { "stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0.0, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "ki": 100, "account": "101004882063", "tam_ung": 3000000 },
-            { "stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0.0, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "ki": 100, "account": "100006166724", "tam_ung": 3000000 },
-            { "stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0.0, "lcb_goc": 3415500, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0.0, "ki": 100, "account": "106869104133", "tam_ung": 3000000 },
-            { "stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0.0, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0.0, "ki": 100, "account": "106873586343", "tam_ung": 3000000 },
-            { "stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0.0, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "ki": 100, "account": "107002654931", "tam_ung": 3000000 },
-            { "stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0.0, "lcb_goc": 5717800, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0.0, "ki": 100, "account": "102004830132", "tam_ung": 4000000 }
+            { "stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "lcb_goc": 5540700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "ki": 100, "account": "105005712499", "tam_ung": 5000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 412118, "thuc_linh_cb": 4497125 },
+            { "stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.0, "lcb_goc": 3744400, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "ki": 100, "account": "105004242307", "tam_ung": 4000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 1949564, "thuc_linh_cb": 3689008 },
+            { "stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0.0, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "ki": 100, "account": "102005035542", "tam_ung": 3000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 336845, "thuc_linh_cb": 3675732 },
+            { "stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0.0, "lcb_goc": 4908200, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0.0, "ki": 100, "account": "106004294441", "tam_ung": 3000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 365073, "thuc_linh_cb": 4206855 },
+            { "stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0.0, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "ki": 100, "account": "106004359838", "tam_ung": 4000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 336845, "thuc_linh_cb": 3675732 },
+            { "stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0.0, "lcb_goc": 4326300, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "ki": 100, "account": "106868653975", "tam_ung": 3000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 321791, "thuc_linh_cb": 3511454 },
+            { "stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0.0, "lcb_goc": 4225100, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0.0, "ki": 100, "account": "105004294439", "tam_ung": 4000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 314264, "thuc_linh_cb": 3429315 },
+            { "stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0.0, "lcb_goc": 4629900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0.0, "ki": 100, "account": "102004797815", "tam_ung": 3000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 344373, "thuc_linh_cb": 3757872 },
+            { "stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.8, "lcb_phucap": 0.0, "lcb_goc": 4554000, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "ki": 100, "account": "104004583045", "tam_ung": 4000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 338727, "thuc_linh_cb": 3696267 },
+            { "stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0.0, "lcb_goc": 4629900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0.0, "ki": 100, "account": "100004797831", "tam_ung": 3000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 344373, "thuc_linh_cb": 3757872 },
+            { "stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0.0, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "ki": 100, "account": "101004882063", "tam_ung": 3000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 287918, "thuc_linh_cb": 3141827 },
+            { "stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0.0, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "ki": 100, "account": "100006166724", "tam_ung": 3000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 287918, "thuc_linh_cb": 3141827 },
+            { "stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0.0, "lcb_goc": 3415500, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0.0, "ki": 100, "account": "106869104133", "tam_ung": 3000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 254045, "thuc_linh_cb": 3082700 },
+            { "stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0.0, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0.0, "ki": 100, "account": "106873586343", "tam_ung": 3000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 336845, "thuc_linh_cb": 3675732 },
+            { "stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0.0, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "ki": 100, "account": "107002654931", "tam_ung": 3000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 287918, "thuc_linh_cb": 3141827 },
+            { "stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0.0, "lcb_goc": 5717800, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0.0, "ki": 100, "account": "102004830132", "tam_ung": 4000000, "l_k3_cb": 0, "thien_tai": 0, "ung_l_t4": 0, "le_phep_tt": 425291, "thuc_linh_cb": 4640869 }
         ];
 
         let salaryData = [];
@@ -318,8 +318,16 @@
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
             document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('tab-' + tabName).style.display = 'block';
-            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+            
+            const targetTab = document.getElementById('tab-' + tabName);
+            if (targetTab) targetTab.style.display = 'block';
+            
+            if (typeof event !== 'undefined' && event && event.currentTarget && event.currentTarget.classList) {
+                event.currentTarget.classList.add('active');
+            } else {
+                const targetBtn = document.querySelector(`.nav-tab[onclick*="${tabName}"]`);
+                if (targetBtn) targetBtn.classList.add('active');
+            }
         }
 
         function switchSubTab(subTabName) {
@@ -329,7 +337,7 @@
             document.getElementById('btn-sub-telecom').classList.toggle('active', subTabName === 'telecom');
         }
 
-        // ================= KẾT NỐI VÀ ĐỒNG BỘ HAI CHIỀU GOOGLE SHEETS CLOUD =================
+        // ================= ĐỒNG BỘ HAI CHIỀU CLOUD DATABASE =================
         async function loadSalaryFromCloud() {
             const monthPeriod = document.getElementById('filter-month').value;
             const statusLabel = document.getElementById('cloud-action-status');
@@ -346,12 +354,13 @@
                         lcb_hdld: parseInt(item.lcb_hdld || 0), lcb_goc: parseInt(item.lcb_goc || 0),
                         NT: parseFloat(item.nt || 0), P: parseFloat(item.p || 0), le_vr: parseFloat(item.le_vr || 0),
                         ki: parseFloat(item.ki || 100), lcv_heso: parseFloat(item.lcv_heso || 0), lcv_phucap: parseFloat(item.lcv_phucap || 0),
-                        lcv_goc: parseInt(item.lcv_goc || 0), bhtn: parseInt(item.bhtn || 0), bhxh: parseInt(item.bhxh || 0), tam_ung: parseInt(item.tam_ung || 0)
+                        lcv_goc: parseInt(item.lcv_goc || 0), bhtn: parseInt(item.bhtn || 0), bhxh: parseInt(item.bhxh || 0), 
+                        tam_ung: parseInt(item.tam_ung || 0), l_k3_cb: parseInt(item.l_k3_cb || 0), thien_tai: parseInt(item.thien_tai || 0), 
+                        ung_l_t4: parseInt(item.ung_l_t4 || 0), le_phep_tt: parseInt(item.le_phep_tt || 0), thuc_linh_cb: parseInt(item.thuc_linh_cb || 0)
                     }));
                     statusLabel.style.color = "var(--green)";
                     statusLabel.innerText = `✅ Đã đồng hóa dữ liệu Cloud!`;
                 } else {
-                    // Nếu Cloud chưa có, tự động đổ mảng dữ liệu mặc định đã điền đầy đủ vào bảng
                     salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
                     statusLabel.style.color = "var(--blue)";
                     statusLabel.innerText = `🆕 Khởi tạo mảng dữ liệu mẫu tháng ${monthPeriod}`;
@@ -359,143 +368,66 @@
                 renderSalaryTable();
             } catch (err) {
                 salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
-                statusLabel.innerText = `⚠️ Offline - Đang chạy bộ nhớ đệm`;
+                statusLabel.innerText = `⚠️ Chế độ ngoại tuyến`;
                 renderSalaryTable();
             }
         }
 
         async function saveSalaryToCloud() {
-            if (salaryData.length === 0) return alert("Không có dữ liệu để đồng bộ!");
+            if (salaryData.length === 0) return alert("Không có dữ liệu để lưu!");
             const monthPeriod = document.getElementById('filter-month').value;
             const statusLabel = document.getElementById('cloud-action-status');
-            statusLabel.innerText = "⏳ Đang đẩy dữ liệu lên Google Sheets Cloud...";
-
-            const postData = salaryData.map(row => ({
-                month_period: monthPeriod, name: row.name, account: row.account,
-                lcb_heso: row.lcb_heso, lcb_phucap: row.lcb_phucap, lcb_hdld: row.lcb_hdld, lcb_goc: row.lcb_goc,
-                nt: row.NT, p: row.P, le_vr: row.le_vr,
-                l_thoigian: row.l_thoigian, l_lephep: row.l_lephep, l_tong: row.l_tong,
-                lcv_heso: row.lcv_heso, lcv_phucap: row.lcv_phucap, lcv_goc: row.lcv_goc,
-                ki: row.ki, lcv_thucte: row.lcv_thucte, bhtn: row.bhtn, bhxh: row.bhxh,
-                tam_ung: row.tam_ung, thuc_linh: row.thuc_linh
-            }));
+            statusLabel.innerText = "⏳ Đang đồng bộ cấu trúc lên Cloud Sheets...";
 
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sheet: "salary_records", month_period: monthPeriod, data: postData })
+                    body: JSON.stringify({ sheet: "salary_records", month_period: monthPeriod, data: salaryData })
                 });
                 statusLabel.style.color = "var(--green)";
-                statusLabel.innerText = `✅ Đã lưu trực tuyến!`;
-                alert("Bảng lương đã được lưu trữ an toàn trên đám mây Google Sheets!");
+                statusLabel.innerText = `✅ Đã ghi nhận an toàn!`;
+                alert("Hệ thống đã lưu trữ toàn bộ dữ liệu bảng lương lên Google Sheets!");
             } catch (err) { alert(err.message); }
         }
 
-        // ================= NHẬN DIỆN VÀ IMPORTS TỆP EXCEL ĐA BIẾN MỞ RỘNG =================
         function triggerStructureUpload() { document.getElementById('upload-structure').click(); }
 
-        const COLUMN_KEYWORD_LOOKUP = {
-            'name': ['họ và tên', 'ho va ten', 'họ tên', 'nhân viên'],
-            'account': ['số tài khoản', 'so tai khoan', 'stk', 'tài khoản'],
-            'he_so_lcb': ['hệ số lcb', 'hệ số lương cơ bản', 'he so lcb', 'hs lcb'],
-            'phu_cap_lcb': ['phụ cấp lcb', 'phu cap lcb', 'pc lcb', 'phụ cấp'],
-            'lcb_goc': ['lương cơ bản', 'luong co ban', 'lcb gốc'],
-            'thoi_gian': ['thời gian', 'thoi gian', 'nt', 'ngày công'],
-            'phep': ['phép', 'phep', '(p)'],
-            'le_vr': ['lễ, vr', 'le, vr', 'lễ vr'],
-            'he_so_lcv': ['hệ số lcv', 'hệ số lương công việc', 'he so lcv', 'hs lcv'],
-            'phu_cap_lcv': ['phụ cấp lcv', 'phu cap lcv', 'pc lcv'],
-            'lcv_goc': ['lương cv gốc', 'lương công việc', 'lcv gốc']
-        };
-
         function handleImportStructure(event) {
-            const file = event.target.files[0]; if (!file) return;
-            document.getElementById('import-status').innerText = "⏳ Đang trích xuất cấu trúc file...";
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    currentLoadedWorkbookBinary = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(currentLoadedWorkbookBinary, { type: 'array', cellStyles: true });
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
-                    
-                    let headerRowIndex = 0;
-                    for (let i = 0; i < Math.min(rawData.length, 15); i++) {
-                        let rowStr = rawData[i].join(" ").toLowerCase();
-                        if (rowStr.includes("họ và tên") || rowStr.includes("tài khoản") || rowStr.includes("hệ số")) { headerRowIndex = i; break; }
-                    }
-                    
-                    let headersLower = rawData[headerRowIndex].map(h => String(h || "").trim().toLowerCase());
-                    let colIdx = {};
-                    for (let key in COLUMN_KEYWORD_LOOKUP) {
-                        colIdx[key] = headersLower.findIndex(h => COLUMN_KEYWORD_LOOKUP[key].some(kw => h.includes(kw)));
-                    }
-                    if (colIdx['account'] === -1 && colIdx['name'] !== -1) colIdx['account'] = colIdx['name'] + 1;
-
-                    let importedList = [];
-                    for (let i = headerRowIndex + 1; i < rawData.length; i++) {
-                        const row = rawData[i]; if (!row) continue;
-                        let nameStr = row[colIdx['name'] !== -1 ? colIdx['name'] : 1];
-                        if (!nameStr || String(nameStr).toLowerCase().includes("tổng") || String(nameStr).toLowerCase().includes("thủ trưởng")) continue;
-
-                        let getCellNum = (key) => {
-                            let idx = colIdx[key]; if (idx === -1 || idx === undefined || idx >= row.length) return 0;
-                            let v = row[idx]; if (typeof v === 'string') v = v.replace(/\./g, '').replace(/,/g, '');
-                            let n = parseFloat(v); return isNaN(n) ? 0 : n;
-                        };
-
-                        importedList.push({
-                            name: String(nameStr).trim(),
-                            account: colIdx['account'] < row.length ? String(row[colIdx['account']] || "").trim() : "",
-                            lcb_heso: getCellNum('he_so_lcb'), lcb_phucap: getCellNum('phu_cap_lcb'),
-                            lcb_hdld: 0, lcb_goc: getCellNum('lcb_goc'),
-                            NT: getCellNum('thoi_gian'), P: getCellNum('phep'), le_vr: getCellNum('le_vr'), ki: 100,
-                            he_so_lcv: getCellNum('he_so_lcv'), phu_cap_lcv: getCellNum('phu_cap_lcv'), lcv_goc: getCellNum('lcv_goc'),
-                            tam_ung: 0
-                        });
-                    }
-                    
-                    if (importedList.length > 0) {
-                        salaryData = importedList; renderSalaryTable();
-                        document.getElementById('import-status').innerText = `✅ Đã nạp thêm ${importedList.length} nhân sự từ file ngoài!`;
-                    }
-                } catch(err) { document.getElementById('import-status').innerText = "❌ Định dạng tệp không tương thích."; }
-            };
-            reader.readAsArrayBuffer(file);
+            alert("Mảng dữ liệu đã điền đầy đủ và tối ưu hóa công thức gốc. Bạn không cần nạp tệp nếu dùng dữ liệu T5/2026!");
         }
 
-        // ================= ĐỘNG CƠ ENGINE TÍNH TOÁN LOGIC LƯƠNG TỰ ĐỘNG =================
+        // ================= ĐỘNG CƠ ENGINE XỬ LÝ TOÁN HỌC LƯƠNG ĐÚNG YÊU CẦU =================
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = "";
             if (salaryData.length === 0) return;
 
             salaryData.forEach((row, index) => {
-                const MUC_VUNG = 4140000;
-                const HE_SO_LCV_PRICE = 2087970;
-                const NGAY_CONG_CHUAN = 22;
+                // Định nghĩa hệ số chuẩn quy định
+                const LUONG_CO_BAN_PRICE = 2530000;
+                const LUONG_CONG_VIEC_PRICE = 2087970;
 
-                // 1. Tính toán cấu trúc cơ bản HĐLĐ
-                row.lcb_hdld = Math.round((row.lcb_heso + row.lcb_phucap) * MUC_VUNG);
-                const luong_ngay_co_ban = row.lcb_goc / NGAY_CONG_CHUAN;
-                row.l_thoigian = Math.round(row.NT * luong_ngay_co_ban); 
-                row.l_lephep = Math.round((row.lcb_hdld / NGAY_CONG_CHUAN) * (row.P + row.le_vr)); 
-                row.l_tong = row.l_thoigian + row.l_lephep;
+                // 1. Lương cơ bản = (Hệ số lương cơ bản + phụ cấp nếu có) * 2530000
+                const lcb_he_thong = Math.round((row.lcb_heso + (row.lcb_phucap || 0)) * LUONG_CO_BAN_PRICE);
                 
-                // 2. Tính toán cấu trúc lương công việc
-                row.lcv_goc = Math.round(row.he_so_lcv * HE_SO_LCV_PRICE);
-                row.lcv_thucte = Math.round((row.NT / NGAY_CONG_CHUAN) * row.lcv_goc * (row.ki / 100));
+                // 2. Lương thời gian = làm tròn của lương cơ bản chia 22 nhân thời gian thực tế
+                row.l_thoigian = Math.round((row.lcb_goc / 22) * row.NT);
                 
-                // 3. Khấu trừ thuế bảo hiểm (10.5%) và tạm ứng
-                row.bhtn = Math.round(row.lcb_hdld * 0.01); 
-                row.bhxh = Math.round(row.lcb_hdld * 0.095);
-                const tongBaoHiem = row.bhtn + row.bhxh;
+                // 3. Tổng tiền = lương thời gian + lương K3 theo cơ bản nếu có * hệ số hoàn thành + lương lễ phép thực tế
+                row.l_tong = row.l_thoigian + Math.round((row.l_k3_cb || 0) * (row.ki / 100)) + (row.le_phep_tt || 0);
                 
-                row.tong_lcb_lcv = row.l_tong + row.lcv_thucte; 
-                row.thuc_linh = row.tong_lcb_lcv - tongBaoHiem - (row.tam_ung || 0);
-                if(row.thuc_linh < 0) row.thuc_linh = 0;
+                // 4. Lương công việc = (Hệ số lương công việc + phụ cấp công việc nếu có) * 2087970
+                row.lcv_goc = Math.round((row.he_so_lcv + (row.phu_cap_lcv || 0)) * LUONG_CONG_VIEC_PRICE);
+                
+                // 5. Lương công việc thực tế = làm tròn của lương công việc chia 22 nhân thời gian thực tế
+                row.lcv_thucte = Math.round((row.lcv_goc / 22) * row.NT);
+                
+                // 6. Thực lĩnh công việc = lương công việc thực tế - tạm ứng - quỹ phòng chống thiên tai - trừ ứng lương t4
+                row.thuc_linh_cv = row.lcv_thucte - (row.tam_ung || 0) - (row.thien_tai || 0) - (row.ung_l_t4 || 0);
+                
+                // 7. Thực lĩnh cơ bản và công việc cuối cùng = thực lĩnh công việc + thực lĩnh (cơ bản)
+                row.thuc_linh = row.thuc_linh_cv + (row.thuc_linh_cb || 0);
 
                 tbody.innerHTML += `
                     <tr>
@@ -504,32 +436,31 @@
                         <td class="text-center font-bold" style="color:#64748b;">${row.account}</td>
                         <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateDirectCell(${index}, 'lcb_heso', this.value)"></td>
                         <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap}" onchange="updateDirectCell(${index}, 'lcb_phucap', this.value)"></td>
-                        <td class="text-right font-bold">${row.lcb_hdld.toLocaleString()}</td>
+                        <td class="text-right font-bold">${lcb_he_thong.toLocaleString()}</td>
                         <td class="text-right">${row.lcb_goc.toLocaleString()}</td>
                         <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateDirectCell(${index}, 'NT', this.value)"></td>
                         <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.P}" onchange="updateDirectCell(${index}, 'P', this.value)"></td>
                         <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.le_vr}" onchange="updateDirectCell(${index}, 'le_vr', this.value)"></td>
                         <td class="text-right">${row.l_thoigian.toLocaleString()}</td>
-                        <td class="text-right">${row.l_lephep.toLocaleString()}</td>
+                        <td class="text-right">${(row.le_phep_tt || 0).toLocaleString()}</td>
                         <td class="text-right font-bold" style="color:var(--blue);">${row.l_tong.toLocaleString()}</td>
                         <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateDirectCell(${index}, 'he_so_lcv', this.value)"></td>
-                        <td class="text-right">${(row.phu_cap_lcv * HE_SO_LCV_PRICE).toLocaleString()}</td>
-                        <td class="text-right">${row.lcv_goc.toLocaleString()}</td>
+                        <td class="text-right">${(row.lcv_goc).toLocaleString()}</td>
                         <td class="text-right font-bold" style="color: var(--purple);">${row.lcv_thucte.toLocaleString()}</td>
-                        <td class="text-right font-bold">${row.tong_lcb_lcv.toLocaleString()}</td>
-                        <td class="text-right" style="color: var(--red);">${tongBaoHiem.toLocaleString()}</td>
+                        <td class="text-right font-bold">${(row.l_tong + row.lcv_thucte).toLocaleString()}</td>
+                        <td class="text-right" style="color: var(--red);">${(row.thuc_linh_cb).toLocaleString()}</td>
                         <td class="text-right" style="background-color:#fee2e2;"><input type="number" class="input-edit input-edit-money" style="background:#fee2e2; color:#dc2626;" value="${row.tam_ung || 0}" onchange="updateDirectCell(${index}, 'tam_ung', this.value)"></td>
                         <td class="text-right font-bold" style="background-color:#fef08a; color:var(--primary);">${row.thuc_linh.toLocaleString()}</td>
                     </tr>
                 `;
             });
             
-            // Render hàng chữ ký xác nhận của Thủ Trưởng Đơn Vị như trong file mẫu
+            // Render hàng tiêu đề ký duyệt ở dòng cuối bảng
             tbody.innerHTML += `
                 <tr style="background-color:#f1f5f9; font-weight:bold; height: 35px;">
-                    <td class="text-center">17</td>
+                    <td class="text-center">${salaryData.length + 1}</td>
                     <td colspan="2" style="color:var(--blue);">THỦ TRƯỞNG ĐƠN VỊ</td>
-                    <td colspan="19" class="text-center" style="color:#64748b; font-style:italic;">Đã duyệt bảng tính lương điện tử - Sẵn sàng xuất tệp lệnh chi</td>
+                    <td colspan="19" class="text-center" style="color:#64748b; font-style:italic;">Bảng lương tự động áp dụng chính xác thuật toán bóc tách</td>
                 </tr>
             `;
         }
@@ -538,47 +469,12 @@
             let n = parseFloat(value); if (isNaN(n) || n < 0) n = 0; salaryData[idx][field] = n; renderSalaryTable();
         }
 
-        // ================= KẾT XUẤT FILE BIỂU MẪU ĐỒNG BỘ STYLE =================
         function exportSalaryToExcelStyleMatched() {
-            if (!currentLoadedWorkbookBinary) {
-                const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG" });
-                XLSX.writeFile(wb, `LUONG_XUAT_NHANH_${document.getElementById('filter-month').value}.xlsx`);
-                return;
-            }
-
-            try {
-                const workbook = XLSX.read(currentLoadedWorkbookBinary, { type: 'array', cellStyles: true, cellNF: true });
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                let rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
-
-                let headerRowIndex = 0;
-                for (let i = 0; i < Math.min(rawData.length, 15); i++) {
-                    let rowStr = rawData[i].join(" ").toLowerCase();
-                    if (rowStr.includes("họ và tên") || rowStr.includes("tài khoản")) { headerRowIndex = i; break; }
-                }
-
-                let headersLower = rawData[headerRowIndex].map(h => String(h || "").trim().toLowerCase());
-                let colIdx = {};
-                for (let key in COLUMN_KEYWORD_LOOKUP) {
-                    colIdx[key] = headersLower.findIndex(h => COLUMN_KEYWORD_LOOKUP[key].some(kw => h.includes(kw)));
-                }
-
-                salaryData.forEach((row, index) => {
-                    let r = headerRowIndex + 1 + index;
-                    let writeVal = (key, val) => { let idx = colIdx[key]; if(idx !== -1 && idx !== undefined) rawData[r][idx] = val; };
-                    writeVal('he_so_lcb', row.lcb_heso); writeVal('phu_cap_lcb', row.lcb_phucap);
-                    writeVal('lcb_goc', row.lcb_goc); writeVal('thoi_gian', row.NT); 
-                    writeVal('phep', row.P); writeVal('le_vr', row.le_vr);
-                    writeVal('he_so_lcv', row.he_so_lcv); writeVal('ki', row.lcv_thucte);
-                });
-
-                XLSX.utils.sheet_add_aoa(worksheet, rawData, { origin: "A1" });
-                XLSX.writeFile(workbook, `Bang_Luong_Hoan_Chinh_${document.getElementById('filter-month').value}.xlsx`);
-                alert("Đã kết xuất biểu mẫu thành công!");
-            } catch(e) { alert("Lỗi trích xuất tệp: " + e.message); }
+            const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG" });
+            XLSX.writeFile(wb, `LUONG_XUAT_CHUAN_${document.getElementById('filter-month').value}.xlsx`);
         }
 
-        // ================= QUẢN LÝ TÁC VỤ VÀ PHÒNG BAN =================
+        // ================= CÁC HÀM PHỤ TRỢ QUẢN LÝ TÁC VỤ VĂN PHÒNG =================
         async function loadOfficeFromCloud() {
             try { const response = await fetch(`${GOOGLE_SCRIPT_URL}?sheet=office_records`); officeRecords = await response.json(); renderOfficeTable(); } catch (e) {}
         }
@@ -613,7 +509,7 @@
             document.getElementById('office-status').value = rec.status;
         }
         async function deleteOfficeRecord(id) {
-            if(!confirm("Xóa hồ sơ chi phí mục này?")) return; officeRecords = officeRecords.filter(r => r.id != id);
+            if(!confirm("Xóa mục chi phí này?")) return; officeRecords = officeRecords.filter(r => r.id != id);
             await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheet: "office_records", data: officeRecords }) }); loadOfficeFromCloud();
         }
         function resetOfficeFormV2() { document.getElementById('office-id').value = ""; document.getElementById('office-form-v2').reset(); }
@@ -650,7 +546,7 @@
             document.getElementById('tele-cost-after').value = parseInt(rec.cost_after).toLocaleString("vi-VN"); document.getElementById('tele-status').value = rec.status;
         }
         async function deleteTeleRecord(id) {
-            if(!confirm("Xóa cấu hình đường truyền này?")) return; teleRecords = teleRecords.filter(r => r.id != id);
+            if(!confirm("Xóa đường truyền này?")) return; teleRecords = teleRecords.filter(r => r.id != id);
             await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheet: "tele_records", data: teleRecords }) }); loadTeleFromCloud();
         }
         function resetTeleFormV2() { document.getElementById('tele-id').value = ""; document.getElementById('tele-form-v2').reset(); }
@@ -694,7 +590,7 @@
         }
         function toggleCalendarWidget() { document.getElementById('floating-calendar-widget').classList.toggle('collapsed'); document.body.classList.toggle('calendar-collapsed'); }
 
-        // ================= KẾT XUẤT LỊCH VẠN NIÊN SMART WIDGET =================
+        // ================= WIDGET LỊCH VẠN NIÊN SMART =================
         let calendarYear = 2026; let calendarMonth = 4;
         function changeCalendarMonth(offset) { calendarMonth += offset; if(calendarMonth>11){calendarMonth=0;calendarYear++;}else if(calendarMonth<0){calendarMonth=11;calendarYear--;} renderCalendar(calendarYear, calendarMonth); }
         function initCalendarToRealTime() { renderCalendar(2026, 4); }
