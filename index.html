@@ -68,18 +68,6 @@
         .input-edit-money { width: 80px; text-align: right; }
         .input-ki { border: 1px dashed var(--purple); color: var(--purple); background: #f3e8ff; width: 55px; }
         .ki-multiplier { font-size: 10px; color: #7c3aed; font-weight: bold; }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
-        .stat-box { background: white; padding: 12px; border-radius: 6px; border-left: 5px solid var(--blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .stat-title { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold; }
-        .stat-value { font-size: 15px; font-weight: bold; margin-top: 5px; }
-        .progress-container { margin: 5px 0 15px 0; }
-        .progress-bar-bg { background-color: #e2e8f0; border-radius: 10px; height: 8px; overflow: hidden; }
-        .progress-bar-fill { background: linear-gradient(90deg, #34d399, #10b981); height: 100%; width: 0%; transition: width 0.3s; }
-        .todo-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; }
-        .task-status-tag { font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; margin-left: 8px; }
-        .status-todo { background-color: #ffedd5; color: #d97706; border: 1px solid #fed7aa; }
-        .status-done { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
         .floating-calendar { position: fixed; right: 15px; top: 50px; width: 350px; background: #ffffff; border-radius: 14px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18); border: 2px solid #e2e8f0; z-index: 999; overflow: hidden; }
         .floating-calendar.collapsed { transform: translateX(330px); }
         .calendar-toggle-btn { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 24px; height: 80px; background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; border: none; border-radius: 6px 0 0 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; writing-mode: vertical-rl; text-transform: uppercase; }
@@ -104,7 +92,7 @@
             <span id="conn-status-dot" class="status-dot status-connected"></span>
             <span id="conn-status-text">Kết nối mây thành công: Google Drive Cloud...</span>
         </div>
-        <div style="font-size: 11px; color: #64748b;">Hệ thống: <strong>Kênh Truyền Gói Tin Không CORS (Ổn Định Vĩnh Viễn)</strong></div>
+        <div style="font-size: 11px; color: #64748b;">Hệ thống: <strong>Đồng bộ Không Cần CORS (Bảo mật Cao)</strong></div>
     </div>
 
     <div id="main-app">
@@ -123,18 +111,26 @@
             <div class="main-card">
                 <div class="card-title">Bộ lọc và công cụ nhập dữ liệu chấm công từ máy</div>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
-                    <div class="form-group" style="min-width: 150px;">
+                    <div class="form-group" style="min-width: 130px;">
                         <label>Tháng lương</label>
                         <input type="month" id="filter-month" value="2026-06" onchange="loadSalaryFromCloud()">
                     </div>
-                    <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Lương Từ Google Sheets</button>
+                    
+                    <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Lương Từ Cloud</button>
+                    
+                    <!-- CÔNG CỤ 1: NẠP FILE HỆ SỐ PHÒNG BAN -->
                     <div class="form-group">
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <button type="button" class="btn btn-success" onclick="triggerAttendanceUpload()">📥 Tải File Chấm Công Vào Hệ Thống</button>
-                            <input type="file" id="upload-attendance" accept=".xlsx, .xls" style="display: none;" onchange="handleImportAttendance(event)" />
-                            <span id="import-status" style="font-weight: bold; color: var(--green);"></span>
-                        </div>
+                        <button type="button" class="btn" style="background-color: var(--purple); color: white;" onclick="triggerStructureUpload()">🗂️ 1. Nạp File Hệ Số Phòng Ban</button>
+                        <input type="file" id="upload-structure" accept=".xlsx, .xls" style="display: none;" onchange="handleImportStructure(event)" />
                     </div>
+
+                    <!-- CÔNG CỤ 2: NẠP NGÀY CÔNG TỪ MÁY CHẤM CÔNG -->
+                    <div class="form-group">
+                        <button type="button" class="btn btn-success" onclick="triggerAttendanceUpload()">📥 2. Tải File Chấm Công (Máy Chấm Công)</button>
+                        <input type="file" id="upload-attendance" accept=".xlsx, .xls" style="display: none;" onchange="handleImportAttendance(event)" />
+                    </div>
+                    
+                    <span id="import-status" style="font-weight: bold; color: var(--green); margin-bottom: 8px;"></span>
                     <span id="cloud-action-status" style="font-weight: bold; color: var(--blue); margin-left: auto;"></span>
                 </div>
             </div>
@@ -143,7 +139,7 @@
                 <div class="card-title">
                     BẢNG TỔNG HỢP THANH TOÁN LƯƠNG TỔNG CÔNG TY
                     <div style="display: flex; gap: 10px;">
-                        <button type="button" class="btn" style="background: var(--purple); color: white;" onclick="saveSalaryToCloud()">☁️ LƯU LÊN GOOGLE SHEETS</button>
+                        <button type="button" class="btn" style="background: var(--primary); color: white;" onclick="saveSalaryToCloud()">☁️ LƯU LÊN GOOGLE SHEETS</button>
                         <button type="button" class="btn btn-primary" onclick="exportSalaryToExcel()">Xuất Excel Lương Chuẩn</button>
                     </div>
                 </div>
@@ -290,7 +286,7 @@
             { "stt": 4, "id": "00004", "name": "Trần Thu Hương", "lcb_heso": 1.65, "lcb_phucap": 200000, "lcb_hdld": 7705500, "lcb_goc": 4714050, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 3.0, "lcv_phucap": 200000, "lcv_goc": 7000000, "ki": 100, "bhtn": 77055, "bhxh": 732023, "tam_ung": 0 },
             { "stt": 5, "id": "00005", "name": "Lê Hoàng Long", "lcb_heso": 2.34, "lcb_phucap": 400000, "lcb_hdld": 10927800, "lcb_goc": 6685380, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 5.8, "lcv_phucap": 800000, "lcv_goc": 13500000, "ki": 100, "bhtn": 109278, "bhxh": 1038141, "tam_ung": 0 },
             { "stt": 6, "id": "00006", "name": "Vũ Đình Chiểu", "lcb_heso": 1.80, "lcb_phucap": 150000, "lcb_hdld": 8406000, "lcb_goc": 5142600, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 3.8, "lcv_phucap": 300000, "lcv_goc": 8800000, "ki": 100, "bhtn": 84060, "bhxh": 798570, "tam_ung": 0 },
-            { "stt": 7, "id": "00007", "name": "Đặng Thị Mai", "lcb_heso": 1.55, "lcb_phucap": 0, "lcb_hdld": 6418500, "lcb_goc": 3922850, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 2.5, "lcb_phucap": 0, "lcv_goc": 5200000, "ki": 100, "bhtn": 64185, "bhxh": 609758, "tam_ung": 0 }
+            { "stt": 7, "id": "00007", "name": "Đặng Thị Mai", "lcb_heso": 1.55, "lcb_phucap": 0, "lcb_hdld": 6418500, "lcb_goc": 3922850, "NT": 22, "P": 0, "le_vr": 1, "lcv_heso": 2.5, "lcv_phucap": 0, "lcv_goc": 5200000, "ki": 100, "bhtn": 64185, "bhxh": 609758, "tam_ung": 0 }
         ];
 
         let salaryData = [];
@@ -334,11 +330,11 @@
                 if (data && data.length > 0) {
                     salaryData = data.map((item, idx) => ({
                         stt: idx + 1, id: item.id, name: item.name,
-                        lcb_heso: parseFloat(item.lcb_heso), lcb_phucap: parseInt(item.lcb_phucap), 
-                        lcb_hdld: parseInt(item.lcb_hdld), lcb_goc: parseInt(item.lcb_goc),
-                        NT: parseFloat(item.nt || item.NT), P: parseFloat(item.p || item.P), le_vr: parseFloat(item.le_vr),
-                        ki: parseFloat(item.ki), lcv_heso: parseFloat(item.lcv_heso), lcv_phucap: parseInt(item.lcv_phucap),
-                        lcv_goc: parseInt(item.lcv_goc), bhtn: parseInt(item.bhtn), bhxh: parseInt(item.bhxh), tam_ung: parseInt(item.tam_ung)
+                        lcb_heso: parseFloat(item.lcb_heso || 0), lcb_phucap: parseInt(item.lcb_phucap || 0), 
+                        lcb_hdld: parseInt(item.lcb_hdld || 0), lcb_goc: parseInt(item.lcb_goc || 0),
+                        NT: parseFloat(item.nt || item.NT || 0), P: parseFloat(item.p || item.P || 0), le_vr: parseFloat(item.le_vr || 0),
+                        ki: parseFloat(item.ki || 100), lcv_heso: parseFloat(item.lcv_heso || 0), lcv_phucap: parseInt(item.lcv_phucap || 0),
+                        lcv_goc: parseInt(item.lcv_goc || 0), bhtn: parseInt(item.bhtn || 0), bhxh: parseInt(item.bhxh || 0), tam_ung: parseInt(item.tam_ung || 0)
                     }));
                     statusLabel.style.color = "var(--green)";
                     statusLabel.innerText = `✅ Đã đồng bộ Google Drive Trực Tuyến!`;
@@ -383,6 +379,102 @@
             } catch (err) { alert(err.message); }
         }
 
+        // ================= ⚙️ ENGINE CÔNG CỤ NHẬP EXCEL THÔNG MINH =================
+        function triggerStructureUpload() { document.getElementById('upload-structure').click(); }
+        function triggerAttendanceUpload() { document.getElementById('upload-attendance').click(); }
+
+        // Công cụ 1: Đọc tệp hệ số cấu trúc nhân sự mới
+        function handleImportStructure(event) {
+            const file = event.target.files[0]; if (!file) return;
+            document.getElementById('import-status').style.color = "var(--orange)";
+            document.getElementById('import-status').innerText = "⏳ Đang nạp danh sách hệ số...";
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    let importedData = [];
+                    // Quét dòng từ tiêu đề đi xuống (Giả định dòng 1 hoặc dòng chỉ định có dữ liệu)
+                    for (let i = 1; i < rawData.length; i++) {
+                        const row = rawData[i];
+                        if (!row || !row[1]) continue; // Không có Mã NV bỏ qua
+                        
+                        let codeId = row[1].toString().trim().padStart(5, '0');
+                        let fullName = row[2] ? row[2].toString().trim() : "Nhân viên mới";
+                        let lcb_hs = parseFloat(row[3]) || 1.0;
+                        let lcb_pc = parseInt(row[4]) || 0;
+                        let lcv_hs = parseFloat(row[5]) || 1.0;
+                        let lcv_pc = parseInt(row[6]) || 0;
+                        
+                        let hdld = Math.round(lcb_hs * 4670000);
+                        let goc = Math.round(lcb_hs * 2857000);
+                        
+                        importedData.push({
+                            stt: i, id: codeId, name: fullName,
+                            lcb_heso: lcb_hs, lcb_phucap: lcb_pc, lcb_hdld: hdld, lcb_goc: goc,
+                            NT: 0, P: 0, le_vr: 0, ki: 100,
+                            lcv_heso: lcv_hs, lcv_phucap: lcv_pc, lcv_goc: Math.round(lcv_hs * 2087970),
+                            bhtn: Math.round(hdld * 0.01), bhxh: Math.round(hdld * 0.095), tam_ung: 0
+                        });
+                    }
+                    
+                    if(importedData.length > 0) {
+                        salaryData = importedData;
+                        renderSalaryTable();
+                        document.getElementById('import-status').style.color = "var(--green)";
+                        document.getElementById('import-status').innerText = `✅ Đã nạp thành công ${salaryData.length} nhân sự mới!`;
+                    } else { throw new Error(); }
+                } catch(err) {
+                    document.getElementById('import-status').style.color = "var(--red)";
+                    document.getElementById('import-status').innerText = "❌ Sai định dạng cấu trúc hàng cột.";
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            event.target.value = "";
+        }
+
+        // Công cụ 2: Khớp ngày công từ máy chấm công
+        function handleImportAttendance(event) {
+            const file = event.target.files[0]; if (!file) return;
+            document.getElementById('import-status').style.color = "var(--orange)";
+            document.getElementById('import-status').innerText = "⏳ Đang khớp ngày công máy chấm công...";
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result); 
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]]; 
+                    const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    let matchedCount = 0;
+                    for (let i = 8; i < rawData.length; i++) { // Bắt đầu quét từ dòng 8 mẫu máy chấm công
+                        const row = rawData[i]; if (!row || !row[1]) continue;
+                        let cleanId = row[1].toString().trim().padStart(5, '0'); 
+                        let ntVal = parseFloat(row[35]) || 0; // Cột tổng công thực tế (Cột AJ)
+                        
+                        const empIndex = salaryData.findIndex(emp => emp.id === cleanId); 
+                        if (empIndex !== -1) {
+                            salaryData[empIndex].NT = ntVal;
+                            matchedCount++;
+                        }
+                    }
+                    renderSalaryTable(); 
+                    document.getElementById('import-status').style.color = "var(--green)"; 
+                    document.getElementById('import-status').innerText = `✅ Đã cập nhật công cho ${matchedCount} người!`;
+                } catch(err) { 
+                    document.getElementById('import-status').style.color = "var(--red)"; 
+                    document.getElementById('import-status').innerText = "❌ Lỗi đọc file công."; 
+                }
+            }; 
+            reader.readAsArrayBuffer(file);
+            event.target.value = "";
+        }
+
+        // ================= HÀNH CHÍNH VÀ CÁC THÀNH PHẦN KHÁC =================
         async function loadOfficeFromCloud() {
             try {
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?sheet=office_records`);
@@ -471,7 +563,7 @@
             loadTasksFromCloud();
         }
 
-        // ================= THUẬT TOÁN ENGINE TÍNH TOÁN LƯƠNG & UI RENDER =================
+        // ================= ENGINE TÍNH TOÁN LƯƠNG & UI RENDER =================
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = "";
             salaryData.forEach((row, index) => {
@@ -513,16 +605,6 @@
                     </tr>
                 `;
             });
-        }
-
-        function updateEmployeeData(index, field, value) {
-            let num = parseFloat(value); if (isNaN(num) || num < 0) num = 0; salaryData[index][field] = num;
-            if (field === 'lcb_heso') {
-                salaryData[index].lcb_hdld = Math.round(num * 4670000); salaryData[index].lcb_goc = Math.round(num * 2857000);
-                salaryData[index].bhtn = Math.round(salaryData[index].lcb_hdld * 0.01); salaryData[index].bhxh = Math.round(salaryData[index].lcb_hdld * 0.095);
-            }
-            if (field === 'lcv_heso') { salaryData[index].lcv_goc = Math.round(num * 2087970); }
-            renderSalaryTable();
         }
 
         function renderOfficeTable() {
@@ -630,40 +712,12 @@
             document.getElementById('progressText').innerText = pct + '% hoàn thành';
         }
 
-        function handleImportAttendance(event) {
-            const file = event.target.files[0]; if (!file) return;
-            document.getElementById('import-status').innerText = "⏳ Đang xử lý...";
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, { type: 'array' });
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]]; const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                    for (let i = 8; i < rawData.length; i++) {
-                        const row = rawData[i]; if (!row || row.length < 3) continue;
-                        const rawId = row[1];
-                        if (rawId) {
-                            let cleanId = rawId.toString().trim().padStart(5, '0'); let ntVal = parseFloat(row[35]) || 0; 
-                            const empIndex = salaryData.findIndex(emp => emp.id === cleanId); if (empIndex !== -1) salaryData[empIndex].NT = ntVal;
-                        }
-                    }
-                    renderSalaryTable(); document.getElementById('import-status').innerText = `✅ Xong!`;
-                } catch(err) { document.getElementById('import-status').innerText = "❌ Lỗi định dạng."; }
-            }; reader.readAsArrayBuffer(file);
-        }
-
-        function triggerAttendanceUpload() { document.getElementById('upload-attendance').click(); }
         function checkTaskEnter(e) { if(e.key === 'Enter') addNewTask(); }
         function formatCurrencyInput(i) { let v = i.value.replace(/\D/g, ""); i.value = v === "" ? "" : parseInt(v).toLocaleString("vi-VN"); }
         function parseCurrency(s) { return s ? parseFloat(s.toString().replace(/\./g, "")) || 0 : 0; }
-        function calculateOfficeVAT() {
-            let b = parseCurrency(document.getElementById('office-amount-before').value);
-            let r = parseInt(document.getElementById('office-tax-rate').value);
-            document.getElementById('office-amount-after').value = Math.round(b * (1 + r/100)).toLocaleString("vi-VN");
-        }
-        function exportSalaryToExcel() { const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG" }); XLSX.writeFile(wb, `LUONG_VINAPACO_${document.getElementById('filter-month').value}.xlsx`); }
         function toggleCalendarWidget() { document.getElementById('floating-calendar-widget').classList.toggle('collapsed'); document.body.classList.toggle('calendar-collapsed'); }
 
-        // ================= ENGINE LỊCH VẠN NIÊN 2026 VIỆT NAM =================
+        // ================= LỊCH VẠN NIÊN WIDGET LOGIC =================
         let calendarYear = 2026; let calendarMonth = 6;
         function changeCalendarMonth(offset) { calendarMonth += offset; if(calendarMonth>11){calendarMonth=0;calendarYear++;}else if(calendarMonth<0){calendarMonth=11;calendarYear--;} renderCalendar(calendarYear, calendarMonth); }
         function initCalendarToRealTime() { renderCalendar(2026, 6); }
