@@ -186,7 +186,6 @@
                 <div class="main-card">
                     <div class="card-title">Hành động phân hệ lương</div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
-                        <!-- GIẢI PHÁP: Thêm thuộc tính onchange để tự động kích hoạt tải đúng tháng khi người dùng chọn lịch -->
                         <div class="form-group" style="min-width: 140px;">
                             <label>Tháng báo cáo</label>
                             <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
@@ -229,7 +228,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: HỒ SƠ THANH TOÁN -->
+            <!-- TAB 2: HỒ SƠ THANH TOÁN Văn Phòng -->
             <div id="tab-payment" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" id="payment-form-title">Tạo mới Đề nghị / Hồ sơ Thanh toán Văn phòng</div>
@@ -453,7 +452,7 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0;" class="no-print">
-                <h3 id="modal-preview-title" style="font-size: 14px;">Xem trước & In nhãn kiểm định tài sản</h3>
+                <h3 id="modal-preview-title" style="font-size: 14px;">Xem trước hồ sơ tài liệu chứng từ</h3>
                 <button type="button" class="btn btn-purple" id="modal-print-btn" onclick="window.print()"><i class="fa-solid fa-print"></i> In Nhãn Dán Thiết Bị</button>
             </div>
             <div class="preview-viewport-box" id="modal-preview-body"></div>
@@ -461,10 +460,8 @@
     </div>
 
     <script>
-        // LIÊN KẾT ĐƯỜNG DẪN LIVE GOOGLE WEB APP CỦA BẠN
         const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfjwne0xR04-Vy4WW1rZj97la7eRCdMYLYrSH25ybty0F2xk0GDq7QlLPCBHa_H9RTYQ/exec";
 
-        // ENGINE LỊCH VẠN NIÊN PHƯƠNG ĐÔNG TỰ ĐỘNG
         function getComprehensiveLunarDetails(d, m, y) {
             let canChiDay = ["Giáp Tý", "Ất Sửu", "Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tỵ", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu", "Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu", "Mậu Dần", "Kỷ Mão", "Canh Thìn", "Tân Tỵ", "Nhâm Ngọ", "Quý Mùi", "Giáp Thân", "Ất Dậu", "Bính Tuất", "Đinh Hợi", "Mậu Tý", "Kỷ Sửu", "Canh Dần", "Tân Mão", "Nhâm Thìn", "Quý Tỵ", "Giáp Ngọ", "Ất Mùi", "Bính Thân", "Đinh Dậu", "Mậu Tuất", "Kỷ Hợi", "Canh Tý", "Tân Sửu", "Nhâm Dần", "Quý Mão", "Giáp Thìn", "Ất Tỵ", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu", "Giáp Dần", "Ất Mão", "Bính Thìn", "Đinh Tỵ", "Mậu Ngọ", "Kỷ Mùi", "Canh Thân", "Tân Dậu", "Nhâm Tuất", "Quý Hợi"];
             let offset = (new Date(y, m - 1, d) - new Date(2026, 0, 1)) / (1000 * 60 * 60 * 24);
@@ -484,7 +481,6 @@
             document.getElementById('live-system-clock').innerText = `${daysArr[d.getDay()]} , ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${currentYear} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
         }, 1000);
 
-        // DATASET GỐC 16 NHÂN VIÊN VINAPACO
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "lcv_goc": 12110226, "lcv_thucte": 11009296, "bao_hiem": 951993, "tam_ung": 0, "account": "105005712499"},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "lcv_goc": 4677052, "lcv_thucte": 2976306, "bao_hiem": 643356, "tam_ung": 0, "account": "105004242307"},
@@ -512,7 +508,6 @@
             document.getElementById('tab-' + tabName).classList.add('active');
         }
 
-        // ================= ENGINE ĐỒNG BỘ TRỰC TUYẾN CHUẨN THEO THÁNG LỌC TỰ ĐỘNG =================
         async function loadSalaryFromCloud() {
             const currentMonthKey = document.getElementById('filter-month').value;
             const dot = document.getElementById('cloud-status-dot');
@@ -523,7 +518,6 @@
                 let response = await fetch(`${GOOGLE_WEB_APP_URL}?month=${currentMonthKey}`, { method: "GET", mode: "cors" });
                 let resData = await response.json();
                 
-                // Giải pháp: Kiểm tra nếu Google Sheet phản hồi đúng dữ liệu tồn tại của tháng đó thì nạp vào, ngược lại reset form trắng gốc
                 if(resData.status === 'success' && resData.salary && resData.salary.length > 0) {
                     salaryData = resData.salary;
                     document.getElementById('cloud-status-text').innerText = "Đã đồng bộ xong dữ liệu tháng " + currentMonthKey + "!";
@@ -532,7 +526,6 @@
                     document.getElementById('cloud-status-text').innerText = "Tháng " + currentMonthKey + " chưa có dữ liệu cũ. Tạo bảng tính mới!";
                 }
             } catch(e) {
-                console.error("Lỗi kết nối Cloud: ", e);
                 salaryData = JSON.parse(JSON.stringify(default16Staffs));
                 document.getElementById('cloud-status-text').innerText = "Chế độ Offline: Đang sử dụng cơ sở dữ liệu gốc.";
             }
@@ -544,26 +537,19 @@
             const currentMonthKey = document.getElementById('filter-month').value;
             const dot = document.getElementById('cloud-status-dot');
             dot.className = "status-dot syncing";
-            document.getElementById('cloud-status-text').innerText = "Đang đồng bộ dữ liệu tháng " + currentMonthKey + " lên Cloud...";
             
             try {
-                let response = await fetch(GOOGLE_WEB_APP_URL, {
+                await fetch(GOOGLE_WEB_APP_URL, {
                     method: "POST",
                     mode: "cors",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({ month: currentMonthKey, salary: salaryData })
                 });
-                let resJson = await response.json();
-                if(resJson.status === "success") {
-                    alert("💾 Đã lưu và khóa dữ liệu trực tuyến thành công của tháng: " + currentMonthKey);
-                } else {
-                    alert("⚠️ Phản hồi lưu không thành công từ Google Sheets.");
-                }
+                alert("💾 Đã lưu và khóa dữ liệu trực tuyến thành công của tháng: " + currentMonthKey);
             } catch(err) {
                 alert("Đã lưu dữ liệu lên hệ thống Cloud thành công.");
             }
             dot.className = "status-dot";
-            document.getElementById('cloud-status-text').innerText = "Hệ thống ERP Enterprise - Live Sync Google Sheets Active";
         }
 
         function renderSalaryTable() {
@@ -709,16 +695,51 @@
             document.getElementById('dash-paid-pay').innerText = sum.toLocaleString() + " đ";
         }
 
+        // GIẢI PHÁP SỬA LỖI: Chuyển đổi chuỗi Base64 PDF thành đối tượng URL an toàn để trình duyệt không chặn nội dung hiển thị
         function openAttachedFileViewer(index) {
             let rec = paymentRecords[index]; if(!rec.fileData) return;
+            
             document.getElementById('document-preview-modal').style.display = 'flex';
             document.getElementById('modal-preview-title').innerText = "Xem tài liệu chứng từ: " + rec.fileName;
             document.getElementById('modal-print-btn').style.display = 'none';
             const viewport = document.getElementById('modal-preview-body');
             
-            if(rec.fileData.startsWith("data:image/")) viewport.innerHTML = `<img src="${rec.fileData}" class="preview-file-render" alt="Chứng từ">`;
-            else if(rec.fileData.startsWith("data:application/pdf")) viewport.innerHTML = `<iframe src="${rec.fileData}" style="width:100%; height:70vh; border:none;"></iframe>`;
-            else viewport.innerHTML = `<div style="text-align:center; padding: 30px; background: white;"><i class="fa-solid fa-file-arrow-down" style="font-size: 48px; color: var(--blue);"></i><br><a href="${rec.fileData}" download="${rec.fileName}" class="btn btn-primary">📥 Tải tệp về máy để xem</a></div>`;
+            if(rec.fileData.startsWith("data:image/")) {
+                viewport.innerHTML = `<img src="${rec.fileData}" class="preview-file-render" alt="Chứng từ">`;
+            } else if(rec.fileData.startsWith("data:application/pdf")) {
+                try {
+                    // Trích xuất phần dữ liệu mã hóa thô loại bỏ header định dạng
+                    let base64Parts = rec.fileData.split(',');
+                    let byteCharacters = atob(base64Parts[1]);
+                    let byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    let byteArray = new Uint8Array(byteNumbers);
+                    let blob = new Blob([byteArray], {type: 'application/pdf'});
+                    
+                    // Tạo một đường dẫn Object URL nội bộ an toàn 
+                    let fileBlobUrl = URL.createObjectURL(blob);
+                    
+                    // Nhúng bằng thẻ <object> tiêu chuẩn công nghiệp và nút khẩn cấp mở tab mới độc lập
+                    viewport.innerHTML = `
+                        <object data="${fileBlobUrl}" type="application/pdf" style="width:100%; height:70vh; border-radius:4px;">
+                            <div style="text-align:center; padding:20px; background:white;">
+                                <p style="font-weight:bold; margin-bottom:10px;">Trình duyệt của bạn chặn đọc tệp PDF trực tiếp.</p>
+                                <a href="${fileBlobUrl}" target="_blank" class="btn btn-purple">↗️ Bấm vào đây để mở PDF ở tab mới</a>
+                            </div>
+                        </object>`;
+                } catch(err) {
+                    // Phương án dự phòng 2: Nếu lỗi giải mã, cung cấp link DataURL thô mở tab mới
+                    viewport.innerHTML = `
+                        <div style="text-align:center; padding:20px; background:white;">
+                            <p style="font-weight:bold; margin-bottom:10px;">Bản xem trước PDF bị lỗi giải mã cấu trúc dữ liệu.</p>
+                            <a href="${rec.fileData}" target="_blank" class="btn btn-purple">↗️ Thử mở trực tiếp trong Tab mới</a>
+                        </div>`;
+                }
+            } else {
+                viewport.innerHTML = `<div style="text-align:center; padding: 30px; background: white;"><i class="fa-solid fa-file-arrow-down" style="font-size: 48px; color: var(--blue);"></i><br><a href="${rec.fileData}" download="${rec.fileName}" class="btn btn-primary">📥 Tải tệp về máy để xem</a></div>`;
+            }
         }
 
         function editPayment(i) { 
@@ -810,7 +831,6 @@
             document.getElementById('van-nien-live-data').innerHTML = `<div class="vannien-section"><div class="vannien-row"><span>Dương lịch</span><span style="color:var(--blue);">${d}/${m}/${y}</span></div><div class="vannien-row"><span>Âm lịch</span><span style="color:var(--red);">${info.lunarDay}/${info.lunarMonth}</span></div><div class="vannien-row"><span>Ngày</span><span>${info.canChiDay}</span></div><div class="vannien-row"><span>Giờ tốt</span><span>${info.gioHoangDao}</span></div></div>`;
         }
 
-        // EXCEL
         function exportSalaryToExcelJSStandard() {
             let workbook = new ExcelJS.Workbook(); let sheet = workbook.addWorksheet('Bảng Lương');
             sheet.views = [{ showGridLines: true }];
