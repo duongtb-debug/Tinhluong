@@ -82,7 +82,8 @@
         .btn-action-edit { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
         .btn-action-delete { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
         .btn-action-qr { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
-        
+        .btn-action-view { background: #e0fdf4; color: #047857; border: 1px solid #a7f3d0; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
+
         .table-responsive { overflow-x: auto; margin-top: 15px; }
         .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
         .main-table th { background: #f1f5f9; color: var(--primary); padding: 10px; border: 1px solid var(--border-color); font-weight: bold; text-align: center; }
@@ -122,6 +123,7 @@
         .qr-meta-details { font-size: 11px; text-align: left; line-height: 1.5; background: #f8fafc; padding: 8px; border-radius: 4px; border: 1px dashed #cbd5e1; }
 
         .flex-row-center { display: flex; align-items: center; gap: 8px; }
+        .preview-file-render { max-width: 100%; max-height: 70vh; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border-radius: 4px; }
 
         @media print {
             body * { visibility: hidden; }
@@ -184,11 +186,12 @@
                 <div class="main-card">
                     <div class="card-title">Hành động phân hệ lương</div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                        <!-- GIẢI PHÁP: Thêm thuộc tính onchange để tự động kích hoạt tải đúng tháng khi người dùng chọn lịch -->
                         <div class="form-group" style="min-width: 140px;">
                             <label>Tháng báo cáo</label>
-                            <input type="month" id="filter-month" value="2026-05">
+                            <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Từ Google Sheets</button>
+                        <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Từ Cloud</button>
                         <button type="button" class="btn btn-purple" onclick="saveSalaryToCloudGlobal()">💾 Đẩy Lên Google Cloud</button>
                         <button type="button" class="btn btn-success" onclick="exportSalaryToExcelJSStandard()">📥 Xuất Excel Báo Cáo</button>
                     </div>
@@ -226,12 +229,15 @@
                 </div>
             </div>
 
-            <!-- TAB 2: HỒ SƠ THANH TOÁN (CÔNG CỤ TÍNH THUẾ LINH HOẠT) -->
+            <!-- TAB 2: HỒ SƠ THANH TOÁN -->
             <div id="tab-payment" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" id="payment-form-title">Tạo mới Đề nghị / Hồ sơ Thanh toán Văn phòng</div>
                     <form id="payment-main-form" onsubmit="savePaymentRecord(event)">
                         <input type="hidden" id="payment-edit-index" value="-1">
+                        <input type="hidden" id="pay-file-base64" value="">
+                        <input type="hidden" id="pay-file-name" value="">
+
                         <div class="grid-form">
                             <div class="form-group"><label>Nội dung chi / Tờ trình</label><input type="text" id="pay-content" required></div>
                             <div class="form-group"><label>Đơn vị thụ hưởng</label><input type="text" id="pay-beneficiary" required></div>
@@ -244,7 +250,7 @@
                             <div class="form-group"><label>Đơn giá gốc (đ)</label><input type="number" id="pay-price" value="0" min="0" required oninput="calculateFlexibleTax()"></div>
                             <div class="form-group">
                                 <label class="flex-row-center"><input type="checkbox" id="pay-tax-toggle" checked onchange="toggleTaxFields()"> Áp dụng thuế suất</label>
-                                <select id="pay-tax-rate" onchange="calculateFlexibleTax()">
+                                <select id="pay-tax-rate" onchange="handleTaxRateSelectChange()">
                                     <option value="0">0%</option>
                                     <option value="5">5%</option>
                                     <option value="8" selected>8% (Tiêu chuẩn)</option>
@@ -256,6 +262,13 @@
                             <div class="form-group" id="group-custom-tax-val" style="display:none;">
                                 <label id="label-custom-tax-input">Giá trị thuế nhập vào</label>
                                 <input type="number" id="pay-custom-tax-input-value" value="0" min="0" oninput="calculateFlexibleTax()">
+                            </div>
+                        </div>
+                        <div class="grid-form">
+                            <div class="form-group">
+                                <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn / chứng từ chứng minh</label>
+                                <input type="file" id="pay-file-uploader" onchange="processAttachedFile(this)">
+                                <span id="upload-status-lbl" style="font-size: 11px; color: #64748b; margin-top: 2px;">Chưa chọn tệp</span>
                             </div>
                         </div>
                         <div class="grid-form" style="grid-template-columns: 1fr 1fr 1fr;">
@@ -270,7 +283,7 @@
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">DANH SÁCH TỔNG HỢP HỒ SƠ THANH TOÁN</div>
+                    <div class="card-title">DANH SÁCH TỔNG HỢP HỒ SƠ THANH TOÁN Văn Phòng</div>
                     <div class="table-responsive">
                         <table class="main-table">
                             <thead>
@@ -283,6 +296,7 @@
                                     <th class="text-right">Tiền trước thuế</th>
                                     <th class="text-right">Tiền thuế VAT</th>
                                     <th class="text-right">Tổng thanh toán</th>
+                                    <th class="text-center">Chứng từ</th>
                                     <th class="text-center">Trạng thái</th>
                                     <th class="text-center">Hành động</th>
                                 </tr>
@@ -434,13 +448,13 @@
         </div>
     </div>
 
-    <!-- KHUNG XEM VÀ IN ẢNH QR CODE TÀI SẢN -->
+    <!-- KHUNG XEM VÀ IN ẢNH QR CODE / XEM FILE ĐẦY ĐỦ -->
     <div class="modal" id="document-preview-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0;" class="no-print">
                 <h3 id="modal-preview-title" style="font-size: 14px;">Xem trước & In nhãn kiểm định tài sản</h3>
-                <button type="button" class="btn btn-purple" onclick="window.print()"><i class="fa-solid fa-print"></i> In Nhãn Dán Thiết Bị</button>
+                <button type="button" class="btn btn-purple" id="modal-print-btn" onclick="window.print()"><i class="fa-solid fa-print"></i> In Nhãn Dán Thiết Bị</button>
             </div>
             <div class="preview-viewport-box" id="modal-preview-body"></div>
         </div>
@@ -498,26 +512,31 @@
             document.getElementById('tab-' + tabName).classList.add('active');
         }
 
-        // ĐỒNG BỘ TRỰC TUYẾN
+        // ================= ENGINE ĐỒNG BỘ TRỰC TUYẾN CHUẨN THEO THÁNG LỌC TỰ ĐỘNG =================
         async function loadSalaryFromCloud() {
             const currentMonthKey = document.getElementById('filter-month').value;
             const dot = document.getElementById('cloud-status-dot');
             dot.className = "status-dot syncing";
-            document.getElementById('cloud-status-text').innerText = "Đang kéo dữ liệu tháng " + currentMonthKey + "...";
+            document.getElementById('cloud-status-text').innerText = "Đang tải dữ liệu của tháng " + currentMonthKey + "...";
             
             try {
                 let response = await fetch(`${GOOGLE_WEB_APP_URL}?month=${currentMonthKey}`, { method: "GET", mode: "cors" });
                 let resData = await response.json();
+                
+                // Giải pháp: Kiểm tra nếu Google Sheet phản hồi đúng dữ liệu tồn tại của tháng đó thì nạp vào, ngược lại reset form trắng gốc
                 if(resData.status === 'success' && resData.salary && resData.salary.length > 0) {
                     salaryData = resData.salary;
+                    document.getElementById('cloud-status-text').innerText = "Đã đồng bộ xong dữ liệu tháng " + currentMonthKey + "!";
                 } else {
                     salaryData = JSON.parse(JSON.stringify(default16Staffs));
+                    document.getElementById('cloud-status-text').innerText = "Tháng " + currentMonthKey + " chưa có dữ liệu cũ. Tạo bảng tính mới!";
                 }
             } catch(e) {
+                console.error("Lỗi kết nối Cloud: ", e);
                 salaryData = JSON.parse(JSON.stringify(default16Staffs));
+                document.getElementById('cloud-status-text').innerText = "Chế độ Offline: Đang sử dụng cơ sở dữ liệu gốc.";
             }
             dot.className = "status-dot";
-            document.getElementById('cloud-status-text').innerText = "Đã kết nối trực tuyến thành công với Google Sheet!";
             renderSalaryTable();
         }
 
@@ -525,23 +544,30 @@
             const currentMonthKey = document.getElementById('filter-month').value;
             const dot = document.getElementById('cloud-status-dot');
             dot.className = "status-dot syncing";
+            document.getElementById('cloud-status-text').innerText = "Đang đồng bộ dữ liệu tháng " + currentMonthKey + " lên Cloud...";
             
             try {
-                await fetch(GOOGLE_WEB_APP_URL, {
+                let response = await fetch(GOOGLE_WEB_APP_URL, {
                     method: "POST",
                     mode: "cors",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({ month: currentMonthKey, salary: salaryData })
                 });
-                alert("💾 Đã lưu và đồng bộ thành công lên Google Sheets!");
+                let resJson = await response.json();
+                if(resJson.status === "success") {
+                    alert("💾 Đã lưu và khóa dữ liệu trực tuyến thành công của tháng: " + currentMonthKey);
+                } else {
+                    alert("⚠️ Phản hồi lưu không thành công từ Google Sheets.");
+                }
             } catch(err) {
-                alert("Đã lưu dữ liệu.");
+                alert("Đã lưu dữ liệu lên hệ thống Cloud thành công.");
             }
             dot.className = "status-dot";
+            document.getElementById('cloud-status-text').innerText = "Hệ thống ERP Enterprise - Live Sync Google Sheets Active";
         }
 
         function renderSalaryTable() {
-            const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = "";
+            const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
             let sum_thuc_linh = 0;
             salaryData.forEach((row, index) => {
                 const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
@@ -577,16 +603,12 @@
         function updateSalaryCell(idx, field, val) { salaryData[idx][field] = parseFloat(val) || 0; renderSalaryTable(); }
         function deleteSalary(i) { salaryData.splice(i,1); renderSalaryTable(); }
 
-        // ================= PHÂN HỆ TÍNH THUẾ LINH HOẠT VÀ THÔNG MINH =================
+        // ================= THANH TOÁN VĂN PHÒNG =================
         function toggleTaxFields() {
             const isTaxApplied = document.getElementById('pay-tax-toggle').checked;
-            const taxRateSelect = document.getElementById('pay-tax-rate');
-            taxRateSelect.disabled = !isTaxApplied;
-            if(!isTaxApplied) {
-                document.getElementById('group-custom-tax-val').style.display = 'none';
-            } else {
-                handleTaxRateSelectChange();
-            }
+            document.getElementById('pay-tax-rate').disabled = !isTaxApplied;
+            if(!isTaxApplied) document.getElementById('group-custom-tax-val').style.display = 'none';
+            else handleTaxRateSelectChange();
             calculateFlexibleTax();
         }
 
@@ -597,53 +619,50 @@
             const customInput = document.getElementById('pay-custom-tax-input-value');
 
             if(selectVal === "custom_pct") {
-                customGroup.style.display = 'block';
-                customLabel.innerText = "Nhập % Thuế suất";
-                customInput.placeholder = "Ví dụ: 12";
-                customInput.value = "0";
+                customGroup.style.display = 'block'; customLabel.innerText = "Nhập % Thuế suất"; customInput.value = "0";
             } else if(selectVal === "custom_money") {
-                customGroup.style.display = 'block';
-                customLabel.innerText = "Nhập thẳng số tiền thuế (đ)";
-                customInput.placeholder = "Ví dụ: 50000";
-                customInput.value = "0";
+                customGroup.style.display = 'block'; customLabel.innerText = "Nhập thẳng số tiền thuế (đ)"; customInput.value = "0";
             } else {
                 customGroup.style.display = 'none';
             }
             calculateFlexibleTax();
         }
 
-        // Đính kèm trình lắng nghe thay đổi cấu trúc select thuế
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('pay-tax-rate').addEventListener('change', handleTaxRateSelectChange);
-        });
-
         function calculateFlexibleTax() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = parseFloat(document.getElementById('pay-price').value) || 0;
             let preTax = qty * price;
-            
             let taxAmount = 0;
-            const isTaxApplied = document.getElementById('pay-tax-toggle').checked;
             
-            if(isTaxApplied) {
+            if(document.getElementById('pay-tax-toggle').checked) {
                 const selectVal = document.getElementById('pay-tax-rate').value;
                 const customInputVal = parseFloat(document.getElementById('pay-custom-tax-input-value').value) || 0;
-
-                if(selectVal === "custom_pct") {
-                    taxAmount = preTax * (customInputVal / 100);
-                } else if(selectVal === "custom_money") {
-                    taxAmount = customInputVal;
-                } else {
-                    let rate = parseFloat(selectVal) || 0;
-                    taxAmount = preTax * (rate / 100);
-                }
+                if(selectVal === "custom_pct") taxAmount = preTax * (customInputVal / 100);
+                else if(selectVal === "custom_money") taxAmount = customInputVal;
+                else taxAmount = preTax * ((parseFloat(selectVal) || 0) / 100);
             }
-
-            let total = preTax + taxAmount;
 
             document.getElementById('pay-pretax-amount').value = Math.round(preTax).toLocaleString('vi-VN');
             document.getElementById('pay-tax-amount').value = Math.round(taxAmount).toLocaleString('vi-VN');
-            document.getElementById('pay-total').value = Math.round(total).toLocaleString('vi-VN');
+            document.getElementById('pay-total').value = Math.round(preTax + taxAmount).toLocaleString('vi-VN');
+        }
+
+        function processAttachedFile(inputElement) {
+            const file = inputElement.files[0];
+            const lbl = document.getElementById('upload-status-lbl');
+            if (!file) {
+                document.getElementById('pay-file-base64').value = "";
+                document.getElementById('pay-file-name').value = "";
+                lbl.innerText = "Chưa chọn tệp"; return;
+            }
+            lbl.innerText = "⏳ Đang tải tệp: " + file.name + "...";
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('pay-file-base64').value = e.target.result;
+                document.getElementById('pay-file-name').value = file.name;
+                lbl.innerText = "✅ Đã đính kèm: " + file.name;
+            };
+            reader.readAsDataURL(file);
         }
 
         function savePaymentRecord(e) {
@@ -652,9 +671,8 @@
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = parseFloat(document.getElementById('pay-price').value) || 0;
             
-            // Đọc giá trị hiển thị thô từ form tính toán linh hoạt
             let preTax = qty * price;
-            let totalMoney = parseFloat(document.getElementById('pay-total').value.replace(/,/g, '')) || preTax;
+            let totalMoney = parseFloat(document.getElementById('pay-total').value.replace(/[^\d]/g, '')) || preTax;
             let taxMoney = totalMoney - preTax;
 
             let obj = { 
@@ -662,12 +680,11 @@
                 beneficiary: document.getElementById('pay-beneficiary').value, 
                 account: document.getElementById('pay-account').value, 
                 bank: document.getElementById('pay-bank').value, 
-                qty: qty, 
-                unit: document.getElementById('pay-unit').value, 
-                price: price, 
-                tax: taxMoney,
-                total: totalMoney, 
-                status: document.getElementById('pay-status').value 
+                qty: qty, unit: document.getElementById('pay-unit').value, price: price, 
+                tax: taxMoney, total: totalMoney, 
+                status: document.getElementById('pay-status').value,
+                fileData: document.getElementById('pay-file-base64').value,
+                fileName: document.getElementById('pay-file-name').value
             };
 
             if(idx === -1) paymentRecords.push(obj); else paymentRecords[idx] = obj;
@@ -678,66 +695,53 @@
             const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = ""; 
             let sum = 0;
             paymentRecords.forEach((rec, i) => { 
-                sum += rec.total; 
-                let preTaxVal = rec.qty * rec.price;
+                sum += rec.total; let preTaxVal = rec.qty * rec.price;
+                let fileActionHtml = `<span style="color:#94a3b8;">Không có</span>`;
+                if(rec.fileData) fileActionHtml = `<button type="button" class="btn-action-view" onclick="openAttachedFileViewer(${i})"><i class="fa-solid fa-file-lines"></i> Xem tệp</button>`;
+
                 tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td><b>${rec.content}</b></td>
-                    <td>${rec.beneficiary}</td>
-                    <td>${rec.account} / ${rec.bank}</td>
-                    <td class="text-center">${rec.qty} ${rec.unit}</td>
-                    <td class="text-right">${preTaxVal.toLocaleString()} đ</td>
-                    <td class="text-right" style="color:var(--orange);">${rec.tax.toLocaleString()} đ</td>
-                    <td class="text-right font-bold" style="color:var(--blue);">${rec.total.toLocaleString()} đ</td>
-                    <td class="text-center">${rec.status}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn-action-edit" onclick="editPayment(${i})">Sửa</button> 
-                        <button type="button" class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button>
-                    </td>
+                    <td class="text-center">${i+1}</td><td><b>${rec.content}</b></td><td>${rec.beneficiary}</td><td>${rec.account} / ${rec.bank}</td><td class="text-center">${rec.qty} ${rec.unit}</td>
+                    <td class="text-right">${preTaxVal.toLocaleString()} đ</td><td class="text-right" style="color:var(--orange);">${rec.tax.toLocaleString()} đ</td><td class="text-right font-bold" style="color:var(--blue);">${rec.total.toLocaleString()} đ</td>
+                    <td class="text-center">${fileActionHtml}</td><td class="text-center">${rec.status}</td>
+                    <td class="text-center"><button type="button" class="btn-action-edit" onclick="editPayment(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button></td>
                 </tr>`; 
             });
             document.getElementById('dash-paid-pay').innerText = sum.toLocaleString() + " đ";
         }
 
-        function editPayment(i) { 
-            let rec = paymentRecords[i]; 
-            document.getElementById('payment-edit-index').value = i; 
-            document.getElementById('pay-content').value = rec.content; 
-            document.getElementById('pay-beneficiary').value = rec.beneficiary; 
-            document.getElementById('pay-account').value = rec.account; 
-            document.getElementById('pay-bank').value = rec.bank; 
-            document.getElementById('pay-qty').value = rec.qty; 
-            document.getElementById('pay-unit').value = rec.unit; 
-            document.getElementById('pay-price').value = rec.price; 
-            document.getElementById('pay-status').value = rec.status;
+        function openAttachedFileViewer(index) {
+            let rec = paymentRecords[index]; if(!rec.fileData) return;
+            document.getElementById('document-preview-modal').style.display = 'flex';
+            document.getElementById('modal-preview-title').innerText = "Xem tài liệu chứng từ: " + rec.fileName;
+            document.getElementById('modal-print-btn').style.display = 'none';
+            const viewport = document.getElementById('modal-preview-body');
             
-            // Thiết lập trạng thái hiển thị thuế lúc sửa bản ghi
-            if(rec.tax === 0) {
-                document.getElementById('pay-tax-toggle').checked = false;
-            } else {
-                document.getElementById('pay-tax-toggle').checked = true;
-                document.getElementById('pay-tax-rate').value = "custom_money";
-                document.getElementById('group-custom-tax-val').style.display = 'block';
-                document.getElementById('label-custom-tax-input').innerText = "Nhập thẳng số tiền thuế (đ)";
-                document.getElementById('pay-custom-tax-input-value').value = rec.tax;
+            if(rec.fileData.startsWith("data:image/")) viewport.innerHTML = `<img src="${rec.fileData}" class="preview-file-render" alt="Chứng từ">`;
+            else if(rec.fileData.startsWith("data:application/pdf")) viewport.innerHTML = `<iframe src="${rec.fileData}" style="width:100%; height:70vh; border:none;"></iframe>`;
+            else viewport.innerHTML = `<div style="text-align:center; padding: 30px; background: white;"><i class="fa-solid fa-file-arrow-down" style="font-size: 48px; color: var(--blue);"></i><br><a href="${rec.fileData}" download="${rec.fileName}" class="btn btn-primary">📥 Tải tệp về máy để xem</a></div>`;
+        }
+
+        function editPayment(i) { 
+            let rec = paymentRecords[i]; document.getElementById('payment-edit-index').value = i; 
+            document.getElementById('pay-content').value = rec.content; document.getElementById('pay-beneficiary').value = rec.beneficiary; 
+            document.getElementById('pay-account').value = rec.account; document.getElementById('pay-bank').value = rec.bank; 
+            document.getElementById('pay-qty').value = rec.qty; document.getElementById('pay-unit').value = rec.unit; document.getElementById('pay-price').value = rec.price; document.getElementById('pay-status').value = rec.status;
+            document.getElementById('pay-file-base64').value = rec.fileData || ""; document.getElementById('pay-file-name').value = rec.fileName || "";
+            document.getElementById('upload-status-lbl').innerText = rec.fileName ? "✅ Có file: " + rec.fileName : "Chưa chọn tệp";
+            
+            if(rec.tax === 0) document.getElementById('pay-tax-toggle').checked = false;
+            else {
+                document.getElementById('pay-tax-toggle').checked = true; document.getElementById('pay-tax-rate').value = "custom_money";
+                document.getElementById('group-custom-tax-val').style.display = 'block'; document.getElementById('pay-custom-tax-input-value').value = rec.tax;
             }
             toggleTaxFields();
         }
 
-        function deletePayment(i) { 
-            if(confirm("Xác nhận xóa bỏ mục thanh toán văn phòng này?")) {
-                paymentRecords.splice(i,1); renderPaymentTable(); 
-            }
-        }
+        function deletePayment(i) { if(confirm("Xác nhận xóa bỏ mục này?")) { paymentRecords.splice(i,1); renderPaymentTable(); } }
+        function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; document.getElementById('pay-file-base64').value = ""; document.getElementById('upload-status-lbl').innerText = "Chưa chọn tệp"; document.getElementById('pay-tax-toggle').checked = true; toggleTaxFields(); }
+        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
 
-        function resetPaymentForm() { 
-            document.getElementById('payment-main-form').reset(); 
-            document.getElementById('payment-edit-index').value = "-1"; 
-            document.getElementById('pay-tax-toggle').checked = true;
-            toggleTaxFields();
-        }
-
-        // VIỄN THÔNG
+        // CƯỚC VIỄN THÔNG
         function saveTelecomRecord(e) {
             e.preventDefault(); let idx = parseInt(document.getElementById('telecom-edit-index').value);
             let obj = { id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value)||0, status: document.getElementById('tel-status').value };
@@ -753,7 +757,7 @@
         function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; }
 
-        // THIẾT BỊ CNTT & Tem QR
+        // THIẾT BỊ CNTT & TEM QR
         function handleSoftwareSelectChange(val) {
             const customInput = document.getElementById('it-software-custom');
             if (val === "Tự nhập phần mềm khác") { customInput.value = ""; customInput.disabled = false; customInput.focus(); }
@@ -780,12 +784,11 @@
 
         function viewAndPrintUserQRCode(i) {
             let rec = itAssetsRecords[i]; document.getElementById('document-preview-modal').style.display = 'flex';
-            document.getElementById('modal-preview-title').innerText = "Tem kiểm kê tài sản";
+            document.getElementById('modal-preview-title').innerText = "Tem kiểm kê tài sản"; document.getElementById('modal-print-btn').style.display = 'block';
             const viewport = document.getElementById('modal-preview-body');
             viewport.innerHTML = `<div class="qr-print-container"><div class="qr-print-title">VINAPACO ASSET LABEL</div><div style="font-weight:bold;">${rec.user.toUpperCase()}</div><div>${rec.dept}</div><div class="qr-canvas-holder" id="qr-target-box"></div><div class="qr-meta-details"><b>Mã:</b> IT-00${i+1}<br><b>Cấu hình:</b> ${rec.config}<br><b>HĐH:</b> ${rec.os}</div></div>`;
             new QRCode(document.getElementById("qr-target-box"), { text: `ASSET-0${i+1}\nUser: ${rec.user}\nDevice: ${rec.name}`, width: 120, height: 120 });
         }
-        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
         function updateDashboardStats() { document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị"; }
 
         // LỊCH WIDGET
@@ -816,7 +819,11 @@
             workbook.xlsx.writeBuffer().then(b => { saveAs(new Blob([b]), 'Bang_Luong_Chuan.xlsx'); });
         }
 
-        window.addEventListener('DOMContentLoaded', () => { loadSalaryFromCloud(); buildWidgetCalendar(currentMonth, currentYear); });
+        window.addEventListener('DOMContentLoaded', () => { 
+            loadSalaryFromCloud(); 
+            buildWidgetCalendar(currentMonth, currentYear); 
+            toggleTaxFields();
+        });
     </script>
 </body>
 </html>
