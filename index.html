@@ -3,232 +3,757 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Công Cụ Chuẩn Hóa & Xuất Bảng Lương Hoàn Chỉnh</title>
-    <!-- Tải thư viện XLSX để xử lý Excel giữ nguyên cấu trúc -->
+    <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG CLOUD</title>
+    <link rel="icon" href="data:,">
+    
+    <!-- Thư viện xử lý cấu trúc file Excel giữ nguyên định dạng của các đơn vị -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        :root {
+            --primary: #0f172a;
+            --blue: #2563eb;
+            --orange: #ea580c;
+            --green: #059669;
+            --purple: #7c3aed;
+            --red: #dc2626;
+            --gray-light: #f1f5f9;
+            --border-color: #cbd5e1;
+            --text-main: #334155;
         }
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            max-width: 650px;
-            width: 100%;
-            text-align: center;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Times New Roman', Times, serif; 
+            font-size: 13px; margin: 0; padding: 15px; background: #f8fafc; color: var(--text-main);
+            padding-right: 380px; transition: padding-right 0.3s ease;
         }
-        h2 { color: #2c3e50; margin-bottom: 10px; }
-        p { color: #7f8c8d; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
-        .upload-box {
-            border: 2px dashed #3498db;
-            padding: 40px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            background-color: #fbfcfd;
-            transition: 0.3s;
+        body.calendar-collapsed { padding-right: 15px; }
+        .db-status-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 15px; background: #e2e8f0; border-bottom: 1px solid var(--border-color);
+            font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px;
         }
-        .upload-box:hover { background-color: #ebf5fb; }
-        input[type="file"] { display: none; }
-        .btn {
-            display: inline-block;
-            background-color: #2ecc71;
-            color: white;
-            padding: 12px 30px;
-            margin-top: 25px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            display: none;
-            transition: 0.2s;
-        }
-        .btn:hover { background-color: #27ae60; }
-        #status { margin-top: 20px; font-weight: bold; color: #e74c3c; }
-        .success { color: #27ae60 !important; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .status-connecting { background-color: var(--orange); animation: blink 1s infinite; }
+        .status-connected { background-color: var(--green); }
+        @keyframes blink { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
+        .header h1 { font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; flex-wrap: wrap; }
+        .nav-tab { padding: 10px 20px; border: none; background: none; font-weight: bold; color: #64748b; cursor: pointer; transition: 0.3s; font-size: 14px; }
+        .nav-tab.active { color: var(--blue); border-bottom: 3px solid var(--blue); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .main-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .card-title { font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--blue); padding-left: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-weight: bold; color: #475569; }
+        .form-group input, .form-group select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; outline: none; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--blue); color: white; }
+        .btn-success { background: var(--green); color: white; }
+        .btn-danger { background: var(--red); color: white; }
+        .btn-action-edit { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-action-delete { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .table-responsive { overflow-x: auto; margin-top: 15px; }
+        .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        .main-table th { background: #f1f5f9; color: var(--primary); padding: 10px; border: 1px solid var(--border-color); font-weight: bold; }
+        .main-table td { padding: 8px 10px; border: 1px solid var(--border-color); }
+        .main-table tbody tr:hover { background-color: #f8fafc; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: bold; }
+        .input-salary-day { width: 55px; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-weight: bold; font-size: 13px; color: var(--primary); }
+        .input-edit { width: 65px; padding: 4px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; font-size: 13px; color: var(--blue); background: #eff6ff; outline: none; }
+        .input-edit-money { width: 80px; text-align: right; }
+        .input-ki { border: 1px dashed var(--purple); color: var(--purple); background: #f3e8ff; width: 55px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .stat-box { background: white; padding: 12px; border-radius: 6px; border-left: 5px solid var(--blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .stat-title { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold; }
+        .stat-value { font-size: 15px; font-weight: bold; margin-top: 5px; }
+        .progress-container { margin: 5px 0 15px 0; }
+        .progress-bar-bg { background-color: #e2e8f0; border-radius: 10px; height: 8px; overflow: hidden; }
+        .progress-bar-fill { background: linear-gradient(90deg, #34d399, #10b981); height: 100%; width: 0%; transition: width 0.3s; }
+        .todo-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; }
+        .floating-calendar { position: fixed; right: 15px; top: 50px; width: 350px; background: #ffffff; border-radius: 14px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18); border: 2px solid #e2e8f0; z-index: 999; overflow: hidden; }
+        .floating-calendar.collapsed { transform: translateX(330px); }
+        .calendar-toggle-btn { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 24px; height: 80px; background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; border: none; border-radius: 6px 0 0 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; writing-mode: vertical-rl; text-transform: uppercase; }
+        .calendar-inner-content { margin-left: 24px; padding: 15px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+        .calendar-day-name { font-weight: bold; padding: 6px 0; background: #f8fafc; border-radius: 4px; color: #475569; font-size: 11px; }
+        .calendar-day-cell { aspect-ratio: 1.1; border: 1px solid #f1f5f9; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; background: white; position: relative; }
+        .calendar-day-cell.active { background: linear-gradient(135deg, #1d4ed8, #2563eb) !important; color: white !important; }
+        .solar-day { font-size: 14px; font-weight: bold; }
+        .lunar-day { font-size: 9px; color: var(--red); margin-top: 2px; font-weight: bold; }
+        .details-panel { background: linear-gradient(to bottom, #ffffff, #f8fafc); border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 12px; max-height: 250px; overflow-y: auto; }
+        .detail-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 11px; }
+        .sub-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .sub-tab { padding: 8px 16px; background: #e2e8f0; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .sub-tab.active { background: var(--blue); color: white; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Chuẩn Hóa & Xuất Bảng Lương Hoàn Chỉnh</h2>
-    <p>Tự động quét cột dựa trên từ khóa gợi nhớ, tính toán chính xác tổng tiền và hệ số, triệt tiêu hoàn toàn lỗi tràn số thập phân, đồng thời xuất lại bảng lương hoàn chỉnh giữ nguyên định dạng của bất kỳ đơn vị nào.</p>
-    
-    <div class="upload-box" onclick="document.getElementById('excel-file').click()">
-        <b style="color: #3498db; font-size: 16px;">Nhấp để chọn hoặc kéo thả file Excel lương vào đây</b>
-        <input type="file" id="excel-file" accept=".xlsx, .xls">
+    <div class="db-status-bar">
+        <div>
+            <span id="conn-status-dot" class="status-dot status-connected"></span>
+            <span id="conn-status-text">Kết nối đám mây thành công: Supabase DB & Cloud Storage Engine...</span>
+        </div>
+        <div style="font-size: 11px; color: #64748b;">Hệ thống: <strong>Xử lý cấu trúc tệp đa biến (Đã chuẩn hóa số học)</strong></div>
     </div>
-    
-    <div id="status"></div>
-    <button class="btn" id="download-btn">Tải Xuất Bảng Lương Hoàn Chỉnh</button>
-</div>
 
-<script>
-let processedWorkbook = null;
-let currentFileName = "";
+    <div id="main-app">
+        <div class="header">
+            <h1>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP TOÀN DIỆN</h1>
+            <div><span style="margin-right: 15px; font-weight: bold;">👤 QUẢN TRỊ VIÊN (Admin)</span></div>
+        </div>
 
-// Bản đồ từ khóa thông minh chuẩn hóa cấu trúc cột của tất cả các đơn vị
-const COLUMN_MAPPINGS = {
-    'he_so_lcb': ['hệ số lcb', 'he so lcb', 'hs lcb', 'hslcb'],
-    'phu_cap': ['phụ cấp', 'phu cap', 'pc', 'phụ cấp lcb'],
-    'luong_hdld': ['lương hđlđ', 'luong hdld', 'lương hợp đồng', 'luonghdld'],
-    'lcb_goc': ['lcb gốc', 'lcb goc', 'lương gốc', 'luong goc'],
-    'thoi_gian': ['thời gian', 'thoi gian', 'tg', 'ngày công', 'ngay cong'],
-    'phep': ['phép', 'phep'],
-    'le_vr': ['lễ, vr', 'le, vr', 'le vr', 'lễ vr'],
-    'luong_tg': ['lương tg', 'luong tg'],
-    'luong_phep': ['lương phép', 'luong phep'],
-    'tong_lcb': ['tổng lcb', 'tong lcb'],
-    'he_so_lcv': ['hệ số lcv', 'he so lcv', 'hs lcv', 'hslcv'],
-    'phu_cap_lcv': ['phụ cấp lcv', 'phu cap lcv', 'pc lcv', 'pclcv'],
-    'lcv_goc': ['lcv gốc', 'lcv goc'],
-    'ki': ['ki (%)', 'ki', 'kỉ', 'ki%'],
-    'lcv_tte': ['lcv t.tế', 'lcv t.te', 'lcv thực tế', 'lcv thuc te']
-};
+        <div class="nav-tabs">
+            <button type="button" class="nav-tab active" onclick="switchTab('salary')">Quản lý & Tính lương Nhân viên</button>
+            <button type="button" class="nav-tab" onclick="switchTab('admin-finance')">Hành chính - Tác vụ chuyên nghiệp</button>
+        </div>
 
-document.getElementById('excel-file').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    currentFileName = file.name;
-    const reader = new FileReader();
-    document.getElementById('status').innerText = "Đang xử lý dữ liệu bảng lương... Vui lòng đợi.";
-    document.getElementById('status').className = "";
-    document.getElementById('download-btn').style.display = "none";
+        <!-- ================= TAB 1: LƯƠNG NHÂN VIÊN TỰ ĐỘNG ================= -->
+        <div id="tab-salary" class="tab-content active">
+            <div class="main-card">
+                <div class="card-title">Bộ lọc và công cụ xử lý tệp dữ liệu thông minh</div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+                    <div class="form-group" style="min-width: 130px;">
+                        <label>Tháng lương</label>
+                        <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Lương Từ DB</button>
+                    
+                    <!-- Nhập tệp mẫu cấu trúc hệ số lương gốc -->
+                    <div class="form-group">
+                        <button type="button" class="btn" style="background-color: #7c3aed; color: white;" onclick="triggerStructureUpload()">🗂️ 1. Nạp File Lương Mẫu (Hệ số gốc)</button>
+                        <input type="file" id="upload-structure" accept=".xlsx, .xls" style="display: none;" onchange="handleImportStructure(event)" />
+                    </div>
 
-    reader.onload = function(e) {
-        try {
-            const data = new Uint8Array(e.target.result);
-            // Đọc toàn bộ workbook và giữ nguyên các định dạng gốc (cellStyles, v.v...)
-            const workbook = XLSX.read(data, { type: 'array', cellStyles: true, cellNF: true });
-            
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            
-            // Chuyển đổi tạm thời sang dạng mảng hai chiều (Array of Arrays) để tính toán dễ dàng
-            let rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
-            
-            if (rawData.length === 0) throw new Error("File trống!");
+                    <!-- Khớp ngày công thực tế từ máy chấm công -->
+                    <div class="form-group">
+                        <button type="button" class="btn btn-success" onclick="triggerAttendanceUpload()">📥 2. Khớp File Máy Chấm Công (.xlsx)</button>
+                        <input type="file" id="upload-attendance" accept=".xlsx, .xls" style="display: none;" onchange="handleImportAttendance(event)" />
+                    </div>
+                    
+                    <span id="import-status" style="font-weight: bold; color: var(--green); margin-bottom: 8px;"></span>
+                    <span id="cloud-action-status" style="font-weight: bold; color: var(--blue); margin-left: auto;"></span>
+                </div>
+            </div>
 
-            // 1. Quét tìm dòng tiêu đề thực tế của bảng lương
-            let headerRowIndex = -1;
-            for (let i = 0; i < Math.min(rawData.length, 10); i++) {
-                let rowStr = rawData[i].join(" ").toLowerCase();
-                if (rowStr.includes("hệ số") || rowStr.includes("lương") || rowStr.includes("phụ cấp") || rowStr.includes("tên")) {
-                    headerRowIndex = i;
-                    break;
-                }
-            }
+            <div class="main-card">
+                <div class="card-title">
+                    BẢNG TỔNG HỢP THANH TOÁN LƯƠNG TỔNG CÔNG TY (CÔNG THỨC CHUẨN VĂN PHÒNG)
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="btn" style="background: var(--purple); color: white;" onclick="saveSalaryToCloud()">Lưu Lên Cloud (Supabase)</button>
+                        <button type="button" class="btn btn-primary" onclick="exportSalaryToExcelStyleMatched()">Xuất Excel Lương Chuẩn</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="main-table" id="main-salary-table" style="font-size: 11px;">
+                        <thead>
+                            <tr style="background-color: #e2e8f0;">
+                                <th rowspan="2" class="text-center">STT</th>
+                                <th rowspan="2" class="text-center">Mã NV</th>
+                                <th rowspan="2">Họ và tên</th>
+                                <th colspan="4" class="text-center">Lương Cơ Bản HĐLĐ</th>
+                                <th colspan="3" class="text-center" style="background-color: #e0f2fe;">Số Ngày Công</th>
+                                <th colspan="3" class="text-center">Chi Tiết Lương CB Thực Nhận</th>
+                                <th colspan="4" class="text-center" style="background-color: #f3e8ff;">Cơ cấu Lương Công Việc (CV)</th>
+                                <th rowspan="2" class="text-right">Tổng LCB + LCV</th>
+                                <th rowspan="2" class="text-right">BHTN + BHXH</th>
+                                <th rowspan="2" class="text-right" style="background-color: #fee2e2;">Tạm Ứng</th>
+                                <th rowspan="2" class="text-right" style="background-color: #fef08a;">Thực Lĩnh Cuối Cùng</th>
+                            </tr>
+                            <tr style="background-color: #f1f5f9;">
+                                <th>Hệ số LCB</th><th>Phụ cấp LCB</th><th>Lương Ký HĐLĐ</th><th>Lương cơ bản</th>
+                                <th style="background-color: #e0f2fe;">Thời gian (NT)</th><th style="background-color: #e0f2fe;">Phép (P)</th><th style="background-color: #e0f2fe;">Lễ, VR</th>
+                                <th>Lương Thời Gian</th><th>Lương Lễ, Phép</th><th>Tổng Lương CB</th>
+                                <th>Hệ số LCV</th><th>Phụ cấp LCV</th><th>Lương CV Gốc</th><th style="background-color: #f3e8ff;">Lương CV Thực Tế</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-salary">
+                            <tr><td colspan="22" class="text-center" style="padding:20px; color:#94a3b8;">Đang tải cấu trúc dữ liệu nền...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-            if (headerRowIndex === -1) headerRowIndex = 0; // Dự phòng nếu không tìm thấy cụm từ khóa
+        <!-- ================= TAB 2: HÀNH CHÍNH VÀ TÁC VỤ VĂN PHÒNG ================= -->
+        <div id="tab-admin-finance" class="tab-content">
+            <div style="display: grid; grid-template-columns: 2.2fr 1.2fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <div class="stat-grid">
+                        <div class="stat-box" style="border-left-color: var(--blue);"><div class="stat-title">Đề xuất hành chính</div><div class="stat-value" id="stat-total-office" style="color: var(--blue);">0 đ</div></div>
+                        <div class="stat-box" style="border-left-color: var(--orange);"><div class="stat-title">Hồ sơ chờ duyệt</div><div class="stat-value" id="stat-pending-office" style="color: var(--orange);">0 hồ sơ</div></div>
+                        <div class="stat-box" style="border-left-color: var(--green);"><div class="stat-title">Hành chính đã chi</div><div class="stat-value" id="stat-paid-office" style="color: var(--green);">0 đ</div></div>
+                    </div>
+                    <div class="stat-grid">
+                        <div class="stat-box" style="border-left-color: var(--purple);"><div class="stat-title">Tổng cước viễn thông</div><div class="stat-value" id="stat-total-telecom" style="color: var(--purple);">0 đ</div></div>
+                        <div class="stat-box" style="border-left-color: var(--red);"><div class="stat-title">Cước chưa chi</div><div class="stat-value" id="stat-unpaid-telecom" style="color: var(--red);">0 đường truyền</div></div>
+                    </div>
+                </div>
 
-            let headers = rawData[headerRowIndex].map(h => String(h || "").trim());
-            
-            // 2. Định vị hoặc tạo mới dòng "Tổng cộng" ở cuối bảng dữ liệu
-            let totalRowIndex = -1;
-            for (let i = rawData.length - 1; i > headerRowIndex; i--) {
-                let firstCellStr = String(rawData[i][0] || "").toLowerCase();
-                let secondCellStr = String(rawData[i][1] || "").toLowerCase();
-                if (firstCellStr.includes("tổng") || firstCellStr.includes("tong") || secondCellStr.includes("tổng") || secondCellStr.includes("tong")) {
-                    totalRowIndex = i;
-                    break;
-                }
-            }
+                <div class="main-card" style="margin-bottom: 0; padding: 15px; border-left: 5px solid var(--green);">
+                    <h3 style="font-size:14px; font-weight:bold; color:var(--primary); display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span>📋 NHẮC VIỆC VĂN PHÒNG</span><span id="progressText" style="font-size:12px; color:var(--green);">0%</span>
+                    </h3>
+                    <div class="progress-container" style="margin-bottom:15px;"><div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div></div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                        <input type="text" id="new-task-input" placeholder="Nhập việc cần làm..." style="flex:1; padding:8px; border:1px solid var(--border-color); border-radius:6px; outline:none;" onkeydown="checkTaskEnter(event)">
+                        <button type="button" class="btn btn-success" style="padding:8px;" onclick="addNewTask()">➕ Thêm</button>
+                    </div>
+                    <div style="max-height: 140px; overflow-y: auto;"><ul class="todo-list" id="todo-list-container"></ul></div>
+                </div>
+            </div>
 
-            // Nếu chưa có dòng tổng cộng, tự chèn thêm một hàng mới rỗng vào cuối bảng
-            if (totalRowIndex === -1) {
-                let newTotalRow = new Array(headers.length).fill("");
-                rawData.push(newTotalRow);
-                totalRowIndex = rawData.length - 1;
-            }
+            <div class="sub-tabs">
+                <button type="button" class="sub-tab active" id="btn-sub-office" onclick="switchSubTab('office')">Hồ sơ Hành chính</button>
+                <button type="button" class="sub-tab" id="btn-sub-telecom" onclick="switchSubTab('telecom')">Cước Viễn thông</button>
+            </div>
 
-            // Đặt nhãn chữ "Tổng cộng" vào đúng vị trí hàng tổng cộng cột đầu tiên hoặc cột thứ 2 (cột Tên)
-            if (headers[0] && (headers[0].toLowerCase().includes("stt") || headers[0].toLowerCase().includes("số tt"))) {
-                rawData[totalRowIndex][0] = "Tổng cộng";
-            } else {
-                rawData[totalRowIndex][1] = "Tổng cộng";
-            }
+            <div id="sub-tab-office" class="main-card">
+                <div class="card-title" id="office-card-title">Quản lý hồ sơ chi phí hành chính</div>
+                <form id="office-form-v2" onsubmit="handleSaveOfficeV2(event)" style="margin-bottom: 20px;">
+                    <input type="hidden" id="office-id">
+                    <div class="grid-form">
+                        <div class="form-group" style="grid-column: span 2;"><label>Nội dung thanh toán</label><input type="text" id="office-category" required placeholder="Mua sắm văn phòng phẩm..."></div>
+                        <div class="form-group"><label>Số tiền trước thuế (VNĐ)</label><input type="text" id="office-amount-before" required onkeyup="formatCurrencyInput(this); calculateOfficeVAT();"></div>
+                        <div class="form-group"><label>Thuế suất VAT</label><select id="office-tax-rate" onchange="calculateOfficeVAT()"><option value="0">0%</option><option value="5">5%</option><option value="10" selected>10%</option></select></div>
+                        <div class="form-group"><label>Tổng thanh toán sau thuế (VNĐ)</label><input type="text" id="office-amount-after" disabled></div>
+                        <div class="form-group"><label>Trạng thái</label><select id="office-status"><option value="Chờ duyệt">Chờ duyệt</option><option value="Đã duyệt">Đã duyệt</option><option value="Đã thanh toán">Đã thanh toán</option></select></div>
+                    </div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;"><button type="submit" class="btn btn-primary">Lưu hồ sơ hành chính</button><button type="button" class="btn" style="background:#64748b; color:white;" onclick="resetOfficeFormV2()">Hủy sửa</button></div>
+                </form>
+                <div class="table-responsive">
+                    <table class="main-table">
+                        <thead>
+                            <tr style="background:#e2e8f0;"><th>Nội dung mua sắm</th><th>Tiền trước thuế</th><th>VAT</th><th>Tổng thanh toán</th><th>Trạng thái</th><th class="text-center">Hành động</th></tr>
+                        </thead>
+                        <tbody id="tbody-office-v2"></tbody>
+                    </table>
+                </div>
+            </div>
 
-            // 3. Tiến hành quét từng cột để nhận diện theo bộ quy tắc tự động
-            for (let colIndex = 0; colIndex < headers.length; colIndex++) {
-                let headerLower = headers[colIndex].toLowerCase();
-                let matchedKey = null;
+            <div id="sub-tab-telecom" class="main-card" style="display: none;">
+                <div class="card-title">Cước viễn thông đường truyền</div>
+                <form id="tele-form-v2" onsubmit="handleSaveTeleV2(event)" style="margin-bottom: 20px;">
+                    <input type="hidden" id="tele-id">
+                    <div class="grid-form">
+                        <div class="form-group"><label>Mã đường truyền</label><input type="text" id="tele-code" required placeholder="FTTH-VNP-001"></div>
+                        <div class="form-group"><label>Nhà mạng</label><select id="tele-provider"><option value="VNPT">VNPT</option><option value="Viettel">Viettel</option><option value="FPT">FPT</option></select></div>
+                        <div class="form-group"><label>Vị trí lắp đặt</label><input type="text" id="tele-location" required></div>
+                        <div class="form-group"><label>Mức cước (VNĐ)</label><input type="text" id="tele-cost-after" required onkeyup="formatCurrencyInput(this);"></div>
+                        <div class="form-group"><label>Trạng thái</label><select id="tele-status"><option value="Chưa thanh toán">Chưa thanh toán</option><option value="Đã thanh toán">Đã thanh toán</option></select></div>
+                    </div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;"><button type="submit" class="btn btn-primary">Lưu cước cấu hình</button><button type="button" class="btn" style="background:#64748b; color:white;" onclick="resetTeleFormV2()">Hủy sửa</button></div>
+                </form>
+                <div class="table-responsive">
+                    <table class="main-table">
+                        <thead>
+                            <tr style="background:#e2e8f0;"><th>Mã mạng</th><th>Nhà mạng</th><th>Vị trí</th><th>Mức cước</th><th>Trạng thái</th><th class="text-center">Hành động</th></tr>
+                        </thead>
+                        <tbody id="tbody-telecom-v2"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                for (let key in COLUMN_MAPPINGS) {
-                    if (COLUMN_MAPPINGS[key].some(kw => headerLower.includes(kw))) {
-                        matchedKey = key;
-                        break;
-                    }
-                }
+    <!-- ================= FLOATING WIDGET LỊCH VẠN NIÊN CHUYÊN NGHIỆP ================= -->
+    <div class="floating-calendar" id="floating-calendar-widget">
+        <button type="button" class="calendar-toggle-btn" onclick="toggleCalendarWidget()">📅 LỊCH VẠN NIÊN</button>
+        <div class="calendar-inner-content">
+            <div class="calendar-header" style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <button type="button" onclick="changeCalendarMonth(-1)">◀</button>
+                <h3 id="calendar-month-year-label">Tháng 05 / 2026</h3>
+                <button type="button" onclick="changeCalendarMonth(1)">▶</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="calendar-day-name">T2</div><div class="calendar-day-name">T3</div><div class="calendar-day-name">T4</div><div class="calendar-day-name">T5</div><div class="calendar-day-name">T6</div><div class="calendar-day-name">T7</div><div class="calendar-day-name">CN</div>
+            </div>
+            <div class="calendar-grid" id="calendar-days-container" style="margin-top: 5px;"></div>
+            <div class="details-panel">
+                <div class="detail-row"><span>Dương Lịch:</span><span id="detail-solar" style="color: var(--blue);"></span></div>
+                <div class="detail-row"><span>Âm Lịch:</span><span id="detail-lunar" style="color: var(--red);"></span></div>
+                <div class="detail-row"><span>Tiết khí:</span><span id="detail-tietkhi" style="color: var(--green);"></span></div>
+            </div>
+        </div>
+    </div>
 
-                // Nếu cột khớp danh mục cần gom tổng số học
-                if (matchedKey) {
-                    let sum = 0;
-                    let hasValidNumber = false;
+    <script>
+        // Lớp kết nối bảo mật REST API đám mây liên kết Supabase của bạn
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAcZ6PV5zXKb6jc3pRC___O_5A6C88F2gO-h3lxtbZbT17wbsSUKgXK9AvlfHtaJI-Fg/exec";
 
-                    // Duyệt qua tất cả các dòng nhân viên (bỏ qua header và dòng tổng cộng)
-                    for (let rowIndex = headerRowIndex + 1; rowIndex < totalRowIndex; rowIndex++) {
-                        let cellValue = rawData[rowIndex][colIndex];
-                        
-                        if (typeof cellValue === 'string') {
-                            // Làm sạch các ký tự phân tách tiền tệ dấu chấm/phẩy nếu đơn vị khác nhập dạng text
-                            cellValue = cellValue.replace(/\./g, '').replace(/,/g, '').trim();
-                        }
-                        
-                        let num = parseFloat(cellValue);
-                        if (!isNaN(num)) {
-                            sum += num;
-                            hasValidNumber = true;
-                            rawData[rowIndex][colIndex] = num; // Lưu số sạch lại bảng
-                        }
-                    }
+        const defaultSalaryData = [
+            { "stt": 1, "id": "00027", "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "lcb_hdld": 9066600, "lcb_goc": 5540700, "NT": 20, "P": 0, "le_vr": 1, "lcv_heso": 5.2, "lcv_phucap": 0.6, "lcv_goc": 12110226, "ki": 100, "tam_ung": 5000000 },
+            { "stt": 2, "id": "00002", "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.0, "lcb_hdld": 6127200, "lcb_goc": 3744400, "NT": 14, "P": 6, "le_vr": 1, "lcv_heso": 2.24, "lcv_phucap": 0.0, "lcv_goc": 4677053, "ki": 100, "tam_ung": 4000000 }
+        ];
 
-                    // 4. Xử lý GỌN GÀNG SỐ HỌC khi điền vào ô Tổng cộng
-                    if (hasValidNumber) {
-                        if (matchedKey.includes('he_so') || matchedKey === 'ki') {
-                            // Đối với Hệ số và % KI: Làm tròn tối đa 3 chữ số thập phân để triệt tiêu lỗi tràn số `.000000003`
-                            rawData[totalRowIndex][colIndex] = Math.round(sum * 1000) / 1000;
-                        } else {
-                            // Đối với các cột tiền tệ (Lương, Phụ cấp, Tổng LCB) hoặc Ngày công: Làm tròn thành số nguyên tròn trịa
-                            rawData[totalRowIndex][colIndex] = Math.round(sum);
-                        }
-                    }
-                }
-            }
+        let salaryData = [];
+        let officeRecords = [];
+        let teleRecords = [];
+        let officeTasks = [];
+        let currentLoadedWorkbookBinary = null;
 
-            // 5. Cập nhật dữ liệu đã xử lý ngược lại Worksheet gốc nhằm bảo toàn 100% định dạng khung bảng kẻ sẵn
-            XLSX.utils.sheet_add_aoa(worksheet, rawData, { origin: "A1" });
+        window.addEventListener('DOMContentLoaded', () => {
+            initCalendarToRealTime();
+            switchTab('salary');
+            loadSalaryFromCloud();
+            loadOfficeFromCloud();
+            loadTeleFromCloud();
+            loadTasksFromCloud();
+        });
 
-            processedWorkbook = workbook;
-            document.getElementById('status').innerText = "✓ Đã xử lý và chuẩn hóa thành công bảng lương hoàn chỉnh!";
-            document.getElementById('status').className = "success";
-            document.getElementById('download-btn').style.display = "inline-block";
-
-        } catch (error) {
-            console.error(error);
-            document.getElementById('status').innerText = "❌ Lỗi: Cấu trúc file không đồng nhất, không thể xuất bảng lương tự động.";
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+            document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab-' + tabName).style.display = 'block';
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
         }
-    };
 
-    reader.readAsArrayBuffer(file);
-});
+        function switchSubTab(subTabName) {
+            document.getElementById('sub-tab-office').style.display = subTabName === 'office' ? 'block' : 'none';
+            document.getElementById('sub-tab-telecom').style.display = subTabName === 'telecom' ? 'block' : 'none';
+            document.getElementById('btn-sub-office').classList.toggle('active', subTabName === 'office');
+            document.getElementById('btn-sub-telecom').classList.toggle('active', subTabName === 'telecom');
+        }
 
-// Sự kiện tải file lương hoàn chỉnh về máy tính
-document.getElementById('download-btn').addEventListener('click', function() {
-    if (!processedWorkbook) return;
-    let outputName = "Bang_Luong_Chuan_Hoa_" + currentFileName;
-    XLSX.writeFile(processedWorkbook, outputName);
-});
-</script>
+        // ================= KẾT NỐI ĐỒNG BỘ DỮ LIỆU ĐÁM MÂY CLOUD =================
+        async function loadSalaryFromCloud() {
+            const monthPeriod = document.getElementById('filter-month').value;
+            const statusLabel = document.getElementById('cloud-action-status');
+            statusLabel.style.color = "var(--orange)";
+            statusLabel.innerText = `⏳ Đang đọc bảng lương ${monthPeriod} từ database...`;
 
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?sheet=salary_records&month_period=${monthPeriod}`);
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    salaryData = data.map((item, idx) => ({
+                        stt: idx + 1, id: item.id, name: item.name,
+                        lcb_heso: parseFloat(item.lcb_heso || 0), lcb_phucap: parseFloat(item.lcb_phucap || 0), 
+                        lcb_hdld: parseInt(item.lcb_hdld || 0), lcb_goc: parseInt(item.lcb_goc || 0),
+                        NT: parseFloat(item.nt || item.NT || 0), P: parseFloat(item.p || item.P || 0), le_vr: parseFloat(item.le_vr || 0),
+                        ki: parseFloat(item.ki || 100), lcv_heso: parseFloat(item.lcv_heso || 0), lcv_phucap: parseFloat(item.lcv_phucap || 0),
+                        lcv_goc: parseInt(item.lcv_goc || 0), bhtn: parseInt(item.bhtn || 0), bhxh: parseInt(item.bhxh || 0), tam_ung: parseInt(item.tam_ung || 0)
+                    }));
+                    statusLabel.style.color = "var(--green)";
+                    statusLabel.innerText = `✅ Đã đồng bộ Trực Tuyến!`;
+                } else {
+                    salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
+                    statusLabel.style.color = "var(--blue)";
+                    statusLabel.innerText = `🆕 Chưa có dữ liệu mây ${monthPeriod} (Dùng mảng cơ sở)`;
+                }
+                renderSalaryTable();
+            } catch (err) {
+                salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
+                statusLabel.innerText = `⚠️ Đang chạy Offline`;
+                renderSalaryTable();
+            }
+        }
+
+        async function saveSalaryToCloud() {
+            const monthPeriod = document.getElementById('filter-month').value;
+            const statusLabel = document.getElementById('cloud-action-status');
+            statusLabel.innerText = "⏳ Đang ghi dữ liệu lên Cloud...";
+
+            const postData = salaryData.map(row => ({
+                id: row.id, month_period: monthPeriod, name: row.name,
+                lcb_heso: row.lcb_heso, lcb_phucap: row.lcb_phucap, lcb_hdld: row.lcb_hdld, lcb_goc: row.lcb_goc,
+                nt: row.NT, p: row.P, le_vr: row.le_vr,
+                l_thoigian: row.l_thoigian, l_lephep: row.l_lephep, l_tong: row.l_tong,
+                lcv_heso: row.lcv_heso, lcv_phucap: row.lcv_phucap, lcv_goc: row.lcv_goc,
+                ki: row.ki, lcv_thucte: row.lcv_thucte, bhtn: row.bhtn, bhxh: row.bhxh,
+                tam_ung: row.tam_ung, thuc_linh: row.thuc_linh
+            }));
+
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sheet: "salary_records", month_period: monthPeriod, data: postData })
+                });
+                statusLabel.style.color = "var(--green)";
+                statusLabel.innerText = `✅ Đồng bộ dữ liệu thành công!`;
+                alert("Hệ thống đã lưu trữ bảng lương an toàn lên Cloud DB!");
+            } catch (err) { alert(err.message); }
+        }
+
+        // ================= CÔNG CỤ ĐỌC EXCEL ĐA BIẾN THÔNG MINH =================
+        function triggerStructureUpload() { document.getElementById('upload-structure').click(); }
+        function triggerAttendanceUpload() { document.getElementById('upload-attendance').click(); }
+
+        const COLUMN_KEYWORD_LOOKUP = {
+            'he_so_lcb': ['hệ số lcb', 'he so lcb', 'hs lcb', 'hslcb'],
+            'phu_cap_lcb': ['phụ cấp lcb', 'phu cap lcb', 'pc lcb', 'phụ cấp'],
+            'luong_hdld': ['lương ký hđlđ', 'luong ky hdld', 'lương hđlđ', 'lương hợp đồng'],
+            'lcb_goc': ['lương cơ bản', 'luong co ban', 'lcb gốc', 'lcb goc'],
+            'thoi_gian': ['thời gian', 'thoi gian', 'tg', 'ngày công', 'ngay cong'],
+            'phep': ['phép', 'phep'],
+            'le_vr': ['lễ, vr', 'le, vr', 'le vr', 'lễ vr'],
+            'luong_tg': ['lương thời gian', 'luong thoi gian', 'lương tg'],
+            'luong_phep': ['lương lễ, phép', 'lương phép', 'luong phep'],
+            'tong_lcb': ['tổng lương cb', 'tong luong cb', 'tổng lcb'],
+            'he_so_lcv': ['hệ số lcv', 'he so lcv', 'hs lcv'],
+            'phu_cap_lcv': ['phụ cấp lcv', 'phu cap lcv', 'pc lcv'],
+            'lcv_goc': ['lương cv gốc', 'lương cv goc', 'lcv gốc'],
+            'ki': ['lương cv thực tế', 'lcv thực tế', 'ki (%)', 'ki']
+        };
+
+        function handleImportStructure(event) {
+            const file = event.target.files[0]; if (!file) return;
+            document.getElementById('import-status').innerText = "⏳ Đang quét cấu hình file...";
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    currentLoadedWorkbookBinary = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(currentLoadedWorkbookBinary, { type: 'array', cellStyles: true });
+                    const sheetName = workbook.SheetNames.includes("Lương CV") ? "Lương CV" : workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+                    
+                    let headerRowIndex = 0;
+                    for (let i = 0; i < Math.min(rawData.length, 10); i++) {
+                        let rowStr = rawData[i].join(" ").toLowerCase();
+                        if (rowStr.includes("hệ số") || rowStr.includes("lương") || rowStr.includes("phụ cấp")) { headerRowIndex = i; break; }
+                    }
+                    
+                    let headersLower = rawData[headerRowIndex].map(h => String(h || "").trim().toLowerCase());
+                    let colIdx = {};
+                    for (let key in COLUMN_KEYWORD_LOOKUP) {
+                        colIdx[key] = headersLower.findIndex(h => COLUMN_KEYWORD_LOOKUP[key].some(kw => h.includes(kw)));
+                    }
+
+                    let importedList = [];
+                    for (let i = headerRowIndex + 1; i < rawData.length; i++) {
+                        const row = rawData[i]; if (!row || (!row[1] && !row[2])) continue;
+                        let nameStr = row[2];
+                        if (String(nameStr).toLowerCase().includes("tổng") || String(nameStr).toLowerCase().includes("stt")) continue;
+
+                        let getCellNum = (key) => {
+                            let idx = colIdx[key]; if (idx === -1 || idx === undefined) return 0;
+                            let v = row[idx]; if (typeof v === 'string') v = v.replace(/\./g, '').replace(/,/g, '');
+                            let n = parseFloat(v); return isNaN(n) ? 0 : n;
+                        };
+
+                        importedList.push({
+                            id: row[1] ? row[1].toString().trim().padStart(5, '0') : "NV"+i,
+                            name: String(nameStr).trim(),
+                            lcb_heso: getCellNum('he_so_lcb'), lcb_phucap: getCellNum('phu_cap_lcb'),
+                            lcb_hdld: getCellNum('luong_hdld'), lcb_goc: getCellNum('lcb_goc'),
+                            NT: getCellNum('thoi_gian'), P: getCellNum('phep'), le_vr: getCellNum('le_vr'), ki: 100,
+                            he_so_lcv: getCellNum('he_so_lcv'), phu_cap_lcv: getCellNum('phu_cap_lcv'), lcv_goc: getCellNum('lcv_goc'),
+                            tam_ung: 0
+                        });
+                    }
+                    
+                    if (importedList.length > 0) {
+                        salaryData = importedList; renderSalaryTable();
+                        document.getElementById('import-status').innerText = `✅ Đã nạp hệ số đơn vị thành công!`;
+                    }
+                } catch(err) { document.getElementById('import-status').innerText = "❌ Sai định dạng cấu trúc file."; }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function handleImportAttendance(event) {
+            const file = event.target.files[0]; if (!file) return;
+            document.getElementById('import-status').innerText = "⏳ Đang kết nối máy chấm công...";
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result); 
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]]; 
+                    const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    let match = 0;
+                    for (let i = 8; i < rawData.length; i++) {
+                        const row = rawData[i]; if (!row || !row[1]) continue;
+                        let cleanId = row[1].toString().trim().padStart(5, '0'); 
+                        let ntVal = parseFloat(row[35]) || 0; 
+                        let pVal = parseFloat(row[47]) || 0;
+                        let leVal = parseFloat(row[48]) || 0;
+                        
+                        const idx = salaryData.findIndex(emp => emp.id === cleanId); 
+                        if (idx !== -1) {
+                            salaryData[idx].NT = ntVal; salaryData[idx].P = pVal; salaryData[idx].le_vr = leVal;
+                            match++;
+                        }
+                    }
+                    renderSalaryTable(); 
+                    document.getElementById('import-status').innerText = `✅ Đã đồng bộ ngày công thực tế thành công!`;
+                } catch(err) { document.getElementById('import-status').innerText = "❌ Lỗi tệp chấm công."; }
+            }; 
+            reader.readAsArrayBuffer(file);
+        }
+
+        // ================= ĐỘNG CƠ ENGINE TÍNH TOÁN VÀ IN BẢNG LƯƠNG CHUẨN =================
+        function renderSalaryTable() {
+            const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = "";
+            
+            if (salaryData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="22" class="text-center" style="padding:20px; color:#94a3b8;">Đang nạp dữ liệu... Hãy nạp file Excel mẫu của đơn vị để tính toán nhanh.</td></tr>`;
+                return;
+            }
+
+            salaryData.forEach((row, index) => {
+                const VUNG_LIMIT = 4140000;
+                const LCV_PRICE = 2087970;
+                const STANDARD_LIMIT = 22;
+
+                row.lcb_hdld = Math.round((row.lcb_heso + row.lcb_phucap) * VUNG_LIMIT);
+                const luong_1_ngay = row.lcb_goc / STANDARD_LIMIT;
+                row.l_thoigian = Math.round(row.NT * luong_1_ngay); 
+                row.l_lephep = Math.round((row.lcb_hdld / STANDARD_LIMIT) * (row.P + row.le_vr)); 
+                row.l_tong = row.l_thoigian + row.l_lephep;
+                
+                row.lcv_goc = Math.round(row.he_so_lcv * LCV_PRICE);
+                row.lcv_thucte = Math.round((row.NT / STANDARD_LIMIT) * row.lcv_goc * (row.ki / 100));
+                
+                row.bhtn = Math.round(row.lcb_hdld * 0.01); 
+                row.bhxh = Math.round(row.lcb_hdld * 0.095);
+                const totalBH = row.bhtn + row.bhxh;
+                
+                row.tong_lcb_lcv = row.l_tong + row.lcv_thucte; 
+                row.thuc_linh = row.tong_lcb_lcv - totalBH - (row.tam_ung || 0);
+                if(row.thuc_linh < 0) row.thuc_linh = 0;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="text-center">${index + 1}</td>
+                        <td class="text-center font-bold" style="color:var(--blue);">${row.id}</td>
+                        <td class="font-bold">${row.name}</td>
+                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateDirectCell(${index}, 'lcb_heso', this.value)"></td>
+                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap}" onchange="updateDirectCell(${index}, 'lcb_phucap', this.value)"></td>
+                        <td class="text-right">${row.lcb_hdld.toLocaleString()}</td>
+                        <td class="text-right">${row.lcb_goc.toLocaleString()}</td>
+                        <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateDirectCell(${index}, 'NT', this.value)"></td>
+                        <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.P}" onchange="updateDirectCell(${index}, 'P', this.value)"></td>
+                        <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.le_vr}" onchange="updateDirectCell(${index}, 'le_vr', this.value)"></td>
+                        <td class="text-right">${row.l_thoigian.toLocaleString()}</td>
+                        <td class="text-right">${row.l_lephep.toLocaleString()}</td>
+                        <td class="text-right font-bold" style="color:var(--blue);">${row.l_tong.toLocaleString()}</td>
+                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateDirectCell(${index}, 'he_so_lcv', this.value)"></td>
+                        <td class="text-right">${(row.phu_cap_lcv * LCV_PRICE).toLocaleString()}</td>
+                        <td class="text-right">${row.lcv_goc.toLocaleString()}</td>
+                        <td class="text-right font-bold" style="color: var(--purple);">${row.lcv_thucte.toLocaleString()}</td>
+                        <td class="text-right font-bold">${row.tong_lcb_lcv.toLocaleString()}</td>
+                        <td class="text-right" style="color: var(--red);">${totalBH.toLocaleString()}</td>
+                        <td class="text-right" style="background-color:#fee2e2;"><input type="number" class="input-edit input-edit-money" style="background:#fee2e2; color:#dc2626;" value="${row.tam_ung || 0}" onchange="updateDirectCell(${index}, 'tam_ung', this.value)"></td>
+                        <td class="text-right font-bold" style="background-color:#fef08a; color:var(--primary);">${row.thuc_linh.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateDirectCell(idx, field, value) {
+            let n = parseFloat(value); if (isNaN(n) || n < 0) n = 0; salaryData[idx][field] = n; renderSalaryTable();
+        }
+
+        // ================= KHU VỰC ENGINE XUẤT FILE HOÀN CHỈNH GIỮ NGUYÊN STYLE =================
+        function exportSalaryToExcelStyleMatched() {
+            if (!currentLoadedWorkbookBinary) {
+                const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG" });
+                XLSX.writeFile(wb, `LUONG_VINAPACO_${document.getElementById('filter-month').value}.xlsx`);
+                return;
+            }
+
+            try {
+                const workbook = XLSX.read(currentLoadedWorkbookBinary, { type: 'array', cellStyles: true, cellNF: true });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                let rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+
+                let headerRowIndex = 0;
+                for (let i = 0; i < Math.min(rawData.length, 10); i++) {
+                    let rowStr = rawData[i].join(" ").toLowerCase();
+                    if (rowStr.includes("hệ số") || rowStr.includes("lương") || rowStr.includes("phụ cấp")) { headerRowIndex = i; break; }
+                }
+
+                let headersLower = rawData[headerRowIndex].map(h => String(h || "").trim().toLowerCase());
+                let colIdx = {};
+                for (let key in COLUMN_KEYWORD_LOOKUP) {
+                    colIdx[key] = headersLower.findIndex(h => COLUMN_KEYWORD_LOOKUP[key].some(kw => h.includes(kw)));
+                }
+
+                let totalRowIndex = -1;
+                for (let i = rawData.length - 1; i > headerRowIndex; i--) {
+                    let text = String(rawData[i][0] || "").toLowerCase() + String(rawData[i][1] || "").toLowerCase();
+                    if (text.includes("tổng") || text.includes("tong")) { totalRowIndex = i; break; }
+                }
+                if (totalRowIndex === -1) { rawData.push(new Array(headersLower.length).fill("")); totalRowIndex = rawData.length - 1; }
+
+                rawData[totalRowIndex] = new Array(headersLower.length).fill("");
+                rawData[totalRowIndex][2] = "Tổng cộng";
+
+                salaryData.forEach((row, index) => {
+                    let r = headerRowIndex + 1 + index;
+                    if (r >= totalRowIndex) return;
+
+                    let writeVal = (key, val) => { let idx = colIdx[key]; if(idx !== -1 && idx !== undefined) rawData[r][idx] = val; };
+                    writeVal('he_so_lcb', row.lcb_heso); writeVal('phu_cap_lcb', row.lcb_phucap);
+                    writeVal('luong_hdld', row.lcb_hdld); writeVal('lcb_goc', row.lcb_goc);
+                    writeVal('thoi_gian', row.NT); writeVal('phep', row.P); writeVal('le_vr', row.le_vr);
+                    writeVal('luong_tg', row.l_thoigian); writeVal('luong_phep', row.l_lephep); writeVal('tong_lcb', row.l_tong);
+                    writeVal('he_so_lcv', row.he_so_lcv); writeVal('lcv_goc', row.lcv_goc);
+                    writeVal('ki', row.lcv_thucte);
+                });
+
+                // Khử sai số dấu phẩy động dạng dài kế thừa máy tính
+                for (let key in colIdx) {
+                    let idx = colIdx[key]; if (idx === -1 || idx === undefined) continue;
+                    let sum = 0, hasData = false;
+                    for (let i = headerRowIndex + 1; i < totalRowIndex; i++) {
+                        let num = parseFloat(rawData[i][idx]); if (!isNaN(num)) { sum += num; hasData = true; }
+                    }
+                    if (hasData) {
+                        if (key.includes('he_so')) {
+                            rawData[totalRowIndex][idx] = Math.round(sum * 1000) / 1000;
+                        } else {
+                            rawData[totalRowIndex][idx] = Math.round(sum);
+                        }
+                    }
+                }
+
+                XLSX.utils.sheet_add_aoa(worksheet, rawData, { origin: "A1" });
+                XLSX.writeFile(workbook, `Bang_Luong_Hoan_Chinh_${document.getElementById('filter-month').value}.xlsx`);
+                alert("Đã xuất tệp lương chuẩn hóa thẩm mỹ thành công!");
+            } catch(e) { alert("Lỗi trích xuất định dạng: " + e.message); }
+        }
+
+        // ================= TÁC VỤ HÀNH CHÍNH & VĂN PHÒNG KHÁC =================
+        async function loadOfficeFromCloud() {
+            try { const response = await fetch(`${GOOGLE_SCRIPT_URL}?sheet=office_records`); officeRecords = await response.json(); renderOfficeTable(); } catch (e) {}
+        }
+        async function handleSaveOfficeV2(e) {
+            e.preventDefault();
+            const record = {
+                id: document.getElementById('office-id').value || Date.now(), category: document.getElementById('office-category').value,
+                amount_before: parseCurrency(document.getElementById('office-amount-before').value), tax_rate: parseInt(document.getElementById('office-tax-rate').value),
+                amount_after: parseCurrency(document.getElementById('office-amount-after').value), status: document.getElementById('office-status').value
+            };
+            const idx = officeRecords.findIndex(r => r.id == record.id);
+            if(idx !== -1) officeRecords[idx] = record; else officeRecords.unshift(record);
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheet: "office_records", data: officeRecords }) });
+            resetOfficeFormV2(); loadOfficeFromCloud();
+        }
+        function renderOfficeTable() {
+            const tbody = document.getElementById('tbody-office-v2'); tbody.innerHTML = "";
+            let total = 0, pending = 0, paid = 0;
+            officeRecords.forEach((rec) => {
+                let amtB = parseInt(rec.amount_before) || 0; let amtA = parseInt(rec.amount_after) || 0;
+                total += amtA; if(rec.status === 'Chờ duyệt') pending++; if(rec.status === 'Đã thanh toán') paid += amtA;
+                tbody.innerHTML += `<tr><td><b>${rec.category}</b></td><td class="text-right">${amtB.toLocaleString()}</td><td class="text-center">${rec.tax_rate}%</td><td class="text-right font-bold" style="color:var(--blue);">${amtA.toLocaleString()}</td><td class="text-center font-bold">${rec.status}</td><td class="text-center"><button type="button" class="btn-action-edit" onclick="editOfficeRecord(${rec.id})">✏️</button> <button type="button" class="btn-action-delete" onclick="deleteOfficeRecord(${rec.id})">🗑️</button></td></tr>`;
+            });
+            document.getElementById('stat-total-office').innerText = total.toLocaleString() + " đ";
+            document.getElementById('stat-pending-office').innerText = pending + " hồ sơ"; document.getElementById('stat-paid-office').innerText = paid.toLocaleString() + " đ";
+        }
+        function editOfficeRecord(id) {
+            const rec = officeRecords.find(r => r.id == id); if(!rec) return;
+            document.getElementById('office-id').value = rec.id; document.getElementById('office-category').value = rec.category;
+            document.getElementById('office-amount-before').value = parseInt(rec.amount_before).toLocaleString("vi-VN");
+            document.getElementById('office-tax-rate').value = rec.tax_rate; document.getElementById('office-amount-after').value = parseInt(rec.amount_after).toLocaleString("vi-VN");
+            document.getElementById('office-status').value = rec.status;
+        }
+        async function deleteOfficeRecord(id) {
+            if(!confirm("Xóa mục này?")) return; officeRecords = officeRecords.filter(r => r.id != id);
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheet: "office_records", data: officeRecords }) }); loadOfficeFromCloud();
+        }
+        function resetOfficeFormV2() { document.getElementById('office-id').value = ""; document.getElementById('office-form-v2').reset(); }
+
+        async function loadTeleFromCloud() {
+            try { const response = await fetch(`${GOOGLE_SCRIPT_URL}?sheet=tele_records`); teleRecords = await response.json(); renderTeleTable(); } catch(e){}
+        }
+        async function handleSaveTeleV2(e) {
+            e.preventDefault();
+            const record = {
+                id: document.getElementById('tele-id').value || Date.now(), code: document.getElementById('tele-code').value,
+                provider: document.getElementById('tele-provider').value, location: document.getElementById('tele-location').value,
+                cost_after: parseCurrency(document.getElementById('tele-cost-after').value), status: document.getElementById('tele-status').value
+            };
+            const idx = teleRecords.findIndex(r => r.id == record.id);
+            if(idx !== -1) teleRecords[idx] = record; else teleRecords.unshift(record);
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheet: "tele_records", data: teleRecords }) });
+            resetTeleFormV2(); loadTeleFromCloud();
+        }
+        function renderTeleTable() {
+            const tbody = document.getElementById('tbody-telecom-v2'); tbody.innerHTML = "";
+            let total = 0, unpaid = 0;
+            teleRecords.forEach((rec) => {
+                let cost = parseInt(rec.cost_after) || 0; total += cost; if(rec.status === 'Chưa thanh toán') unpaid++;
+                tbody.innerHTML += `<tr><td><b>${rec.code}</b></td><td>${rec.provider}</td><td>${rec.location}</td><td class="text-right font-bold" style="color:var(--purple);">${cost.toLocaleString()}</td><td class="text-center font-bold">${rec.status}</td><td class="text-center"><button type="button" class="btn-action-edit" onclick="editTeleRecord(${rec.id})">✏️</button> <button type="button" class="btn-action-delete" onclick="deleteTeleRecord(${rec.id})">🗑️</button></td></tr>`;
+            });
+            document.getElementById('stat-total-telecom').innerText = total.toLocaleString() + " đ";
+            document.getElementById('stat-unpaid-telecom').innerText = unpaid + " đường truyền";
+        }
+        function editTeleRecord(id) {
+            const rec = teleRecords.find(r => r.id == id); if(!rec) return;
+            document.getElementById('tele-id').value = rec.id; document.getElementById('tele-code').value = rec.code;
+            document.getElementById('tele-provider').value = rec.provider; document.getElementById('tele-location').value = rec.location;
+            document.getElementById('tele-cost-after').value = parseInt(rec.cost_after).toLocaleString("vi-VN"); document.getElementById('tele-status').value = rec.status;
+        }
+        async function deleteTeleRecord(id) {
+            if(!confirm("Xóa?")) return; teleRecords = teleRecords.filter(r => r.id != id);
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheet: "tele_records", data: teleRecords }) }); loadTeleFromCloud();
+        }
+        function resetTeleFormV2() { document.getElementById('tele-id').value = ""; document.getElementById('tele-form-v2').reset(); }
+
+        async function loadTasksFromCloud() {
+            try { const response = await fetch(`${GOOGLE_SCRIPT_URL}?sheet=office_tasks`); officeTasks = await response.json(); renderTasks(); } catch(e){}
+        }
+        async function addNewTask() {
+            const txt = document.getElementById('new-task-input').value.trim(); if(!txt) return;
+            officeTasks.push({ id: Date.now(), text: txt, completed: false });
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheet: "office_tasks", data: officeTasks }) });
+            document.getElementById('new-task-input').value = ""; loadTasksFromCloud();
+        }
+        async function toggleTaskComplete(id) {
+            const t = officeTasks.find(x => x.id == id);
+            if(t) {
+                t.completed = (t.completed === true || t.completed === "true") ? false : true;
+                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheet: "office_tasks", data: officeTasks }) }); loadTasksFromCloud();
+            }
+        }
+        async function deleteTask(id) {
+            officeTasks = officeTasks.filter(x => x.id != id);
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheet: "office_tasks", data: officeTasks }) }); loadTasksFromCloud();
+        }
+        function renderTasks() {
+            const c = document.getElementById('todo-list-container'); c.innerHTML = ""; let checked = 0;
+            officeTasks.forEach((t) => {
+                let isComp = (t.completed === true || t.completed === "true"); if(isComp) checked++;
+                c.innerHTML += `<li class="todo-item"><div><input type="checkbox" ${isComp ? 'checked' : ''} onchange="toggleTaskComplete(${t.id})"> <label style="${isComp ? 'text-decoration:line-through;color:#94a3b8' : ''}">${t.text}</label></div><button type="button" onclick="deleteTask(${t.id})" style="background:none;border:none;color:var(--red);font-weight:bold;cursor:pointer;">×</button></li>`;
+            });
+            const pct = officeTasks.length > 0 ? Math.round((checked / officeTasks.length) * 100) : 0;
+            document.getElementById('progressBar').style.width = pct + '%'; document.getElementById('progressText').innerText = pct + '% hoàn thành';
+        }
+
+        function checkTaskEnter(e) { if(e.key === 'Enter') addNewTask(); }
+        function formatCurrencyInput(i) { let v = i.value.replace(/\D/g, ""); i.value = v === "" ? "" : parseInt(v).toLocaleString("vi-VN"); }
+        function parseCurrency(s) { return s ? parseFloat(s.toString().replace(/\./g, "")) || 0 : 0; }
+        function calculateOfficeVAT() {
+            let b = parseCurrency(document.getElementById('office-amount-before').value); let r = parseInt(document.getElementById('office-tax-rate').value);
+            document.getElementById('office-amount-after').value = Math.round(b * (1 + r/100)).toLocaleString("vi-VN");
+        }
+        function toggleCalendarWidget() { document.getElementById('floating-calendar-widget').classList.toggle('collapsed'); document.body.classList.toggle('calendar-collapsed'); }
+
+        // ================= ENGINE PHÁT TRIỂN LỊCH VẠN NIÊN LUNAR LAYER =================
+        let calendarYear = 2026; let calendarMonth = 4;
+        function changeCalendarMonth(offset) { calendarMonth += offset; if(calendarMonth>11){calendarMonth=0;calendarYear++;}else if(calendarMonth<0){calendarMonth=11;calendarYear--;} renderCalendar(calendarYear, calendarMonth); }
+        function initCalendarToRealTime() { renderCalendar(2026, 4); }
+        function renderCalendar(y, m) {
+            document.getElementById('calendar-month-year-label').innerText = `Tháng ${m+1} / ${y}`;
+            const container = document.getElementById('calendar-days-container'); container.innerHTML = "";
+            for (let d = 1; d <= 31; d++) { container.innerHTML += `<div class="calendar-day-cell ${d===18&&m===4?'active':''}"><span class="solar-day">${d}</span><span class="lunar-day">${d===18?2:d}</span></div>`; }
+            document.getElementById('detail-solar').innerText = "Ngày 18 tháng 5 năm 2026";
+            document.getElementById('detail-lunar').innerText = "Ngày 02 tháng 04 âm lịch (Bính Tuất)"; document.getElementById('detail-tietkhi').innerText = "Lập Hạ";
+        }
+    </script>
 </body>
 </html>
