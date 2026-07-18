@@ -3,223 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ DOANH NGHIỆP TOÀN DIỆN MASTER</title>
+    <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG CLOUD</title>
     
     <!-- Core Engine Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-body: #090d16;
-            --surface-card: rgba(17, 24, 39, 0.7);
-            --surface-glass: rgba(255, 255, 255, 0.03);
-            --primary: #3b82f6;
-            --primary-glow: rgba(59, 130, 246, 0.3);
-            --success: #10b981;
-            --success-glow: rgba(16, 185, 129, 0.2);
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --purple: #8b5cf6;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --primary: #0f172a;
+            --blue: #2563eb;
+            --blue-hover: #1d4ed8;
+            --orange: #ea580c;
+            --green: #059669;
+            --purple: #7c3aed;
+            --red: #dc2626;
+            --border-color: #cbd5e1;
+            --text-main: #334155;
+            --bg-light: #f8fafc;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
-            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg-body) 70%);
-            color: var(--text-main); min-height: 100vh; padding: 20px; overflow-x: hidden;
+            font-family: 'Times New Roman', Times, serif; 
+            font-size: 13px; margin: 0; padding: 15px; background: var(--bg-light); color: var(--text-main);
         }
+        
+        .workspace { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+        @media (max-width: 1150px) { .workspace { grid-template-columns: 1fr; } }
 
-        /* Responsive Layout Grid */
-        .app-container { display: grid; grid-template-columns: 1fr 360px; gap: 24px; max-width: 1750px; margin: 0 auto; }
-        @media (max-width: 1250px) { .app-container { grid-template-columns: 1fr; } }
-
-        /* Status Top Bar */
-        .status-bar {
-            display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;
-            background: var(--surface-card); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border-glass); border-radius: 12px; margin-bottom: 20px; font-weight: 600; font-size: 13px;
+        .db-status-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 15px; background: #e2e8f0; border-bottom: 1px solid var(--border-color);
+            font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px;
         }
-        .pulse-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 8px; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; background-color: var(--green); }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
+        .header h1 { font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Premium Glass Card */
-        .glass-card { 
-            background: var(--surface-card); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-glass); border-radius: 16px; padding: 24px; margin-bottom: 24px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-        .card-title { font-size: 16px; font-weight: 800; tracking: 0.5px; text-transform: uppercase; color: var(--text-main); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary); padding-left: 12px; }
+        .live-clock-box { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 6px; font-family: monospace; font-size: 14px; text-align: right; }
 
-        /* Modern Dashboard Widgets */
-        .widget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .widget { background: var(--surface-glass); border: 1px solid var(--border-glass); padding: 20px; border-radius: 12px; transition: transform 0.3s; }
-        .widget:hover { transform: translateY(-3px); border-color: rgba(59, 130, 246, 0.3); }
-        .widget-title { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; }
-        .widget-value { font-size: 20px; font-weight: 800; margin-top: 8px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--blue); border: 1px solid #e2e8f0; border-left-width: 5px; }
+        .stat-card.orange { border-left-color: var(--orange); }
+        .stat-card.green { border-left-color: var(--green); }
+        .stat-card.purple { border-left-color: var(--purple); }
+        .stat-title { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; letter-spacing: 0.5px; }
+        .stat-value { font-size: 16px; font-weight: bold; margin-top: 5px; color: var(--primary); }
+        
+        .progress-box { margin-top: 8px; }
+        .progress-bar-bg { background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 4px; }
+        .progress-bar-fill { background: var(--green); height: 100%; width: 0%; transition: width 0.4s; }
 
-        /* Navigation Advanced Tabs */
-        .tab-navigation { display: flex; gap: 8px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 12px; border: 1px solid var(--border-glass); margin-bottom: 24px; width: fit-content; }
-        .tab-btn { padding: 10px 20px; border: none; background: none; font-weight: 700; color: var(--text-muted); border-radius: 8px; cursor: pointer; transition: 0.3s; font-size: 13px; }
-        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px var(--primary-glow); }
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
-
-        /* Cyberpunk Interactive Forms */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 16px; }
-        .input-wrapper { display: flex; flex-direction: column; gap: 6px; }
-        .input-wrapper label { font-size: 12px; font-weight: 700; color: var(--text-muted); }
-        .input-wrapper input, .input-wrapper select { background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 8px; padding: 10px 14px; color: white; font-size: 13px; outline: none; transition: 0.2s; }
-        .input-wrapper input:focus, .input-wrapper select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
-
-        /* Buttons Core */
-        .btn { padding: 10px 20px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: var(--success); color: white; }
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; }
+        .nav-tab { padding: 10px 20px; border: none; background: none; font-weight: bold; color: #64748b; cursor: pointer; transition: 0.3s; font-size: 14px; outline: none; }
+        .nav-tab.active { color: var(--blue); border-bottom: 3px solid var(--blue); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .main-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .card-title { font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--blue); padding-left: 10px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-weight: bold; color: #475569; }
+        .form-group input, .form-group select, .form-group textarea { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; outline: none; font-family: 'Times New Roman'; }
+        
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; }
+        .btn-primary { background: var(--blue); color: white; }
+        .btn-success { background: var(--green); color: white; }
         .btn-purple { background: var(--purple); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-
-        /* Data Tables Modern Style */
-        .scroll-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-glass); background: rgba(0,0,0,0.2); }
-        .custom-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; font-size: 12px; }
-        .custom-table th { background: rgba(15, 23, 42, 0.9); color: var(--text-muted); font-weight: 700; padding: 14px; border-bottom: 1px solid var(--border-glass); text-transform: uppercase; letter-spacing: 0.5px; }
-        .custom-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .custom-table tbody tr:hover { background: rgba(255,255,255,0.02); }
-        .input-inline { background: rgba(59, 130, 246, 0.1); border: 1px dashed var(--primary); border-radius: 4px; padding: 4px; text-align: center; color: white; font-weight: bold; outline: none; width: 55px; }
-
-        /* SIDEBAR: ĐỒNG HỒ & LỊCH VẠN NIÊN SIÊU CẤP */
-        .sidebar-panel { display: flex; flex-direction: column; gap: 20px; }
+        .btn-danger { background: var(--red); color: white; }
+        .btn-action-edit { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-action-delete { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         
-        /* Đồng hồ LED Futuristic */
-        .digital-clock-card {
-            background: linear-gradient(135deg, #1e1b4b, #0f0b26); border: 1px solid var(--border-glass);
-            border-radius: 16px; padding: 20px; text-align: center; box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.15);
-        }
-        .clock-time { font-family: 'Share Tech Mono', monospace; font-size: 34px; font-weight: 700; color: #38bdf8; text-shadow: 0 0 15px rgba(56, 189, 248, 0.6); }
-        .clock-date { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
-
-        /* Giao diện khối lịch hiện đại */
-        .cal-container { background: var(--surface-card); border: 1px solid var(--border-glass); border-radius: 16px; padding: 16px; }
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 800; }
-        .cal-btn { background: var(--surface-glass); border: 1px solid var(--border-glass); color: white; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
-        .cal-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-bottom: 6px; }
-        .cal-week-name { font-size: 11px; font-weight: 800; color: var(--text-muted); padding: 4px 0; }
-        .cal-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .table-responsive { overflow-x: auto; margin-top: 15px; }
+        .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        .main-table th { background: #f1f5f9; color: var(--primary); padding: 10px; border: 1px solid var(--border-color); font-weight: bold; text-align: center; }
+        .main-table td { padding: 8px 10px; border: 1px solid var(--border-color); }
+        .main-table tbody tr:hover { background-color: #f8fafc; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: bold; }
         
-        .cal-cell { 
-            aspect-ratio: 1; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02);
-            background: rgba(255,255,255,0.01); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;
-        }
-        .cal-cell:hover { background: rgba(59, 130, 246, 0.15); border-color: var(--primary); }
-        .cal-cell.today-focus {
-            background: linear-gradient(135deg, var(--primary), #1d4ed8) !important;
-            color: white !important; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); border: none;
-        }
-        .cal-cell.today-focus .lun-num { color: #fef08a !important; }
-        .sol-num { font-size: 13px; font-weight: 800; }
-        .lun-num { font-size: 9px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
-        
-        /* Khối hiển thị dữ liệu vạn niên cao cấp nhất */
-        .vannien-board { background: rgba(0,0,0,0.2); border: 1px solid var(--border-glass); border-radius: 12px; padding: 14px; font-size: 12px; line-height: 1.6; }
-        .vannien-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.02); }
-        .vannien-row span:first-child { color: var(--text-muted); font-weight: 600; }
-        .vannien-row span:last-child { font-weight: 700; text-align: right; }
-        .badge-hoangdao { background: #fef3c7; color: #d97706; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; }
-        .badge-hacdao { background: #334155; color: #cbd5e1; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; }
+        .input-salary-day { width: 50px; padding: 4px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; color: var(--blue); background: #f0fdf4; outline: none; }
+        .input-edit { width: 60px; padding: 4px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; color: var(--blue); background: #eff6ff; outline: none; }
+        .input-edit-money { width: 95px; text-align: right; }
 
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
-        .modal-content { background: #0f172a; border: 1px solid var(--border-glass); padding: 24px; border-radius: 16px; width: 80%; max-width: 800px; max-height: 85vh; overflow-y: auto; position: relative; }
-        .close-modal { position: absolute; right: 20px; top: 20px; font-size: 24px; cursor: pointer; color: var(--text-muted); }
+        .file-upload-zone { border: 2px dashed var(--border-color); padding: 15px; border-radius: 6px; text-align: center; background: var(--bg-light); cursor: pointer; transition: 0.3s; }
+        .file-upload-zone:hover { border-color: var(--blue); background: #eff6ff; }
+        .preview-area { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .preview-badge { background: #e2e8f0; padding: 4px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: bold; border: 1px solid #cbd5e1; }
+        .preview-badge span.remove-file { color: var(--red); cursor: pointer; font-size: 14px; font-weight: bold; }
+        .preview-badge span.view-file { color: var(--blue); cursor: pointer; text-decoration: underline; }
+        
+        .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid var(--border-color); padding: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); align-self: start; }
+        .calendar-widget-title { font-size: 14px; font-weight: bold; text-align: center; color: var(--primary); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--blue); }
+        .calendar-month-selector { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; }
+        .calendar-month-selector button { padding: 2px 8px; border: 1px solid var(--border-color); background: white; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+        .calendar-day-name { font-weight: bold; padding: 6px 0; background: #e2e8f0; border-radius: 4px; color: #475569; font-size: 11px; }
+        .calendar-day-cell { aspect-ratio: 1; border: 1px solid #f1f5f9; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; background: white; transition: 0.2s; }
+        .calendar-day-cell:hover { background-color: #eff6ff; }
+        .calendar-day-cell.active-today { background: linear-gradient(135deg, #1d4ed8, var(--blue)) !important; color: white !important; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4); }
+        .calendar-day-cell.active-today .lunar-day-num { color: #fef08a !important; }
+        .solar-day-num { font-size: 13px; font-weight: bold; }
+        .lunar-day-num { font-size: 9px; color: var(--red); margin-top: 1px; }
+        .van-nien-details { background: var(--bg-light); border: 1px dashed var(--border-color); border-radius: 6px; padding: 10px; margin-top: 15px; font-size: 12px; line-height: 1.5; }
+        .van-nien-details strong { color: var(--blue); }
+        .vannien-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #e2e8f0; }
+        .vannien-row span:first-child { color: #64748b; font-weight: bold; }
+        .vannien-row span:last-child { font-weight: bold; text-align: right; }
+
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 80%; max-width: 800px; max-height: 85vh; overflow-y: auto; position: relative; color: var(--text-main); }
+        .close-modal { position: absolute; right: 15px; top: 15px; font-size: 24px; cursor: pointer; color: #64748b; }
     </style>
 </head>
 <body>
 
-    <div class="status-bar">
-        <div><span class="pulse-dot"></span><span>VINAPACO ERM CLOUD CORE SYSTEM ACTIVE</span></div>
-        <div style="color: var(--text-muted)">Hệ thống thời gian thực tập trung (Mốc năm hành chính: 2026)</div>
+    <div class="db-status-bar">
+        <div>
+            <span class="status-dot"></span>
+            <span>Hệ thống ERP Toàn Diện - Đã kết nối cơ sở dữ liệu Thống kê & Lịch Vạn Niên Trực Tuyến</span>
+        </div>
+        <div style="font-size: 11px; color: #64748b;">Trạng thái: <strong>Classic Style - Công thức Lương Thời Gian chuẩn Lương cơ bản</strong></div>
     </div>
 
-    <div class="app-container">
-        
-        <!-- CỘT TRÁI: PHÂN HỆ NGHIỆP VỤ & LƯƠNG NHÂN VIÊN -->
-        <div class="main-workspace">
-            
-            <!-- BIỂU ĐỒ THỐNG KÊ DASHBOARD TRỰC QUAN -->
-            <div class="widget-grid">
-                <div class="widget">
-                    <div class="widget-title">Tổng Giá Trị Hồ Sơ</div>
-                    <div class="widget-value" id="dash-total-pay">0 đ</div>
+    <div class="workspace">
+        <div class="main-body">
+            <div class="header">
+                <h1>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG CLOUD</h1>
+                <div class="live-clock-box" id="live-system-clock">Thứ ---, 00/00/0000 00:00:00</div>
+            </div>
+
+            <!-- DASHBOARD BOX -->
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-title">Tổng Hồ Sơ Đăng Ký</div>
+                    <div class="stat-value" id="dash-total-pay">0 đ</div>
+                    <div class="progress-box"><span style="font-size:10px; color:#64748b;" id="dash-pay-count">0 hồ sơ</span></div>
                 </div>
-                <div class="widget" style="border-left: 3px solid var(--success)">
-                    <div class="widget-title">Đã Giải Ngân Chi</div>
-                    <div class="widget-value" id="dash-paid-pay" style="color:var(--success)">0 đ</div>
-                    <div class="progress-box">
-                        <div class="progress-bar-bg"><div class="progress-bar-fill" id="dash-paid-progress"></div></div>
-                    </div>
+                <div class="stat-card green">
+                    <div class="stat-title">Hồ Sơ Đã Giải Ngân</div>
+                    <div class="stat-value" id="dash-paid-pay" style="color:var(--green);">0 đ</div>
+                    <div class="progress-box"><div class="progress-bar-bg"><div class="progress-bar-fill" id="dash-paid-progress"></div></div></div>
                 </div>
-                <div class="widget" style="border-left: 3px solid var(--warning)">
-                    <div class="widget-title">Hồ Sơ Chờ Phê Duyệt</div>
-                    <div class="widget-value" id="dash-pending-pay" style="color:var(--warning)">0 đ</div>
+                <div class="stat-card orange">
+                    <div class="stat-title">Hồ Sơ Chờ Phê Duyệt</div>
+                    <div class="stat-value" id="dash-pending-pay" style="color:var(--orange);">0 đ</div>
+                    <div class="progress-box"><span style="font-size:10px; color:#64748b;" id="dash-pending-count">0 đang treo</span></div>
                 </div>
-                <div class="widget" style="border-left: 3px solid var(--purple)">
-                    <div class="widget-title">Cước Hạ Tầng Viễn Thông</div>
-                    <div class="widget-value" id="dash-total-tel" style="color:var(--purple)">0 đ</div>
+                <div class="stat-card purple">
+                    <div class="stat-title">Cước Viễn Thông Tháng</div>
+                    <div class="stat-value" id="dash-total-tel" style="color:var(--purple);">0 đ</div>
+                    <div class="progress-box"><span style="font-size:10px; color:#64748b;" id="dash-unpaid-tel">Chưa chi: 0 đ</span></div>
                 </div>
             </div>
 
-            <!-- Tab Navigation Control -->
-            <div class="tab-navigation">
-                <button type="button" class="tab-btn active" onclick="switchMainTab('salary')">💵 Bảng Tính Lương 16 Nhân Viên</button>
-                <button type="button" class="tab-btn" onclick="switchMainTab('payment')">🧾 Đề Nghị Thanh Toán Hành Chính</button>
-                <button type="button" class="tab-btn" onclick="switchMainTab('telecom')">🌐 Cước Viễn Thông & Internet</button>
+            <div class="nav-tabs">
+                <button type="button" class="nav-tab active" onclick="switchMainTab('salary')">💵 Tính Lương 16 Nhân Viên</button>
+                <button type="button" class="nav-tab" onclick="switchMainTab('payment')">🧾 Hồ Sơ Thanh Toán Văn Phòng</button>
+                <button type="button" class="nav-tab" onclick="switchMainTab('telecom')">🌐 Cước Viễn Thông & Internet</button>
             </div>
 
-            <!-- ================= TAB 1: BẢNG TÍNH LƯƠNG NHÂN VIÊN ================= -->
-            <div id="tab-salary" class="tab-pane active">
-                <div class="glass-card">
-                    <div class="card-title">Điều hướng chu kỳ kế toán</div>
+            <!-- ================= TAB 1: BẢNG LƯƠNG NHÂN VIÊN ================= -->
+            <div id="tab-salary" class="tab-content active">
+                <div class="main-card">
+                    <div class="card-title">Bộ lọc điều hướng thời gian lương</div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
-                        <div class="input-wrapper" style="min-width: 150px;">
-                            <label>Tháng lương kết xuất</label>
+                        <div class="form-group" style="min-width: 140px;">
+                            <label>Tháng lương báo cáo</label>
                             <input type="month" id="filter-month" value="2026-05">
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Hệ Thống</button>
-                        <button type="button" class="btn btn-purple" onclick="saveSalaryToCloud()">💾 Lưu Lên Cloud DB</button>
-                        <button type="button" class="btn btn-success" onclick="exportSalaryToExcelJSStandard()">📥 Xuất Excel Cấu Trúc Đẹp Chuẩn</button>
+                        <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Từ Cloud</button>
+                        <button type="button" class="btn btn-purple" onclick="saveSalaryToCloud()">💾 Lưu Lên Cloud</button>
+                        <button type="button" class="btn btn-success" onclick="exportSalaryToExcelJSStandard()">📥 Xuất Excel Định Dạng Chuẩn Đẹp</button>
                     </div>
                 </div>
 
-                <div class="glass-card">
-                    <div class="card-title">BẢNG LƯƠNG CHI TIẾT PHÒNG BAN VĂN PHÒNG (KHỚP CHUẨN Ô SỐ LIỆU)</div>
-                    <div class="scroll-wrapper">
-                        <table class="custom-table" id="main-salary-table">
+                <div class="main-card">
+                    <div class="card-title">BẢNG TỔNG HỢP CHI TRẢ LƯƠNG CỦA 16 NHÂN VIÊN (ĐÃ KHỚP CHUẨN Ô SỐ LIỆU)</div>
+                    <div class="table-responsive">
+                        <table class="main-table" id="main-salary-table" style="font-size: 11px;">
                             <thead>
-                                <tr>
+                                <tr style="background-color: #e2e8f0;">
                                     <th rowspan="2" class="text-center">STT</th>
                                     <th rowspan="2">HỌ VÀ TÊN</th>
                                     <th rowspan="2">Số tài khoản</th>
                                     <th colspan="4" class="text-center">Lương Cơ Bản HĐLĐ</th>
-                                    <th colspan="3" class="text-center" style="color:var(--primary)">Số Ngày Công Thực Tế</th>
+                                    <th colspan="3" class="text-center" style="background-color: #e0f2fe;">Số Ngày Công Thực Tế</th>
                                     <th colspan="3" class="text-center">Chi Tiết Lương Thực Nhận</th>
-                                    <th colspan="4" class="text-center" style="color:var(--purple)">Cơ cấu Lương Công Việc (CV)</th>
-                                    <th rowspan="2" class="text-right">Tổng LCB + LCV</th>
-                                    <th rowspan="2" class="text-right" style="color:var(--danger)">BHTN+BHXH+BHYT</th>
-                                    <th rowspan="2" class="text-center" style="background: rgba(239,68,68,0.05)">Tạm Ứng</th>
-                                    <th rowspan="2" class="text-right" style="color:var(--warning)">Thực Lĩnh CB+CV</th>
+                                    <th colspan="4" class="text-center" style="background-color: #f3e8ff;">Cơ cấu Lương Công Việc (CV)</th>
+                                    <th rowspan="2" class="text-right" style="background-color: #f8fafc; color: var(--blue);">Tổng LCB + LCV</th>
+                                    <th rowspan="2" class="text-right" style="color: var(--red);">BHTN+BHXH+BHYT</th>
+                                    <th rowspan="2" class="text-center" style="background-color: #fee2e2; width: 115px;">Tạm Ứng</th>
+                                    <th rowspan="2" class="text-right" style="background-color: #fef08a;">Thực Lĩnh CB+CV</th>
                                 </tr>
-                                <tr>
+                                <tr style="background-color: #f1f5f9;">
                                     <th>Hệ số LCB</th><th>Phụ cấp LCB</th><th>Lương Ký HĐLĐ</th><th>Lương cơ bản</th>
-                                    <th>Thời gian (NT)</th><th>Phép (P)</th><th>Lễ, VR</th>
+                                    <th style="background-color: #e0f2fe;">Thời gian (NT)</th><th style="background-color: #e0f2fe;">Phép (P)</th><th style="background-color: #e0f2fe;">Lễ, VR</th>
                                     <th>Lương Thời Gian</th><th>Lương Lễ, Phép</th><th>Tổng Lương CB</th>
-                                    <th>Hệ số LCV</th><th>Phụ cấp LCV</th><th>Lương CV Gốc</th><th>Lương CV Thực Tế</th>
+                                    <th>Hệ số LCV</th><th>Phụ cấp LCV</th><th>Lương CV Gốc</th><th style="background-color: #f3e8ff;">Lương CV Thực Tế</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-salary"></tbody>
@@ -228,561 +214,283 @@
                 </div>
             </div>
 
-            <!-- ================= TAB 2: HỒ SƠ THANH TOÁN VĂN PHÒNG ================= -->
-            <div id="tab-payment" class="tab-pane">
-                <div class="glass-card">
+            <!-- ================= TAB 2: HỒ SƠ THANH TOÁN DOANH NGHIỆP ================= -->
+            <div id="tab-payment" class="tab-content">
+                <div class="main-card">
                     <div class="card-title" id="payment-form-title">Tạo mới Đề nghị / Hồ sơ Thanh toán Văn phòng</div>
                     <form id="payment-main-form" onsubmit="savePaymentRecord(event)">
                         <input type="hidden" id="payment-edit-index" value="-1">
-                        <div class="form-grid">
-                            <div class="input-wrapper">
-                                <label>Nội dung chi / Tờ trình</label>
-                                <input type="text" id="pay-content" required placeholder="Nội dung đề xuất...">
-                            </div>
-                            <div class="input-wrapper">
-                                <label>Đơn vị thụ hưởng</label>
-                                <input type="text" id="pay-beneficiary" required placeholder="Tên đơn vị nhận...">
-                            </div>
-                            <div class="input-wrapper">
-                                <label>Số tài khoản thụ hưởng</label>
-                                <input type="text" id="pay-account" required placeholder="Số tài khoản...">
-                            </div>
-                            <div class="input-wrapper">
-                                <label>Tại Ngân hàng</label>
-                                <input type="text" id="pay-bank" required placeholder="Tên ngân hàng mở...">
-                            </div>
+                        <div class="grid-form">
+                            <div class="form-group"><label>Nội dung chi / Tờ trình</label><input type="text" id="pay-content" required></div>
+                            <div class="form-group"><label>Đơn vị thụ hưởng</label><input type="text" id="pay-beneficiary" required></div>
+                            <div class="form-group"><label>Số tài khoản thụ hưởng</label><input type="text" id="pay-account" required></div>
+                            <div class="form-group"><label>Tại Ngân hàng</label><input type="text" id="pay-bank" required></div>
                         </div>
-
-                        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));">
-                            <div class="input-wrapper"><label>ĐVT</label><input type="text" id="pay-unit" required placeholder="Bộ, Chiếc..."></div>
-                            <div class="input-wrapper"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" required oninput="calculatePaymentTax()"></div>
-                            <div class="input-wrapper"><label>Đơn giá trước thuế (đ)</label><input type="number" id="pay-price" value="0" min="0" required oninput="calculatePaymentTax()"></div>
-                            <div class="input-wrapper">
-                                <label>Thuế suất (%)</label>
-                                <select id="pay-tax-rate" onchange="calculatePaymentTax()">
-                                    <option value="0">0%</option><option value="5">5%</option><option value="8" selected>8%</option><option value="10">10%</option>
-                                </select>
-                            </div>
-                            <div class="input-wrapper"><label>Tiền thuế VAT (đ)</label><input type="text" id="pay-tax-amount" readonly style="background:rgba(255,255,255,0.05)"></div>
-                            <div class="input-wrapper"><label>Tổng sau thuế (đ)</label><input type="text" id="pay-total" readonly style="color:var(--warning); background:rgba(255,255,255,0.05)"></div>
-                            <div class="input-wrapper">
-                                <label>Trạng thái hồ sơ</label>
-                                <select id="pay-status">
-                                    <option value="Chưa duyệt">❌ Chưa phê duyệt</option><option value="Đã duyệt chi">✅ Đã giải ngân chi</option>
-                                </select>
-                            </div>
+                        <div class="grid-form" style="grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));">
+                            <div class="form-group"><label>ĐVT</label><input type="text" id="pay-unit" required></div>
+                            <div class="form-group"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" required oninput="calculatePaymentTax()"></div>
+                            <div class="form-group"><label>Đơn giá trước thuế (đ)</label><input type="number" id="pay-price" value="0" min="0" required oninput="calculatePaymentTax()"></div>
+                            <div class="form-group"><label>Thuế suất (%)</label><select id="pay-tax-rate" onchange="calculatePaymentTax()"><option value="0">0%</option><option value="5">5%</option><option value="8" selected>8%</option><option value="10">10%</option></select></div>
+                            <div class="form-group"><label>Tiền thuế VAT (đ)</label><input type="text" id="pay-tax-amount" readonly style="background:#f1f5f9; font-weight:bold;"></div>
+                            <div class="form-group"><label>Tổng sau thuế (đ)</label><input type="text" id="pay-total" readonly style="background:#fef08a; font-weight:bold;"></div>
+                            <div class="form-group"><label>Trạng thái</label><select id="pay-status"><option value="Chưa duyệt">❌ Chưa phê duyệt</option><option value="Đã duyệt chi">✅ Đã giải ngân chi</option></select></div>
                         </div>
-
-                        <!-- MULTI FILE UPLOAD CHỨNG TỪ -->
-                        <div class="input-wrapper" style="margin-bottom: 20px;">
-                            <label>Hóa đơn điện tử, Tài liệu minh chứng đính kèm (Chọn được nhiều file cùng lúc)</label>
-                            <div class="file-upload-zone" onclick="document.getElementById('pay-files').click()">
-                                📂 Nhấp vào đây để tải lên một hoặc nhiều tệp hóa đơn chứng từ liên quan
-                                <input type="file" id="pay-files" multiple style="display:none;" onchange="handlePaymentFiles(this.files)">
-                            </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label>Tài liệu đính kèm (Nhiều file)</label>
+                            <div class="file-upload-zone" onclick="document.getElementById('pay-files').click()">📂 Chọn nhiều chứng từ thanh toán văn phòng<input type="file" id="pay-files" multiple style="display:none;" onchange="handlePaymentFiles(this.files)"></div>
                             <div class="preview-area" id="pay-file-preview-zone"></div>
                         </div>
-
-                        <div style="display: flex; gap: 10px;">
-                            <button type="submit" class="btn btn-primary">💾 Xác Nhận Lưu Hồ Sơ</button>
-                            <button type="button" class="btn btn-danger" onclick="resetPaymentForm()">🔄 Hủy Bỏ</button>
-                        </div>
+                        <div style="display: flex; gap: 10px;"><button type="submit" class="btn btn-primary">💾 Lưu Hồ Sơ</button><button type="button" class="btn btn-danger" onclick="resetPaymentForm()">Hủy</button></div>
                     </form>
                 </div>
-
-                <div class="glass-card">
-                    <div class="card-title">TỔNG HỢP TIẾN ĐỘ GIẢI NGÂN HỒ SƠ THANH TOÁN HÀNH CHÍNH</div>
-                    <div class="scroll-wrapper">
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">STT</th><th>Nội dung thanh toán</th><th>Đơn vị thụ hưởng</th><th>Tài khoản / Ngân hàng</th><th class="text-center">Số lượng</th><th class="text-right">Tiền trước thuế</th><th class="text-right">Thuế VAT</th><th class="text-right">Tổng thanh toán</th><th class="text-center">Trạng thái</th><th class="text-center">Chứng từ</th><th class="text-center">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-payment"></tbody>
-                        </table>
-                    </div>
+                <div class="main-card">
+                    <div class="card-title">DANH SÁCH TỔNG HỢP HỒ SƠ THANH TOÁN</div>
+                    <div class="table-responsive"><table class="main-table"><thead><tr style="background:#e2e8f0;"><th class="text-center">STT</th><th>Nội dung thanh toán</th><th>Đơn vị thụ hưởng</th><th>Tài khoản / Ngân hàng</th><th class="text-center">Số lượng</th><th class="text-right">Tiền trước thuế</th><th class="text-right">Thuế VAT</th><th class="text-right">Tổng thanh toán</th><th class="text-center">Trạng thái</th><th class="text-center">Chứng từ</th><th class="text-center">Hành động</th></tr></thead><tbody id="tbody-payment"></tbody></table></div>
                 </div>
             </div>
 
-            <!-- ================= TAB 3: QUẢN LÝ CƯỚC HẠ TẦNG VIỄN THÔNG ================= -->
-            <div id="tab-telecom" class="tab-pane">
-                <div class="glass-card">
-                    <div class="card-title" id="telecom-form-title">Cập nhật cước dịch vụ Internet & Đường truyền số liệu</div>
+            <!-- ================= TAB 3: QUẢN LÝ CƯỚC VIỄN THÔNG ================= -->
+            <div id="tab-telecom" class="tab-content">
+                <div class="main-card">
+                    <div class="card-title">Cập nhật cước dịch vụ Internet & Đường truyền số liệu</div>
                     <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)">
                         <input type="hidden" id="telecom-edit-index" value="-1">
-                        <div class="form-grid">
-                            <div class="input-wrapper">
-                                <label>Tên đường truyền / ID thuê bao</label>
-                                <input type="text" id="tel-id" required placeholder="Mã FTTH...">
-                            </div>
-                            <div class="input-wrapper">
-                                <label>Nhà cung cấp mạng (ISP)</label>
-                                <select id="tel-provider">
-                                    <option value="VNPT">VNPT Tập đoàn Viễn thông</option><option value="Viettel">Viettel Telecom</option><option value="FPT">FPT Telecom</option><option value="CMC">CMC Telecom</option>
-                                </select>
-                            </div>
-                            <div class="input-wrapper"><label>Kỳ cước thanh toán</label><input type="month" id="tel-period" value="2026-05"></div>
-                            <div class="input-wrapper"><label>Mức cước trọn gói sau thuế (đ)</label><input type="number" id="tel-cost" value="0" min="0" required></div>
-                            <div class="input-wrapper">
-                                <label>Trạng thái thanh toán</label>
-                                <select id="tel-status">
-                                    <option value="Chưa thanh toán">❌ Chưa thanh toán</option><option value="Đã thanh toán">✅ Đã thanh toán</option>
-                                </select>
-                            </div>
+                        <div class="grid-form">
+                            <div class="form-group"><label>Tên đường truyền / ID</label><input type="text" id="tel-id" required></div>
+                            <div class="form-group"><label>Nhà mạng</label><select id="tel-provider"><option value="VNPT">VNPT</option><option value="Viettel">Viettel</option><option value="FPT">FPT</option><option value="CMC">CMC</option></select></div>
+                            <div class="form-group"><label>Kỳ cước</label><input type="month" id="tel-period" value="2026-05"></div>
+                            <div class="form-group"><label>Mức cước sau thuế (đ)</label><input type="number" id="tel-cost" value="0" min="0" required></div>
+                            <div class="form-group"><label>Trạng thái</label><select id="tel-status"><option value="Chưa thanh toán">❌ Chưa thanh toán</option><option value="Đã thanh toán">✅ Đã thanh toán</option></select></div>
                         </div>
-
-                        <div class="input-wrapper" style="margin-bottom:15px;">
-                            <label>Hóa đơn / Biên lai viễn thông (Chọn được nhiều file)</label>
-                            <div class="file-upload-zone" onclick="document.getElementById('tel-files').click()">
-                                🌐 Tải lên thông báo cước mạng internet cơ quan
-                                <input type="file" id="tel-files" multiple style="display:none;" onchange="handleTelecomFiles(this.files)">
-                            </div>
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <label>Biên lai đính kèm (Nhiều file)</label>
+                            <div class="file-upload-zone" onclick="document.getElementById('tel-files').click()">🌐 Tải lên thông báo cước nhiều file<input type="file" id="tel-files" multiple style="display:none;" onchange="handleTelecomFiles(this.files)"></div>
                             <div class="preview-area" id="tel-file-preview-zone"></div>
                         </div>
-
-                        <div style="display: flex; gap: 10px;">
-                            <button type="submit" class="btn btn-purple">💾 Lưu Cước Đường Truyền</button>
-                            <button type="button" class="btn btn-danger" onclick="resetTelecomForm()">Hủy</button>
-                        </div>
+                        <div style="display: flex; gap: 10px;"><button type="submit" class="btn btn-purple">💾 Lưu Cước</button><button type="button" class="btn btn-danger" onclick="resetTelecomForm()">Hủy</button></div>
                     </form>
                 </div>
-
-                <div class="glass-card">
-                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET DOANH NGHIỆP</div>
-                    <div class="scroll-wrapper">
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">STT</th><th>Mã thuê bao / Đường truyền</th><th>Nhà mạng</th><th class="text-center">Kỳ cước</th><th class="text-right">Chi phí thanh toán</th><th class="text-center">Trạng thái</th><th class="text-center">Chứng từ</th><th class="text-center">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-telecom"></tbody>
-                        </table>
-                    </div>
+                <div class="main-card">
+                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</div>
+                    <div class="table-responsive"><table class="main-table"><thead><tr style="background:#e2e8f0;"><th class="text-center">STT</th><th>Mã thuê bao</th><th>Nhà mạng</th><th class="text-center">Kỳ cước</th><th class="text-right">Chi phí</th><th class="text-center">Trạng thái</th><th class="text-center">Chứng từ</th><th class="text-center">Hành động</th></tr></thead><tbody id="tbody-telecom"></tbody></table></div>
                 </div>
             </div>
-
         </div>
 
-        <!-- ================= CỘT PHẢI: ĐỒNG HỒ LED & LỊCH VẠN NIÊN HIỆN ĐẠI BẬC NHẤT ================= -->
-        <div class="sidebar-panel">
-            
-            <!-- ĐỒNG HỒ ĐIỆN TỬ FUTRISTIC CHẠY REAL-TIME CHUẨN XÁC -->
-            <div class="digital-clock-card">
-                <div class="clock-time" id="led-time">00:00:00 PM</div>
-                <div class="clock-date" id="led-date">Thứ ---, 00 Tháng 00, 2026</div>
+        <!-- ================= CỘT PHẢI: LỊCH VẠN NIÊN SYSTEM ================= -->
+        <div class="calendar-sidebar">
+            <div class="calendar-widget-title">📅 LỊCH VẠN NIÊN DOANH NGHIỆP</div>
+            <div class="calendar-month-selector">
+                <button type="button" onclick="navigateWidgetMonth(-1)">◀</button><span id="calendar-view-label">Tháng 05 / 2026</span><button type="button" onclick="navigateWidgetMonth(1)">▶</button>
             </div>
-
-            <!-- BẢNG LỊCH VẠN NIÊN ĐA TÍNH NĂNG -->
-            <div class="cal-container">
-                <div class="cal-header">
-                    <button type="button" class="cal-btn" onclick="navigateWidgetMonth(-1)">◀</button>
-                    <span id="calendar-view-label" style="font-size: 14px;">Tháng 05 / 2026</span>
-                    <button type="button" class="cal-btn" onclick="navigateWidgetMonth(1)">▶</button>
-                </div>
-
-                <div class="cal-week-grid">
-                    <div class="cal-week-name">T2</div><div class="cal-week-name">T3</div><div class="cal-week-name">T4</div><div class="cal-week-name">T5</div><div class="cal-week-name">T6</div><div class="cal-week-name">T7</div><div class="cal-week-name" style="color:var(--danger)">CN</div>
-                </div>
-                
-                <div class="cal-days-grid" id="calendar-body-days"></div>
-
-                <h4 style="margin-top:20px; margin-bottom:10px; font-size:12px; font-weight:800; text-transform:uppercase; color:var(--primary); letter-spacing:0.5px;">Thông Tin Chi Tiết Nhật Ký Vạn Niên</h4>
-                <div class="vannien-board" id="van-nien-live-data"></div>
+            <div class="calendar-grid">
+                <div class="calendar-day-name">T2</div><div class="calendar-day-name">T3</div><div class="calendar-day-name">T4</div><div class="calendar-day-name">T5</div><div class="calendar-day-name">T6</div><div class="calendar-day-name">T7</div><div class="calendar-day-name" style="color:var(--red);">CN</div>
             </div>
-
+            <div class="calendar-grid" id="calendar-body-days" style="margin-top: 5px;"></div>
+            <div class="van-nien-details" id="van-nien-live-data"></div>
         </div>
-
     </div>
 
-    <!-- MODAL ĐA PHƯƠNG TIỆN XEM TRƯỚC CHỨNG TỪ CHUYÊN NGHIỆP -->
+    <!-- PREVIEW MODAL -->
     <div class="modal" id="document-preview-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
-            <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px;" id="modal-preview-title">Xem trước tài liệu chứng từ</h3>
-            <div id="modal-preview-body"></div>
+            <h3 style="margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;" id="modal-preview-title">Xem trước tài liệu</h3>
+            <div id="modal-preview-body" style="text-align:center; min-height:300px; display:flex; align-items:center; justify-content:center;"></div>
         </div>
     </div>
 
     <script>
-        // ENGINE LỊCH VẠN NIÊN PHỨC HỢP (Tính toán Đầy đủ Can Chi, Sao, Trực, Tiết Khí, Hoàng Đạo 2026)
         function getComprehensiveLunarDetails(d, m, y) {
             let canChiDay = ["Giáp Tý", "Ất Sửu", "Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tỵ", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu", "Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu", "Mậu Dần", "Kỷ Mão", "Canh Thìn", "Tân Tỵ", "Nhâm Ngọ", "Quý Mùi", "Giáp Thân", "Ất Dậu", "Bính Tuất", "Đinh Hợi", "Mậu Tý", "Kỷ Sửu", "Canh Dần", "Tân Mão", "Nhâm Thìn", "Quý Tỵ", "Giáp Ngọ", "Ất Mùi", "Bính Thân", "Đinh Dậu", "Mậu Tuất", "Kỷ Hợi", "Canh Tý", "Tân Sửu", "Nhâm Dần", "Quý Mão", "Giáp Thìn", "Ất Tỵ", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu", "Giáp Dần", "Ất Mão", "Bính Thìn", "Đinh Tỵ", "Mậu Ngọ", "Kỷ Mùi", "Canh Thân", "Tân Dậu", "Nhâm Tuất", "Quý Hợi"];
             let canChiMonth = ["Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tỵ", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu", "Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu"];
-            
             let offset = (new Date(y, m - 1, d) - new Date(2026, 0, 1)) / (1000 * 60 * 60 * 24);
             let dayIndex = (offset + 42) % 60; if(dayIndex < 0) dayIndex += 60;
-
-            let dAm = d - 14, mAm = m - 1;
-            if(dAm <= 0) { dAm += 30; mAm -= 1; if(mAm <= 0) mAm = 12; }
-            
-            let isHoangDao = (d % 2 === 0); 
-            let tietKhi = "Lập Hạ"; if(m === 6) tietKhi = "Mang Chủng"; if(m === 7) tietKhi = "Tiểu Thử";
-
-            return {
-                solarDay: d, solarMonth: m, solarYear: y,
-                lunarDay: dAm, lunarMonth: mAm, lunarYear: "Bính Ngọ",
-                canChiDay: canChiDay[Math.floor(dayIndex)],
-                canChiMonth: canChiMonth[m - 1],
-                tietKhi: tietKhi,
-                nature: isHoangDao ? "Ngày Hoàng Đạo (Cát)" : "Ngày Hắc Đạo (Hung)",
-                isHoangDao: isHoangDao,
-                truc: ["Bế", "Kiến", "Trừ", "Mãn", "Bình", "Định", "Chấp", "Phá", "Nguy", "Thành", "Thâu", "Khai"][d % 12],
-                sao: ["Giác", "Cang", "Đê", "Phòng", "Tâm", "Vĩ", "Cơ", "Đấu", "Ngưu", "Nữ", "Hư", "Nguy"][d % 12]
-            };
+            let dAm = d - 14, mAm = m - 1; if(dAm <= 0) { dAm += 30; mAm -= 1; if(mAm <= 0) mAm = 12; }
+            return { lunarDay: dAm, lunarMonth: mAm, lunarYear: "Bính Ngọ", canChiDay: canChiDay[Math.floor(dayIndex)], canChiMonth: canChiMonth[m - 1], tietKhi: "Lập Hạ", nature: (d % 2 === 0) ? "Ngày Hoàng Đạo (Cát)" : "Ngày Hắc Đạo (Hung)" };
         }
 
-        let sysDate = new Date();
-        let currentYear = 2026; 
-        let currentMonth = sysDate.getMonth(); 
-        let todayRealDay = sysDate.getDate();
-
-        // Đồng hồ số chạy Real-time chính xác từng mili-giây
+        let sysDate = new Date(); let currentYear = 2026; let currentMonth = sysDate.getMonth(); let todayRealDay = sysDate.getDate();
         setInterval(() => {
-            let d = new Date();
-            let daysArr = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
-            let monthsArr = ["Tháng 01", "Tháng 02", "Tháng 03", "Tháng 04", "Tháng 05", "Tháng 06", "Tháng 07", "Tháng 08", "Tháng 09", "Tháng 10", "Tháng 11", "Tháng 12"];
-            
-            let hr = d.getHours(); let min = String(d.getMinutes()).padStart(2,'0'); let sec = String(d.getSeconds()).padStart(2,'0');
-            let ampm = hr >= 12 ? 'PM' : 'AM'; hr = hr % 12; hr = hr ? hr : 12;
-            
-            document.getElementById('led-time').innerText = `${String(hr).padStart(2,'0')}:${min}:${sec} ${ampm}`;
-            document.getElementById('led-date').innerText = `${daysArr[d.getDay()]}, ${String(d.getDate()).padStart(2,'0')} ${monthsArr[d.getMonth()]}, ${currentYear}`;
+            let d = new Date(); let daysArr = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+            document.getElementById('live-system-clock').innerText = `${daysArr[d.getDay()]} , ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${currentYear} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
         }, 1000);
 
-        // DANH SÁCH 16 NHÂN VIÊN GỐC KHỚP SỐ LIỆU TUYỆT ĐỐI THEO ẢNH
         const defaultSalaryData = [
-          {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "lcb_goc": 5540700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0, "lcv_goc": 12110226, "lcv_thucte": 11009296, "tong_lcb_lcv": 16458414, "bao_hiem": 951993, "tam_ung": 5000000, "thuc_linh": 10506421, "account": "105005712499", "le_phep_tt": 412118},
-          {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "lcb_goc": 3744400, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "lcv_goc": 4677052, "lcv_thucte": 2976306, "tong_lcb_lcv": 7308670, "bao_hiem": 643356, "tam_ung": 4000000, "thuc_linh": 2665314, "account": "105004242307", "le_phep_tt": 1949564},
-          {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "tong_lcb_lcv": 7756634, "bao_hiem": 778113, "tam_ung": 3000000, "thuc_linh": 3978521, "account": "102005035542", "le_phep_tt": 336845},
-          {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0, "lcb_goc": 4908200, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0, "lcv_goc": 3883624, "lcv_thucte": 3707096, "tong_lcb_lcv": 8757269, "bao_hiem": 843318, "tam_ung": 3000000, "thuc_linh": 4913951, "account": "106004294441", "le_phep_tt": 365073},
-          {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "tong_lcb_lcv": 7756634, "bao_hiem": 778113, "tam_ung": 4000000, "thuc_linh": 2978521, "account": "106004359838", "le_phep_tt": 336845},
-          {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0, "lcb_goc": 4326300, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "tong_lcb_lcv": 7557580, "bao_hiem": 743337, "tam_ung": 3000000, "thuc_linh": 3814243, "account": "106868653975", "le_phep_tt": 321791},
-          {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0, "lcb_goc": 4225100, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0, "lcv_goc": 3090195, "lcv_thucte": 2809269, "tong_lcb_lcv": 6964533, "bao_hiem": 725949, "tam_ung": 4000000, "thuc_linh": 2238584, "account": "105004294439", "le_phep_tt": 314264},
-          {"stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0, "lcb_goc": 4629900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "lcv_goc": 3466030, "lcv_thucte": 3150937, "tong_lcb_lcv": 7704310, "bao_hiem": 795501, "tam_ung": 3000000, "thuc_linh": 3908809, "account": "102004797815", "le_phep_tt": 344373},
-          {"stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.8, "lcb_phucap": 0, "lcb_goc": 4554000, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "tong_lcb_lcv": 7553737, "bao_hiem": 782460, "tam_ung": 4000000, "thuc_linh": 2771277, "account": "104004583045", "le_phep_tt": 338727},
-          {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0, "lcb_goc": 4629900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "lcv_goc": 3466030, "lcv_thucte": 3150937, "tong_lcb_lcv": 7704310, "bao_hiem": 795501, "tam_ung": 3000000, "thuc_linh": 3908809, "account": "100004797831", "le_phep_tt": 344373},
-          {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "tong_lcb_lcv": 6881928, "bao_hiem": 665091, "tam_ung": 3000000, "thuc_linh": 3216837, "account": "101004882063", "le_phep_tt": 287918},
-          {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "tong_lcb_lcv": 6881928, "bao_hiem": 665091, "tam_ung": 3000000, "thuc_linh": 3216837, "account": "100006166724", "le_phep_tt": 287918},
-          {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0, "lcb_goc": 3415500, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0, "lcv_goc": 3403391, "lcv_thucte": 3093992, "tong_lcb_lcv": 7072936, "bao_hiem": 586845, "tam_ung": 3000000, "thuc_linh": 3486091, "account": "106869104133", "le_phep_tt": 254045},
-          {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0, "lcb_goc": 4528700, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0, "lcv_goc": 5011128, "lcv_thucte": 4555571, "tong_lcb_lcv": 9009416, "bao_hiem": 778113, "tam_ung": 3000000, "thuc_linh": 5231303, "account": "106873586343", "le_phep_tt": 336845},
-          {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0, "lcb_goc": 3870900, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "tong_lcb_lcv": 6881928, "bao_hiem": 665091, "tam_ung": 3000000, "thuc_linh": 3216837, "account": "107002654931", "le_phep_tt": 287918},
-          {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "lcb_goc": 5717799, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0, "lcv_goc": 5011128, "lcv_thucte": 4555571, "tong_lcb_lcv": 10178862, "bao_hiem": 982422, "tam_ung": 4000000, "thuc_linh": 5196440, "account": "102004830132", "le_phep_tt": 425291}
+          {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0, "lcv_goc": 12110226, "lcv_thucte": 11009296, "bao_hiem": 951993, "tam_ung": 5000000, "account": "105005712499"},
+          {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "lcv_goc": 4677052, "lcv_thucte": 2976306, "bao_hiem": 643356, "tam_ung": 4000000, "account": "105004242307"},
+          {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "bao_hiem": 778113, "tam_ung": 3000000, "account": "102005035542"},
+          {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0, "lcv_goc": 3883624, "lcv_thucte": 3707096, "bao_hiem": 843318, "tam_ung": 3000000, "account": "106004294441"},
+          {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "bao_hiem": 778113, "tam_ung": 4000000, "account": "106004359838"},
+          {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "bao_hiem": 743337, "tam_ung": 3000000, "account": "106868653975"},
+          {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0, "lcv_goc": 3090195, "lcv_thucte": 2809269, "bao_hiem": 725949, "tam_ung": 4000000, "account": "105004294439"},
+          {"stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "lcv_goc": 3466030, "lcv_thucte": 3150937, "bao_hiem": 795501, "tam_ung": 3000000, "account": "102004797815"},
+          {"stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.8, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "bao_hiem": 782460, "tam_ung": 4000000, "account": "104004583045"},
+          {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "lcv_goc": 3466030, "lcv_thucte": 3150937, "bao_hiem": 795501, "tam_ung": 3000000, "account": "100004797831"},
+          {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "bao_hiem": 665091, "tam_ung": 3000000, "account": "101004882063"},
+          {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "bao_hiem": 665091, "tam_ung": 3000000, "account": "100006166724"},
+          {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0, "lcv_goc": 3403391, "lcv_thucte": 3093992, "bao_hiem": 586845, "tam_ung": 3000000, "account": "106869104133"},
+          {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0, "lcv_goc": 5011128, "lcv_thucte": 4555571, "bao_hiem": 778113, "tam_ung": 3000000, "account": "106873586343"},
+          {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "bao_hiem": 665091, "tam_ung": 3000000, "account": "107002654931"},
+          {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0, "lcv_goc": 5011128, "lcv_thucte": 4555571, "bao_hiem": 982422, "tam_ung": 4000000, "account": "102004830132"}
         ];
 
         let salaryData = []; let paymentData = []; let telecomData = [];
         let currentUploadedPaymentFiles = []; let currentUploadedTelecomFiles = [];
 
-        window.addEventListener('DOMContentLoaded', () => {
-            loadSalaryFromCloud();
-            buildWidgetCalendar(currentMonth, currentYear);
-            refreshDashboardStats();
-        });
-
         function switchMainTab(tabName) {
-            document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
             event.currentTarget.classList.add('active');
         }
 
-        // ================= RENDERING LỊCH VẠN NIÊN GRAPHIC GRID =================
         function buildWidgetCalendar(month, year) {
             const container = document.getElementById('calendar-body-days'); container.innerHTML = "";
             document.getElementById('calendar-view-label').innerText = `Tháng ${String(month + 1).padStart(2,'0')} / ${year}`;
-            
-            let firstDayIndex = new Date(year, month, 1).getDay(); 
-            firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1; 
+            let firstDayIndex = new Date(year, month, 1).getDay(); firstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
             let totalDays = new Date(year, month + 1, 0).getDate();
-            
-            for (let i = 0; i < firstDayIndex; i++) {
-                container.innerHTML += `<div class="cal-cell" style="visibility:hidden;"></div>`;
-            }
-
+            for (let i = 0; i < firstDayIndex; i++) container.innerHTML += `<div class="calendar-day-cell" style="visibility:hidden;"></div>`;
             for (let day = 1; day <= totalDays; day++) {
                 let details = getComprehensiveLunarDetails(day, month + 1, year);
                 let isToday = (day === todayRealDay && month === sysDate.getMonth() && year === currentYear);
-                
-                container.innerHTML += `
-                    <div class="cal-cell ${isToday ? 'today-focus' : ''}" onclick="showDayVanNienInfo(${day}, ${month+1}, ${year})">
-                        <span class="sol-num">${day}</span>
-                        <span class="lun-num">${details.lunarDay === 1 ? details.lunarDay + '/' + details.lunarMonth : details.lunarDay}</span>
-                    </div>
-                `;
+                container.innerHTML += `<div class="calendar-day-cell ${isToday ? 'active-today' : ''}" onclick="showDayVanNienInfo(${day}, ${month+1}, ${year})"><span class="solar-day-num">${day}</span><span class="lunar-day-num">${details.lunarDay === 1 ? details.lunarDay + '/' + details.lunarMonth : details.lunarDay}</span></div>`;
             }
-            if(month === sysDate.getMonth() && year === currentYear) {
-                showDayVanNienInfo(todayRealDay, month + 1, year);
-            } else {
-                showDayVanNienInfo(1, month + 1, year);
-            }
+            showDayVanNienInfo(month === sysDate.getMonth() ? todayRealDay : 1, month + 1, year);
         }
 
-        function navigateWidgetMonth(dir) {
-            currentMonth += dir;
-            if(currentMonth > 11) { currentMonth = 0; currentYear++; }
-            if(currentMonth < 0) { currentMonth = 11; currentYear--; }
-            buildWidgetCalendar(currentMonth, currentYear);
-        }
-
+        function navigateWidgetMonth(dir) { currentMonth += dir; if(currentMonth > 11) { currentMonth = 0; currentYear++; } else if(currentMonth < 0) { currentMonth = 11; currentYear--; } buildWidgetCalendar(currentMonth, currentYear); }
         function showDayVanNienInfo(d, m, y) {
             let info = getComprehensiveLunarDetails(d, m, y);
-            document.getElementById('van-nien-live-data').innerHTML = `
-                <div class="vannien-row"><span>Dương lịch</span><span>Ngày ${d}/${m}/${y}</span></div>
-                <div class="vannien-row"><span>Âm lịch</span><span>Ngày ${info.lunarDay}/${info.lunarMonth} (${info.lunarYear})</span></div>
-                <div class="vannien-row"><span>Ngày Can Chi</span><span>${info.canChiDay}</span></div>
-                <div class="vannien-row"><span>Tháng Can Chi</span><span>${info.canChiMonth}</span></div>
-                <div class="vannien-row"><span>Tiết khí</span><span>${info.tietKhi}</span></div>
-                <div class="vannien-row"><span>Trực / Sao</span><span>Trực ${info.truc} / Sao ${info.sao}</span></div>
-                <div class="vannien-row"><span>Đánh giá ngày</span><span><span class="${info.isHoangDao?'badge-hoangdao':'badge-hacdao'}">${info.nature}</span></span></div>
-            `;
+            document.getElementById('van-nien-live-data').innerHTML = `<div class="vannien-row"><span>Dương lịch</span><span>Ngày ${d}/${m}/${y}</span></div><div class="vannien-row"><span>Âm lịch</span><span>Ngày ${info.lunarDay}/${info.lunarMonth}</span></div><div class="vannien-row"><span>Ngày Can Chi</span><span>${info.canChiDay}</span></div><div class="vannien-row"><span>Tiết khí</span><span>${info.tietKhi}</span></div><div class="vannien-row"><span>Đánh giá</span><span>${info.nature}</span></div>`;
         }
 
-        // ================= REFRESH DASHBOARD STATS =================
         function refreshDashboardStats() {
             let totalPay = 0, paidPay = 0, pendingPay = 0, totalTel = 0;
-            paymentData.forEach(r => {
-                totalPay += r.total;
-                if(r.status === 'Đã duyệt chi') paidPay += r.total; else pendingPay += r.total;
-            });
+            paymentData.forEach(r => { totalPay += r.total; if(r.status === 'Đã duyệt chi') paidPay += r.total; else pendingPay += r.total; });
             telecomData.forEach(t => { totalTel += t.cost; });
-
             document.getElementById('dash-total-pay').innerText = totalPay.toLocaleString() + " đ";
             document.getElementById('dash-paid-pay').innerText = paidPay.toLocaleString() + " đ";
             document.getElementById('dash-pending-pay').innerText = pendingPay.toLocaleString() + " đ";
             document.getElementById('dash-total-tel').innerText = totalTel.toLocaleString() + " đ";
-            let pct = totalPay > 0 ? (paidPay / totalPay) * 100 : 0;
-            document.getElementById('dash-paid-progress').style.width = pct + "%";
+            document.getElementById('dash-paid-progress').style.width = (totalPay > 0 ? (paidPay / totalPay) * 100 : 0) + "%";
         }
 
-        // ================= HỒ SƠ THANH TOÁN (HỖ TRỢ NHIỀU FILE & PREVIEW) =================
         function calculatePaymentTax() {
-            const qty = parseFloat(document.getElementById('pay-qty').value) || 0;
-            const price = parseFloat(document.getElementById('pay-price').value) || 0;
-            const taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
+            const qty = parseFloat(document.getElementById('pay-qty').value) || 0; const price = parseFloat(document.getElementById('pay-price').value) || 0; const taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
             const subtotal = qty * price; const taxAmount = Math.round(subtotal * (taxRate / 100));
-            document.getElementById('pay-tax-amount').value = taxAmount.toLocaleString('vi-VN');
-            document.getElementById('pay-total').value = (subtotal + taxAmount).toLocaleString('vi-VN');
+            document.getElementById('pay-tax-amount').value = taxAmount.toLocaleString('vi-VN'); document.getElementById('pay-total').value = (subtotal + taxAmount).toLocaleString('vi-VN');
         }
 
-        function handlePaymentFiles(files) {
-            for (let file of files) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentUploadedPaymentFiles.push({ name: file.name, type: file.type, base64: e.target.result });
-                    renderFilePreviews('payment');
-                }; reader.readAsDataURL(file);
-            }
-        }
-
+        function handlePaymentFiles(files) { for (let file of files) { const reader = new FileReader(); reader.onload = function(e) { currentUploadedPaymentFiles.push({ name: file.name, type: file.type, base64: e.target.result }); renderFilePreviews('payment'); }; reader.readAsDataURL(file); } }
+        function handleTelecomFiles(files) { for (let file of files) { const reader = new FileReader(); reader.onload = function(e) { currentUploadedTelecomFiles.push({ name: file.name, type: file.type, base64: e.target.result }); renderFilePreviews('telecom'); }; reader.readAsDataURL(file); } }
+        
         function renderFilePreviews(type) {
-            const zone = document.getElementById(type === 'payment' ? 'pay-file-preview-zone' : 'tel-file-preview-zone');
-            const arr = type === 'payment' ? currentUploadedPaymentFiles : currentUploadedTelecomFiles;
-            zone.innerHTML = "";
-            arr.forEach((file, idx) => {
-                zone.innerHTML += `
-                    <div class="preview-badge">
-                        <span>📄 ${file.name.substring(0,12)}...</span>
-                        <span class="view-file" onclick="viewAttachedFile('${type}', ${idx})">Xem</span>
-                        <span class="remove-file" onclick="removeAttachedFile('${type}', ${idx})">&times;</span>
-                    </div>
-                `;
-            });
+            const zone = document.getElementById(type === 'payment' ? 'pay-file-preview-zone' : 'tel-file-preview-zone'); const arr = type === 'payment' ? currentUploadedPaymentFiles : currentUploadedTelecomFiles; zone.innerHTML = "";
+            arr.forEach((file, idx) => { zone.innerHTML += `<div class="preview-badge"><span>📄 ${file.name.substring(0,12)}...</span><span class="view-file" onclick="viewAttachedFile('${type}', ${idx})">Xem</span><span class="remove-file" onclick="removeAttachedFile('${type}', ${idx})">&times;</span></div>`; });
         }
-
-        function removeAttachedFile(type, idx) {
-            if (type === 'payment') currentUploadedPaymentFiles.splice(idx, 1); else currentUploadedTelecomFiles.splice(idx, 1);
-            renderFilePreviews(type);
-        }
-
+        function removeAttachedFile(type, idx) { if (type === 'payment') currentUploadedPaymentFiles.splice(idx, 1); else currentUploadedTelecomFiles.splice(idx, 1); renderFilePreviews(type); }
         function viewAttachedFile(type, idx) {
-            const file = type === 'payment' ? currentUploadedPaymentFiles[idx] : currentUploadedTelecomFiles[idx];
-            document.getElementById('modal-preview-title').innerText = "Minh chứng tệp đính kèm: " + file.name;
-            const body = document.getElementById('modal-preview-body'); body.innerHTML = "";
-            if (file.type.startsWith('image/')) {
-                body.innerHTML = `<img src="${file.base64}" style="max-width:100%; max-height:480px; border-radius:8px;">`;
-            } else if (file.type === 'application/pdf') {
-                body.innerHTML = `<embed src="${file.base64}" type="application/pdf" width="100%" height="480px">`;
-            } else {
-                body.innerHTML = `<div><p>Định dạng tệp không hỗ trợ preview trực tiếp.</p><a class="btn btn-primary" href="${file.base64}" download="${file.name}" style="margin-top:10px;">Tải xuống</a></div>`;
-            }
+            const file = type === 'payment' ? currentUploadedPaymentFiles[idx] : currentUploadedTelecomFiles[idx]; document.getElementById('modal-preview-title').innerText = "Xem tài liệu: " + file.name; const body = document.getElementById('modal-preview-body'); body.innerHTML = "";
+            if (file.type.startsWith('image/')) body.innerHTML = `<img src="${file.base64}" style="max-width:100%; max-height:480px;">`;
+            else if (file.type === 'application/pdf') body.innerHTML = `<embed src="${file.base64}" type="application/pdf" width="100%" height="480px">`;
+            else body.innerHTML = `<a class="btn btn-primary" href="${file.base64}" download="${file.name}">Tải xuống tệp</a>`;
             document.getElementById('document-preview-modal').style.display = 'flex';
         }
-
         function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
 
         function savePaymentRecord(e) {
-            e.preventDefault();
-            const editIdx = parseInt(document.getElementById('payment-edit-index').value);
-            const qty = parseFloat(document.getElementById('pay-qty').value) || 0;
-            const price = parseFloat(document.getElementById('pay-price').value) || 0;
-            const taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
-            const subtotal = qty * price; const taxAmount = Math.round(subtotal * (taxRate / 100));
-
-            const record = {
-                content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value,
-                account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value,
-                unit: document.getElementById('pay-unit').value, qty: qty, price: price, subtotal: subtotal, taxRate: taxRate, taxAmount: taxAmount, total: subtotal + taxAmount,
-                status: document.getElementById('pay-status').value, files: [...currentUploadedPaymentFiles]
-            };
-            if (editIdx > -1) paymentData[editIdx] = record; else paymentData.push(record);
-            resetPaymentForm(); renderPaymentTable(); refreshDashboardStats();
+            e.preventDefault(); const editIdx = parseInt(document.getElementById('payment-edit-index').value); const qty = parseFloat(document.getElementById('pay-qty').value) || 0; const price = parseFloat(document.getElementById('pay-price').value) || 0; const taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0; const subtotal = qty * price; const taxAmount = Math.round(subtotal * (taxRate / 100));
+            const record = { content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value, account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value, unit: document.getElementById('pay-unit').value, qty: qty, price: price, subtotal: subtotal, taxRate: taxRate, taxAmount: taxAmount, total: subtotal + taxAmount, status: document.getElementById('pay-status').value, files: [...currentUploadedPaymentFiles] };
+            if (editIdx > -1) paymentData[editIdx] = record; else paymentData.push(record); resetPaymentForm(); renderPaymentTable(); refreshDashboardStats();
         }
-
         function renderPaymentTable() {
             const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = "";
-            paymentData.forEach((row, idx) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="text-center">${idx + 1}</td><td class="font-bold">${row.content}</td><td>${row.beneficiary}</td><td>${row.account} <span style="display:block;font-size:10px;color:var(--text-muted);">${row.bank}</span></td><td class="text-center">${row.qty} ${row.unit}</td><td class="text-right">${row.subtotal.toLocaleString()} đ</td><td class="text-right">${row.taxAmount.toLocaleString()} đ</td><td class="text-right font-bold" style="color:var(--warning)">${row.total.toLocaleString()} đ</td><td class="text-center font-bold" style="color:${row.status==='Đã duyệt chi'?'var(--success)':'var(--warning)'}">${row.status}</td>
-                        <td class="text-center">${row.files.length > 0 ? `<button class="btn" style="padding:2px 6px; font-size:11px; background:var(--purple); color:white;" onclick="openPaymentRowFiles(${idx})">📂 ${row.files.length} Tệp</button>` : `<span style="color:var(--text-muted)">Không có</span>`}</td>
-                        <td class="text-center"><button class="btn-action-edit" onclick="editPaymentRecord(${idx})">Sửa</button> <button class="btn-action-delete" onclick="deletePaymentRecord(${idx})">Xóa</button></td>
-                    </tr>
-                `;
-            });
-            if(paymentData.length === 0) tbody.innerHTML = `<tr><td colspan="11" class="text-center" style="color:var(--text-muted)">Chưa có hồ sơ chi phí nào được đẩy lên hệ thống.</td></tr>`;
+            paymentData.forEach((row, idx) => { tbody.innerHTML += `<tr><td class="text-center">${idx + 1}</td><td class="font-bold" style="color:var(--blue);">${row.content}</td><td>${row.beneficiary}</td><td>${row.account} <span style="display:block;font-size:10px;color:#64748b;">${row.bank}</span></td><td class="text-center">${row.qty} ${row.unit}</td><td class="text-right">${row.subtotal.toLocaleString()} đ</td><td class="text-right">${row.taxAmount.toLocaleString()} đ</td><td class="text-right font-bold" style="background:#fffbeb; color:var(--orange);">${row.total.toLocaleString()} đ</td><td class="text-center font-bold">${row.status}</td><td class="text-center">${row.files.length > 0 ? `<button class="btn" style="padding:2px 6px; font-size:11px; background:var(--purple); color:white;" onclick="openPaymentRowFiles(${idx})">📂 ${row.files.length} File</button>` : `-`}</td><td class="text-center"><button class="btn-action-edit" onclick="editPaymentRecord(${idx})">Sửa</button> <button class="btn-action-delete" onclick="deletePaymentRecord(${idx})">Xóa</button></td></tr>`; });
         }
-
-        function editPaymentRecord(idx) {
-            const r = paymentData[idx]; document.getElementById('payment-edit-index').value = idx;
-            document.getElementById('pay-content').value = r.content; document.getElementById('pay-beneficiary').value = r.beneficiary;
-            document.getElementById('pay-account').value = r.account; document.getElementById('pay-bank').value = r.bank;
-            document.getElementById('pay-unit').value = r.unit; document.getElementById('pay-qty').value = r.qty;
-            document.getElementById('pay-price').value = r.price; document.getElementById('pay-tax-rate').value = r.taxRate;
-            document.getElementById('pay-status').value = r.status; currentUploadedPaymentFiles = [...r.files];
-            renderFilePreviews('payment'); calculatePaymentTax();
-        }
-
+        function editPaymentRecord(idx) { const r = paymentData[idx]; document.getElementById('payment-edit-index').value = idx; document.getElementById('pay-content').value = r.content; document.getElementById('pay-beneficiary').value = r.beneficiary; document.getElementById('pay-account').value = r.account; document.getElementById('pay-bank').value = r.bank; document.getElementById('pay-unit').value = r.unit; document.getElementById('pay-qty').value = r.qty; document.getElementById('pay-price').value = r.price; document.getElementById('pay-tax-rate').value = r.taxRate; document.getElementById('pay-status').value = r.status; currentUploadedPaymentFiles = [...r.files]; renderFilePreviews('payment'); calculatePaymentTax(); }
         function deletePaymentRecord(idx) { paymentData.splice(idx,1); renderPaymentTable(); refreshDashboardStats(); }
         function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; currentUploadedPaymentFiles = []; calculatePaymentTax(); }
         function openPaymentRowFiles(idx) { currentUploadedPaymentFiles = [...paymentData[idx].files]; renderFilePreviews('payment'); if(currentUploadedPaymentFiles.length > 0) viewAttachedFile('payment', 0); }
 
-        // ================= PHÂN HỆ CƯỚC VIỄN THÔNG (CHỌN NHIỀU FILE) =================
-        function handleTelecomFiles(files) {
-            for (let file of files) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentUploadedTelecomFiles.push({ name: file.name, type: file.type, base64: e.target.result });
-                    renderFilePreviews('telecom');
-                }; reader.readAsDataURL(file);
-            }
-        }
-
-        function saveTelecomRecord(e) {
-            e.preventDefault(); const editIdx = parseInt(document.getElementById('telecom-edit-index').value);
-            const record = {
-                id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value,
-                period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value) || 0,
-                status: document.getElementById('tel-status').value, files: [...currentUploadedTelecomFiles]
-            };
-            if (editIdx > -1) telecomData[editIdx] = record; else telecomData.push(record);
-            resetTelecomForm(); renderTelecomTable(); refreshDashboardStats();
-        }
-
-        function renderTelecomTable() {
-            const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = "";
-            telecomData.forEach((row, idx) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="text-center">${idx + 1}</td><td class="font-bold" style="color:var(--purple)">${row.id}</td><td>${row.provider}</td><td class="text-center">${row.period}</td><td class="text-right font-bold">${row.cost.toLocaleString()} đ</td><td class="text-center font-bold" style="color:${row.status==='Đã thanh toán'?'var(--success)':'var(--danger)'}">${row.status}</td>
-                        <td class="text-center">${row.files.length > 0 ? `<button class="btn" style="padding:2px 6px; font-size:11px; background:var(--primary); color:white;" onclick="openTelecomRowFiles(${idx})">📂 Xem File</button>` : `<span style="color:var(--text-muted)">Không có</span>`}</td>
-                        <td class="text-center"><button class="btn-action-edit" onclick="editTelecomRecord(${idx})">Sửa</button> <button class="btn-action-delete" onclick="deleteTelecomRecord(${idx})">Xóa</button></td>
-                    </tr>
-                `;
-            });
-        }
-
-        function editTelecomRecord(idx) {
-            const r = telecomData[idx]; document.getElementById('telecom-edit-index').value = idx;
-            document.getElementById('tel-id').value = r.id; document.getElementById('tel-provider').value = r.provider;
-            document.getElementById('tel-period').value = r.period; document.getElementById('tel-cost').value = r.cost;
-            document.getElementById('tel-status').value = r.status; currentUploadedTelecomFiles = [...r.files];
-            renderFilePreviews('telecom');
-        }
-
+        function saveTelecomRecord(e) { e.preventDefault(); const editIdx = parseInt(document.getElementById('telecom-edit-index').value); const record = { id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value) || 0, status: document.getElementById('tel-status').value, files: [...currentUploadedTelecomFiles] }; if (editIdx > -1) telecomData[editIdx] = record; else telecomData.push(record); resetTelecomForm(); renderTelecomTable(); refreshDashboardStats(); }
+        function renderTelecomTable() { const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = ""; telecomData.forEach((row, idx) => { tbody.innerHTML += `<tr><td class="text-center">${idx + 1}</td><td class="font-bold" style="color:var(--purple)">${row.id}</td><td>${row.provider}</td><td class="text-center">${row.period}</td><td class="text-right font-bold">${row.cost.toLocaleString()} đ</td><td class="text-center font-bold">${row.status}</td><td class="text-center">${row.files.length > 0 ? `<button class="btn" style="padding:2px 6px; font-size:11px; background:var(--blue); color:white;" onclick="openTelecomRowFiles(${idx})">📂 ${row.files.length} File</button>` : `-`}</td><td class="text-center"><button class="btn-action-edit" onclick="editTelecomRecord(${idx})">Sửa</button> <button class="btn-action-delete" onclick="deleteTelecomRecord(${idx})">Xóa</button></td></tr>`; }); }
+        function editTelecomRecord(idx) { const r = telecomData[idx]; document.getElementById('telecom-edit-index').value = idx; document.getElementById('tel-id').value = r.id; document.getElementById('tel-provider').value = r.provider; document.getElementById('tel-period').value = r.period; document.getElementById('tel-cost').value = r.cost; document.getElementById('tel-status').value = r.status; currentUploadedTelecomFiles = [...r.files]; renderFilePreviews('telecom'); }
         function deleteTelecomRecord(idx) { telecomData.splice(idx,1); renderTelecomTable(); refreshDashboardStats(); }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; currentUploadedTelecomFiles = []; }
         function openTelecomRowFiles(idx) { currentUploadedTelecomFiles = [...telecomData[idx].files]; renderFilePreviews('telecom'); if(currentUploadedTelecomFiles.length > 0) viewAttachedFile('telecom', 0); }
 
-        // ================= PHÂN HỆ QUẢN LÝ LƯƠNG 16 NHÂN VIÊN GỐC =================
         function loadSalaryFromCloud() { salaryData = JSON.parse(JSON.stringify(defaultSalaryData)); renderSalaryTable(); }
 
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = "";
             salaryData.forEach((row, index) => {
+                const TOI_THIEU_VUNG = 4140000;
                 const LUONG_CO_BAN_PRICE = 2530000;
+                
+                // 1. Lương ký HĐLĐ = (Hệ số LCB + Phụ cấp LCB) * 4.140.000
+                row.lcb_goc = Math.round((row.lcb_heso + row.lcb_phucap) * TOI_THIEU_VUNG);
+                
+                // 2. Lương cơ bản hệ thống = (Hệ số LCB + Phụ cấp LCB) * 2.530.000
                 const luong_cb_he_thong = Math.round((row.lcb_heso + row.lcb_phucap) * LUONG_CO_BAN_PRICE);
-                row.l_thoigian = Math.round((row.lcb_goc / 22) * row.NT);
+                
+                // ĐÃ CẬP NHẬT: Lương thời gian = Làm tròn của (Lương cơ bản hệ thống / 22 * NT)
+                row.l_thoigian = Math.round((luong_cb_he_thong / 22) * row.NT);
+                
+                row.le_phep_tt = Math.round((row.lcb_goc / 22) * (row.P + row.le_vr));
+                
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt;
                 const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; const o_thuc_linh = o_tong_lcb_lcv - row.bao_hiem - row.tam_ung;
 
                 tbody.innerHTML += `
                     <tr>
-                        <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td class="text-center font-bold" style="color:var(--text-muted)">${row.account}</td>
-                        <td class="text-center"><input type="number" step="0.01" class="input-inline" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td>
-                        <td class="text-center"><input type="number" step="0.01" class="input-inline" value="${row.lcb_phucap}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
-                        <td class="text-right">${luong_cb_he_thong.toLocaleString()}</td><td class="text-right">${row.lcb_goc.toLocaleString()}</td>
-                        <td class="text-center"><input type="number" class="input-inline" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td>
-                        <td class="text-center"><input type="number" class="input-inline" value="${row.P}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td>
-                        <td class="text-center"><input type="number" class="input-inline" value="${row.le_vr}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td>
-                        <td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold" style="color:var(--primary)">${l_tong_cb.toLocaleString()}</td>
-                        <td class="text-center"><input type="number" step="0.01" class="input-inline" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td>
-                        <td class="text-center"><input type="number" class="input-inline" value="${row.phu_cap_lcv}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td>
+                        <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td class="text-center font-bold" style="color:#64748b;">${row.account}</td>
+                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td>
+                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
+                        <td class="text-right font-bold" style="color:var(--blue);">${row.lcb_goc.toLocaleString()}</td>
+                        <td class="text-right">${luong_cb_he_thong.toLocaleString()}</td>
+                        <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td>
+                        <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.P}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td>
+                        <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.le_vr}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td>
+                        <td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold" style="color:var(--blue);">${l_tong_cb.toLocaleString()}</td>
+                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td>
+                        <td class="text-center"><input type="number" class="input-edit" value="${row.phu_cap_lcv}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td>
                         <td class="text-right font-bold">${row.lcv_goc.toLocaleString()}</td><td class="text-right font-bold" style="color: var(--purple);">${row.lcv_thucte.toLocaleString()}</td>
-                        <td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right" style="color: var(--danger); font-weight: bold;">${row.bao_hiem.toLocaleString()}</td>
-                        <td class="text-center"><input type="text" class="input-inline" style="width:85px; color:var(--danger)" value="${row.tam_ung.toLocaleString('vi-VN')}" onblur="updateSalaryCell(${index}, 'tam_ung', this.value)"></td>
-                        <td class="text-right font-bold" style="color:var(--warning); font-size:13px;">${o_thuc_linh.toLocaleString()}</td>
+                        <td class="text-right font-bold" style="background-color:#f8fafc;">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right" style="color: var(--red); font-weight: bold;">${row.bao_hiem.toLocaleString()}</td>
+                        <td class="text-center" style="background-color:#fee2e2;"><input type="text" class="input-edit input-edit-money" style="background:#fee2e2; color:#dc2626; font-weight: bold;" value="${row.tam_ung.toLocaleString('vi-VN')}" onblur="updateSalaryCell(${index}, 'tam_ung', this.value)"></td>
+                        <td class="text-right font-bold" style="background-color:#fef08a;">${o_thuc_linh.toLocaleString()}</td>
                     </tr>
                 `;
             });
         }
 
-        function updateSalaryCell(idx, field, val) {
-            let n = parseFloat(val.toString().replace(/\./g, "").replace(/,/g, ""));
-            if (isNaN(n)) n = 0; salaryData[idx][field] = n; renderSalaryTable();
-        }
+        function updateSalaryCell(idx, field, val) { let n = parseFloat(val.toString().replace(/\./g, "").replace(/,/g, "")); if (isNaN(n)) n = 0; salaryData[idx][field] = n; renderSalaryTable(); }
 
-        // ================= EXCELJS MASTER CORE EXPORT ENGINE =================
         async function exportSalaryToExcelJSStandard() {
-            if (salaryData.length === 0) return;
-            const workbook = new ExcelJS.Workbook(); const worksheet = workbook.addWorksheet('Bảng Tính Lương Chuẩn');
-            worksheet.views = [{ showGridLines: true }];
-
-            worksheet.addRow(['TỔNG CÔNG TY GIẤY VIỆT NAM']); worksheet.addRow(['VĂN PHÒNG']); worksheet.addRow([]);
-            worksheet.addRow(['BẢNG TỔNG HỢP CHI TRẢ LƯƠNG NHÂN VIÊN - MASTER REPORT']); worksheet.addRow([]);
-            worksheet.getCell('A1').font = { name: 'Arial', size: 11, bold: true };
-            worksheet.getCell('A4').font = { name: 'Arial', size: 14, bold: true, color: { argb: '1E3A8A' } };
-            worksheet.mergeCells('A4:U4'); worksheet.getCell('A4').alignment = { horizontal: 'center' };
+            if (salaryData.length === 0) return; const workbook = new ExcelJS.Workbook(); const worksheet = workbook.addWorksheet('Bảng Lương'); worksheet.views = [{ showGridLines: true }];
+            worksheet.addRow(['TỔNG CÔNG TY GIẤY VIỆT NAM']); worksheet.addRow(['VĂN PHÒNG']); worksheet.addRow([]); worksheet.addRow(['BẢNG TỔNG HỢP CHI TRẢ LƯƠNG NHÂN VIÊN - MASTER REPORT']); worksheet.addRow([]);
+            worksheet.getCell('A1').font = { name: 'Arial', size: 11, bold: true }; worksheet.getCell('A4').font = { name: 'Arial', size: 14, bold: true, color: { argb: '1E3A8A' } }; worksheet.mergeCells('A4:U4'); worksheet.getCell('A4').alignment = { horizontal: 'center' };
 
             const row6Vals = ['STT', 'HỌ VÀ TÊN', 'Số tài khoản', 'Lương Cơ Bản HĐLĐ', '', '', '', 'Số Ngày Công Thực Tế', '', '', 'Chi Tiết Lương Thực Nhận', '', '', 'Cơ cấu Lương Công Việc (CV)', '', '', '', 'Tổng LCB + LCV', 'BHTN+BHXH+BHYT', 'Tạm Ứng', 'Thực Lĩnh CB+CV'];
             const row7Vals = ['', '', '', 'Hệ số LCB', 'Phụ cấp LCB', 'Lương Ký HĐLĐ', 'Lương cơ bản', 'Thời gian (NT)', 'Phép (P)', 'Lễ, VR', 'Lương Thời Gian', 'Lương Lễ, Phép', 'Tổng Lương CB', 'Hệ số LCV', 'Phụ cấp LCV', 'Lương CV Gốc', 'Lương CV Thực Tế', '', '', '', ''];
             const r6 = worksheet.addRow(row6Vals); r6.height = 26; const r7 = worksheet.addRow(row7Vals); r7.height = 22;
+            worksheet.mergeCells('A6:A7'); worksheet.mergeCells('B6:B7'); worksheet.mergeCells('C6:C7'); worksheet.mergeCells('D6:G6'); worksheet.mergeCells('H6:J6'); worksheet.mergeCells('K6:M6'); worksheet.mergeCells('N6:Q6'); worksheet.mergeCells('R6:R7'); worksheet.mergeCells('S6:S7'); worksheet.mergeCells('T6:T7'); worksheet.mergeCells('U6:U7');
 
-            worksheet.mergeCells('A6:A7'); worksheet.mergeCells('B6:B7'); worksheet.mergeCells('C6:C7');
-            worksheet.mergeCells('D6:G6'); worksheet.mergeCells('H6:J6'); worksheet.mergeCells('K6:M6');
-            worksheet.mergeCells('N6:Q6'); worksheet.mergeCells('R6:R7'); worksheet.mergeCells('S6:S7');
-            worksheet.mergeCells('T6:T7'); worksheet.mergeCells('U6:U7');
-
-            const colorizeHeader = (cell, bgHex) => {
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgHex } };
-                cell.font = { name: 'Arial', size: 9, bold: true, color: { argb: '000000' } };
-                cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-                cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-            };
-
-            for(let col = 1; col <= 21; col++) {
-                colorizeHeader(r6.getCell(col), 'E2E8F0'); colorizeHeader(r7.getCell(col), 'F1F5F9');
-            }
+            const colorizeHeader = (cell, bgHex) => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgHex } }; cell.font = { name: 'Arial', size: 9, bold: true }; cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} }; };
+            for(let col = 1; col <= 21; col++) { colorizeHeader(r6.getCell(col), 'E2E8F0'); colorizeHeader(r7.getCell(col), 'F1F5F9'); }
 
             salaryData.forEach((row, index) => {
-                const LUONG_CO_BAN_PRICE = 2530000;
+                const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
+                const lcb_goc = Math.round((row.lcb_heso + row.lcb_phucap) * TOI_THIEU_VUNG);
                 const luong_cb_he_thong = Math.round((row.lcb_heso + row.lcb_phucap) * LUONG_CO_BAN_PRICE);
-                const l_thoigian = Math.round((row.lcb_goc / 22) * row.NT); const l_tong_cb = l_thoigian + row.le_phep_tt;
-                const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; const o_thuc_linh = o_tong_lcb_lcv - row.bao_hiem - row.tam_ung;
+                
+                // Đồng bộ công thức mới vào cấu phần kết xuất ExcelJS
+                const l_thoigian = Math.round((luong_cb_he_thong / 22) * row.NT);
+                
+                const le_phep_tt = Math.round((lcb_goc / 22) * (row.P + row.le_vr));
+                const l_tong_cb = l_thoigian + le_phep_tt; const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; const o_thuc_linh = o_tong_lcb_lcv - row.bao_hiem - row.tam_ung;
 
-                const dataRow = worksheet.addRow([
-                    index + 1, row.name, row.account, row.lcb_heso, row.lcb_phucap, luong_cb_he_thong, row.lcb_goc, row.NT, row.P, row.le_vr, l_thoigian, row.le_phep_tt, l_tong_cb, row.he_so_lcv, row.phu_cap_lcv, row.lcv_goc, row.lcv_thucte, o_tong_lcb_lcv, row.bao_hiem, row.tam_ung, o_thuc_linh
-                ]);
+                const dataRow = worksheet.addRow([ index + 1, row.name, row.account, row.lcb_heso, row.lcb_phucap, lcb_goc, luong_cb_he_thong, row.NT, row.P, row.le_vr, l_thoigian, le_phep_tt, l_tong_cb, row.he_so_lcv, row.phu_cap_lcv, row.lcv_goc, row.lcv_thucte, o_tong_lcb_lcv, row.bao_hiem, row.tam_ung, o_thuc_linh ]);
                 dataRow.height = 20;
                 for (let col = 1; col <= 21; col++) {
                     const cell = dataRow.getCell(col); cell.font = { name: 'Arial', size: 9.5 };
@@ -795,16 +503,10 @@
                     if(col === 21) { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEF08A' } }; cell.font.bold = true; }
                 }
             });
-
-            worksheet.columns.forEach(column => {
-                let maxLen = 0; column.eachCell({ includeEmpty: false }, cell => {
-                    let s = cell.value ? cell.value.toString() : ""; if (s.length > maxLen) maxLen = s.length;
-                }); column.width = Math.max(maxLen + 3, 11);
-            });
-            worksheet.getColumn(2).width = 24;
-            const buffer = await workbook.xlsx.writeBuffer();
-            saveAs(new Blob([buffer]), `BAO_CAO_LUONG_MASTER_VINAPACO.xlsx`);
+            worksheet.columns.forEach(column => { let maxLen = 0; column.eachCell({ includeEmpty: false }, cell => { let s = cell.value ? cell.value.toString() : ""; if (s.length > maxLen) maxLen = s.length; }); column.width = Math.max(maxLen + 3, 11); });
+            worksheet.getColumn(2).width = 24; const buffer = await workbook.xlsx.writeBuffer(); saveAs(new Blob([buffer]), `BAO_CAO_LUONG_MASTER_VINAPACO.xlsx`);
         }
+        window.addEventListener('DOMContentLoaded', () => { loadSalaryFromCloud(); buildWidgetCalendar(currentMonth, currentYear); refreshDashboardStats(); });
     </script>
 </body>
 </html>
