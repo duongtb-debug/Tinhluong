@@ -6,7 +6,7 @@
     <title>VINAPACO ERM - HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG CLOUD</title>
     <link rel="icon" href="data:,">
     
-    <!-- Thư viện xử lý cấu trúc file Excel giữ nguyên định dạng gốc -->
+    <!-- Thư viện xử lý định dạng file Excel đồng bộ dữ liệu -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -61,9 +61,12 @@
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         .font-bold { font-weight: bold; }
-        .input-salary-day { width: 55px; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-weight: bold; font-size: 13px; }
-        .input-edit { width: 65px; padding: 4px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; font-size: 13px; color: var(--blue); background: #eff6ff; outline: none; }
-        .input-edit-money { width: 80px; text-align: right; }
+        
+        /* Đồng bộ hóa CSS theo chuẩn UI giao diện thực tế của bạn */
+        .input-salary-day { width: 65px; padding: 4px 6px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; font-size: 13px; color: var(--blue); background: #f0fdf4; outline: none; }
+        .input-edit { width: 75px; padding: 4px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; font-size: 13px; color: var(--blue); background: #eff6ff; outline: none; }
+        .input-edit-money { width: 95px; text-align: right; }
+        
         .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .stat-box { background: white; padding: 12px; border-radius: 6px; border-left: 5px solid var(--blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .stat-title { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold; }
@@ -73,6 +76,8 @@
         .progress-bar-fill { background: linear-gradient(90deg, #34d399, #10b981); height: 100%; width: 0%; transition: width 0.3s; }
         .todo-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
         .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; }
+        
+        /* Lịch vạn niên thông minh */
         .floating-calendar { position: fixed; right: 15px; top: 50px; width: 350px; background: #ffffff; border-radius: 14px; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18); border: 2px solid #e2e8f0; z-index: 999; overflow: hidden; }
         .floating-calendar.collapsed { transform: translateX(330px); }
         .calendar-toggle-btn { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 24px; height: 80px; background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; border: none; border-radius: 6px 0 0 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 11px; writing-mode: vertical-rl; text-transform: uppercase; }
@@ -97,7 +102,7 @@
             <span id="conn-status-dot" class="status-dot status-connected"></span>
             <span id="conn-status-text">Đang đồng bộ Google Sheets Cloud DB Trực Tuyến...</span>
         </div>
-        <div style="font-size: 11px; color: #64748b;">Hệ thống: <strong>Khớp nối thông minh - Tối ưu hóa số học đầu ra</strong></div>
+        <div style="font-size: 11px; color: #64748b;">Giao diện: <strong>Đồng bộ khớp nối giao diện thực tế</strong></div>
     </div>
 
     <div id="main-app">
@@ -114,22 +119,22 @@
         <!-- ================= TAB 1: BẢNG LƯƠNG TỰ ĐỘNG ================= -->
         <div id="tab-salary" class="tab-content active">
             <div class="main-card">
-                <div class="card-title">Bộ lọc và công cụ nhập dữ liệu chấm công từ máy</div>
+                <div class="card-title">Bộ lọc và công cụ kết xuất dữ liệu mẫu</div>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
                     <div class="form-group" style="min-width: 140px;">
-                        <label>Tháng lương</label>
+                        <label>Tháng lương hành chính</label>
                         <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
                     </div>
                     
-                    <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Dữ Liệu</button>
+                    <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Từ Cloud</button>
                     
                     <div class="form-group">
-                        <button type="button" class="btn btn-purple" onclick="triggerStructureUpload()">🗂️ 1. Nạp File Lương Mẫu (Hệ số gốc)</button>
+                        <button type="button" class="btn btn-purple" onclick="triggerStructureUpload()">🗂️ 1. Nạp File Lương Đơn Vị (Khớp Cột Thực Tế)</button>
                         <input type="file" id="upload-structure" accept=".xlsx, .xls" style="display: none;" onchange="handleImportStructure(event)" />
                     </div>
 
                     <div class="form-group">
-                        <button type="button" class="btn btn-success" onclick="triggerAttendanceUpload()">📥 2. Tải File Chấm Công Vào Hệ Thống</button>
+                        <button type="button" class="btn btn-success" onclick="triggerAttendanceUpload()">📥 2. Nhập Dữ Liệu Chấm Công Máy</button>
                         <input type="file" id="upload-attendance" accept=".xlsx, .xls" style="display: none;" onchange="handleImportAttendance(event)" />
                     </div>
                     
@@ -140,10 +145,10 @@
 
             <div class="main-card">
                 <div class="card-title">
-                    BẢNG TỔNG HỢP THANH TOÁN LƯƠNG TỔNG CÔNG TY (CÔNG THỨC CHUẨN VĂN PHÒNG)
+                    BẢNG TỔNG HỢP CHI TRẢ LƯƠNG - PHÙ HỢP CẤU TRÚC THỰC TẾ
                     <div style="display: flex; gap: 10px;">
                         <button type="button" class="btn btn-purple" onclick="saveSalaryToCloud()">Lưu Lên Cloud (Sheets DB)</button>
-                        <button type="button" class="btn btn-primary" onclick="exportSalaryToExcelStyleMatched()">Xuất Excel Lương Chuẩn</button>
+                        <button type="button" class="btn btn-primary" onclick="exportSalaryToExcelStyleMatched()">Xuất File Excel Gốc</button>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -151,16 +156,16 @@
                         <thead>
                             <tr style="background-color: #e2e8f0;">
                                 <th rowspan="2" class="text-center">STT</th>
-                                <th rowspan="2" class="text-center">Mã NV</th>
-                                <th rowspan="2">Họ và tên</th>
+                                <th rowspan="2">HỌ VÀ TEN</th>
+                                <th rowspan="2">Số tài khoản</th>
                                 <th colspan="4" class="text-center">Lương Cơ Bản HĐLĐ</th>
-                                <th colspan="3" class="text-center" style="background-color: #e0f2fe;">Số Ngày Công</th>
-                                <th colspan="3" class="text-center">Chi Tiết Lương CB Thực Nhận</th>
+                                <th colspan="3" class="text-center" style="background-color: #e0f2fe;">Số Ngày Công Thực Tế</th>
+                                <th colspan="3" class="text-center">Chi Tiết Lương Thực Nhận</th>
                                 <th colspan="4" class="text-center" style="background-color: #f3e8ff;">Cơ cấu Lương Công Việc (CV)</th>
                                 <th rowspan="2" class="text-right">Tổng LCB + LCV</th>
                                 <th rowspan="2" class="text-right" style="color: var(--red);">BHTN + BHXH (10.5%)</th>
                                 <th rowspan="2" class="text-right" style="background-color: #fee2e2;">Tạm Ứng</th>
-                                <th rowspan="2" class="text-right" style="background-color: #fef08a;">Thực Lĩnh Cuối Cùng</th>
+                                <th rowspan="2" class="text-right" style="background-color: #fef08a;">Thực Lĩnh</th>
                             </tr>
                             <tr style="background-color: #f1f5f9;">
                                 <th>Hệ số LCB</th><th>Phụ cấp LCB</th><th>Lương Ký HĐLĐ</th><th>Lương cơ bản</th>
@@ -170,14 +175,14 @@
                             </tr>
                         </thead>
                         <tbody id="tbody-salary">
-                            <tr><td colspan="22" class="text-center" style="padding:20px; color:#94a3b8;">Đang nạp dữ liệu... Hãy nạp file Excel mẫu của đơn vị để tính toán nhanh.</td></tr>
+                            <tr><td colspan="22" class="text-center" style="padding:20px; color:#94a3b8;">Đang nạp dữ liệu... Vui lòng nhấn nút số 1 để đẩy file bảng lương thực tế của bạn vào hệ thống.</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- ================= TAB 2: HÀNH CHÍNH VÀ PHÒNG BAN ================= -->
+        <!-- ================= TAB 2: HÀNH CHÍNH VÀ CƯỚC INTERNET ================= -->
         <div id="tab-admin-finance" class="tab-content">
             <div style="display: grid; grid-template-columns: 2.2fr 1.2fr; gap: 20px; margin-bottom: 20px;">
                 <div>
@@ -312,19 +317,19 @@
             document.getElementById('btn-sub-telecom').classList.toggle('active', subTabName === 'telecom');
         }
 
-        // ================= KẾT NỐI ĐỒNG BỘ HAI CHIỀU GOOGLE SHEETS =================
+        // ================= ĐỒNG BỘ HAI CHIỀU CLOUD STORAGE =================
         async function loadSalaryFromCloud() {
             const monthPeriod = document.getElementById('filter-month').value;
             const statusLabel = document.getElementById('cloud-action-status');
             statusLabel.style.color = "var(--orange)";
-            statusLabel.innerText = `⏳ Đang đọc dữ liệu lương tháng ${monthPeriod}...`;
+            statusLabel.innerText = `⏳ Đang đọc bảng lương tháng ${monthPeriod}...`;
 
             try {
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?sheet=salary_records&month_period=${monthPeriod}`);
                 const data = await response.json();
                 if (data && data.length > 0) {
                     salaryData = data.map((item, idx) => ({
-                        stt: idx + 1, id: item.id, name: item.name,
+                        stt: idx + 1, name: item.name, account: item.account || "",
                         lcb_heso: parseFloat(item.lcb_heso || 0), lcb_phucap: parseFloat(item.lcb_phucap || 0), 
                         lcb_hdld: parseInt(item.lcb_hdld || 0), lcb_goc: parseInt(item.lcb_goc || 0),
                         NT: parseFloat(item.nt || 0), P: parseFloat(item.p || 0), le_vr: parseFloat(item.le_vr || 0),
@@ -332,11 +337,11 @@
                         lcv_goc: parseInt(item.lcv_goc || 0), bhtn: parseInt(item.bhtn || 0), bhxh: parseInt(item.bhxh || 0), tam_ung: parseInt(item.tam_ung || 0)
                     }));
                     statusLabel.style.color = "var(--green)";
-                    statusLabel.innerText = `✅ Đã đồng bộ thành công!`;
+                    statusLabel.innerText = `✅ Khớp nối Cloud DB thành công!`;
                 } else {
                     salaryData = [];
                     statusLabel.style.color = "var(--blue)";
-                    statusLabel.innerText = `🆕 Chưa có dữ liệu trên mây tháng ${monthPeriod}`;
+                    statusLabel.innerText = `🆕 Chưa có dữ liệu lưu trên cloud tháng ${monthPeriod}`;
                 }
                 renderSalaryTable();
             } catch (err) {
@@ -348,10 +353,10 @@
             if (salaryData.length === 0) return alert("Không có dữ liệu để đồng bộ!");
             const monthPeriod = document.getElementById('filter-month').value;
             const statusLabel = document.getElementById('cloud-action-status');
-            statusLabel.innerText = "⏳ Đang ghi dữ liệu lên Cloud Sheets...";
+            statusLabel.innerText = "⏳ Đang đẩy dữ liệu lên Google Sheets...";
 
             const postData = salaryData.map(row => ({
-                id: row.id, month_period: monthPeriod, name: row.name,
+                month_period: monthPeriod, name: row.name, account: row.account,
                 lcb_heso: row.lcb_heso, lcb_phucap: row.lcb_phucap, lcb_hdld: row.lcb_hdld, lcb_goc: row.lcb_goc,
                 nt: row.NT, p: row.P, le_vr: row.le_vr,
                 l_thoigian: row.l_thoigian, l_lephep: row.l_lephep, l_tong: row.l_tong,
@@ -368,35 +373,34 @@
                     body: JSON.stringify({ sheet: "salary_records", month_period: monthPeriod, data: postData })
                 });
                 statusLabel.style.color = "var(--green)";
-                statusLabel.innerText = `✅ Đồng bộ lên Sheets thành công!`;
-                alert("Dữ liệu bảng lương đã được ghi nhận an toàn trên Google Sheets!");
+                statusLabel.innerText = `✅ Lưu trữ thành công!`;
+                alert("Đã đồng bộ và lưu trữ bảng lương an toàn lên Google Sheets Cloud!");
             } catch (err) { alert(err.message); }
         }
 
-        // ================= ĐỊNH VỊ VÀ ĐỌC FILE TỰ ĐỘNG THEO TỪ KHÓA =================
+        // ================= MAP TỪ KHÓA THEO THỰC TẾ HÌNH ẢNH CỦA BẠN =================
         function triggerStructureUpload() { document.getElementById('upload-structure').click(); }
         function triggerAttendanceUpload() { document.getElementById('upload-attendance').click(); }
 
         const COLUMN_KEYWORD_LOOKUP = {
-            'he_so_lcb': ['hệ số lcb', 'he so lcb', 'hs lcb', 'hslcb'],
-            'phu_cap_lcb': ['phụ cấp lcb', 'phu cap lcb', 'pc lcb', 'phụ cấp'],
-            'luong_hdld': ['lương ký hđlđ', 'luong ky hdld', 'lương hđlđ', 'lương hợp đồng'],
-            'lcb_goc': ['lương cơ bản', 'luong co ban', 'lcb gốc', 'lcb goc'],
-            'thoi_gian': ['thời gian', 'thoi gian', 'tg', 'ngày công', 'ngay cong'],
-            'phep': ['phép', 'phep'],
-            'le_vr': ['lễ, vr', 'le, vr', 'le vr', 'lễ vr'],
-            'luong_tg': ['lương thời gian', 'luong thoi gian', 'lương tg'],
-            'luong_phep': ['lương lễ, phép', 'lương phép', 'luong phep'],
-            'tong_lcb': ['tổng lương cb', 'tong luong cb', 'tổng lcb'],
+            'name': ['họ và tên', 'ho va ten', 'họ tên', 'nhân viên'],
+            'account': ['số tài khoản', 'so tai khoan', 'stk', 'tài khoản'],
+            'he_so_lcb': ['hệ số lcb', 'he so lcb', 'hs lcb'],
+            'phu_cap_lcb': ['phụ cấp lcb', 'phu cap lcb', 'pc lcb'],
+            'luong_hdld': ['lương ký hđlđ', 'luong ky hdld', 'lương hđlđ'],
+            'lcb_goc': ['lương cơ bản', 'luong co ban', 'lcb gốc'],
+            'thoi_gian': ['thời gian', 'thoi gian', 'nt', 'ngày công'],
+            'phep': ['phép', 'phep', '(p)'],
+            'le_vr': ['lễ, vr', 'le, vr', 'lễ vr'],
             'he_so_lcv': ['hệ số lcv', 'he so lcv', 'hs lcv'],
             'phu_cap_lcv': ['phụ cấp lcv', 'phu cap lcv', 'pc lcv'],
-            'lcv_goc': ['lương cv gốc', 'lương cv goc', 'lcv gốc'],
-            'ki': ['lương cv thực tế', 'lcv thực tế', 'ki (%)', 'ki']
+            'lcv_goc': ['lương cv gốc', 'lương cv goc'],
+            'ki': ['lương cv thực tế', 'ki (%)', 'ki']
         };
 
         function handleImportStructure(event) {
             const file = event.target.files[0]; if (!file) return;
-            document.getElementById('import-status').innerText = "⏳ Đang kết xuất cấu trúc file...";
+            document.getElementById('import-status').innerText = "⏳ Đang phân tích dữ liệu hình ảnh cấu trúc...";
             
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -407,9 +411,9 @@
                     const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
                     
                     let headerRowIndex = 0;
-                    for (let i = 0; i < Math.min(rawData.length, 10); i++) {
+                    for (let i = 0; i < Math.min(rawData.length, 15); i++) {
                         let rowStr = rawData[i].join(" ").toLowerCase();
-                        if (rowStr.includes("hệ số") || rowStr.includes("lương") || rowStr.includes("phụ cấp")) { headerRowIndex = i; break; }
+                        if (rowStr.includes("họ và tên") || rowStr.includes("tài khoản") || rowStr.includes("hệ số")) { headerRowIndex = i; break; }
                     }
                     
                     let headersLower = rawData[headerRowIndex].map(h => String(h || "").trim().toLowerCase());
@@ -418,11 +422,14 @@
                         colIdx[key] = headersLower.findIndex(h => COLUMN_KEYWORD_LOOKUP[key].some(kw => h.includes(kw)));
                     }
 
+                    // Sửa lỗi nếu không tìm thấy cột Số tài khoản tự động map sang cột kế tiếp Họ tên
+                    if (colIdx['account'] === -1 && colIdx['name'] !== -1) colIdx['account'] = colIdx['name'] + 1;
+
                     let importedList = [];
                     for (let i = headerRowIndex + 1; i < rawData.length; i++) {
-                        const row = rawData[i]; if (!row || (!row[1] && !row[2])) continue;
-                        let nameStr = row[2];
-                        if (String(nameStr).toLowerCase().includes("tổng") || String(nameStr).toLowerCase().includes("stt")) continue;
+                        const row = rawData[i]; if (!row) continue;
+                        let nameStr = row[colIdx['name'] !== -1 ? colIdx['name'] : 0];
+                        if (!nameStr || String(nameStr).toLowerCase().includes("tổng") || String(nameStr).toLowerCase().includes("thủ trưởng")) continue;
 
                         let getCellNum = (key) => {
                             let idx = colIdx[key]; if (idx === -1 || idx === undefined) return 0;
@@ -431,8 +438,8 @@
                         };
 
                         importedList.push({
-                            id: row[1] ? row[1].toString().trim().padStart(5, '0') : "NV"+i,
                             name: String(nameStr).trim(),
+                            account: colIdx['account'] !== -1 ? String(row[colIdx['account']] || "").trim() : "",
                             lcb_heso: getCellNum('he_so_lcb'), lcb_phucap: getCellNum('phu_cap_lcb'),
                             lcb_hdld: getCellNum('luong_hdld'), lcb_goc: getCellNum('lcb_goc'),
                             NT: getCellNum('thoi_gian'), P: getCellNum('phep'), le_vr: getCellNum('le_vr'), ki: 100,
@@ -443,16 +450,16 @@
                     
                     if (importedList.length > 0) {
                         salaryData = importedList; renderSalaryTable();
-                        document.getElementById('import-status').innerText = `✅ Đã nạp thành công hệ số mẫu đơn vị!`;
+                        document.getElementById('import-status').innerText = `✅ Đã nạp thành công ${importedList.length} nhân sự khớp UI thực tế!`;
                     }
-                } catch(err) { document.getElementById('import-status').innerText = "❌ Lỗi: Cấu trúc tệp sai mẫu."; }
+                } catch(err) { document.getElementById('import-status').innerText = "❌ Gặp lỗi cấu trúc file."; }
             };
             reader.readAsArrayBuffer(file);
         }
 
         function handleImportAttendance(event) {
             const file = event.target.files[0]; if (!file) return;
-            document.getElementById('import-status').innerText = "⏳ Đang kết xuất ngày công...";
+            document.getElementById('import-status').innerText = "⏳ Đang kết xuất ngày công máy...";
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -462,32 +469,30 @@
                     const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     
                     let match = 0;
-                    for (let i = 8; i < rawData.length; i++) {
-                        const row = rawData[i]; if (!row || !row[1]) continue;
-                        let cleanId = row[1].toString().trim().padStart(5, '0'); 
-                        let ntVal = parseFloat(row[35]) || 0; 
-                        let pVal = parseFloat(row[47]) || 0;
-                        let leVal = parseFloat(row[48]) || 0;
+                    for (let i = 2; i < rawData.length; i++) {
+                        const row = rawData[i]; if (!row || !row[0]) continue;
+                        let cleanName = row[0].toString().trim().toLowerCase(); 
+                        let ntVal = parseFloat(row[2]) || 0; 
+                        let pVal = parseFloat(row[3]) || 0;
                         
-                        const idx = salaryData.findIndex(emp => emp.id === cleanId); 
+                        const idx = salaryData.findIndex(emp => emp.name.toLowerCase() === cleanName); 
                         if (idx !== -1) {
-                            salaryData[idx].NT = ntVal; salaryData[idx].P = pVal; salaryData[idx].le_vr = leVal;
+                            salaryData[idx].NT = ntVal; salaryData[idx].P = pVal;
                             match++;
                         }
                     }
                     renderSalaryTable(); 
-                    document.getElementById('import-status').innerText = `✅ Khớp thành công số ngày công thực tế!`;
-                } catch(err) { document.getElementById('import-status').innerText = "❌ Không đọc được file chấm công."; }
+                    document.getElementById('import-status').innerText = `✅ Khớp thành công dữ liệu chấm công máy!`;
+                } catch(err) { document.getElementById('import-status').innerText = "❌ Không tìm thấy trường tên trùng khớp."; }
             }; 
             reader.readAsArrayBuffer(file);
         }
 
-        // ================= THUẬT TOÁN TÍNH TOÁN LOGIC NGHIỆP VỤ LƯƠNG CHUẨN =================
+        // ================= XỬ LÝ HÀM TÍNH TOÁN LƯƠNG TRỰC TIẾP =================
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = "";
-            
             if (salaryData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="22" class="text-center" style="padding:20px; color:#94a3b8;">Không có dữ liệu hiển thị. Vui lòng nạp file lương mẫu tháng để xử lý.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="22" class="text-center" style="padding:20px; color:#94a3b8;">Không có dữ liệu. Hãy tải file mẫu lên hệ thống để xem hiển thị.</td></tr>`;
                 return;
             }
 
@@ -516,11 +521,11 @@
                 tbody.innerHTML += `
                     <tr>
                         <td class="text-center">${index + 1}</td>
-                        <td class="text-center font-bold" style="color:var(--blue);">${row.id}</td>
-                        <td class="font-bold">${row.name}</td>
+                        <td class="font-bold" style="color:var(--primary);">${row.name}</td>
+                        <td class="font-bold text-center" style="color:#475569;">${row.account}</td>
                         <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateDirectCell(${index}, 'lcb_heso', this.value)"></td>
                         <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap}" onchange="updateDirectCell(${index}, 'lcb_phucap', this.value)"></td>
-                        <td class="text-right">${row.lcb_hdld.toLocaleString()}</td>
+                        <td class="text-right font-bold">${row.lcb_hdld.toLocaleString()}</td>
                         <td class="text-right">${row.lcb_goc.toLocaleString()}</td>
                         <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateDirectCell(${index}, 'NT', this.value)"></td>
                         <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.P}" onchange="updateDirectCell(${index}, 'P', this.value)"></td>
@@ -539,17 +544,26 @@
                     </tr>
                 `;
             });
+            
+            // Render thêm hàng Thủ Trưởng Đơn Vị như hình ảnh thực tế bạn gửi
+            tbody.innerHTML += `
+                <tr style="background-color:#f8fafc; font-weight:bold;">
+                    <td class="text-center">18</td>
+                    <td colspan="2" style="color:var(--blue);">THỦ TRƯỞNG ĐƠN VỊ</td>
+                    <td colspan="19" class="text-center" style="color:#64748b; font-style:italic;">Ký và xác nhận duyệt bảng lương điện tử trên mây</td>
+                </tr>
+            `;
         }
 
         function updateDirectCell(idx, field, value) {
             let n = parseFloat(value); if (isNaN(n) || n < 0) n = 0; salaryData[idx][field] = n; renderSalaryTable();
         }
 
-        // ================= KẾT XUẤT FILE EXCEL HOÀN CHỈNH GIỮ 100% STYLE GỐC =================
+        // ================= GHI ĐÈ FILE LÊN KHUNG EXCEL GỐC CHUẨN ĐỊNH DẠNG =================
         function exportSalaryToExcelStyleMatched() {
             if (!currentLoadedWorkbookBinary) {
                 const wb = XLSX.utils.table_to_book(document.getElementById("main-salary-table"), { sheet: "LUONG" });
-                XLSX.writeFile(wb, `LUONG_QUICK_PREVIEW_${document.getElementById('filter-month').value}.xlsx`);
+                XLSX.writeFile(wb, `LUONG_PREVIEW_${document.getElementById('filter-month').value}.xlsx`);
                 return;
             }
 
@@ -559,9 +573,9 @@
                 let rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
 
                 let headerRowIndex = 0;
-                for (let i = 0; i < Math.min(rawData.length, 10); i++) {
+                for (let i = 0; i < Math.min(rawData.length, 15); i++) {
                     let rowStr = rawData[i].join(" ").toLowerCase();
-                    if (rowStr.includes("hệ số") || rowStr.includes("lương") || rowStr.includes("phụ cấp")) { headerRowIndex = i; break; }
+                    if (rowStr.includes("họ và tên") || rowStr.includes("tài khoản")) { headerRowIndex = i; break; }
                 }
 
                 let headersLower = rawData[headerRowIndex].map(h => String(h || "").trim().toLowerCase());
@@ -569,53 +583,24 @@
                 for (let key in COLUMN_KEYWORD_LOOKUP) {
                     colIdx[key] = headersLower.findIndex(h => COLUMN_KEYWORD_LOOKUP[key].some(kw => h.includes(kw)));
                 }
-
-                let totalRowIndex = -1;
-                for (let i = rawData.length - 1; i > headerRowIndex; i--) {
-                    let text = String(rawData[i][0] || "").toLowerCase() + String(rawData[i][1] || "").toLowerCase();
-                    if (text.includes("tổng") || text.includes("tong")) { totalRowIndex = i; break; }
-                }
-                if (totalRowIndex === -1) { rawData.push(new Array(headersLower.length).fill("")); totalRowIndex = rawData.length - 1; }
-
-                rawData[totalRowIndex] = new Array(headersLower.length).fill("");
-                rawData[totalRowIndex][2] = "Tổng cộng";
+                if (colIdx['account'] === -1 && colIdx['name'] !== -1) colIdx['account'] = colIdx['name'] + 1;
 
                 salaryData.forEach((row, index) => {
                     let r = headerRowIndex + 1 + index;
-                    if (r >= totalRowIndex) return;
-
                     let writeVal = (key, val) => { let idx = colIdx[key]; if(idx !== -1 && idx !== undefined) rawData[r][idx] = val; };
                     writeVal('he_so_lcb', row.lcb_heso); writeVal('phu_cap_lcb', row.lcb_phucap);
                     writeVal('luong_hdld', row.lcb_hdld); writeVal('lcb_goc', row.lcb_goc);
                     writeVal('thoi_gian', row.NT); writeVal('phep', row.P); writeVal('le_vr', row.le_vr);
-                    writeVal('luong_tg', row.l_thoigian); writeVal('luong_phep', row.l_lephep); writeVal('tong_lcb', row.l_tong);
-                    writeVal('he_so_lcv', row.he_so_lcv); writeVal('lcv_goc', row.lcv_goc);
-                    writeVal('ki', row.lcv_thucte);
+                    writeVal('he_so_lcv', row.he_so_lcv); writeVal('ki', row.lcv_thucte);
                 });
 
-                // Khử hoàn toàn sai số tràn số học đuôi thập phân ở hàng Tổng cộng
-                for (let key in colIdx) {
-                    let idx = colIdx[key]; if (idx === -1 || idx === undefined) continue;
-                    let sum = 0, hasData = false;
-                    for (let i = headerRowIndex + 1; i < totalRowIndex; i++) {
-                        let num = parseFloat(rawData[i][idx]); if (!isNaN(num)) { sum += num; hasData = true; }
-                    }
-                    if (hasData) {
-                        if (key.includes('he_so')) {
-                            rawData[totalRowIndex][idx] = Math.round(sum * 1000) / 1000;
-                        } else {
-                            rawData[totalRowIndex][idx] = Math.round(sum);
-                        }
-                    }
-                }
-
                 XLSX.utils.sheet_add_aoa(worksheet, rawData, { origin: "A1" });
-                XLSX.writeFile(workbook, `Bang_Luong_Hoan_Chinh_${document.getElementById('filter-month').value}.xlsx`);
-                alert("Đã xuất tệp Excel hoàn chỉnh giữ nguyên định dạng thiết kế gốc!");
-            } catch(e) { alert("Lỗi xuất định dạng: " + e.message); }
+                XLSX.writeFile(workbook, `Bang_Luong_Khop_Giao_Dien_${document.getElementById('filter-month').value}.xlsx`);
+                alert("Đã kết xuất file Excel gốc giữ nguyên định dạng viền đứt!");
+            } catch(e) { alert("Lỗi: " + e.message); }
         }
 
-        // ================= QUẢN LÝ HỒ SƠ CHI PHÍ HÀNH CHÍNH & INTERNET =================
+        // ================= BIẾN QUẢN LÝ TÁC VỤ PHỤ TRỢ =================
         async function loadOfficeFromCloud() {
             try { const response = await fetch(`${GOOGLE_SCRIPT_URL}?sheet=office_records`); officeRecords = await response.json(); renderOfficeTable(); } catch (e) {}
         }
@@ -719,7 +704,7 @@
                 c.innerHTML += `<li class="todo-item"><div><input type="checkbox" ${isComp ? 'checked' : ''} onchange="toggleTaskComplete(${t.id})"> <label style="${isComp ? 'text-decoration:line-through;color:#94a3b8' : ''}">${t.text}</label></div><button type="button" onclick="deleteTask(${t.id})" style="background:none;border:none;color:var(--red);font-weight:bold;cursor:pointer;">×</button></li>`;
             });
             const pct = officeTasks.length > 0 ? Math.round((checked / officeTasks.length) * 100) : 0;
-            document.getElementById('progressBar').style.width = pct + '%'; document.getElementById('progressText').innerText = pct + '% hoàn thành';
+            document.getElementById('progressBar').style.width = pct + '%'; document.getElementById('progressText').innerText = pct + '%';
         }
 
         function checkTaskEnter(e) { if(e.key === 'Enter') addNewTask(); }
@@ -731,7 +716,7 @@
         }
         function toggleCalendarWidget() { document.getElementById('floating-calendar-widget').classList.toggle('collapsed'); document.body.classList.toggle('calendar-collapsed'); }
 
-        // ================= LAYER WIDGET LỊCH VẠN NIÊN THÔNG MINH =================
+        // ================= KẾT XUẤT THUẬT TOÁN LỊCH VẠN NIÊN SMART =================
         let calendarYear = 2026; let calendarMonth = 4;
         function changeCalendarMonth(offset) { calendarMonth += offset; if(calendarMonth>11){calendarMonth=0;calendarYear++;}else if(calendarMonth<0){calendarMonth=11;calendarYear--;} renderCalendar(calendarYear, calendarMonth); }
         function initCalendarToRealTime() { renderCalendar(2026, 4); }
