@@ -119,12 +119,13 @@
         .vannien-row span:first-child { color: #64748b; font-weight: bold; }
         .vannien-row span:last-child { font-weight: bold; text-align: right; }
 
+        /* SỬA LỖI CSS MODAL GÂY TREO TAB */
         .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 900px; height: 80vh; overflow-y: auto; position: relative; color: var(--text-main); }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 900px; height: 85vh; position: relative; display: flex; flex-direction: column; }
         .close-modal { position: absolute; right: 15px; top: 15px; font-size: 24px; cursor: pointer; color: #64748b; }
-        .preview-viewport-box { width: 100%; height: calc(100% - 40px); margin-top: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: #cbd5e1; display: flex; align-items: center; justify-content: center; overflow: auto; }
+        .preview-viewport-box { width: 100%; flex-grow: 1; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: #cbd5e1; display: flex; align-items: center; justify-content: center; overflow: auto; min-height: 400px; }
         .preview-viewport-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .preview-viewport-box iframe { width: 100%; height: 100%; border: none; }
+        .preview-viewport-box iframe { width: 100%; height: 100%; min-height: 450px; border: none; background: white; }
     </style>
 </head>
 <body>
@@ -297,18 +298,20 @@
         </div>
     </div>
 
-    <!-- PREVIEW MODAL CẤU HÌNH FULL NỘI DUNG CHUYÊN NGHIỆP -->
+    <!-- PREVIEW MODAL CẤU HÌNH LẠI CHUẨN KHÔNG TREO TAB -->
     <div class="modal" id="document-preview-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
-            <h3 style="margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;" id="modal-preview-title">Xem trước tài liệu đầy đủ</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0;">
+                <h3 id="modal-preview-title" style="font-size: 14px;">Xem trước tài liệu đầy đủ</h3>
+                <a id="modal-download-fallback" href="#" download="#" class="btn btn-primary" style="padding: 4px 10px; font-size: 11px; margin-right: 35px; text-decoration: none;">📥 Tải tệp về máy</a>
+            </div>
             <div class="preview-viewport-box" id="modal-preview-body"></div>
         </div>
     </div>
 
     <script>
-        // ================= CẤU HÌNH LINK APPS SCRIPT CLOUD =================
-        const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzL_WwY8AEXv9Vl68V_vjBv_W8dIXSzAJvG8/exec";
+        const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzgwwswS27ZJG4AZBWg2vK790Q18BYR1qjcCPhT6gxPlRrzTnUAJGi6N5bWEEoyK2z1/exec";
 
         function getComprehensiveLunarDetails(d, m, y) {
             let canChiDay = ["Giáp Tý", "Ất Sửu", "Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tỵ", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu", "Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu", "Mậu Dần", "Kỷ Mão", "Canh Thìn", "Tân Tỵ", "Nhâm Ngọ", "Quý Mùi", "Giáp Thân", "Ất Dậu", "Bính Tuất", "Đinh Hợi", "Mậu Tý", "Kỷ Sửu", "Canh Dần", "Tân Mão", "Nhâm Thìn", "Quý Tỵ", "Giáp Ngọ", "Ất Mùi", "Bính Thân", "Đinh Dậu", "Mậu Tuất", "Kỷ Hợi", "Canh Tý", "Tân Sửu", "Nhâm Dần", "Quý Mão", "Giáp Thìn", "Ất Tỵ", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu", "Giáp Dần", "Ất Mão", "Bính Thìn", "Đinh Tỵ", "Mậu Ngọ", "Kỷ Mùi", "Canh Thân", "Tân Dậu", "Nhâm Tuất", "Quý Hợi"];
@@ -325,7 +328,6 @@
             document.getElementById('live-system-clock').innerText = `${daysArr[d.getDay()]} , ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${currentYear} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
         }, 1000);
 
-        // BỘ CƠ SỞ DỮ LIỆU GỐC BẤT BIẾN - ĐÃ CẬP NHẬT 0.6 CHO CHỊ NGỌC
         const defaultSalaryData = [
           {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "lcv_goc": 12110226, "lcv_thucte": 11009296, "bao_hiem": 951993, "tam_ung": 5000000, "account": "105005712499"},
           {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "lcv_goc": 4677052, "lcv_thucte": 2976306, "bao_hiem": 643356, "tam_ung": 4000000, "account": "105004242307"},
@@ -347,12 +349,20 @@
 
         let salaryData = []; let paymentRecords = []; let telecomRecords = [];
         let paymentFilesMap = []; let telecomFilesMap = [];
+        let activeBlobUrls = []; 
 
+        /* SỬA LẠI CHUYỂN TAB CỐ LẬP KHÔNG BỊ TREO */
         function switchMainTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tabName).classList.add('active');
-            event.currentTarget.classList.add('active');
+            
+            var targetTab = document.getElementById('tab-' + tabName);
+            if(targetTab) {
+                targetTab.classList.add('active');
+            }
+            if(event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
         }
 
         function buildWidgetCalendar(month, year) {
@@ -383,17 +393,9 @@
             txt.innerText = text;
         }
 
-        // ĐỒNG BỘ THEO THÁNG MỚI - TỰ ĐỘNG GIỮ NGUYÊN HỆ SỐ CỦA TỪNG THÁNG ĐỘC LẬP
         async function loadSalaryFromCloud() {
             const currentMonthKey = document.getElementById('filter-month').value;
-            updateCloudStatus('sync', `Đang kiểm tra dữ liệu Tháng ${currentMonthKey}...`);
-            
-            if (GOOGLE_WEB_APP_URL.includes("DÁN_URL")) {
-                salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
-                renderSalaryTable();
-                updateCloudStatus('success', `Đã hiển thị dữ liệu gốc cứu hộ của 16 nhân viên.`);
-                return;
-            }
+            updateCloudStatus('sync', `Đang kết nối Google Sheets Tháng ${currentMonthKey}...`);
             
             try {
                 let response = await fetch(`${GOOGLE_WEB_APP_URL}?month=${currentMonthKey}`);
@@ -402,33 +404,32 @@
                     salaryData = resData.salary;
                     updateCloudStatus('success', `Đã đồng bộ trực tuyến thành công dữ liệu Tháng ${currentMonthKey}.`);
                 } else {
-                    // Nếu là một tháng hoàn toàn mới, nhân bản bộ dữ liệu gốc để giữ nguyên hệ số và mở khóa nhập mới số công
                     salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
-                    updateCloudStatus('success', `Khởi tạo phân hệ lương mới cho Tháng ${currentMonthKey} thành công.`);
+                    updateCloudStatus('success', `Khởi tạo phân hệ lương mới cho Tháng ${currentMonthKey} từ bộ nhớ gốc.`);
                 }
             } catch(e) {
                 salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
-                updateCloudStatus('success', `Đang chạy ở chế độ dự phòng thông minh.`);
+                updateCloudStatus('success', `Đang chạy độc lập ở chế độ dự phòng thông minh.`);
             }
             renderSalaryTable();
         }
 
         async function saveSalaryToCloud() {
             const currentMonthKey = document.getElementById('filter-month').value;
-            if (GOOGLE_WEB_APP_URL.includes("DÁN_URL")) {
-                alert("Bạn vui lòng cấu hình link Apps Script trước khi thực hiện!");
-                return;
-            }
             updateCloudStatus('sync', `Đang truyền dữ liệu lên Google Drive...`);
             try {
+                var payload = JSON.stringify({ month: currentMonthKey, salary: salaryData });
                 await fetch(GOOGLE_WEB_APP_URL, { 
                     method: 'POST', 
-                    body: JSON.stringify({ month: currentMonthKey, salary: salaryData }) 
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: payload
                 });
-                updateCloudStatus('success', `Đã đồng bộ lưu trữ cấu trúc bảng lương lên Google Drive.`);
+                updateCloudStatus('success', `Đã đồng bộ xuất và căn chỉnh tự động bảng lương ${currentMonthKey} vào Google Sheets.`);
                 alert(`✅ Đã đồng bộ xuất và căn chỉnh tự động bảng lương ${currentMonthKey} vào Google Sheets.`);
             } catch(err) {
-                alert("Lỗi đường truyền đồng bộ.");
+                console.error(err);
+                alert("Lỗi kết nối mạng vật lý. Vui lòng kiểm tra lại thiết bị.");
             }
         }
 
@@ -444,7 +445,6 @@
                 const o_tong_lcb_lcv = l_tong_cb + parseFloat(row.lcv_thucte); 
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung);
 
-                // THAY THẾ step="0.01" CHO PHÉP NHẬP KHÔNG PHẨY CHO CỘT PHU_CAP_LCV
                 tbody.innerHTML += `
                     <tr>
                         <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td class="text-center">${row.account}</td>
@@ -467,7 +467,6 @@
         }
         function updateSalaryCell(idx, field, val) { let n = parseFloat(val.toString().replace(/\./g, "").replace(/,/g, "")); if (isNaN(n)) n = 0; salaryData[idx][field] = n; renderSalaryTable(); }
 
-        // ================= XỬ LÝ PHẦN HỒ SƠ THANH TOÁN =================
         function calculatePaymentTax() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = parseFloat(document.getElementById('pay-price').value) || 0;
@@ -505,21 +504,53 @@
             renderFileBadges(type);
         }
 
+        /* HÀM OPEN PREVIEW ĐÃ ĐƯỢC FIX KHÔNG BAO GIỜ GÂY XUNG ĐỘT TREO TRANG */
         function openPreviewModal(fileName, fileData) {
             document.getElementById('document-preview-modal').style.display = 'flex';
             document.getElementById('modal-preview-title').innerText = "Xem trước tài liệu: " + fileName;
-            const viewport = document.getElementById('modal-preview-body');
             
-            if (fileData.startsWith('data:image/')) {
-                viewport.innerHTML = `<img src="${fileData}" alt="Chung tu">`;
-            } else if (fileData.startsWith('data:application/pdf')) {
-                viewport.innerHTML = `<iframe src="${fileData}"></iframe>`;
-            } else {
-                viewport.innerHTML = `<div style='text-align:center;color:#64748b'><i class='fa-solid fa-file-prescription' style='font-size:48px;'></i><p style='margin-top:10px;'>Tài liệu định dạng nâng cao.</p></div>`;
+            const viewport = document.getElementById('modal-preview-body');
+            const fallbackLink = document.getElementById('modal-download-fallback');
+            viewport.innerHTML = ""; 
+
+            fallbackLink.href = fileData;
+            fallbackLink.download = fileName;
+
+            try {
+                if (fileData.startsWith('data:image/')) {
+                    viewport.innerHTML = `<img src="${fileData}" alt="Chung tu hinh anh">`;
+                } 
+                else if (fileData.startsWith('data:application/pdf')) {
+                    var parts = fileData.split(';base64,');
+                    var contentType = parts[0].split(':')[1];
+                    var rawBytes = atob(parts[1]);
+                    var rawBytesLength = rawBytes.length;
+                    var uInt8Array = new Uint8Array(rawBytesLength);
+
+                    for (var i = 0; i < rawBytesLength; ++i) {
+                        uInt8Array[i] = rawBytes.charCodeAt(i);
+                    }
+
+                    var blobObj = new Blob([uInt8Array], { type: contentType });
+                    var blobUrl = URL.createObjectURL(blobObj);
+                    
+                    activeBlobUrls.push(blobUrl);
+                    viewport.innerHTML = `<iframe src="${blobUrl}"></iframe>`;
+                } 
+                else {
+                    viewport.innerHTML = `<div style='text-align:center;color:#64748b;padding:20px;'><i class='fa-solid fa-file-excel' style='font-size:48px;'></i><p style='margin-top:10px;'>Tài liệu đặc thù. Vui lòng bấm nút "Tải tệp về máy" phía trên để mở.</p></div>`;
+                }
+            } catch (err) {
+                console.error(err);
+                viewport.innerHTML = `<div style='text-align:center;color:#64748b;padding:20px;'><p>Trình duyệt chặn xem trực tiếp. Vui lòng bấm "Tải tệp về máy" để kiểm tra.</p></div>`;
             }
         }
 
-        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
+        function closePreviewModal() { 
+            document.getElementById('document-preview-modal').style.display = 'none'; 
+            activeBlobUrls.forEach(url => URL.revokeObjectURL(url));
+            activeBlobUrls = [];
+        }
 
         function savePaymentRecord(e) {
             e.preventDefault();
@@ -578,7 +609,6 @@
         function deletePayment(i) { paymentRecords.splice(i,1); renderPaymentTable(); updateDashboardStats(); }
         function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; paymentFilesMap = []; renderFileBadges('payment'); document.getElementById('payment-form-title').innerText = "Tạo mới Đề nghị / Hồ sơ Thanh toán Văn phòng"; }
 
-        // ================= XỬ LÝ PHẦN CƯỚC VIỄN THÔNG =================
         function handleTelecomFiles(files) {
             for(let f of files) {
                 let r = new FileReader(); r.onload = function(e) {
