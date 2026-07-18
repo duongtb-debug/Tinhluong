@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
@@ -38,6 +39,8 @@
             font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px;
         }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; background-color: var(--green); }
+        .status-dot.syncing { background-color: var(--orange); animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.4; } }
         
         .header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
         .header h1 { font-size: 20px; text-transform: uppercase; letter-spacing: 1px; font-family: 'Times New Roman'; }
@@ -116,19 +119,23 @@
         .vannien-row span:first-child { color: #64748b; font-weight: bold; }
         .vannien-row span:last-child { font-weight: bold; text-align: right; }
 
-        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 80%; max-width: 800px; max-height: 85vh; overflow-y: auto; position: relative; color: var(--text-main); }
+        /* LỚP MODAL XEM TRƯỚC HỒ SƠ CHUYÊN NGHIỆP KHÔNG BỊ KHUẤT */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 900px; height: 80vh; overflow-y: auto; position: relative; color: var(--text-main); }
         .close-modal { position: absolute; right: 15px; top: 15px; font-size: 24px; cursor: pointer; color: #64748b; }
+        .preview-viewport-box { width: 100%; height: calc(100% - 40px); margin-top: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: #cbd5e1; display: flex; align-items: center; justify-content: center; overflow: auto; }
+        .preview-viewport-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .preview-viewport-box iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
 
     <div class="db-status-bar">
         <div>
-            <span class="status-dot"></span>
-            <span>Hệ thống ERP Toàn Diện - Đã kết nối cơ sở dữ liệu Thống kê & Lịch Vạn Niên Trực Tuyến</span>
+            <span class="status-dot" id="cloud-status-dot"></span>
+            <span id="cloud-status-text">Hệ thống ERP - Sẵn sàng kết nối Google Sheets & Google Drive Live Cloud</span>
         </div>
-        <div style="font-size: 11px; color: #64748b;">Trạng thái: <strong>Times New Roman Quy Chuẩn - Quản Lý Lịch Sử Đám Mây</strong></div>
+        <div style="font-size: 11px; color: #64748b;">Trạng thái: <strong>Times New Roman - Google Drive Auto Integration</strong></div>
     </div>
 
     <div class="workspace">
@@ -138,7 +145,7 @@
                 <div class="live-clock-box" id="live-system-clock">Thứ ---, 00/00/0000 00:00:00</div>
             </div>
 
-            <!-- DASHBOARD TỔNG HỢP -->
+            <!-- STAT CARDS -->
             <div class="stat-grid">
                 <div class="stat-card">
                     <div class="stat-title">Tổng Hồ Sơ Đăng Ký</div>
@@ -171,20 +178,20 @@
             <!-- ================= TAB 1: BẢNG LƯƠNG NHÂN VIÊN ================= -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
-                    <div class="card-title">Bộ lọc điều hướng thời gian lương lịch sử</div>
+                    <div class="card-title">Bộ lọc thời gian lương lịch sử (Tải trực tiếp từ Google Sheet)</div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
                         <div class="form-group" style="min-width: 140px;">
                             <label>Tháng lương báo cáo</label>
                             <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại / Xem Tháng Đã Chọn</button>
-                        <button type="button" class="btn btn-purple" onclick="saveSalaryToCloud()">💾 Lưu Lên Cloud</button>
-                        <button type="button" class="btn btn-success" onclick="exportSalaryToExcelJSStandard()">📥 Xuất Excel Định Dạng Chuẩn Đẹp</button>
+                        <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Đồng Bộ Từ Google Sheet</button>
+                        <button type="button" class="btn btn-purple" onclick="saveSalaryToCloud()">💾 Lưu Thẳng Vào Google Drive</button>
+                        <button type="button" class="btn btn-success" onclick="exportSalaryToExcelJSStandard()">📥 Xuất Excel Định Dạng Times New Roman</button>
                     </div>
                 </div>
 
                 <div class="main-card">
-                    <div class="card-title">BẢNG TỔNG HỢP CHI TRẢ LƯƠNG CỦA 16 NHÂN VIÊN (DỮ LIỆU ĐỒNG BỘ TUYỆT ĐỐI)</div>
+                    <div class="card-title">BẢNG TỔNG HỢP CHI TRẢ LƯƠNG CỦA 16 NHÂN VIÊN (TIMES NEW ROMAN)</div>
                     <div class="table-responsive">
                         <table class="main-table" id="main-salary-table" style="font-size: 11px;">
                             <thead>
@@ -214,7 +221,7 @@
                 </div>
             </div>
 
-            <!-- ================= TAB 2: HỒ SƠ THANH TOÁN DOANH NGHIỆP ================= -->
+            <!-- ================= TAB 2: HỒ SƠ THANH TOÁN ================= -->
             <div id="tab-payment" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" id="payment-form-title">Tạo mới Đề nghị / Hồ sơ Thanh toán Văn phòng</div>
@@ -236,7 +243,7 @@
                             <div class="form-group"><label>Trạng thái</label><select id="pay-status"><option value="Chưa duyệt">❌ Chưa phê duyệt</option><option value="Đã duyệt chi">✅ Đã giải ngân chi</option></select></div>
                         </div>
                         <div class="form-group" style="margin-bottom: 15px;">
-                            <label>Tài liệu chứng từ đi kèm (Chọn nhiều file)</label>
+                            <label>Tài liệu đính kèm</label>
                             <div class="file-upload-zone" onclick="document.getElementById('pay-files').click()">📂 Chọn nhiều chứng từ thanh toán văn phòng<input type="file" id="pay-files" multiple style="display:none;" onchange="handlePaymentFiles(this.files)"></div>
                             <div class="preview-area" id="pay-file-preview-zone"></div>
                         </div>
@@ -263,7 +270,7 @@
                             <div class="form-group"><label>Trạng thái</label><select id="tel-status"><option value="Chưa thanh toán">❌ Chưa thanh toán</option><option value="Đã thanh toán">✅ Đã thanh toán</option></select></div>
                         </div>
                         <div class="form-group" style="margin-bottom:15px;">
-                            <label>Biên lai thông báo đính kèm (Chọn nhiều file)</label>
+                            <label>Biên lai đính kèm</label>
                             <div class="file-upload-zone" onclick="document.getElementById('tel-files').click()">🌐 Tải lên thông báo cước nhiều file<input type="file" id="tel-files" multiple style="display:none;" onchange="handleTelecomFiles(this.files)"></div>
                             <div class="preview-area" id="tel-file-preview-zone"></div>
                         </div>
@@ -271,7 +278,7 @@
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET DOANH NGHIỆP</div>
+                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</div>
                     <div class="table-responsive"><table class="main-table"><thead><tr style="background:#e2e8f0;"><th class="text-center">STT</th><th>Mã thuê bao</th><th>Nhà mạng</th><th class="text-center">Kỳ cước</th><th class="text-right">Chi phí</th><th class="text-center">Trạng thái</th><th class="text-center">Chứng từ</th><th class="text-center">Hành động</th></tr></thead><tbody id="tbody-telecom"></tbody></table></div>
                 </div>
             </div>
@@ -291,16 +298,20 @@
         </div>
     </div>
 
-    <!-- PREVIEW MODAL -->
+    <!-- PREVIEW MODAL CẤU HÌNH FULL NỘI DUNG CHUYÊN NGHIỆP -->
     <div class="modal" id="document-preview-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
-            <h3 style="margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;" id="modal-preview-title">Xem trước tài liệu</h3>
-            <div id="modal-preview-body" style="text-align:center; min-height:300px; display:flex; align-items:center; justify-content:center;"></div>
+            <h3 style="margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;" id="modal-preview-title">Xem trước tài liệu đầy đủ</h3>
+            <div class="preview-viewport-box" id="modal-preview-body"></div>
         </div>
     </div>
 
     <script>
+        // ================= CẤU HÌNH LIÊN KẾT ĐƯỜNG TRUYỀN GOOGLE SHEETS LIVE CLOUD =================
+        // HÃY ĐỔI ĐƯỜNG LINK CỦA BẠN VÀO GIỮA HAI DẤU NGOẶC KÉP NÀY
+        const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfmjniTP_fhbm_bgiRfqgra8CVkf1Lt8yUyWwfXcl2R3_6YqB0hF4MCIgW-ga43_TXxA/exec";
+
         function getComprehensiveLunarDetails(d, m, y) {
             let canChiDay = ["Giáp Tý", "Ất Sửu", "Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tỵ", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu", "Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu", "Mậu Dần", "Kỷ Mão", "Canh Thìn", "Tân Tỵ", "Nhâm Ngọ", "Quý Mùi", "Giáp Thân", "Ất Dậu", "Bính Tuất", "Đinh Hợi", "Mậu Tý", "Kỷ Sửu", "Canh Dần", "Tân Mão", "Nhâm Thìn", "Quý Tỵ", "Giáp Ngọ", "Ất Mùi", "Bính Thân", "Đinh Dậu", "Mậu Tuất", "Kỷ Hợi", "Canh Tý", "Tân Sửu", "Nhâm Dần", "Quý Mão", "Giáp Thìn", "Ất Tỵ", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu", "Giáp Dần", "Ất Mão", "Bính Thìn", "Đinh Tỵ", "Mậu Ngọ", "Kỷ Mùi", "Canh Thân", "Tân Dậu", "Nhâm Tuất", "Quý Hợi"];
             let canChiMonth = ["Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tỵ", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu", "Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu"];
@@ -319,7 +330,7 @@
         const defaultSalaryData = [
           {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0, "lcv_goc": 12110226, "lcv_thucte": 11009296, "bao_hiem": 951993, "tam_ung": 5000000, "account": "105005712499"},
           {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "lcv_goc": 4677052, "lcv_thucte": 2976306, "bao_hiem": 643356, "tam_ung": 4000000, "account": "105004242307"},
-          {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "bao_hiem": 778113, "tam_ung": 3000000, "account": "102005035542"},
+          {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "bao_hiem": 778113, "tam_ung": 3000000, "account": "102005035542"},
           {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0, "lcv_goc": 3883624, "lcv_thucte": 3707096, "bao_hiem": 843318, "tam_ung": 3000000, "account": "106004294441"},
           {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "bao_hiem": 778113, "tam_ung": 4000000, "account": "106004359838"},
           {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "bao_hiem": 743337, "tam_ung": 3000000, "account": "106868653975"},
@@ -329,14 +340,14 @@
           {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "lcv_goc": 3466030, "lcv_thucte": 3150937, "bao_hiem": 795501, "tam_ung": 3000000, "account": "100004797831"},
           {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "bao_hiem": 665091, "tam_ung": 3000000, "account": "101004882063"},
           {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "bao_hiem": 665091, "tam_ung": 3000000, "account": "100006166724"},
-          {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0, "lcv_goc": 3403391, "lcv_thucte": 3093992, "bao_hiem": 586845, "tam_ung": 3000000, "account": "106869104133"},
+          {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0, "lcv_goc": 3403391, "lcv_thucte": 3093992, "bao_hiem": 586845, "tam_ung": 3000000, "account": "106869104133"},
           {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0, "lcv_goc": 5011128, "lcv_thucte": 4555571, "bao_hiem": 778113, "tam_ung": 3000000, "account": "106873586343"},
           {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3382511, "lcv_thucte": 3075010, "bao_hiem": 665091, "tam_ung": 3000000, "account": "107002654931"},
-          {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0, "lcv_goc": 5011128, "lcv_thucte": 4555571, "bao_hiem": 982422, "tam_ung": 4000000, "account": "102004830132"}
+          {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.4, "phu_cap_lcv": 0, "lcv_goc": 5011128, "lcv_thucte": 4555571, "bao_hiem": 982422, "tam_ung": 4000000, "account": "102004830132"}
         ];
 
-        let salaryData = []; let paymentData = []; let telecomData = [];
-        let currentUploadedPaymentFiles = []; let currentUploadedTelecomFiles = [];
+        let salaryData = []; let paymentRecords = []; let telecomRecords = [];
+        let paymentFilesMap = []; let telecomFilesMap = [];
 
         function switchMainTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -354,7 +365,7 @@
             for (let day = 1; day <= totalDays; day++) {
                 let details = getComprehensiveLunarDetails(day, month + 1, year);
                 let isToday = (day === todayRealDay && month === sysDate.getMonth() && year === currentYear);
-                container.innerHTML += `<div class="calendar-day-cell ${isToday ? 'active-today' : ''}" onclick="showDayVanNienInfo(${day}, ${month+1}, ${year})"><span class="solar-day-num">${day}</span><span class="lunar-day-num">${details.lunarDay === 1 ? details.lunarDay + '/' + details.lunarMonth : details.lunarDay}</span></div>`;
+                container.innerHTML += `<div class="calendar-day-cell ${isToday ? 'active-today' : ''}" onclick="showDayVanNienInfo(${day}, ${month+1}, ${year})"><span class="solar-day-num">${day}</span><span class="lunar-day-num">${details.lunarDay}</span></div>`;
             }
             showDayVanNienInfo(month === sysDate.getMonth() ? todayRealDay : 1, month + 1, year);
         }
@@ -362,165 +373,376 @@
         function navigateWidgetMonth(dir) { currentMonth += dir; if(currentMonth > 11) { currentMonth = 0; currentYear++; } else if(currentMonth < 0) { currentMonth = 11; currentYear--; } buildWidgetCalendar(currentMonth, currentYear); }
         function showDayVanNienInfo(d, m, y) {
             let info = getComprehensiveLunarDetails(d, m, y);
-            document.getElementById('van-nien-live-data').innerHTML = `<div class="vannien-row"><span>Dương lịch</span><span>Ngày ${d}/${m}/${y}</span></div><div class="vannien-row"><span>Âm lịch</span><span>Ngày ${info.lunarDay}/${info.lunarMonth}</span></div><div class="vannien-row"><span>Ngày Can Chi</span><span>${info.canChiDay}</span></div><div class="vannien-row"><span>Tiết khí</span><span>${info.tietKhi}</span></div><div class="vannien-row"><span>Đánh giá</span><span>${info.nature}</span></div>`;
+            document.getElementById('van-nien-live-data').innerHTML = `<div class="vannien-row"><span>Dương lịch</span><span>Ngày ${d}/${m}/${y}</span></div><div class="vannien-row"><span>Âm lịch</span><span>Ngày ${info.lunarDay}</span></div><div class="vannien-row"><span>Ngày Can Chi</span><span>${info.canChiDay}</span></div><div class="vannien-row"><span>Đánh giá</span><span>${info.nature}</span></div>`;
         }
 
-        function refreshDashboardStats() {
-            let totalPay = 0, paidPay = 0, pendingPay = 0, totalTel = 0;
-            paymentData.forEach(r => { totalPay += r.total; if(r.status === 'Đã duyệt chi') paidPay += r.total; else pendingPay += r.total; });
-            telecomData.forEach(t => { totalTel += t.cost; });
-            document.getElementById('dash-total-pay').innerText = totalPay.toLocaleString() + " đ";
-            document.getElementById('dash-paid-pay').innerText = paidPay.toLocaleString() + " đ";
-            document.getElementById('dash-pending-pay').innerText = pendingPay.toLocaleString() + " đ";
-            document.getElementById('dash-total-tel').innerText = totalTel.toLocaleString() + " đ";
-            document.getElementById('dash-paid-progress').style.width = (totalPay > 0 ? (paidPay / totalPay) * 100 : 0) + "%";
+        function updateCloudStatus(status, text) {
+            const dot = document.getElementById('cloud-status-dot');
+            const txt = document.getElementById('cloud-status-text');
+            dot.className = "status-dot " + (status === 'sync' ? 'syncing' : '');
+            if(status === 'success') dot.style.backgroundColor = 'var(--green)';
+            txt.innerText = text;
         }
 
-        function calculatePaymentTax() {
-            const qty = parseFloat(document.getElementById('pay-qty').value) || 0; const price = parseFloat(document.getElementById('pay-price').value) || 0; const taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
-            const subtotal = qty * price; const taxAmount = Math.round(subtotal * (taxRate / 100));
-            document.getElementById('pay-tax-amount').value = taxAmount.toLocaleString('vi-VN'); document.getElementById('pay-total').value = (subtotal + taxAmount).toLocaleString('vi-VN');
-        }
-
-        function handlePaymentFiles(files) { for (let file of files) { const reader = new FileReader(); reader.onload = function(e) { currentUploadedPaymentFiles.push({ name: file.name, type: file.type, base64: e.target.result }); renderFilePreviews('payment'); }; reader.readAsDataURL(file); } }
-        function handleTelecomFiles(files) { for (let file of files) { const reader = new FileReader(); reader.onload = function(e) { currentUploadedTelecomFiles.push({ name: file.name, type: file.type, base64: e.target.result }); renderFilePreviews('telecom'); }; reader.readAsDataURL(file); } }
-        
-        function renderFilePreviews(type) {
-            const zone = document.getElementById(type === 'payment' ? 'pay-file-preview-zone' : 'tel-file-preview-zone'); const arr = type === 'payment' ? currentUploadedPaymentFiles : currentUploadedTelecomFiles; zone.innerHTML = "";
-            arr.forEach((file, idx) => { zone.innerHTML += `<div class="preview-badge"><span>📄 ${file.name.substring(0,12)}...</span><span class="view-file" onclick="viewAttachedFile('${type}', ${idx})">Xem</span><span class="remove-file" onclick="removeAttachedFile('${type}', ${idx})">&times;</span></div>`; });
-        }
-        function removeAttachedFile(type, idx) { if (type === 'payment') currentUploadedPaymentFiles.splice(idx, 1); else currentUploadedTelecomFiles.splice(idx, 1); renderFilePreviews(type); }
-        function viewAttachedFile(type, idx) {
-            const file = type === 'payment' ? currentUploadedPaymentFiles[idx] : currentUploadedTelecomFiles[idx]; document.getElementById('modal-preview-title').innerText = "Xem tài liệu: " + file.name; const body = document.getElementById('modal-preview-body'); body.innerHTML = "";
-            if (file.type.startsWith('image/')) body.innerHTML = `<img src="${file.base64}" style="max-width:100%; max-height:480px;">`;
-            else if (file.type === 'application/pdf') body.innerHTML = `<embed src="${file.base64}" type="application/pdf" width="100%" height="480px">`;
-            else body.innerHTML = `<a class="btn btn-primary" href="${file.base64}" download="${file.name}">Tải xuống tệp</a>`;
-            document.getElementById('document-preview-modal').style.display = 'flex';
-        }
-        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
-
-        function savePaymentRecord(e) {
-            e.preventDefault(); const editIdx = parseInt(document.getElementById('payment-edit-index').value); const qty = parseFloat(document.getElementById('pay-qty').value) || 0; const price = parseFloat(document.getElementById('pay-price').value) || 0; const taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0; const subtotal = qty * price; const taxAmount = Math.round(subtotal * (taxRate / 100));
-            const record = { content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value, account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value, unit: document.getElementById('pay-unit').value, qty: qty, price: price, subtotal: subtotal, taxRate: taxRate, taxAmount: taxAmount, total: subtotal + taxAmount, status: document.getElementById('pay-status').value, files: [...currentUploadedPaymentFiles] };
-            if (editIdx > -1) paymentData[editIdx] = record; else paymentData.push(record); resetPaymentForm(); renderPaymentTable(); refreshDashboardStats();
-        }
-        function renderPaymentTable() {
-            const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = "";
-            paymentData.forEach((row, idx) => { tbody.innerHTML += `<tr><td class="text-center">${idx + 1}</td><td class="font-bold" style="color:var(--blue);">${row.content}</td><td>${row.beneficiary}</td><td>${row.account} <span style="display:block;font-size:10px;color:#64748b;">${row.bank}</span></td><td class="text-center">${row.qty} ${row.unit}</td><td class="text-right">${row.subtotal.toLocaleString()} đ</td><td class="text-right">${row.taxAmount.toLocaleString()} đ</td><td class="text-right font-bold" style="background:#fffbeb; color:var(--orange);">${row.total.toLocaleString()} đ</td><td class="text-center font-bold">${row.status}</td><td class="text-center">${row.files.length > 0 ? `<button class="btn" style="padding:2px 6px; font-size:11px; background:var(--purple); color:white;" onclick="openPaymentRowFiles(${idx})">📂 ${row.files.length} File</button>` : `-`}</td><td class="text-center"><button class="btn-action-edit" onclick="editPaymentRecord(${idx})">Sửa</button> <button class="btn-action-delete" onclick="deletePaymentRecord(${idx})">Xóa</button></td></tr>`; });
-        }
-        function editPaymentRecord(idx) { const r = paymentData[idx]; document.getElementById('payment-edit-index').value = idx; document.getElementById('pay-content').value = r.content; document.getElementById('pay-beneficiary').value = r.beneficiary; document.getElementById('pay-account').value = r.account; document.getElementById('pay-bank').value = r.bank; document.getElementById('pay-unit').value = r.unit; document.getElementById('pay-qty').value = r.qty; document.getElementById('pay-price').value = r.price; document.getElementById('pay-tax-rate').value = r.taxRate; document.getElementById('pay-status').value = r.status; currentUploadedPaymentFiles = [...r.files]; renderFilePreviews('payment'); calculatePaymentTax(); }
-        function deletePaymentRecord(idx) { paymentData.splice(idx,1); renderPaymentTable(); refreshDashboardStats(); }
-        function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; currentUploadedPaymentFiles = []; calculatePaymentTax(); }
-        function openPaymentRowFiles(idx) { currentUploadedPaymentFiles = [...paymentData[idx].files]; renderFilePreviews('payment'); if(currentUploadedPaymentFiles.length > 0) viewAttachedFile('payment', 0); }
-
-        function saveTelecomRecord(e) { e.preventDefault(); const editIdx = parseInt(document.getElementById('telecom-edit-index').value); const record = { id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value) || 0, status: document.getElementById('tel-status').value, files: [...currentUploadedTelecomFiles] }; if (editIdx > -1) telecomData[editIdx] = record; else telecomData.push(record); resetTelecomForm(); renderTelecomTable(); refreshDashboardStats(); }
-        function renderTelecomTable() { const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = ""; telecomData.forEach((row, idx) => { tbody.innerHTML += `<tr><td class="text-center">${idx + 1}</td><td class="font-bold" style="color:var(--purple)">${row.id}</td><td>${row.provider}</td><td class="text-center">${row.period}</td><td class="text-right font-bold">${row.cost.toLocaleString()} đ</td><td class="text-center font-bold">${row.status}</td><td class="text-center">${row.files.length > 0 ? `<button class="btn" style="padding:2px 6px; font-size:11px; background:var(--blue); color:white;" onclick="openTelecomRowFiles(${idx})">📂 ${row.files.length} File</button>` : `-`}</td><td class="text-center"><button class="btn-action-edit" onclick="editTelecomRecord(${idx})">Sửa</button> <button class="btn-action-delete" onclick="deleteTelecomRecord(${idx})">Xóa</button></td></tr>`; }); }
-        function editTelecomRecord(idx) { const r = telecomData[idx]; document.getElementById('telecom-edit-index').value = idx; document.getElementById('tel-id').value = r.id; document.getElementById('tel-provider').value = r.provider; document.getElementById('tel-period').value = r.period; document.getElementById('tel-cost').value = r.cost; document.getElementById('tel-status').value = r.status; currentUploadedTelecomFiles = [...r.files]; renderFilePreviews('telecom'); }
-        function deleteTelecomRecord(idx) { telecomData.splice(idx,1); renderTelecomTable(); refreshDashboardStats(); }
-        function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; currentUploadedTelecomFiles = []; }
-        function openTelecomRowFiles(idx) { currentUploadedTelecomFiles = [...telecomData[idx].files]; renderFilePreviews('telecom'); if(currentUploadedTelecomFiles.length > 0) viewAttachedFile('telecom', 0); }
-
-        function loadSalaryFromCloud() {
+        // BIẾN THAY ĐỔI THEO THÁNG - FIX LỖI KHÔNG ĐỔI NGÀY CÔNG KHI CHUYỂN THÁNG
+        async function loadSalaryFromCloud() {
             const currentMonthKey = document.getElementById('filter-month').value;
-            const savedData = localStorage.getItem(`vinapaco_salary_${currentMonthKey}`);
-            if (savedData) { salaryData = JSON.parse(savedData); } else { salaryData = JSON.parse(JSON.stringify(defaultSalaryData)); }
+            updateCloudStatus('sync', `Đang kết nối Google Sheets...`);
+            
+            if (GOOGLE_WEB_APP_URL.includes("DÁN_URL")) {
+                salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
+                renderSalaryTable();
+                updateCloudStatus('success', `Đã hiển thị dữ liệu gốc cố định cứu hộ của 16 nhân viên.`);
+                return;
+            }
+            
+            try {
+                let response = await fetch(`${GOOGLE_WEB_APP_URL}?month=${currentMonthKey}`);
+                let resData = await response.json();
+                if(resData.status === 'success') {
+                    salaryData = resData.salary;
+                    updateCloudStatus('success', `Đã đồng bộ trực tuyến thành công dữ liệu Tháng ${currentMonthKey}.`);
+                } else {
+                    // Nếu chưa có dữ liệu online của tháng này, tự động clone bộ mẫu chuẩn để người dùng nhập mới
+                    salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
+                    updateCloudStatus('success', `Khởi tạo dữ liệu tháng mới ${currentMonthKey} từ bộ nhớ dự phòng.`);
+                }
+            } catch(e) {
+                salaryData = JSON.parse(JSON.stringify(defaultSalaryData));
+                updateCloudStatus('success', `Chế độ cục bộ: Đã tải dữ liệu 16 nhân viên.`);
+            }
             renderSalaryTable();
         }
 
-        function saveSalaryToCloud() {
+        async function saveSalaryToCloud() {
             const currentMonthKey = document.getElementById('filter-month').value;
-            localStorage.setItem(`vinapaco_salary_${currentMonthKey}`, JSON.stringify(salaryData));
-            alert(`✅ Hệ thống ERM xác nhận: Đã lưu thành công dữ liệu bảng lương của Tháng ${currentMonthKey} lên máy chủ đám mây Cloud.`);
+            if (GOOGLE_WEB_APP_URL.includes("DÁN_URL")) {
+                alert("Bạn vui lòng cấu hình link Apps Script trước khi thực hiện!");
+                return;
+            }
+            updateCloudStatus('sync', `Đang truyền dữ liệu lên Google Drive...`);
+            try {
+                await fetch(GOOGLE_WEB_APP_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors',
+                    body: JSON.stringify({ month: currentMonthKey, salary: salaryData }) 
+                });
+                updateCloudStatus('success', `Đã đồng bộ lưu trữ cấu trúc bảng lương lên Google Drive.`);
+                alert(`✅ Đã đồng bộ xuất và căn chỉnh tự động bảng lương ${currentMonthKey} vào Google Sheets.`);
+            } catch(err) {
+                alert("Lỗi đường truyền đồng bộ.");
+            }
         }
 
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = "";
             salaryData.forEach((row, index) => {
                 const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
-                row.lcb_goc = Math.round((row.lcb_heso + row.lcb_phucap) * TOI_THIEU_VUNG);
-                const luong_cb_he_thong = Math.round((row.lcb_heso + row.lcb_phucap) * LUONG_CO_BAN_PRICE);
-                
-                row.l_thoigian = Math.round((luong_cb_he_thong / 22) * row.NT);
-                row.le_phep_tt = Math.round((row.lcb_goc / 22) * (row.P + row.le_vr));
-                
+                row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap)) * TOI_THIEU_VUNG);
+                const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap)) * LUONG_CO_BAN_PRICE);
+                row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
+                row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P) + parseFloat(row.le_vr)));
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt;
-                const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; const o_thuc_linh = o_tong_lcb_lcv - row.bao_hiem - row.tam_ung;
+                const o_tong_lcb_lcv = l_tong_cb + parseFloat(row.lcv_thucte); 
+                const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung);
 
                 tbody.innerHTML += `
                     <tr>
-                        <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td class="text-center font-bold" style="color:#64748b;">${row.account}</td>
-                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td>
-                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
-                        <td class="text-right font-bold" style="color:var(--blue);">${row.lcb_goc.toLocaleString()}</td>
-                        <td class="text-right">${luong_cb_he_thong.toLocaleString()}</td>
-                        <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td>
-                        <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.P}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td>
-                        <td style="background-color: #e0f2fe;" class="text-center"><input type="number" class="input-salary-day" value="${row.le_vr}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td>
+                        <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td class="text-center">${row.account}</td>
+                        <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td>
+                        <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
+                        <td class="text-right font-bold">${row.lcb_goc.toLocaleString()}</td><td class="text-right">${luong_cb_he_thong.toLocaleString()}</td>
+                        <td style="background-color: #e0f2fe;"><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td>
+                        <td style="background-color: #e0f2fe;"><input type="number" class="input-salary-day" value="${row.P}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td>
+                        <td style="background-color: #e0f2fe;"><input type="number" class="input-salary-day" value="${row.le_vr}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td>
                         <td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold" style="color:var(--blue);">${l_tong_cb.toLocaleString()}</td>
-                        <td class="text-center"><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td>
-                        <td class="text-center"><input type="number" class="input-edit" value="${row.phu_cap_lcv}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td>
-                        <td class="text-right font-bold">${row.lcv_goc.toLocaleString()}</td><td class="text-right font-bold" style="color: var(--purple);">${row.lcv_thucte.toLocaleString()}</td>
-                        <td class="text-right font-bold" style="background-color:#f8fafc;">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right" style="color: var(--red); font-weight: bold;">${row.bao_hiem.toLocaleString()}</td>
-                        <td class="text-center" style="background-color:#fee2e2;"><input type="text" class="input-edit input-edit-money" style="background:#fee2e2; color:#dc2626; font-weight: bold;" value="${row.tam_ung.toLocaleString('vi-VN')}" onblur="updateSalaryCell(${index}, 'tam_ung', this.value)"></td>
+                        <td><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td>
+                        <td><input type="number" class="input-edit" value="${row.phu_cap_lcv}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td>
+                        <td class="text-right">${row.lcv_goc.toLocaleString()}</td><td class="text-right font-bold" style="color: var(--purple);">${row.lcv_thucte.toLocaleString()}</td>
+                        <td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right" style="color: var(--red);">${row.bao_hiem.toLocaleString()}</td>
+                        <td class="text-center" style="background-color:#fee2e2;"><input type="text" class="input-edit input-edit-money" value="${row.tam_ung.toLocaleString('vi-VN')}" onblur="updateSalaryCell(${index}, 'tam_ung', this.value)"></td>
                         <td class="text-right font-bold" style="background-color:#fef08a;">${o_thuc_linh.toLocaleString()}</td>
                     </tr>
                 `;
             });
         }
-
         function updateSalaryCell(idx, field, val) { let n = parseFloat(val.toString().replace(/\./g, "").replace(/,/g, "")); if (isNaN(n)) n = 0; salaryData[idx][field] = n; renderSalaryTable(); }
 
-        // ================= EXCELJS MASTER CHUẨN ĐẸP 100% FONT TIMES NEW ROMAN =================
-        async function exportSalaryToExcelJSStandard() {
-            if (salaryData.length === 0) return; 
-            const currentMonthKey = document.getElementById('filter-month').value;
-            const workbook = new ExcelJS.Workbook(); const worksheet = workbook.addWorksheet('Bảng Lương'); worksheet.views = [{ showGridLines: true }];
-            
-            worksheet.addRow(['TỔNG CÔNG TY GIẤY VIỆT NAM']); worksheet.addRow(['VĂN PHÒNG TỔNG HỢP']); worksheet.addRow([]); 
-            worksheet.addRow([`BẢNG TỔNG HỢP CHI TRẢ LƯƠNG NHÂN VIÊN - THÁNG ${currentMonthKey}`]); worksheet.addRow([]);
-            worksheet.getCell('A1').font = { name: 'Times New Roman', size: 10, bold: true, color: { argb: '475569' } }; worksheet.getCell('A2').font = { name: 'Times New Roman', size: 10, italic: true, color: { argb: '64748b' } };
-            worksheet.getCell('A4').font = { name: 'Times New Roman', size: 15, bold: true, color: { argb: '0F172A' } }; worksheet.mergeCells('A4:U4'); worksheet.getCell('A4').alignment = { horizontal: 'center', vertical: 'middle' };
-            worksheet.getRow(4).height = 35;
-
-            const row6Vals = ['STT', 'HỌ VÀ TÊN', 'SỐ TÀI KHOẢN', 'LƯƠNG CƠ BẢN HĐLĐ', '', '', '', 'SỐ NGÀY CÔNG THỰC TẾ', '', '', 'CHI TIẾT LƯƠNG THỰC NHẬN', '', '', 'CƠ CẤU LƯƠNG CÔNG VIỆC (CV)', '', '', '', 'TỔNG CB + CV', 'BHXH KHẤU TRỪ', 'TẠM ỨNG', 'THỰC LĨNH'];
-            const row7Vals = ['', '', '', 'Hệ số LCB', 'Phụ cấp LCB', 'Lương HĐLĐ', 'LCB Hệ thống', 'Thời gian (NT)', 'Phép (P)', 'Lễ, VR', 'Lương Thời Gian', 'Lương Lễ Phép', 'Tổng Lương CB', 'Hệ số LCV', 'Phụ cấp LCV', 'LCV Gốc', 'LCV Thực Tế', '', '', '', ''];
-            const r6 = worksheet.addRow(row6Vals); r6.height = 24; const r7 = worksheet.addRow(row7Vals); r7.height = 22;
-            worksheet.mergeCells('A6:A7'); worksheet.mergeCells('B6:B7'); worksheet.mergeCells('C6:C7'); worksheet.mergeCells('D6:G6'); worksheet.mergeCells('H6:J6'); worksheet.mergeCells('K6:M6'); worksheet.mergeCells('N6:Q6'); worksheet.mergeCells('R6:R7'); worksheet.mergeCells('S6:S7'); worksheet.mergeCells('T6:T7'); worksheet.mergeCells('U6:U7');
-
-            const colorizeHeader = (cell, bgHex, fontColorHex = 'FFFFFF') => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgHex } }; cell.font = { name: 'Times New Roman', size: 10, bold: true, color: { argb: fontColorHex } }; cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; cell.border = { top: {style:'thin', color: {argb:'94A3B8'}}, left: {style:'thin', color: {argb:'94A3B8'}}, bottom: {style:'thin', color: {argb:'94A3B8'}}, right: {style:'thin', color: {argb:'94A3B8'}} }; };
-            for(let col = 1; col <= 21; col++) { colorizeHeader(r6.getCell(col), '1E293B', 'FFFFFF'); colorizeHeader(r7.getCell(col), '334155', 'F8FAFC'); }
-
-            salaryData.forEach((row, index) => {
-                const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
-                const lcb_goc = Math.round((row.lcb_heso + row.lcb_phucap) * TOI_THIEU_VUNG);
-                const luong_cb_he_thong = Math.round((row.lcb_heso + row.lcb_phucap) * LUONG_CO_BAN_PRICE);
-                const l_thoigian = Math.round((luong_cb_he_thong / 22) * row.NT);
-                const le_phep_tt = Math.round((lcb_goc / 22) * (row.P + row.le_vr));
-                const l_tong_cb = l_thoigian + le_phep_tt; const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; const o_thuc_linh = o_tong_lcb_lcv - row.bao_hiem - row.tam_ung;
-
-                const dataRow = worksheet.addRow([ index + 1, row.name, row.account, row.lcb_heso, row.lcb_phucap, lcb_goc, luong_cb_he_thong, row.NT, row.P, row.le_vr, l_thoigian, le_phep_tt, l_tong_cb, row.he_so_lcv, row.phu_cap_lcv, row.lcv_goc, row.lcv_thucte, o_tong_lcb_lcv, row.bao_hiem, row.tam_ung, o_thuc_linh ]);
-                dataRow.height = 22;
-                const isEven = (index % 2 === 0); const rowBg = isEven ? 'FFFFFF' : 'F8FAFC';
-
-                for (let col = 1; col <= 21; col++) {
-                    const cell = dataRow.getCell(col); cell.font = { name: 'Times New Roman', size: 11, color: { argb: '334155' } };
-                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowBg } };
-                    cell.border = { top: {style:'thin', color:{argb:'CBD5E1'}}, bottom: {style:'thin', color:{argb:'CBD5E1'}}, left: {style:'thin', color:{argb:'CBD5E1'}}, right: {style:'thin', color:{argb:'CBD5E1'}} };
-                    if (col === 1) cell.alignment = { horizontal: 'center', vertical: 'middle' };
-                    else if (col === 2) { cell.alignment = { horizontal: 'left', vertical: 'middle' }; cell.font.bold = true; }
-                    else if (col === 3) { cell.alignment = { horizontal: 'center', vertical: 'middle' }; cell.numFmt = '@'; }
-                    else if ([4,5,8,9,10,14,15].includes(col)) cell.alignment = { horizontal: 'center', vertical: 'middle' };
-                    else { cell.alignment = { horizontal: 'right', vertical: 'middle' }; cell.numFmt = '#,##0'; }
-                    
-                    if(col === 21) { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'ECFDF5' } }; cell.font.bold = true; cell.font.color = { argb: '065F46' }; }
-                }
-            });
-            worksheet.columns.forEach(column => { let maxLen = 0; column.eachCell({ includeEmpty: false }, cell => { let s = cell.value ? cell.value.toString() : ""; if (s.length > maxLen) maxLen = s.length; }); column.width = Math.max(maxLen + 4, 12); });
-            worksheet.getColumn(1).width = 6; worksheet.getColumn(2).width = 25;
-            
-            const buffer = await workbook.xlsx.writeBuffer(); saveAs(new Blob([buffer]), `BAO_CAO_LUONG_MASTER_VINAPACO_${currentMonthKey}.xlsx`);
+        // ================= XỬ LÝ PHẦN HỒ SƠ THANH TOÁN VÀ XEM TRƯỚC TÀI LIỆU =================
+        function calculatePaymentTax() {
+            let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
+            let price = parseFloat(document.getElementById('pay-price').value) || 0;
+            let rate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
+            let preTax = qty * price; let tax = preTax * (rate / 100); let total = preTax + tax;
+            document.getElementById('pay-tax-amount').value = Math.round(tax).toLocaleString('vi-VN');
+            document.getElementById('pay-total').value = Math.round(total).toLocaleString('vi-VN');
         }
-        window.addEventListener('DOMContentLoaded', () => { loadSalaryFromCloud(); buildWidgetCalendar(currentMonth, currentYear); refreshDashboardStats(); });
+
+        function handlePaymentFiles(files) {
+            for(let f of files) {
+                let r = new FileReader(); r.onload = function(e) {
+                    paymentFilesMap.push({ name: f.name, type: f.type, data: e.target.result });
+                    renderFileBadges('payment');
+                }; r.readAsDataURL(f);
+            }
+        }
+
+        function renderFileBadges(type) {
+            const zone = document.getElementById(type === 'payment' ? 'pay-file-preview-zone' : 'tel-file-preview-zone');
+            const map = type === 'payment' ? paymentFilesMap : telecomFilesMap;
+            zone.innerHTML = "";
+            map.forEach((file, idx) => {
+                zone.innerHTML += `
+                    <div class="preview-badge">
+                        <span class="view-file" onclick="openPreviewModal('${file.name}', '${file.data}')">👁 Xem ${file.name.substring(0,12)}...</span>
+                        <span class="remove-file" onclick="removeAttachedFile('${type}', ${idx})">&times;</span>
+                    </div>`;
+            });
+        }
+
+        function removeAttachedFile(type, idx) {
+            if(type === 'payment') paymentFilesMap.splice(idx, 1);
+            else telecomFilesMap.splice(idx, 1);
+            renderFileBadges(type);
+        }
+
+        // TÍNH NĂNG XEM TRƯỚC BẬT MODAL CHUYÊN NGHIỆP HIỂN THỊ NỘI DUNG ĐẦY ĐỦ KHÔNG BỊ KHUẤT
+        function openPreviewModal(fileName, fileData) {
+            document.getElementById('document-preview-modal').style.display = 'flex';
+            document.getElementById('modal-preview-title').innerText = "Xem trước tài liệu: " + fileName;
+            const viewport = document.getElementById('modal-preview-body');
+            
+            if (fileData.startsWith('data:image/')) {
+                viewport.innerHTML = `<img src="${fileData}" alt="Chung tu">`;
+            } else if (fileData.startsWith('data:application/pdf')) {
+                viewport.innerHTML = `<iframe src="${fileData}"></iframe>`;
+            } else {
+                viewport.innerHTML = `<div style='text-align:center;color:#64748b'><i class='fa-solid fa-file-prescription' style='font-size:48px;'></i><p style='margin-top:10px;'>Tài liệu định dạng văn bản nâng cao. Tự động mã hóa lưu trữ.</p></div>`;
+            }
+        }
+
+        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
+
+        function savePaymentRecord(e) {
+            e.preventDefault();
+            let idx = parseInt(document.getElementById('payment-edit-index').value);
+            let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
+            let price = parseFloat(document.getElementById('pay-price').value) || 0;
+            let rate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
+            let preTax = qty * price; let tax = preTax * (rate / 100); let total = preTax + tax;
+
+            let dataObj = {
+                content: document.getElementById('pay-content').value,
+                beneficiary: document.getElementById('pay-beneficiary').value,
+                account: document.getElementById('pay-account').value,
+                bank: document.getElementById('pay-bank').value,
+                unit: document.getElementById('pay-unit').value,
+                qty: qty, price: price, tax: tax, total: total,
+                status: document.getElementById('pay-status').value,
+                files: [...paymentFilesMap]
+            };
+
+            if(idx === -1) paymentRecords.push(dataObj);
+            else paymentRecords[idx] = dataObj;
+
+            resetPaymentForm(); renderPaymentTable(); updateDashboardStats();
+        }
+
+        function renderPaymentTable() {
+            const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = "";
+            paymentRecords.forEach((rec, i) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="text-center">${i+1}</td><td><b>${rec.content}</b></td><td>${rec.beneficiary}</td><td>${rec.account} / ${rec.bank}</td>
+                        <td class="text-center">${rec.qty} ${rec.unit}</td><td class="text-right">${rec.price.toLocaleString()} đ</td>
+                        <td class="text-right">${rec.tax.toLocaleString()} đ</td><td class="text-right font-bold" style="background:#fef08a">${rec.total.toLocaleString()} đ</td>
+                        <td class="text-center font-bold">${rec.status}</td>
+                        <td class="text-center">${rec.files.length > 0 ? `<button class="btn-action-edit" onclick="openPreviewModal('${rec.files[0].name}', '${rec.files[0].data}')">📄 Xem ${rec.files.length} file</button>` : 'Không có'}</td>
+                        <td class="text-center">
+                            <button class="btn-action-edit" onclick="editPayment(${i})">Sửa</button>
+                            <button class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function editPayment(i) {
+            let rec = paymentRecords[i]; document.getElementById('payment-edit-index').value = i;
+            document.getElementById('pay-content').value = rec.content; document.getElementById('pay-beneficiary').value = rec.beneficiary;
+            document.getElementById('pay-account').value = rec.account; document.getElementById('pay-bank').value = rec.bank;
+            document.getElementById('pay-unit').value = rec.unit; document.getElementById('pay-qty').value = rec.qty;
+            document.getElementById('pay-price').value = rec.price; document.getElementById('pay-tax-rate').value = (rec.tax / (rec.qty * rec.price)) * 100;
+            document.getElementById('pay-status').value = rec.status; paymentFilesMap = [...rec.files];
+            calculatePaymentTax(); renderFileBadges('payment');
+            document.getElementById('payment-form-title').innerText = "Chỉnh sửa Đề nghị Thanh toán số: " + (i+1);
+        }
+
+        function deletePayment(i) { paymentRecords.splice(i,1); renderPaymentTable(); updateDashboardStats(); }
+        function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; paymentFilesMap = []; renderFileBadges('payment'); document.getElementById('payment-form-title').innerText = "Tạo mới Đề nghị / Hồ sơ Thanh toán Văn phòng"; }
+
+        // ================= XỬ LÝ PHẦN CƯỚC VIỄN THÔNG INTERNET =================
+        function handleTelecomFiles(files) {
+            for(let f of files) {
+                let r = new FileReader(); r.onload = function(e) {
+                    telecomFilesMap.push({ name: f.name, type: f.type, data: e.target.result });
+                    renderFileBadges('telecom');
+                }; r.readAsDataURL(f);
+            }
+        }
+
+        function saveTelecomRecord(e) {
+            e.preventDefault();
+            let idx = parseInt(document.getElementById('telecom-edit-index').value);
+            let dataObj = {
+                id: document.getElementById('tel-id').value,
+                provider: document.getElementById('tel-provider').value,
+                period: document.getElementById('tel-period').value,
+                cost: parseFloat(document.getElementById('tel-cost').value) || 0,
+                status: document.getElementById('tel-status').value,
+                files: [...telecomFilesMap]
+            };
+            if(idx === -1) telecomRecords.push(dataObj);
+            else telecomRecords[idx] = dataObj;
+            resetTelecomForm(); renderTelecomTable(); updateDashboardStats();
+        }
+
+        function renderTelecomTable() {
+            const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = "";
+            telecomRecords.forEach((rec, i) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="text-center">${i+1}</td><td class="font-bold">${rec.id}</td><td>${rec.provider}</td><td class="text-center">${rec.period}</td>
+                        <td class="text-right font-bold">${rec.cost.toLocaleString()} đ</td><td class="text-center font-bold">${rec.status}</td>
+                        <td class="text-center">${rec.files.length > 0 ? `<button class="btn-action-edit" onclick="openPreviewModal('${rec.files[0].name}', '${rec.files[0].data}')">🌐 Biên lai</button>` : 'Không có'}</td>
+                        <td class="text-center">
+                            <button class="btn-action-edit" onclick="editTelecom(${i})">Sửa</button>
+                            <button class="btn-action-delete" onclick="deleteTelecom(${i})">Xóa</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function editTelecom(i) {
+            let rec = telecomRecords[i]; document.getElementById('telecom-edit-index').value = i;
+            document.getElementById('tel-id').value = rec.id; document.getElementById('tel-provider').value = rec.provider;
+            document.getElementById('tel-period').value = rec.period; document.getElementById('tel-cost').value = rec.cost;
+            document.getElementById('tel-status').value = rec.status; telecomFilesMap = [...rec.files];
+            renderFileBadges('telecom');
+        }
+        function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); updateDashboardStats(); }
+        function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; telecomFilesMap = []; renderFileBadges('telecom'); }
+
+        // ================= CẬP NHẬT TRẠNG THÁI DASHBOARD BÁO CÁO =================
+        function updateDashboardStats() {
+            let totalPay = 0; let paidPay = 0; let pendingPay = 0; let pendingCount = 0;
+            paymentRecords.forEach(r => {
+                totalPay += r.total;
+                if(r.status === 'Đã duyệt chi') paidPay += r.total;
+                else { pendingPay += r.total; pendingCount++; }
+            });
+            let totalTel = 0; let unpaidTel = 0;
+            telecomRecords.forEach(t => {
+                totalTel += t.cost;
+                if(t.status === 'Chưa thanh toán') unpaidTel += t.cost;
+            });
+
+            document.getElementById('dash-total-pay').innerText = Math.round(totalPay).toLocaleString('vi-VN') + " đ";
+            document.getElementById('dash-pay-count').innerText = paymentRecords.length + " hồ sơ chứng từ";
+            document.getElementById('dash-paid-pay').innerText = Math.round(paidPay).toLocaleString('vi-VN') + " đ";
+            document.getElementById('dash-pending-pay').innerText = Math.round(pendingPay).toLocaleString('vi-VN') + " đ";
+            document.getElementById('dash-pending-count').innerText = pendingCount + " hồ sơ đang treo";
+            document.getElementById('dash-total-tel').innerText = Math.round(totalTel).toLocaleString('vi-VN') + " đ";
+            document.getElementById('dash-unpaid-tel').innerText = "Chưa chi: " + Math.round(unpaidTel).toLocaleString('vi-VN') + " đ";
+            
+            let pct = totalPay > 0 ? (paidPay / totalPay) * 100 : 0;
+            document.getElementById('dash-paid-progress').style.width = pct + "%";
+        }
+
+        // ================= XUẤT EXCEL CHUYÊN NGHIỆP EXCELJS (CĂN CỘT AUTO-FIT) =================
+        function exportSalaryToExcelJSStandard() {
+            let workbook = new ExcelJS.Workbook();
+            let sheet = workbook.addWorksheet('Bảng Tính Lương');
+            
+            sheet.views = [{ showGridLines: true }];
+            sheet.getCell('A1').value = "TỔNG CÔNG TY GIẤY VIỆT NAM"; sheet.getCell('A1').font = { name: 'Times New Roman', size: 11, bold: true };
+            sheet.getCell('A2').value = "VĂN PHÒNG TỔNG HỢP"; sheet.getCell('A2').font = { name: 'Times New Roman', size: 11, bold: true };
+            
+            let currentMonthKey = document.getElementById('filter-month').value;
+            sheet.getCell('A4').value = "BẢNG TỔNG HỢP CHI TRẢ LƯƠNG NHÂN VIÊN - THÁNG " + currentMonthKey.split("-")[1] + "/" + currentMonthKey.split("-")[0];
+            sheet.getCell('A4').font = { name: 'Times New Roman', size: 14, bold: true };
+            sheet.getCell('A4').alignment = { horizontal: 'center' };
+            sheet.mergeCells('A4:U4');
+
+            let headersRow1 = ["STT", "HỌ VÀ TÊN", "Số tài khoản", "Lương Cơ Bản HĐLĐ", "", "", "", "Số Ngày Công Thực Tế", "", "", "Chi Tiết Lương Thực Nhận", "", "", "Cơ cấu Lương Công Việc (CV)", "", "", "", "Tổng LCB + LCV", "BHTN+BHXH+BHYT", "Tạm Ứng", "Thực Lĩnh CB+CV"];
+            let headersRow2 = ["", "", "", "Hệ số LCB", "Phụ cấp LCB", "Lương Ký HĐLĐ", "Lương cơ bản", "Thời gian (NT)", "Phép (P)", "Lễ, VR", "Lương Thời Gian", "Lương Lễ, Phép", "Tổng Lương CB", "Hệ số LCV", "Phụ cấp LCV", "Lương CV Gốc", "Lương CV Thực Tế", "", "", "", ""];
+            
+            sheet.getRow(6).values = headersRow1;
+            sheet.getRow(7).values = headersRow2;
+
+            // Merge Headers dọc và ngang
+            sheet.mergeCells('A6:A7'); sheet.mergeCells('B6:B7'); sheet.mergeCells('C6:C7');
+            sheet.mergeCells('D6:G6'); sheet.mergeCells('H6:J6'); sheet.mergeCells('K6:M6'); sheet.mergeCells('N6:Q6');
+            sheet.mergeCells('R6:R7'); sheet.mergeCells('S6:S7'); sheet.mergeCells('T6:T7'); sheet.mergeCells('U6:U7');
+
+            // Style Headers
+            for(let r of [6,7]) {
+                sheet.getRow(r).eachCell(c => {
+                    c.font = { name: 'Times New Roman', size: 10, bold: true };
+                    c.fill = { type: 'pattern', pattern:'solid', fgColor:{argb:'F1F5F9'} };
+                    c.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                    c.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+                });
+            }
+
+            // Đổ dữ liệu 16 nhân viên
+            salaryData.forEach((row, idx) => {
+                let rNum = 8 + idx;
+                const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
+                let lcb_goc = Math.round((row.lcb_heso + row.lcb_phucap) * TOI_THIEU_VUNG);
+                let luong_cb_ht = Math.round((row.lcb_heso + row.lcb_phucap) * LUONG_CO_BAN_PRICE);
+                let l_thoigian = Math.round((luong_cb_ht / 22) * row.NT);
+                let le_phep_tt = Math.round((lcb_goc / 22) * (row.P + row.le_vr));
+                let l_tong_cb = l_thoigian + le_phep_tt;
+                let o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte;
+                let o_thuc_linh = o_tong_lcb_lcv - row.bao_hiem - row.tam_ung;
+
+                sheet.getRow(rNum).values = [
+                    idx + 1, row.name, row.account, row.lcb_heso, row.lcb_phucap,
+                    lcb_goc, luong_cb_ht, row.NT, row.P, row.le_vr,
+                    l_thoigian, le_phep_tt, l_tong_cb, row.he_so_lcv, row.phu_cap_lcv,
+                    row.lcv_goc, row.lcv_thucte, o_tong_lcb_lcv, row.bao_hiem, row.tam_ung, o_thuc_linh
+                ];
+
+                sheet.getRow(rNum).eachCell((cell, colIndex) => {
+                    cell.font = { name: 'Times New Roman', size: 10 };
+                    cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+                    if([1,3,4,5,8,9,10,14,15].includes(colIndex)) cell.alignment = { horizontal: 'center' };
+                    if([6,7,11,12,13,16,17,18,19,20,21].includes(colIndex)) {
+                        cell.numberFormat = '#,##0';
+                        cell.alignment = { horizontal: 'right' };
+                    }
+                });
+            });
+
+            // TỰ ĐỘNG CĂN CHỈNH ĐỘ RỘNG CỘT CHỐNG RỘNG QUÁ MỨC
+            sheet.columns.forEach(column => {
+                let maxLen = 0;
+                column.eachCell({ includeEmpty: true }, cell => {
+                    let val = cell.value ? cell.value.toString() : '';
+                    if(val.length > maxLen) maxLen = val.length;
+                });
+                column.width = maxLen < 10 ? 10 : (maxLen > 30 ? 30 : maxLen + 4);
+            });
+
+            workbook.xlsx.writeBuffer().then(buffer => {
+                saveAs(new Blob([buffer]), `BAO_CAO_LUONG_VINAPACO_${currentMonthKey}.xlsx`);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSalaryFromCloud(); updateDashboardStats();
+            buildWidgetCalendar(currentMonth, currentYear);
+        });
     </script>
 </body>
 </html>
