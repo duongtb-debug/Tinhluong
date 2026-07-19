@@ -574,6 +574,43 @@
         function updateSalaryCell(idx, f, v) { salaryData[idx][f] = parseFloat(v) || 0; renderSalaryTable(); }
         function deleteSalary(i) { salaryData.splice(i,1); renderSalaryTable(); }
 
+        // ================= ĐÃ CẬP NHẬT: HÀM ĐẨY LÊN GOOGLE CLOUD CÓ THÔNG BÁO TRỰC QUAN =================
+        async function saveSalaryToCloudGlobal() {
+            const currentMonthKey = document.getElementById('filter-month').value;
+            const dot = document.getElementById('cloud-status-dot');
+            
+            // Bật trạng thái nhấp nháy đồng bộ
+            dot.className = "status-dot syncing";
+            document.getElementById('cloud-status-text').innerText = "Đang kết nối và ghi dữ liệu lương tháng " + currentMonthKey + " lên Cloud...";
+            
+            try {
+                let resp = await fetch(GOOGLE_WEB_APP_URL, {
+                    method: "POST",
+                    mode: "cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ month: currentMonthKey, salary: salaryData })
+                });
+                
+                let resJson = await resp.json();
+                
+                if(resJson.status === "success") {
+                    alert("✅ Đồng bộ thành công! Bảng tính lương tháng " + currentMonthKey + " đã được ghi nhận vào hệ thống đám mây.");
+                    document.getElementById('cloud-status-text').innerText = "Đã đồng bộ trực tuyến dữ liệu tháng " + currentMonthKey;
+                } else {
+                    alert("❌ Thất bại: Máy chủ Cloud phản hồi cấu trúc không hợp lệ. Vui lòng kiểm tra lại cấu hình script.");
+                    document.getElementById('cloud-status-text').innerText = "Lỗi phản hồi hệ thống!";
+                }
+            } catch(err) {
+                // Hiển thị hộp thoại cảnh báo chi tiết lỗi CORS khi chạy file HTML offline
+                alert("⚠️ Không thể kết nối tới Google Cloud!\n\nLý do: Trình duyệt chặn kết nối chéo (CORS) khi mở trực tiếp file HTML offline hoặc URL Web App chưa đúng.\n\nHệ thống hiện tại vẫn lưu trữ tạm thời dữ liệu trong phiên làm việc của bạn.");
+                console.error("Cloud Sync Error: ", err);
+                document.getElementById('cloud-status-text').innerText = "Kết nối Cloud thất bại (Lỗi bảo mật trình duyệt)";
+            }
+            
+            // Tắt hiệu ứng nhấp nháy, trở về bình thường
+            dot.className = "status-dot";
+        }
+
         // ================= HỒ SƠ THANH TOÁN VĂN PHÒNG =================
         function toggleTaxFields() {
             const isTaxApplied = document.getElementById('pay-tax-toggle').checked;
@@ -725,7 +762,6 @@
             toggleTaxFields();
         }
 
-        function deletePayment(i) { if(confirm("Xóa mục này?")) { paymentRecords.splice(i,1); renderPaymentTable(); } }
         function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; document.getElementById('pay-file-base64').value = ""; document.getElementById('instant-preview-zone').style.display = "none"; document.getElementById('upload-status-lbl').innerText = "Chưa chọn tệp"; document.getElementById('pay-tax-toggle').checked = true; toggleTaxFields(); }
         function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; if(activePdfBlobUrl) { URL.revokeObjectURL(activePdfBlobUrl); activePdfBlobUrl = null; } }
 
@@ -741,8 +777,6 @@
             telecomRecords.forEach((rec, i) => { sum += rec.cost; tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td><b>${rec.id}</b></td><td>${rec.provider}</td><td class="text-center">${rec.period}</td><td class="text-right">${rec.cost.toLocaleString()}</td><td class="text-center">${rec.status}</td><td class="text-center"><button type="button" class="btn-action-edit" onclick="editTelecom(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="deleteTelecom(${i})">Xóa</button></td></tr>`; });
             document.getElementById('dash-pending-pay').innerText = sum.toLocaleString();
         }
-        function editTelecom(i) { let rec = telecomRecords[i]; document.getElementById('telecom-edit-index').value = i; document.getElementById('tel-id').value = rec.id; document.getElementById('tel-cost').value = rec.cost; }
-        function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; }
 
         // ================= THIẾT BỊ CNTT =================
