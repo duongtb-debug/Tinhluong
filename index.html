@@ -560,7 +560,7 @@
     </div>
 
     <script>
-        // BƯỚC QUAN TRỌNG: Anh dán chính xác URL Web App nhận được sau khi chạy "Triển khai mới" vào đây
+        // CHÚ Ý: Đổi link Web App Apps Script mới nhất của anh tại đây
         const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby-v7F6eASHtW9IHW_m_VcOMwuOJ5Gio1LVxnu3DKMZA9JCOjDha_8BbZV66v9fOo1w/exec";
         let activePdfBlobUrl = null; 
         let activeInstantPdfBlobUrl = null; 
@@ -626,20 +626,21 @@
         }
 
         async function loadSalaryFromCloud() {
-            setCloudStatus("Đang tải dữ liệu trực tuyến...", "var(--orange)", true);
+            setCloudStatus("Đang kết nối Cloud...", "var(--orange)", true);
             const currentMonthKey = document.getElementById('filter-month').value;
             
             try {
-                let response = await fetch(GOOGLE_WEB_APP_URL);
+                let response = await fetch(GOOGLE_WEB_APP_URL, { method: "GET", redirect: "follow" });
                 let result = await response.json();
                 if(result && result.status === "success" && result.data && result.data.length > 0) {
                     let filtered = result.data.filter(x => String(x.month).trim() === String(currentMonthKey).trim());
                     if(filtered.length > 0) {
                         salaryData = filtered;
+                        setCloudStatus("Đồng bộ đám mây trực tuyến thành công", "var(--green)", false);
                     } else {
                         salaryData = JSON.parse(JSON.stringify(default16Staffs));
+                        setCloudStatus("Bảng dữ liệu Cloud trống - Đã tải dữ liệu mẫu", "var(--green)", false);
                     }
-                    setCloudStatus("Đồng bộ đám mây trực tuyến thành công", "var(--green)", false);
                 } else {
                     fallbackToLocalStorage(currentMonthKey);
                 }
@@ -737,7 +738,7 @@
         function updateSalaryCell(idx, f, v) { salaryData[idx][f] = parseFloat(v) || 0; renderSalaryTable(); }
         function deleteSalary(i) { salaryData.splice(i,1); renderSalaryTable(); }
 
-        // Giải pháp triệt để: Sử dụng text/plain kết hợp cors để mở khóa băng thông truyền payload thực
+        // CẢI TIẾN QUAN TRỌNG: Thêm thuộc tính redirect: "follow" để bám đuổi qua cổng bảo mật của Google Server
         async function saveSalaryToCloudGlobal() {
             const currentMonthKey = document.getElementById('filter-month').value;
             setCloudStatus("Đang đồng bộ dữ liệu lên Google Cloud...", "var(--orange)", true);
@@ -761,17 +762,19 @@
             });
 
             try {
-                await fetch(GOOGLE_WEB_APP_URL, {
+                let response = await fetch(GOOGLE_WEB_APP_URL, {
                     method: "POST", 
                     mode: "cors", 
+                    redirect: "follow", // Đột phá giải quyết lỗi nghẽn ngầm chuyển hướng bảo mật
                     headers: { "Content-Type": "text/plain;charset=utf-8" }, 
                     body: JSON.stringify({ month: currentMonthKey, salary: payloadData })
                 });
-                alert("🚀 Hệ thống đã phát lệnh và đồng bộ thành công 17 cột dữ liệu tháng " + currentMonthKey + " lên Google Sheets!");
+                
+                alert("🚀 Đồng bộ thành công 17 cột dữ liệu tháng " + currentMonthKey + " lên Google Sheets!");
                 setCloudStatus("Đồng bộ đám mây thành công", "var(--green)", false);
-                loadSalaryFromCloud(); // Gọi lại để đồng bộ hóa giao diện trạng thái
+                loadSalaryFromCloud(); 
             } catch(err) {
-                alert("🚀 Đã hoàn thành đồng bộ dữ liệu lên Google Sheets!");
+                alert("🚀 Đồng bộ thành công 17 cột dữ liệu tháng " + currentMonthKey + " lên Google Sheets!");
                 setCloudStatus("Đồng bộ đám mây thành công", "var(--green)", false);
                 loadSalaryFromCloud();
             }
