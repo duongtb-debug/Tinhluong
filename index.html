@@ -82,7 +82,6 @@
         .form-group label { font-weight: bold; color: #475569; }
         .form-group input, .form-group select, .form-group textarea { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 13px; outline: none; font-family: 'Times New Roman'; }
         
-        /* CSS thu gọn vùng Uploader */
         .compact-uploader-box {
             display: grid;
             grid-template-columns: minmax(200px, 350px) 1fr;
@@ -137,6 +136,8 @@
         .calendar-day-cell:hover { background-color: #eff6ff; border-color: var(--blue); }
         .calendar-day-cell.active-today { background: linear-gradient(135deg, #1d4ed8, var(--blue)) !important; color: white !important; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4); }
         .calendar-day-cell.active-today .lunar-num { color: #fef08a !important; }
+        .calendar-day-cell.blank-cell { background: #f8fafc; cursor: default; border: none; }
+        .calendar-day-cell.blank-cell:hover { background: #f8fafc; border: none; }
 
         .van-nien-details { margin-top: 15px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; }
         .vannien-title { font-size: 13px; font-weight: bold; color: var(--blue); border-bottom: 1px dashed var(--border-color); padding-bottom: 5px; margin-bottom: 8px; text-align: center; text-transform: uppercase; }
@@ -319,7 +320,6 @@
                             </div>
                         </div>
 
-                        <!-- ĐÃ SỬA ĐỔI: Thu gọn ô đính kèm hóa đơn thành hàng ngang mini -->
                         <div class="form-group" style="margin-bottom: 15px;">
                             <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn / chứng từ chứng minh</label>
                             <div class="compact-uploader-box">
@@ -534,7 +534,7 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN THÔNG MINH -->
+        <!-- CỘT PHẢI: LỊCH VẠN NIÊN ĐÃ SỬA LỖI LỆCH THỨ -->
         <div class="calendar-sidebar">
             <div class="calendar-widget-title">📅 LỊCH VẠN NIÊN THÔNG MINH ENTERPRISE</div>
             <div class="calendar-month-selector">
@@ -548,7 +548,7 @@
         </div>
     </div>
 
-    <!-- KHUNG XEM LẠI TRONG MODAL -->
+    <!-- KHUNG XEM MODAL -->
     <div class="modal" id="document-preview-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
@@ -930,12 +930,24 @@
         function deleteITAsset(i) { itAssetsRecords.splice(i,1); renderITTable(); }
         function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; }
 
-        // ================= LỊCH VẠN NIÊN WIDGET =================
+        // ================= ĐÃ SỬA ĐỒI: THUẬT TOÁN ENGINE LỊCH TÍNH ĐÚNG THỨ ĐẦU THÁNG =================
         function buildWidgetCalendar(month, year) {
             const container = document.getElementById('calendar-body-days'); container.innerHTML = "";
             document.getElementById('calendar-view-label').innerText = `Tháng ${String(month + 1).padStart(2,'0')} / ${year}`;
-            let totalDays = new Date(year, month + 1, 0).getDate();
             
+            // Tìm ngày đầu tiên của tháng là thứ mấy (0: Chủ Nhật, 1: Thứ 2, ..., 6: Thứ 7)
+            let firstDayIndex = new Date(year, month, 1).getDay();
+            
+            // Chuyển đổi định dạng để khớp với Grid xuất phát từ Thứ 2 (T2 -> CN)
+            // Lịch cũ quy ước: T2=0, T3=1, T4=2, T5=3, T6=4, T7=5, CN=6
+            let blanksCount = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+            
+            // Chèn các ô trống giữ chỗ trước ngày mùng 1
+            for (let b = 0; b < blanksCount; b++) {
+                container.innerHTML += `<div class="calendar-day-cell blank-cell"></div>`;
+            }
+            
+            let totalDays = new Date(year, month + 1, 0).getDate();
             for (let day = 1; day <= totalDays; day++) {
                 let details = getComprehensiveLunarDetails(day, month + 1, year);
                 let isToday = (day === todayRealDay && month === sysDate.getMonth() && year === currentYear);
