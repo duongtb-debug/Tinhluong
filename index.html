@@ -560,6 +560,7 @@
     </div>
 
     <script>
+        // Đường link Apps Script của bạn đã được cấu hình mặc định tại đây
         const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxfa9FPoaXb1O8PwE8zq5H2Smm73A3l06vHjQ0ECCjBjBJ9yEi9OmYvT7SRsPvbVoGAkA/exec";
         let activePdfBlobUrl = null; 
         let activeInstantPdfBlobUrl = null; 
@@ -620,7 +621,6 @@
             document.getElementById('tab-' + tabName).classList.add('active');
         }
 
-        // ĐẦ VÀO LOGIC: Đọc dữ liệu riêng biệt lưu trong bộ nhớ máy theo tháng chọn
         async function loadSalaryFromCloud() {
             const currentMonthKey = document.getElementById('filter-month').value;
             const localSaved = localStorage.getItem("salary_data_" + currentMonthKey);
@@ -680,7 +680,6 @@
             document.getElementById('v-total-lcv').innerText = sum_lcv_thucte.toLocaleString() + " VND";
             document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
             
-            // Tự động ghi lại cấu trúc phiên làm việc cục bộ khi bảng thay đổi số liệu
             const currentMonthKey = document.getElementById('filter-month').value;
             localStorage.setItem("salary_data_" + currentMonthKey, JSON.stringify(salaryData));
         }
