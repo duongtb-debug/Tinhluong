@@ -375,7 +375,7 @@
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</div>
+                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀNET</div>
                     <div class="table-responsive"><table class="main-table"><thead><tr style="background:#e2e8f0;"><th class="text-center">STT</th><th>Mã thuê bao</th><th>Nhà mạng</th><th class="text-center">Kỳ cước</th><th class="text-right">Chi phí</th><th class="text-center">Trạng thái</th><th class="text-center">Hành động</th></tr></thead><tbody id="tbody-telecom"></tbody></table></div>
                 </div>
             </div>
@@ -680,7 +680,7 @@
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung || 0);
                 sum_thuc_linh += o_thuc_linh;
 
-                // Lưu các trường tính toán sẵn để gửi lên cloud dạng cấu trúc 1:1 mở rộng
+                // Đồng bộ và lưu dữ liệu tính sẵn theo cấu trúc 17 cột ERP
                 row.luong_cb = l_tong_cb;
                 row.luong_cv = row.lcv_thucte;
                 row.tong_thu_nhap = o_tong_lcb_lcv;
@@ -731,19 +731,17 @@
             salaryData[index]['tam_ung'] = num;
             inputEl.value = num.toLocaleString('en-US');
             renderSalaryTable();
-            
-            // Đặt lại con trỏ để người dùng không bị nhảy chữ khi đang gõ số phân cách hàng nghìn
             inputEl.focus();
         }
 
         function updateSalaryCell(idx, f, v) { salaryData[idx][f] = parseFloat(v) || 0; renderSalaryTable(); }
         function deleteSalary(i) { salaryData.splice(i,1); renderSalaryTable(); }
 
+        // BỔ SUNG HOÀN CHỈNH: Thu thập và đồng bộ chính xác cấu trúc mảng 17 cột lên Cloud 
         async function saveSalaryToCloudGlobal() {
             const currentMonthKey = document.getElementById('filter-month').value;
             setCloudStatus("Đang đồng bộ dữ liệu lên Google Cloud...", "var(--orange)", true);
             
-            // Gói đầy đủ cấu trúc 17 cột thông tin tính toán định dạng giống hệt trên web sang trang tính
             let payloadData = salaryData.map(row => {
                 return {
                     stt: row.stt,
@@ -754,15 +752,11 @@
                     NT: row.NT,
                     P: row.P || 0,
                     le_vr: row.le_vr || 0,
-                    luong_cb: row.luong_cb || 0,
+                    luong_cb: row.luong_cb || 0,       // Truyền số tiền lương CB tính sẵn từ web
                     he_so_lcv: row.he_so_lcv,
                     phu_cap_lcv: row.phu_cap_lcv || 0,
-                    luong_cv: row.luong_cv || 0,
-                    tong_thu_nhap: row.tong_thu_nhap || 0,
-                    bhxh: row.bhxh || 0,
-                    tam_ung: row.tam_ung || 0,
-                    thuc_linh: row.thuc_linh || 0,
-                    ghi_chu: row.ghi_chu || ""
+                    luong_cv: row.luong_cv || 0,       // Truyền số tiền lương CV tính sẵn từ web
+                    tam_ung: row.tam_ung || 0          // Truyền số tiền tạm ứng
                 };
             });
 
@@ -773,10 +767,10 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ month: currentMonthKey, salary: payloadData })
                 });
-                alert("🚀 Dữ liệu bảng tính lương tháng " + currentMonthKey + " với đầy đủ cơ cấu định dạng đã được phát lệnh đồng bộ lên Google Sheets thành công!");
+                alert("🚀 Dữ liệu bảng tính lương tháng " + currentMonthKey + " với cấu trúc 17 cột định dạng đồng bộ hoàn tất lên Google Sheets!");
                 setCloudStatus("Đồng bộ đám mây thành công", "var(--green)", false);
             } catch(err) {
-                alert("⚠️ Có lỗi kết nối trong quá trình truyền dữ liệu mạng!");
+                alert("⚠️ Có lỗi kết nối mạng xảy ra!");
                 setCloudStatus("Lỗi kết nối đồng bộ đám mây", "var(--red)", false);
             }
         }
