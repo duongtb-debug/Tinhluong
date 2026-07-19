@@ -216,7 +216,7 @@
                                     <th colspan="3" class="text-center">Chi Tiết Lương Thực Nhận</th>
                                     <th colspan="4" class="text-center" style="background-color: #f3e8ff;">Cơ cấu Lương Công Việc (CV)</th>
                                     <th rowspan="2" class="text-right" style="background-color: #f8fafc; color: var(--blue);">Tổng LCB + LCV</th>
-                                    <th rowspan="2" class="text-right" style="color: var(--red);">BH Bắt Buộc</th>
+                                    <th rowspan="2" class="text-right" style="color: var(--red);">BH Bắt Buộc (10.5%)</th>
                                     <th rowspan="2" class="text-center" style="background-color: #fee2e2; width: 125px;">Tạm Ứng</th>
                                     <th rowspan="2" class="text-right" style="background-color: #fef08a;">Thực Lĩnh</th>
                                     <th rowspan="2" class="text-center">Hành động</th>
@@ -411,7 +411,6 @@
                             <div class="form-group">
                                 <label>Phần mềm nghiệp vụ ưu tiên</label>
                                 <select id="it-software-select">
-                                    <!-- Ưu tiên lên đầu và loại bỏ mục nhập tự do theo yêu cầu -->
                                     <option value="⚠️ Chưa cấu hình phần mềm nghiệp vụ" selected>⚠️ Chưa cấu hình phần mềm nghiệp vụ</option>
                                     <option value="Không có nghiệp vụ khác">Không có nghiệp vụ khác</option>
                                     <option value="MISA SME">MISA SME</option>
@@ -486,7 +485,7 @@
     <script>
         const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfjwne0xR04-Vy4WW1rZj97la7eRCdMYLYrSH25ybty0F2xk0GDq7QlLPCBHa_H9RTYQ/exec";
 
-        // ENGINE TÍNH TOÁN LỊCH VẠN NIÊN TOÀN DIỆN PHƯƠNG ĐÔNG (ĐỒNG BỘ CAN CHI & TIẾT KHÍ)
+        // ENGINE LỊCH VẠN NIÊN ĐA NĂNG PHƯƠNG ĐÔNG
         function getComprehensiveLunarDetails(d, m, y) {
             let canChiDayArr = ["Giáp Tý", "Ất Sửu", "Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tỵ", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu", "Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu", "Mậu Dần", "Kỷ Mão", "Canh Thìn", "Tân Tỵ", "Nhâm Ngọ", "Quý Mùi", "Giáp Thân", "Ất Dậu", "Bính Tuất", "Đinh Hợi", "Mậu Tý", "Kỷ Sửu", "Canh Dần", "Tân Mão", "Nhâm Thìn", "Quý Tỵ", "Giáp Ngọ", "Ất Mùi", "Bính Thân", "Đinh Dậu", "Mậu Tuất", "Kỷ Hợi", "Canh Tý", "Tân Sửu", "Nhâm Dần", "Quý Mão", "Giáp Thìn", "Ất Tỵ", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu", "Giáp Dần", "Ất Mão", "Bính Thìn", "Đinh Tỵ", "Mậu Ngọ", "Kỷ Mùi", "Canh Thân", "Tân Dậu", "Nhâm Tuất", "Quý Hợi"];
             let canChiMonthArr = ["Nhâm Dần", "Quý Mão", "Giáp Thìn", "Ất Tỵ", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu"];
@@ -531,23 +530,25 @@
             document.getElementById('live-system-clock').innerText = `${daysArr[d.getDay()]} , ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${currentYear} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
         }, 1000);
 
+        // DANH SÁCH 16 NHÂN SỰ GỐC (ĐÃ BỔ SUNG TẠM ỨNG CỐ ĐỊNH CỦA PHẠM HUY CHIẾN)
         const default16Staffs = [
-            {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "lcv_goc": 12110226, "lcv_thucte": 11009296, "bao_hiem": 951993, "tam_ung": 5000000, "account": "105005712499"},
-            {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "lcv_goc": 4677052, "lcv_thucte": 2976306, "bao_hiem": 643356, "tam_ung": 4000000, "account": "105004242307"},
-            {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3302789, "bao_hiem": 778113, "tam_ung": 3000000, "account": "102005035542"},
-            {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0, "lcv_goc": 4405620, "lcv_thucte": 4205365, "bao_hiem": 763002, "tam_ung": 3000000, "account": "106004294441"},
-            {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3467928, "bao_hiem": 704007, "tam_ung": 4000000, "account": "106004359838"},
-            {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "lcv_goc": 3633067, "lcv_thucte": 3467928, "bao_hiem": 672543, "tam_ung": 3000000, "account": "106868653975"},
-            {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0, "lcv_goc": 3215392, "lcv_thucte": 3069238, "bao_hiem": 656811, "tam_ung": 4000000, "account": "105004294439"},
-            {"stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "lcv_goc": 3215392, "lcv_thucte": 3069238, "bao_hiem": 719739, "tam_ung": 3000000, "account": "102004797815"},
-            {"stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.80, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 3215392, "lcv_thucte": 3069238, "bao_hiem": 707940, "tam_ung": 4000000, "account": "104004583045"},
-            {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "lcv_goc": 2797717, "lcv_thucte": 2670548, "bao_hiem": 719739, "tam_ung": 3000000, "account": "100004797831"},
-            {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 2797717, "lcv_thucte": 2670548, "bao_hiem": 601749, "tam_ung": 3000000, "account": "101004882063"},
-            {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 2797717, "lcv_thucte": 2670548, "bao_hiem": 601749, "tam_ung": 3000000, "account": "100006166724"},
-            {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0, "lcv_goc": 2380042, "lcv_thucte": 2271858, "bao_hiem": 530955, "tam_ung": 3000000, "account": "106869104133"},
-            {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "lcv_goc": 2380042, "lcv_thucte": 2271858, "bao_hiem": 704007, "tam_ung": 3000000, "account": "106873586343"},
-            {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "lcv_goc": 2380042, "lcv_thucte": 2271858, "bao_hiem": 601749, "tam_ung": 3000000, "account": "107002654931"},
-            {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "lcv_goc": 2380042, "lcv_thucte": 2271858, "bao_hiem": 888858, "tam_ung": 0, "account": "106001245634"}
+            {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
+            {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "105004242307"},
+            {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "102005035542"},
+            {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106004294441"},
+            {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "106004359838"},
+            {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106868653975"},
+            {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "105004294439"},
+            {"stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "102004797815"},
+            {"stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.80, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "104004583045"},
+            {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "100004797831"},
+            {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "101004882063"},
+            {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "100006166724"},
+            {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106869104133"},
+            {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106873586343"},
+            {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "107002654931"},
+            // ĐÃ BỔ SUNG: Tạm ứng cố định 4,000,000đ cho Phạm Huy Chiến
+            {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "106001245634"}
         ];
 
         let salaryData = []; let paymentRecords = []; let telecomRecords = []; let itAssetsRecords = [];
@@ -558,7 +559,6 @@
             document.getElementById('tab-' + tabName).classList.add('active');
         }
 
-        // TẢI DỮ LIỆU TỪ GOOGLE SHEET CLOUD
         async function loadSalaryFromCloud() {
             const currentMonthKey = document.getElementById('filter-month').value;
             const dot = document.getElementById('cloud-status-dot');
@@ -584,7 +584,6 @@
             renderSalaryTable();
         }
 
-        // GHI ĐỒNG BỘ DỮ LIỆU LÊN GOOGLE SHEET CLOUD
         async function saveSalaryToCloudGlobal() {
             const currentMonthKey = document.getElementById('filter-month').value;
             const dot = document.getElementById('cloud-status-dot');
@@ -610,18 +609,30 @@
             dot.className = "status-dot";
         }
 
-        // ĐÃ SỬA: Loại bỏ ký tự 'đ' ở phần tiền tệ cột Tạm ứng & Dashboard
+        // PHÂN HỆ TÍNH TOÁN LƯƠNG ĐÃ CẬP NHẬT CÔNG THỨC LƯƠNG CÔNG VIỆC CHUẨN XÁC
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
             let sum_thuc_linh = 0;
             salaryData.forEach((row, index) => {
                 const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
+                
+                // 1. Phân hệ Lương Cơ Bản
                 row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap)) * TOI_THIEU_VUNG);
                 const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap)) * LUONG_CO_BAN_PRICE);
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
                 row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P) + parseFloat(row.le_vr)));
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt;
-                const o_tong_lcb_lcv = l_tong_cb + parseFloat(row.lcv_thucte); 
+                
+                // 2. ĐÃ SỬA: Phân hệ Lương Công Việc theo đúng thuật toán yêu cầu
+                // Công thức Lương CV Gốc = (Hệ số LCV + Phụ cấp LCV) * 2087970
+                row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv)) * 2087970);
+                // Công thức Lương CV Thực Tế = Làm tròn của (Lương CV Gốc / 22) * NT
+                row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT));
+
+                // 3. Phân hệ Tổng hợp, Bảo hiểm & Thực lĩnh
+                const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; 
+                row.bao_hiem = Math.round(row.lcb_goc * 0.105); // Bảo hiểm bắt buộc = 10.5% lương HĐ
+                
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung);
                 sum_thuc_linh += o_thuc_linh;
 
@@ -636,10 +647,11 @@
                     <td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold">${l_tong_cb.toLocaleString()}</td>
                     <td><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td>
                     <td><input type="number" step="0.01" class="input-edit" value="${row.phu_cap_lcv}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td>
-                    <td class="text-right">${row.lcv_goc.toLocaleString()}</td><td class="text-right">${row.lcv_thucte.toLocaleString()}</td>
-                    <td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right">${row.bao_hiem.toLocaleString()}</td>
+                    <td class="text-right" style="background:#f8fafc; font-weight:bold;">${row.lcv_goc.toLocaleString()}</td>
+                    <td class="text-right" style="background:#f3e8ff; font-weight:bold; color:var(--purple);">${row.lcv_thucte.toLocaleString()}</td>
+                    <td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td>
+                    <td class="text-right" style="color:var(--red); font-weight:bold;">${row.bao_hiem.toLocaleString()}</td>
                     
-                    <!-- Ô NHẬP TẠM ỨNG BỎ CHỮ đ ĐÚNG YÊU CẦU -->
                     <td class="text-center">
                         <input type="text" class="input-advance-money" value="${Math.round(row.tam_ung).toLocaleString('vi-VN')}" onblur="handleAdvanceBlur(${index}, this.value)" onfocus="handleAdvanceFocus(this)">
                     </td>
@@ -823,7 +835,6 @@
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; }
 
         // ================= THIẾT BỊ CNTT & TEM QR =================
-        // ĐA SỬA: Loại bỏ hoàn toàn trường nhập tay tự do, lấy trực tiếp giá trị từ select box
         function saveITRecord(e) {
             e.preventDefault(); 
             let idx = parseInt(document.getElementById('it-edit-index').value);
