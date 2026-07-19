@@ -56,7 +56,6 @@
         .stat-title { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; letter-spacing: 0.5px; }
         .stat-value { font-size: 16px; font-weight: bold; margin-top: 5px; color: var(--primary); }
         
-        /* Cấu trúc phần Tổng quan Trực quan cho Phân hệ Lương */
         .salary-visual-summary {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; background: #f1f5f9; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);
         }
@@ -127,10 +126,24 @@
         .badge-hoangdao { background: #fef3c7; color: #d97706; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; }
         .badge-hacdao { background: #f1f5f9; color: #475569; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 10px; }
 
+        /* Modal Viewer Cải tiến */
         .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 900px; height: 85vh; position: relative; display: flex; flex-direction: column; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 950px; height: 85vh; position: relative; display: flex; flex-direction: column; }
         .close-modal { position: absolute; right: 15px; top: 15px; font-size: 24px; cursor: pointer; color: #64748b; }
-        .preview-viewport-box { width: 100%; flex-grow: 1; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: #cbd5e1; display: flex; align-items: center; justify-content: center; overflow: auto; }
+        
+        .preview-viewport-box { 
+            width: 100%; 
+            flex-grow: 1; 
+            margin-top: 15px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 6px; 
+            background: #1e293b; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: auto; 
+            padding: 10px;
+        }
         
         .qr-print-container { background: white; padding: 20px; border: 2px solid #334155; border-radius: 8px; text-align: center; max-width: 320px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .qr-print-title { font-size: 14px; font-weight: bold; color: var(--primary); margin-bottom: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px; }
@@ -138,7 +151,15 @@
         .qr-meta-details { font-size: 11px; text-align: left; line-height: 1.5; background: #f8fafc; padding: 8px; border-radius: 4px; border: 1px dashed #cbd5e1; }
 
         .flex-row-center { display: flex; align-items: center; gap: 8px; }
-        .preview-file-render { max-width: 100%; max-height: 70vh; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border-radius: 4px; }
+        
+        .preview-file-render { 
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5); 
+            border-radius: 4px; 
+            background-color: white;
+        }
 
         @media print {
             body * { visibility: hidden; }
@@ -211,7 +232,7 @@
                     </div>
                 </div>
 
-                <!-- BỔ SUNG: KHU VỰC TỔNG QUAN TRỰC QUAN CÁC CHỈ SỐ LƯƠNG CHÍNH THEO YÊU CẦU -->
+                <!-- KHU VỰC TỔNG QUAN TRỰC QUAN CÁC CHỈ SỐ LƯƠNG CHÍNH -->
                 <div class="main-card">
                     <div class="card-title"><i class="fa-solid fa-chart-pie" style="color:var(--blue);"></i> TỔNG QUAN TRỰC QUAN CƠ CẤU CHI TRẢ QUỸ LƯƠNG</div>
                     <div class="salary-visual-summary">
@@ -379,26 +400,15 @@
                         <div class="grid-form">
                             <div class="form-group"><label>Thông số cấu hình</label><input type="text" id="it-config" placeholder="Core i5/8GB/256GB SSD" required></div>
                             <div class="form-group">
-                                <label>Hệ điều hành (HĐH) - Toàn bộ lịch sử</label>
+                                <label>Hệ điều hành (HĐH)</label>
                                 <select id="it-os">
                                     <option value="Windows 11 Pro 64-bit" selected>Windows 11 Pro 64-bit</option>
                                     <option value="Windows 11 Home 64-bit">Windows 11 Home 64-bit</option>
                                     <option value="Windows 10 Pro 64-bit">Windows 10 Pro 64-bit</option>
                                     <option value="Windows 10 Home 64-bit">Windows 10 Home 64-bit</option>
                                     <option value="Windows 8.1 Professional">Windows 8.1 Professional</option>
-                                    <option value="Windows 8 Professional">Windows 8 Professional</option>
                                     <option value="Windows 7 Professional SP1">Windows 7 Professional SP1</option>
-                                    <option value="Windows 7 Ultimate">Windows 7 Ultimate</option>
-                                    <option value="Windows Vista Business">Windows Vista Business</option>
-                                    <option value="Windows XP Professional SP3">Windows XP Professional SP3</option>
-                                    <option value="Windows 2000 Professional">Windows 2000 Professional</option>
-                                    <option value="Windows 98 SE">Windows 98 SE</option>
-                                    <option value="Windows 95">Windows 95</option>
-                                    <option value="Windows Server 2025/2022/2019">Windows Server 2025/2022/2019</option>
-                                    <option value="Windows Server 2016/2012 R2">Windows Server 2016/2012 R2</option>
-                                    <option value="Windows Server 2008 R2 / 2003">Windows Server 2008 R2 / 2003</option>
                                     <option value="macOS Sequoia / Sonoma / Ventura">macOS Sequoia / Sonoma / Ventura</option>
-                                    <option value="macOS Classic (OS X / OS 9)">macOS Classic (OS X / OS 9)</option>
                                     <option value="Linux / Ubuntu / Fedora / RedHat">Linux / Ubuntu / Fedora / RedHat</option>
                                 </select>
                             </div>
@@ -413,20 +423,13 @@
 
                         <div class="grid-form">
                             <div class="form-group">
-                                <label>Phiên bản Office - Toàn bộ lịch sử</label>
+                                <label>Phiên bản Office</label>
                                 <select id="it-office">
                                     <option value="Microsoft 365 Apps">Microsoft 365 Apps</option>
                                     <option value="Office 2024 LTSC">Office 2024 LTSC</option>
                                     <option value="Office 2021 LTSC" selected>Office 2021 LTSC</option>
                                     <option value="Office 2019 Professional">Office 2019 Professional</option>
                                     <option value="Office 2016 Professional">Office 2016 Professional</option>
-                                    <option value="Office 2013 Professional">Office 2013 Professional</option>
-                                    <option value="Office 2010 Professional">Office 2010 Professional</option>
-                                    <option value="Office 2007 Professional">Office 2007 Professional</option>
-                                    <option value="Office 2003 Professional">Office 2003 Professional</option>
-                                    <option value="Office XP (2002)">Office XP (2002)</option>
-                                    <option value="Office 2000">Office 2000</option>
-                                    <option value="Office 97 / 95">Office 97 / 95</option>
                                     <option value="Không có Office">Không có Office</option>
                                 </select>
                             </div>
@@ -444,9 +447,7 @@
                                     <option value="Không có nghiệp vụ khác">Không có nghiệp vụ khác</option>
                                     <option value="MISA SME">MISA SME</option>
                                     <option value="MISA Mimosa">MISA Mimosa</option>
-                                    <option value="MISA Bamboo">MISA Bamboo</option>
                                     <option value="ASIA ERP">ASIA ERP</option>
-                                    <option value="Quasoft ERP">Quasoft ERP</option>
                                 </select>
                             </div>
                         </div>
@@ -485,7 +486,7 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN THỰC THỤ PHƯƠNG ĐÔNG -->
+        <!-- CỘT PHẢI: LỊCH VẠN NIÊN PHƯƠNG ĐÔNG -->
         <div class="calendar-sidebar">
             <div class="calendar-widget-title">📅 LỊCH VẠN NIÊN ĐA NĂNG</div>
             <div class="calendar-month-selector">
@@ -625,11 +626,10 @@
                 });
                 let resJson = await resp.json();
                 if(resJson.status === "success") {
-                    alert("✅ Thành công: Bảng tính đã được đồng bộ trực tuyến và lưu vào Google Sheets!");
+                    alert("✅ Bảng tính đã được đồng bộ trực tuyến và lưu vào Google Sheets!");
                     document.getElementById('cloud-status-text').innerText = "Đã đồng bộ trực tuyến dữ liệu tháng " + currentMonthKey;
                 }
             } catch(err) {
-                alert("Đã đồng bộ dữ liệu lên Google Sheets thành công.");
                 document.getElementById('cloud-status-text').innerText = "Đã đồng bộ dữ liệu Cloud.";
             }
             dot.className = "status-dot";
@@ -637,9 +637,7 @@
 
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
-            let sum_thuc_linh = 0;
-            let sum_lcb_thucte = 0;
-            let sum_lcv_thucte = 0;
+            let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0;
 
             salaryData.forEach((row, index) => {
                 const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
@@ -650,19 +648,19 @@
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
                 row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P) + parseFloat(row.le_vr)));
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt;
-                sum_lcb_thucte += l_tong_cb; // Cộng dồn LCB Thực Tế
+                sum_lcb_thucte += l_tong_cb;
                 
                 // 2. Phân hệ Lương Công Việc
                 row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv)) * 2087970);
                 row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT));
-                sum_lcv_thucte += row.lcv_thucte; // Cộng dồn LCV Thực Tế
+                sum_lcv_thucte += row.lcv_thucte;
 
-                // 3. Phân hệ Tổng hợp, Bảo hiểm & Thực lĩnh
+                // 3. Phân hệ Tổng hợp & Bảo hiểm (10.5%)
                 const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; 
                 row.bao_hiem = Math.round(row.lcb_goc * 0.105); 
                 
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung);
-                sum_thuc_linh += o_thuc_linh; // Cộng dồn Tổng Thực Lĩnh
+                sum_thuc_linh += o_thuc_linh;
 
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td>${row.account}</td>
@@ -679,25 +677,19 @@
                     <td class="text-right" style="background:#f3e8ff; font-weight:bold; color:var(--purple);">${row.lcv_thucte.toLocaleString()}</td>
                     <td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td>
                     <td class="text-right" style="color:var(--red); font-weight:bold;">${row.bao_hiem.toLocaleString()}</td>
-                    
                     <td class="text-center">
                         <input type="text" class="input-advance-money" value="${Math.round(row.tam_ung).toLocaleString('vi-VN')}" onblur="handleAdvanceBlur(${index}, this.value)" onfocus="handleAdvanceFocus(this)">
                     </td>
-                    
                     <td class="text-right font-bold" style="background:#fef08a;">${o_thuc_linh.toLocaleString()}</td>
                     <td class="text-center"><button type="button" class="btn-action-delete" onclick="deleteSalary(${index})">Xóa</button></td>
                 </tr>`;
             });
             
-            // Cập nhật số liệu lên Dashboard Tổng hợp 4 trong 1
             document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString();
-
-            // CẬP NHẬT CÁC THẺ TRỰC QUAN KHU VỰC LƯƠNG THEO YÊU CẦU
             document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND";
             document.getElementById('v-total-lcv').innerText = sum_lcv_thucte.toLocaleString() + " VND";
             document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
 
-            // Tính tỷ trọng phân phối tương đối giữa LCB và LCV trên Quỹ lương thực tế
             let total_base_pool = sum_lcb_thucte + sum_lcv_thucte;
             if(total_base_pool > 0) {
                 let pct_lcb = Math.round((sum_lcb_thucte / total_base_pool) * 100);
@@ -711,14 +703,12 @@
         
         function handleAdvanceFocus(input) {
             let val = input.value.replace(/[^\d]/g, '');
-            input.value = val;
-            input.type = 'number';
+            input.value = val; input.type = 'number';
         }
 
         function handleAdvanceBlur(index, value) {
             let numericVal = parseFloat(value.replace(/[^\d]/g, '')) || 0;
-            salaryData[index]['tam_ung'] = numericVal;
-            renderSalaryTable();
+            salaryData[index]['tam_ung'] = numericVal; renderSalaryTable();
         }
 
         function updateSalaryCell(idx, field, val) { salaryData[idx][field] = parseFloat(val) || 0; renderSalaryTable(); }
@@ -752,8 +742,7 @@
         function calculateFlexibleTax() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             let price = parseFloat(document.getElementById('pay-price').value) || 0;
-            let preTax = qty * price;
-            let taxAmount = 0;
+            let preTax = qty * price; let taxAmount = 0;
             
             if(document.getElementById('pay-tax-toggle').checked) {
                 const selectVal = document.getElementById('pay-tax-rate').value;
@@ -831,16 +820,21 @@
         }
 
         function openAttachedFileViewer(index) {
-            let rec = paymentRecords[index]; if(!rec.fileData) return;
+            let rec = paymentRecords[index]; 
+            if(!rec.fileData) return;
+            
             document.getElementById('document-preview-modal').style.display = 'flex';
             document.getElementById('modal-preview-title').innerText = "Xem tài liệu chứng từ: " + rec.fileName;
             document.getElementById('modal-print-btn').style.display = 'none';
             const viewport = document.getElementById('modal-preview-body');
             
             if(rec.fileData.startsWith("data:image/")) {
-                viewport.innerHTML = `<img src="${rec.fileData}" class="preview-file-render" alt="Chứng từ">`;
+                viewport.innerHTML = `<img src="${rec.fileData}" class="preview-file-render" alt="Chứng từ đính kèm">`;
+            } else if(rec.fileData.startsWith("data:application/pdf")) {
+                // TỐI ƯU MỚI: Hiển thị tệp tin PDF đầy đủ nội dung trực tiếp qua iframe
+                viewport.innerHTML = `<iframe src="${rec.fileData}" style="width: 100%; height: 100%; border: none; background: white;" title="PDF Preview"></iframe>`;
             } else {
-                viewport.innerHTML = `<div style="text-align:center; padding: 30px; background: white;"><i class="fa-solid fa-file-arrow-down" style="font-size: 48px; color: var(--blue);"></i><br><a href="${rec.fileData}" download="${rec.fileName}" class="btn btn-primary">📥 Tải tệp về máy để xem</a></div>`;
+                viewport.innerHTML = `<div style="text-align:center; padding: 30px; background: white; border-radius: 6px;"><i class="fa-solid fa-file-arrow-down" style="font-size: 48px; color: var(--blue);"></i><br><br><a href="${rec.fileData}" download="${rec.fileName}" class="btn btn-primary">📥 Tải tệp về máy để kiểm tra</a></div>`;
             }
         }
 
@@ -960,7 +954,6 @@
                     <div class="vannien-row"><span>Dương lịch:</span><span style="color:var(--blue); font-weight:bold;">${d}/${m}/${y}</span></div>
                     <div class="vannien-row"><span>Âm lịch:</span><span style="color:var(--red); font-weight:bold;">Tháng ${info.lunarMonth} - Ngày ${info.lunarDay}</span></div>
                     <div class="vannien-row"><span>Năm Can Chi:</span><span class="font-bold">${info.lunarYear}</span></div>
-                    <div class="vannien-row"><span>Tháng Can Chi:</span><span>${info.canChiMonth}</span></div>
                     <div class="vannien-row"><span>Ngày Can Chi:</span><span style="color:var(--purple); font-weight:bold;">${info.canChiDay}</span></div>
                 </div>
                 <div class="vannien-section">
