@@ -49,16 +49,25 @@
         .live-clock-box { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 6px; font-family: monospace; font-size: 14px; text-align: right; }
 
         .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--blue); border: 1px solid #e2e8f0; border-left-width: 5px; }
+        .stat-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; border-left: 5px solid var(--blue); }
         .stat-card.orange { border-left-color: var(--orange); }
         .stat-card.green { border-left-color: var(--green); }
         .stat-card.purple { border-left-color: var(--purple); }
         .stat-title { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; letter-spacing: 0.5px; }
         .stat-value { font-size: 16px; font-weight: bold; margin-top: 5px; color: var(--primary); }
         
-        .progress-box { margin-top: 8px; }
+        /* Cấu trúc phần Tổng quan Trực quan cho Phân hệ Lương */
+        .salary-visual-summary {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 15px; background: #f1f5f9; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);
+        }
+        @media (max-width: 768px) { .salary-visual-summary { grid-template-columns: 1fr; } }
+        .visual-mini-card { background: white; padding: 10px 12px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .visual-lbl { font-size: 11px; font-weight: bold; color: #475569; display: flex; justify-content: space-between; }
+        .visual-val { font-size: 14px; font-weight: bold; margin: 4px 0; color: var(--primary); }
+
+        .progress-box { margin-top: 6px; }
         .progress-bar-bg { background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 4px; }
-        .progress-bar-fill { background: var(--green); height: 100%; width: 0%; transition: width 0.4s; }
+        .progress-bar-fill { background: var(--blue); height: 100%; width: 0%; transition: width 0.4s; }
 
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; flex-wrap: wrap; }
         .nav-tab { padding: 10px 15px; border: none; background: none; font-weight: bold; color: #64748b; cursor: pointer; transition: 0.3s; font-size: 13px; outline: none; font-family: 'Times New Roman'; }
@@ -156,7 +165,7 @@
                 <div class="live-clock-box" id="live-system-clock">Thứ ---, 00/00/0000 00:00:00</div>
             </div>
 
-            <!-- DASHBOARD BOX -->
+            <!-- DASHBOARD TỔNG HỢP 4 TRONG 1 -->
             <div class="stat-grid">
                 <div class="stat-card">
                     <div class="stat-title">Tổng Lương Thực Tế</div>
@@ -202,7 +211,27 @@
                     </div>
                 </div>
 
+                <!-- BỔ SUNG: KHU VỰC TỔNG QUAN TRỰC QUAN CÁC CHỈ SỐ LƯƠNG CHÍNH THEO YÊU CẦU -->
                 <div class="main-card">
+                    <div class="card-title"><i class="fa-solid fa-chart-pie" style="color:var(--blue);"></i> TỔNG QUAN TRỰC QUAN CƠ CẤU CHI TRẢ QUỸ LƯƠNG</div>
+                    <div class="salary-visual-summary">
+                        <div class="visual-mini-card">
+                            <div class="visual-lbl"><span>TỔNG LƯƠNG CƠ BẢN THỰC TẾ</span><span style="color:var(--blue);" id="pct-lcb">0%</span></div>
+                            <div class="visual-val" id="v-total-lcb">0 VND</div>
+                            <div class="progress-bar-bg"><div class="progress-bar-fill" id="v-bar-lcb" style="background:var(--blue);"></div></div>
+                        </div>
+                        <div class="visual-mini-card">
+                            <div class="visual-lbl"><span>TỔNG LƯƠNG CÔNG VIỆC THỰC TẾ</span><span style="color:var(--purple);" id="pct-lcv">0%</span></div>
+                            <div class="visual-val" id="v-total-lcv" style="color:var(--purple);">0 VND</div>
+                            <div class="progress-bar-bg"><div class="progress-bar-fill" id="v-bar-lcv" style="background:var(--purple);"></div></div>
+                        </div>
+                        <div class="visual-mini-card">
+                            <div class="visual-lbl"><span>TỔNG THỰC LĨNH NHÂN VIÊN</span><span style="color:var(--green);"><i class="fa-solid fa-wallet"></i> NET</span></div>
+                            <div class="visual-val" id="v-total-thuc" style="color:var(--green);">0 VND</div>
+                            <div class="progress-bar-bg"><div class="progress-bar-fill" id="v-bar-thuc" style="background:var(--green); width: 100%;"></div></div>
+                        </div>
+                    </div>
+
                     <div class="card-title">BẢNG TỔNG HỢP CHI TRẢ LƯƠNG CỦA 16 NHÂN VIÊN (TIMES NEW ROMAN)</div>
                     <div class="table-responsive">
                         <table class="main-table" id="main-salary-table" style="font-size: 11px;">
@@ -456,7 +485,7 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN THỰC THỤ PHƯƠNG ĐÔNG NÂNG CẤP ĐA NĂNG -->
+        <!-- CỘT PHẢI: LỊCH VẠN NIÊN THỰC THỤ PHƯƠNG ĐÔNG -->
         <div class="calendar-sidebar">
             <div class="calendar-widget-title">📅 LỊCH VẠN NIÊN ĐA NĂNG</div>
             <div class="calendar-month-selector">
@@ -485,7 +514,6 @@
     <script>
         const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfjwne0xR04-Vy4WW1rZj97la7eRCdMYLYrSH25ybty0F2xk0GDq7QlLPCBHa_H9RTYQ/exec";
 
-        // ENGINE LỊCH VẠN NIÊN ĐA NĂNG PHƯƠNG ĐÔNG
         function getComprehensiveLunarDetails(d, m, y) {
             let canChiDayArr = ["Giáp Tý", "Ất Sửu", "Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tỵ", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu", "Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu", "Mậu Dần", "Kỷ Mão", "Canh Thìn", "Tân Tỵ", "Nhâm Ngọ", "Quý Mùi", "Giáp Thân", "Ất Dậu", "Bính Tuất", "Đinh Hợi", "Mậu Tý", "Kỷ Sửu", "Canh Dần", "Tân Mão", "Nhâm Thìn", "Quý Tỵ", "Giáp Ngọ", "Ất Mùi", "Bính Thân", "Đinh Dậu", "Mậu Tuất", "Kỷ Hợi", "Canh Tý", "Tân Sửu", "Nhâm Dần", "Quý Mão", "Giáp Thìn", "Ất Tỵ", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu", "Giáp Dần", "Ất Mão", "Bính Thìn", "Đinh Tỵ", "Mậu Ngọ", "Kỷ Mùi", "Canh Thân", "Tân Dậu", "Nhâm Tuất", "Quý Hợi"];
             let canChiMonthArr = ["Nhâm Dần", "Quý Mão", "Giáp Thìn", "Ất Tỵ", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu"];
@@ -530,7 +558,6 @@
             document.getElementById('live-system-clock').innerText = `${daysArr[d.getDay()]} , ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${currentYear} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
         }, 1000);
 
-        // DANH SÁCH 16 NHÂN SỰ GỐC (ĐÃ BỔ SUNG TẠM ỨNG CỐ ĐỊNH CỦA PHẠM HUY CHIẾN)
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "105004242307"},
@@ -547,7 +574,6 @@
             {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106869104133"},
             {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106873586343"},
             {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "107002654931"},
-            // ĐÃ BỔ SUNG: Tạm ứng cố định 4,000,000đ cho Phạm Huy Chiến
             {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "106001245634"}
         ];
 
@@ -609,10 +635,12 @@
             dot.className = "status-dot";
         }
 
-        // PHÂN HỆ TÍNH TOÁN LƯƠNG ĐÃ CẬP NHẬT CÔNG THỨC LƯƠNG CÔNG VIỆC CHUẨN XÁC
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
             let sum_thuc_linh = 0;
+            let sum_lcb_thucte = 0;
+            let sum_lcv_thucte = 0;
+
             salaryData.forEach((row, index) => {
                 const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
                 
@@ -622,19 +650,19 @@
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
                 row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P) + parseFloat(row.le_vr)));
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt;
+                sum_lcb_thucte += l_tong_cb; // Cộng dồn LCB Thực Tế
                 
-                // 2. ĐÃ SỬA: Phân hệ Lương Công Việc theo đúng thuật toán yêu cầu
-                // Công thức Lương CV Gốc = (Hệ số LCV + Phụ cấp LCV) * 2087970
+                // 2. Phân hệ Lương Công Việc
                 row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv)) * 2087970);
-                // Công thức Lương CV Thực Tế = Làm tròn của (Lương CV Gốc / 22) * NT
                 row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT));
+                sum_lcv_thucte += row.lcv_thucte; // Cộng dồn LCV Thực Tế
 
                 // 3. Phân hệ Tổng hợp, Bảo hiểm & Thực lĩnh
                 const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; 
-                row.bao_hiem = Math.round(row.lcb_goc * 0.105); // Bảo hiểm bắt buộc = 10.5% lương HĐ
+                row.bao_hiem = Math.round(row.lcb_goc * 0.105); 
                 
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung);
-                sum_thuc_linh += o_thuc_linh;
+                sum_thuc_linh += o_thuc_linh; // Cộng dồn Tổng Thực Lĩnh
 
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td>${row.account}</td>
@@ -660,7 +688,25 @@
                     <td class="text-center"><button type="button" class="btn-action-delete" onclick="deleteSalary(${index})">Xóa</button></td>
                 </tr>`;
             });
+            
+            // Cập nhật số liệu lên Dashboard Tổng hợp 4 trong 1
             document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString();
+
+            // CẬP NHẬT CÁC THẺ TRỰC QUAN KHU VỰC LƯƠNG THEO YÊU CẦU
+            document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND";
+            document.getElementById('v-total-lcv').innerText = sum_lcv_thucte.toLocaleString() + " VND";
+            document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
+
+            // Tính tỷ trọng phân phối tương đối giữa LCB và LCV trên Quỹ lương thực tế
+            let total_base_pool = sum_lcb_thucte + sum_lcv_thucte;
+            if(total_base_pool > 0) {
+                let pct_lcb = Math.round((sum_lcb_thucte / total_base_pool) * 100);
+                let pct_lcv = 100 - pct_lcb;
+                document.getElementById('pct-lcb').innerText = pct_lcb + "% Quỹ";
+                document.getElementById('pct-lcv').innerText = pct_lcv + "% Quỹ";
+                document.getElementById('v-bar-lcb').style.width = pct_lcb + "%";
+                document.getElementById('v-bar-lcv').style.width = pct_lcv + "%";
+            }
         }
         
         function handleAdvanceFocus(input) {
@@ -884,7 +930,7 @@
         }
         function updateDashboardStats() { document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị"; }
 
-        // ================= LỊCH VẠN NIÊN ĐA NĂNG PHƯƠNG ĐÔNG =================
+        // ================= LỊCH VẠN NIÊN ĐA NĂNG =================
         function buildWidgetCalendar(month, year) {
             const container = document.getElementById('calendar-body-days'); container.innerHTML = "";
             document.getElementById('calendar-view-label').innerText = `Tháng ${String(month + 1).padStart(2,'0')} / ${year}`;
