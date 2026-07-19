@@ -560,7 +560,6 @@
     </div>
 
     <script>
-        // Đường dẫn link Apps Script thực tế đã được cấu hình cố định vượt qua chặn bảo mật CORS
         const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby-v7F6eASHtW9IHW_m_VcOMwuOJ5Gio1LVxnu3DKMZA9JCOjDha_8BbZV66v9fOo1w/exec";
         let activePdfBlobUrl = null; 
         let activeInstantPdfBlobUrl = null; 
@@ -592,26 +591,29 @@
         let sysDate = new Date(); let currentYear = 2026; let currentMonth = sysDate.getMonth(); let todayRealDay = sysDate.getDate();
         setInterval(() => {
             let d = new Date(); let daysArr = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
-            document.getElementById('live-system-clock').innerText = `${daysArr[d.getDay()]} , ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${currentYear} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+            let clockEl = document.getElementById('live-system-clock');
+            if(clockEl) {
+                clockEl.innerText = `${daysArr[d.getDay()]} , ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${currentYear} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+            }
         }, 1000);
 
         const default16Staffs = [
-            {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 500000, "account": "10506421"},
-            {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "tam_ung": 0, "account": "10508892"},
-            {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 0, "account": "102005035542"},
-            {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0, "tam_ung": 0, "account": "106004294441"},
-            {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 0, "account": "106004359838"},
-            {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 0, "account": "106868653975"},
-            {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0, "tam_ung": 0, "account": "105004294439"},
-            {"stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "tam_ung": 0, "account": "102004797815"},
-            {"stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.80, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 0, "account": "104004583045"},
-            {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "tam_ung": 0, "account": "100004797831"},
-            {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 0, "account": "101004882063"},
-            {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 0, "account": "100006166724"},
-            {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0, "tam_ung": 0, "account": "106869104133"},
-            {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 0, "account": "106873586343"},
-            {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 0, "account": "107002654931"},
-            {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 0, "account": "106001245634"}
+            {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
+            {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "105004242307"},
+            {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "102005035542"},
+            {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106004294441"},
+            {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "106004359838"},
+            {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106868653975"},
+            {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "105004294439"},
+            {"stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "102004797815"},
+            {"stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.80, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "104004583045"},
+            {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "100004797831"},
+            {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "101004882063"},
+            {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "100006166724"},
+            {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106869104133"},
+            {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106873586343"},
+            {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "107002654931"},
+            {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "102004830132"}
         ];
         let salaryData = []; let paymentRecords = []; let telecomRecords = []; let itAssetsRecords = [];
 
@@ -619,19 +621,41 @@
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
-        // Đồng bộ dữ liệu cục bộ theo tháng đã lưu trong máy
         async function loadSalaryFromCloud() {
+            setCloudStatus("Đang tải dữ liệu trực tuyến...", "var(--orange)", true);
             const currentMonthKey = document.getElementById('filter-month').value;
-            const localSaved = localStorage.getItem("salary_data_" + currentMonthKey);
             
+            try {
+                let response = await fetch(GOOGLE_WEB_APP_URL);
+                let result = await response.json();
+                if(result && result.status === "success" && result.data && result.data.length > 0) {
+                    let filtered = result.data.filter(x => x.month === currentMonthKey);
+                    if(filtered.length > 0) {
+                        salaryData = filtered;
+                    } else {
+                        salaryData = JSON.parse(JSON.stringify(default16Staffs));
+                    }
+                    setCloudStatus("Đồng bộ đám mây trực tuyến thành công", "var(--green)", false);
+                } else {
+                    fallbackToLocalStorage(currentMonthKey);
+                }
+            } catch(e) {
+                fallbackToLocalStorage(currentMonthKey);
+            }
+            renderSalaryTable();
+        }
+
+        function fallbackToLocalStorage(monthKey) {
+            const localSaved = localStorage.getItem("salary_data_" + monthKey);
             if (localSaved) {
                 salaryData = JSON.parse(localSaved);
             } else {
                 salaryData = JSON.parse(JSON.stringify(default16Staffs));
             }
-            renderSalaryTable();
+            setCloudStatus("Chạy dữ liệu Local Engine (Offline)", "var(--blue)", false);
         }
 
         function renderSalaryTable() {
@@ -640,77 +664,132 @@
 
             salaryData.forEach((row, index) => {
                 const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
-                row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap)) * TOI_THIEU_VUNG);
-                const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap)) * LUONG_CO_BAN_PRICE);
+                row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG);
+                const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * LUONG_CO_BAN_PRICE);
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
-                row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P) + parseFloat(row.le_vr)));
+                row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt;
                 sum_lcb_thucte += l_tong_cb;
                 
-                row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv)) * 2087970);
+                row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * 2087970);
                 row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT));
                 sum_lcv_thucte += row.lcv_thucte;
 
                 const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; 
                 row.bao_hiem = Math.round(row.lcb_goc * 0.105); 
-                const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung);
+                const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung || 0);
                 sum_thuc_linh += o_thuc_linh;
+
+                // Lưu các trường tính toán sẵn để gửi lên cloud dạng cấu trúc 1:1 mở rộng
+                row.luong_cb = l_tong_cb;
+                row.luong_cv = row.lcv_thucte;
+                row.tong_thu_nhap = o_tong_lcb_lcv;
+                row.bhxh = row.bao_hiem;
+                row.thuc_linh = o_thuc_linh;
 
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td>${row.account}</td>
                     <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td>
-                    <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
+                    <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap || 0}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
                     <td class="text-right">${row.lcb_goc.toLocaleString()}</td><td class="text-right">${luong_cb_he_thong.toLocaleString()}</td>
                     <td><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td>
-                    <td><input type="number" class="input-salary-day" value="${row.P}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td>
-                    <td><input type="number" class="input-salary-day" value="${row.le_vr}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td>
+                    <td><input type="number" class="input-salary-day" value="${row.P || 0}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td>
+                    <td><input type="number" class="input-salary-day" value="${row.le_vr || 0}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td>
                     <td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold">${l_tong_cb.toLocaleString()}</td>
                     <td><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td>
-                    <td><input type="number" step="0.01" class="input-edit" value="${row.phu_cap_lcv}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td>
+                    <td><input type="number" step="0.01" class="input-edit" value="${row.phu_cap_lcv || 0}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td>
                     <td class="text-right" style="background:#f8fafc; font-weight:bold;">${row.lcv_goc.toLocaleString()}</td>
                     <td class="text-right" style="background:#f3e8ff; font-weight:bold; color:var(--purple);">${row.lcv_thucte.toLocaleString()}</td>
                     <td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td>
                     <td class="text-right" style="color:var(--red); font-weight:bold;">${row.bao_hiem.toLocaleString()}</td>
-                    <td class="text-center"><input type="text" class="input-advance-money" value="${Math.round(row.tam_ung).toLocaleString('vi-VN')}" onblur="handleAdvanceBlur(${index}, this.value)" onfocus="handleAdvanceFocus(this)"></td>
+                    <td class="text-center"><input type="text" class="input-advance-money" value="${Math.round(row.tam_ung || 0).toLocaleString('en-US')}" oninput="handleAdvanceLiveMoneyInput(this, ${index})"></td>
                     <td class="text-right font-bold" style="background:#fef08a;">${o_thuc_linh.toLocaleString()}</td>
                     <td class="text-center"><button type="button" class="btn-action-delete" onclick="deleteSalary(${index})">Xóa</button></td>
                 </tr>`;
             });
-            document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString();
+            document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString() + " VND";
             document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND";
             document.getElementById('v-total-lcv').innerText = sum_lcv_thucte.toLocaleString() + " VND";
             document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
             
+            let totalFund = sum_lcb_thucte + sum_lcv_thucte || 1;
+            let pctLCB = Math.round((sum_lcb_thucte / totalFund) * 100);
+            let pctLCV = 100 - pctLCB;
+            
+            document.getElementById('pct-lcb').innerText = pctLCB + "%";
+            document.getElementById('pct-lcv').innerText = pctLCV + "%";
+            document.getElementById('v-bar-lcb').style.width = pctLCB + "%";
+            document.getElementById('v-bar-lcv').style.width = pctLCV + "%";
+
             const currentMonthKey = document.getElementById('filter-month').value;
             localStorage.setItem("salary_data_" + currentMonthKey, JSON.stringify(salaryData));
         }
 
-        function handleAdvanceFocus(i) { i.value = i.value.replace(/[^\d]/g, ''); i.type = 'number'; }
-        function handleAdvanceBlur(idx, v) { salaryData[idx]['tam_ung'] = parseFloat(v.replace(/[^\d]/g, '')) || 0; renderSalaryTable(); }
+        function handleAdvanceLiveMoneyInput(inputEl, index) {
+            let cleanVal = inputEl.value.replace(/,/g, '');
+            let num = parseFloat(cleanVal) || 0;
+            salaryData[index]['tam_ung'] = num;
+            inputEl.value = num.toLocaleString('en-US');
+            renderSalaryTable();
+            
+            // Đặt lại con trỏ để người dùng không bị nhảy chữ khi đang gõ số phân cách hàng nghìn
+            inputEl.focus();
+        }
+
         function updateSalaryCell(idx, f, v) { salaryData[idx][f] = parseFloat(v) || 0; renderSalaryTable(); }
         function deleteSalary(i) { salaryData.splice(i,1); renderSalaryTable(); }
 
-        // Đẩy lên Google Sheets dưới chế độ bảo mật 'no-cors' tránh lỗi trắng trơn
         async function saveSalaryToCloudGlobal() {
             const currentMonthKey = document.getElementById('filter-month').value;
-            const dot = document.getElementById('cloud-status-dot');
-            dot.className = "status-dot syncing";
-            document.getElementById('cloud-status-text').innerText = "Đang truyền dữ liệu lương tháng " + currentMonthKey + " lên Cloud...";
+            setCloudStatus("Đang đồng bộ dữ liệu lên Google Cloud...", "var(--orange)", true);
             
+            // Gói đầy đủ cấu trúc 17 cột thông tin tính toán định dạng giống hệt trên web sang trang tính
+            let payloadData = salaryData.map(row => {
+                return {
+                    stt: row.stt,
+                    name: row.name,
+                    account: row.account,
+                    lcb_heso: row.lcb_heso,
+                    lcb_phucap: row.lcb_phucap || 0,
+                    NT: row.NT,
+                    P: row.P || 0,
+                    le_vr: row.le_vr || 0,
+                    luong_cb: row.luong_cb || 0,
+                    he_so_lcv: row.he_so_lcv,
+                    phu_cap_lcv: row.phu_cap_lcv || 0,
+                    luong_cv: row.luong_cv || 0,
+                    tong_thu_nhap: row.tong_thu_nhap || 0,
+                    bhxh: row.bhxh || 0,
+                    tam_ung: row.tam_ung || 0,
+                    thuc_linh: row.thuc_linh || 0,
+                    ghi_chu: row.ghi_chu || ""
+                };
+            });
+
             try {
                 await fetch(GOOGLE_WEB_APP_URL, {
                     method: "POST", 
                     mode: "no-cors", 
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ month: currentMonthKey, salary: salaryData })
+                    body: JSON.stringify({ month: currentMonthKey, salary: payloadData })
                 });
-                alert("🚀 Dữ liệu bảng tính lương tháng " + currentMonthKey + " đã được phát lệnh đồng bộ lên Google Sheets thành công!");
-                document.getElementById('cloud-status-text').innerText = "Đã đồng bộ dữ liệu tháng " + currentMonthKey;
+                alert("🚀 Dữ liệu bảng tính lương tháng " + currentMonthKey + " với đầy đủ cơ cấu định dạng đã được phát lệnh đồng bộ lên Google Sheets thành công!");
+                setCloudStatus("Đồng bộ đám mây thành công", "var(--green)", false);
             } catch(err) {
-                alert("⚠️ Có lỗi xảy ra trong quá trình truyền dữ liệu mạng!");
-                document.getElementById('cloud-status-text').innerText = "Lỗi kết nối mạng đám mây";
+                alert("⚠️ Có lỗi kết nối trong quá trình truyền dữ liệu mạng!");
+                setCloudStatus("Lỗi kết nối đồng bộ đám mây", "var(--red)", false);
             }
-            dot.className = "status-dot";
+        }
+
+        function setCloudStatus(msg, color, isSyncing) {
+            let dot = document.getElementById('cloud-status-dot');
+            let txt = document.getElementById('cloud-status-text');
+            if(dot) {
+                dot.style.backgroundColor = color;
+                if(isSyncing) dot.classList.add('syncing');
+                else dot.classList.remove('syncing');
+            }
+            if(txt) txt.innerText = msg;
         }
 
         // ================= HỒ SƠ THANH TOÁN VĂN PHÒNG =================
