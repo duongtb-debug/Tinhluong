@@ -534,7 +534,7 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN ĐÃ SỬA LỖI LỆCH THỨ -->
+        <!-- CỘT PHẢI: LỊCH VẠN NIÊN THÔNG MINH -->
         <div class="calendar-sidebar">
             <div class="calendar-widget-title">📅 LỊCH VẠN NIÊN THÔNG MINH ENTERPRISE</div>
             <div class="calendar-month-selector">
@@ -560,7 +560,7 @@
     </div>
 
     <script>
-        const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwgEUwazmh5SbE-nVtXx9XpUNewmgnyjdq2VafzXKvytqFG6MF0_JCCCW4Dam6yfMS_kw/exec";
+        const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxfa9FPoaXb1O8PwE8zq5H2Smm73A3l06vHjQ0ECCjBjBJ9yEi9OmYvT7SRsPvbVoGAkA/exec";
         let activePdfBlobUrl = null; 
         let activeInstantPdfBlobUrl = null; 
 
@@ -578,9 +578,7 @@
             let tkIndex = (m - 1) * 2; if (d > 21) tkIndex += 1;
 
             return {
-                lunarDay: dAm,
-                lunarMonth: mAm,
-                lunarYear: "Bính Ngọ",
+                lunarDay: dAm, lunarMonth: mAm, lunarYear: "Bính Ngọ",
                 canChiNgay: CAN_NGAY[idxCan] + " " + CHI_NGAY[idxChi],
                 canChiThang: mAm === 5 ? "Giáp Ngọ" : "Ất Tỵ",
                 tietKhi: TIET_KHI[tkIndex % 24],
@@ -622,8 +620,16 @@
             document.getElementById('tab-' + tabName).classList.add('active');
         }
 
+        // ĐẦ VÀO LOGIC: Đọc dữ liệu riêng biệt lưu trong bộ nhớ máy theo tháng chọn
         async function loadSalaryFromCloud() {
-            salaryData = JSON.parse(JSON.stringify(default16Staffs));
+            const currentMonthKey = document.getElementById('filter-month').value;
+            const localSaved = localStorage.getItem("salary_data_" + currentMonthKey);
+            
+            if (localSaved) {
+                salaryData = JSON.parse(localSaved);
+            } else {
+                salaryData = JSON.parse(JSON.stringify(default16Staffs));
+            }
             renderSalaryTable();
         }
 
@@ -673,7 +679,12 @@
             document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND";
             document.getElementById('v-total-lcv').innerText = sum_lcv_thucte.toLocaleString() + " VND";
             document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
+            
+            // Tự động ghi lại cấu trúc phiên làm việc cục bộ khi bảng thay đổi số liệu
+            const currentMonthKey = document.getElementById('filter-month').value;
+            localStorage.setItem("salary_data_" + currentMonthKey, JSON.stringify(salaryData));
         }
+
         function handleAdvanceFocus(i) { i.value = i.value.replace(/[^\d]/g, ''); i.type = 'number'; }
         function handleAdvanceBlur(idx, v) { salaryData[idx]['tam_ung'] = parseFloat(v.replace(/[^\d]/g, '')) || 0; renderSalaryTable(); }
         function updateSalaryCell(idx, f, v) { salaryData[idx][f] = parseFloat(v) || 0; renderSalaryTable(); }
@@ -930,19 +941,14 @@
         function deleteITAsset(i) { itAssetsRecords.splice(i,1); renderITTable(); }
         function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; }
 
-        // ================= ĐÃ SỬA ĐỒI: THUẬT TOÁN ENGINE LỊCH TÍNH ĐÚNG THỨ ĐẦU THÁNG =================
+        // ================= LỊCH VẠN NIÊN WIDGET =================
         function buildWidgetCalendar(month, year) {
             const container = document.getElementById('calendar-body-days'); container.innerHTML = "";
             document.getElementById('calendar-view-label').innerText = `Tháng ${String(month + 1).padStart(2,'0')} / ${year}`;
             
-            // Tìm ngày đầu tiên của tháng là thứ mấy (0: Chủ Nhật, 1: Thứ 2, ..., 6: Thứ 7)
             let firstDayIndex = new Date(year, month, 1).getDay();
-            
-            // Chuyển đổi định dạng để khớp với Grid xuất phát từ Thứ 2 (T2 -> CN)
-            // Lịch cũ quy ước: T2=0, T3=1, T4=2, T5=3, T6=4, T7=5, CN=6
             let blanksCount = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
             
-            // Chèn các ô trống giữ chỗ trước ngày mùng 1
             for (let b = 0; b < blanksCount; b++) {
                 container.innerHTML += `<div class="calendar-day-cell blank-cell"></div>`;
             }
