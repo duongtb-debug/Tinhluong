@@ -114,11 +114,6 @@
         
         .select-advance-dropdown { width: 110px; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px; font-weight: bold; color: var(--red); background: #fff5f5; outline: none; font-family: 'Times New Roman'; cursor: pointer; }
 
-        .realtime-qr-wrapper { display: flex; gap: 20px; background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 15px; align-items: center; margin-top: 15px; }
-        .realtime-qr-box { width: 110px; height: 110px; background: white; border: 1px solid var(--border-color); border-radius: 6px; padding: 5px; display: flex; align-items: center; justify-content: center; }
-        .realtime-qr-box canvas, .realtime-qr-box img { width: 100% !important; height: 100% !important; display: block; }
-        .realtime-qr-desc { font-size: 12px; line-height: 1.5; color: #5b21b6; }
-
         .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid var(--border-color); padding: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); width: 100%; min-width: 320px; }
         .calendar-widget-title { font-size: 14px; font-weight: bold; text-align: center; color: white; background: var(--primary); padding: 8px; border-radius: 6px; margin-bottom: 12px; }
         .calendar-month-selector { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; }
@@ -130,8 +125,6 @@
         .calendar-day-cell.blank-cell { background: #f8fafc; cursor: default; border: none; }
         .calendar-day-cell.today-cell { background: #e0f2fe; border: 2px solid var(--blue); font-weight: bold; }
         .solar-num { font-size: 13px; font-weight: bold; color: var(--primary); }
-        .lunar-num { font-size: 10px; color: var(--red); font-weight: bold; margin-top: 1px; }
-        .van-nien-details { margin-top: 15px; padding: 10px; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; font-size: 12px; line-height: 1.6; color: #92400e; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 850px; text-align: center; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3); }
@@ -141,19 +134,7 @@
         .preview-content-viewport iframe { width: 100%; height: 100%; border: none; background: white; }
 
         .payslip-details-box { background: #f8fafc; border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 12px; line-height: 1.6; max-height: 250px; overflow-y: auto; margin-top: 10px; text-align: left; }
-        
-        .table-qr-holder { width: 45px; height: 45px; display: inline-block; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 4px; padding: 2px; }
-        .table-qr-holder canvas, .table-qr-holder img { width: 100% !important; height: 100% !important; display: block; }
         .table-responsive { overflow-x: auto; margin-top: 15px; width: 100%; }
-        
-        @media print {
-            body * { visibility: hidden; }
-            #preview-file-body-content, #preview-file-body-content * { visibility: visible; }
-            #preview-file-body-content { position: absolute; left: 0; top: 0; width: 100%; height: auto; }
-            .modal { background: none; position: relative; }
-            .modal-content { box-shadow: none; padding: 0; max-width: 100%; }
-            .preview-actions-bar, .btn-close-modal-main { display: none !important; }
-        }
     </style>
 </head>
 <body>
@@ -161,7 +142,7 @@
     <div class="db-status-bar">
         <div>
             <span class="status-dot" id="cloud-status-dot"></span>
-            <span id="cloud-status-text">Hệ thống Đám Mây API - Đã cập nhật mẫu kết xuất Excel khớp 100% tài liệu ảnh mẫu</span>
+            <span id="cloud-status-text">Hệ thống Đám Mây API - Định dạng Việt Nam (Tự động mở Google Sheets)</span>
         </div>
         <div>Trạng thái API: <strong id="live-sync-lbl" style="color:var(--green)">SẴN SÀNG</strong></div>
     </div>
@@ -185,7 +166,6 @@
                 <button type="button" class="nav-tab active" data-tab="salary" onclick="switchMainTab('salary')">💵 Tính Lương Nhân Viên</button>
                 <button type="button" class="nav-tab" data-tab="payment" onclick="switchMainTab('payment')">🧾 Hồ Sơ Thanh Toán Văn Phòng</button>
                 <button type="button" class="nav-tab" data-tab="telecom" onclick="switchMainTab('telecom')">🌐 Cước Viễn Thông & Internet</button>
-                <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')">💻 Thiết Bị Công Nghệ Thông Tin</button>
             </div>
 
             <!-- TAB 1: BẢNG LƯƠNG -->
@@ -228,87 +208,12 @@
             <!-- TAB 2: HỒ SƠ THANH TOÁN -->
             <div id="tab-payment" class="tab-content">
                 <div class="main-card">
-                    <div class="card-title" style="border-left-color: var(--green);">Tạo mới Hồ sơ Đề nghị Thanh toán Văn phòng</div>
-                    <form id="payment-main-form" onsubmit="savePaymentRecord(event)">
-                        <div class="grid-form">
-                            <div class="form-group"><label>Nội dung chi</label><input type="text" id="pay-content" required></div>
-                            <div class="form-group"><label>Đơn vị thụ hưởng</label><input type="text" id="pay-beneficiary" required></div>
-                            <div class="form-group"><label>Số tài khoản thụ hưởng</label><input type="text" id="pay-account" required></div>
-                            <div class="form-group"><label>Tại Ngân hàng</label><input type="text" id="pay-bank" required></div>
-                        </div>
-                        <div class="grid-form">
-                            <div class="form-group"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" oninput="calculateFlexibleTax()"></div>
-                            <div class="form-group"><label>Tiền trước thuế</label><input type="number" id="pay-pretax-input" value="0" oninput="calculateFlexibleTax()"></div>
-                            <div class="form-group"><label>Thuế suất VAT</label><select id="pay-tax-rate" onchange="calculateFlexibleTax()"><option value="0">0%</option><option value="5">5%</option><option value="8" selected>8%</option><option value="10">10%</option></select></div>
-                        </div>
-                        <div class="grid-form">
-                            <div class="form-group"><label>Tiền thuế VAT</label><input type="text" id="pay-tax-amount" readonly style="background:#f1f5f9;"></div>
-                            <div class="form-group"><label>Tổng cộng thanh toán</label><input type="text" id="pay-total" readonly style="background:#fef08a;"></div>
-                            <div class="form-group"><label>Trạng thái duyệt chi</label><select id="pay-status"><option value="Chưa duyệt">Chưa duyệt</option><option value="Đã duyệt chi">Đã duyệt chi</option></select></div>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fa-solid fa-paperclip"></i> Chọn tệp chứng từ đính kèm (Nhấn vào tệp để xem trước trực quan)</label>
-                            <input type="file" id="pay-file-uploader" multiple onchange="processAttachedFilesMulti(this, 'payment')">
-                            <div class="preview-thumbnails-container" id="payment-thumbnails-zone" style="display: none;"></div>
-                        </div>
-                        <button type="submit" class="btn btn-green" style="margin-top:10px;">💾 Lưu Hồ Sơ Thanh Toán</button>
-                    </form>
-                </div>
-                <div class="main-card">
-                    <div class="table-responsive"><table class="main-table"><thead><tr><th>STT</th><th>Nội dung thanh toán</th><th>Đơn vị thụ hưởng</th><th>Tài khoản</th><th>SL</th><th>Trước thuế</th><th>Thuế</th><th>Tổng chi</th><th>Chứng Từ</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody id="tbody-payment"></tbody></table></div>
-                </div>
-            </div>
-
-            <!-- TAB 3: CƯỚC VIỄN THÔNG -->
-            <div id="tab-telecom" class="tab-content">
-                <div class="main-card">
-                    <div class="card-title" style="border-left-color: var(--orange);">Cập nhật chi phí hạ tầng mạng Internet & Viễn thông</div>
-                    <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)">
-                        <div class="grid-form">
-                            <div class="form-group"><label>Mã đường truyền / ID thuê bao</label><input type="text" id="tel-id" required></div>
-                            <div class="form-group"><label>Nhà mạng</label><select id="tel-provider"><option value="VNPT">VNPT</option><option value="Viettel">Viettel</option><option value="FPT">FPT</option><option value="CMC">CMC</option></select></div>
-                            <div class="form-group"><label>Kỳ cước hóa đơn</label><input type="month" id="tel-period" value="2026-06"></div>
-                            <div class="form-group"><label>Mức cước phát sinh sau thuế</label><input type="number" id="tel-cost" value="0" required></div>
-                            <div class="form-group"><label>Trạng thái chi trả</label><select id="tel-status"><option value="Chưa thanh toán">Chưa thanh toán</option><option value="Đã thanh toán">Đã thanh toán</option></select></div>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fa-solid fa-paperclip"></i> Chọn tệp hóa đơn đính kèm (Nhấn vào tệp để xem trước trực quan)</label>
-                            <input type="file" id="tel-file-uploader" multiple onchange="processAttachedFilesMulti(this, 'telecom')">
-                            <div class="preview-thumbnails-container" id="telecom-thumbnails-zone" style="display: none;"></div>
-                        </div>
-                        <button type="submit" class="btn btn-orange" style="margin-top:10px;">💾 Lưu Cước Hạ Tầng</button>
-                    </form>
-                </div>
-                <div class="main-card">
-                    <div class="table-responsive"><table class="main-table"><thead><tr><th>STT</th><th>Mã thuê bao / ID</th><th>Nhà mạng</th><th>Kỳ cước</th><th>Chi phí</th><th>Hóa Đơn</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody id="tbody-telecom"></tbody></table></div>
-                </div>
-            </div>
-
-            <!-- TAB 4: THIẾT BỊ CNTT -->
-            <div id="tab-it-assets" class="tab-content">
-                <div class="main-card">
-                    <div class="card-title" style="border-left-color: var(--purple);">Cấu hình và kiểm kê Tài sản Công nghệ Thông tin</div>
-                    <form id="it-main-form" onsubmit="saveITRecord(event)">
-                        <div class="grid-form">
-                            <div class="form-group"><label>Người sử dụng thiết bị</label><input type="text" id="it-user" oninput="triggerRealtimeFormQR()" required placeholder="Họ tên..."></div>
-                            <div class="form-group"><label>Bộ phận sử dụng</label><input type="text" id="it-dept" oninput="triggerRealtimeFormQR()" required placeholder="Kế toán, Nhân sự..."></div>
-                            <div class="form-group">
-                                <label>Phân loại thiết bị phần cứng</label>
-                                <select id="it-device-type" onchange="autoGenerateAssetID(); triggerRealtimeFormQR();">
-                                    <option value="LAP">Laptop Doanh Nghiệp (Cá nhân)</option>
-                                    <option value="PC">Máy tính để bàn Workstation (PC)</option>
-                                    <option value="SRV">Máy chủ trung tâm dữ liệu (Server)</option>
-                                </select>
-                            </div>
-                            <div class="form-group"><label>Mã tài sản định danh (Auto)</label><input type="text" id="it-serial-id" readonly style="background:#f1f5f9; font-weight:bold;"></div>
-                        </div>
-                        <button type="submit" class="btn btn-purple" style="margin-top: 15px;">💾 Lưu Thiết Bị & Bản Quyền Phần Mềm</button>
-                    </form>
+                    <div class="table-responsive"><table class="main-table"><thead><tr><th>STT</th><th>Nội dung thanh toán</th><th>Đơn vị thụ hưởng</th><th>Tài khoản</th><th>SL</th><th>Trước thuế</th><th>Thuế</th><th>Tổng chi</th><th>Trạng thái</th></tr></thead><tbody id="tbody-payment"></tbody></table></div>
                 </div>
             </div>
         </div>
 
-        <!-- SIDEBAR LỊCH VẠN NIÊN -->
+        <!-- SIDEBAR -->
         <div class="calendar-sidebar">
             <div class="calendar-widget-title"><i class="fa-solid fa-calendar-days"></i> LỊCH VẠN NIÊN THÔNG MINH</div>
             <div class="calendar-month-selector">
@@ -323,7 +228,7 @@
         </div>
     </div>
 
-    <!-- PREVIEW CHỨNG TỪ NÂNG CẤP ĐẦY ĐỦ CHỨC NĂNG -->
+    <!-- PREVIEW MODAL -->
     <div id="filePreviewModal" class="modal" onclick="closeFilePreviewModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="card-title" id="preview-file-title" style="border-left-color: var(--blue);">XEM CHI TIẾT CHỨNG TỪ ĐÍNH KÈM</div>
@@ -336,30 +241,21 @@
         </div>
     </div>
 
-    <div id="payslipModal" class="modal" onclick="closePayslipModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="card-title" id="modal-qr-title">PHIẾU LƯƠNG NHÂN VIÊN MÃ HOÁ QR</div>
-            <div style="display:flex;justify-content:center;margin:10px 0;" id="qrcode-canvas-zone"></div>
-            <div class="payslip-details-box" id="payslip-text-details"></div>
-            <button type="button" class="btn btn-danger" style="margin-top:15px;" onclick="closePayslipModal()">Đóng cửa sổ</button>
-        </div>
-    </div>
-
     <script>
+        // Đường dẫn Google Apps Script API đã cấu hình Web App của bạn
         const CLOUD_API_ENDPOINT = "https://script.google.com/macros/s/AKfycby-v7F6eASHtW9IHW_m_VcOMwuOJ5Gio1LVxnu3DKMZA9JCOjDha_8BbZV66v9fOo1w/exec";
+        // ID trang tính thực tế hiển thị dữ liệu trực quan sau đồng bộ
+        const GOOGLE_SHEET_VIEW_URL = "https://docs.google.com/spreadsheets/d/10YxYreB23WbeEksS49gL43fH8m67SWhTfV3r_oXgX5w/edit"; 
         
         let salaryConfigsByMonth = {}; 
         let salaryDataByMonth = {}; 
         let paymentRecords = []; 
         let telecomRecords = []; 
         let itAssetsRecords = [];
-        let currentPaymentFiles = []; 
-        let currentTelecomFiles = [];
         let currentYear = 2026; 
-        let currentMonth = 5; // Tháng 6 (0-indexed)
+        let currentMonth = 5; 
         let activeBlobUrl = null;
 
-        // ĐỒNG BỘ CHÍNH XÁC DANH SÁCH 16 NHÂN SỰ MẪU KHỚP TỪNG TÊN VÀ SỐ LIỆU TRÊN ẢNH
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499", "note": ""},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 19, "P": 3, "le_vr": 0, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004242307", "note": ""},
@@ -387,14 +283,22 @@
                 const slice = byteCharacters.slice(offset, offset + sliceSize);
                 const byteNumbers = new Array(slice.length);
                 for (let i = 0; i < slice.length; i++) { byteNumbers[i] = slice.charCodeAt(i); }
-                const byteArray = new Uint8Array(byteNumbers);
-                byteArrays.push(byteArray);
+                byteArrays.push(new Uint8Array(byteNumbers));
             }
             return URL.createObjectURL(new Blob(byteArrays, {type: contentType}));
         }
 
+        function switchMainTab(name) { 
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
+            document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active')); 
+            document.getElementById('tab-' + name).classList.add('active'); 
+            document.querySelector(`.nav-tabs .nav-tab[data-tab="${name}"]`).classList.add('active'); 
+        }
+
         function renderSalaryTable() {
             let sm = document.getElementById('filter-month').value; 
+            
+            // Định dạng tháng năm hiển thị kiểu Việt Nam: Th06/2026 hoặc 06/2026
             let monthLabel = sm.split("-")[1] + "/" + sm.split("-")[0];
             const tbody = document.getElementById('tbody-salary'); 
             if(!tbody) return; tbody.innerHTML = ""; 
@@ -428,7 +332,7 @@
                 dropdownHTML += `</select>`;
 
                 tbody.innerHTML += `<tr>
-                    <td>${monthLabel}</td>
+                    <td>Tháng ${monthLabel}</td>
                     <td class="text-center">${index + 1}</td>
                     <td class="font-bold">${row.name}</td>
                     <td>${row.account}</td>
@@ -479,7 +383,33 @@
             document.getElementById('v-total-thuc').innerText = T_o_thuc_linh.toLocaleString() + " VND";
         }
 
-        // 🌟 KHÔI PHỤC & ĐỒNG BỘ 100% FORM EXCEL CHỮ KÝ THEO ĐÚNG ẢNH MẪU CỦA KHÁCH HÀNG 🌟
+        // 🌟 TÍNH NĂNG BỔ SUNG: ĐỒNG BỘ MÂY THÀNH CÔNG VÀ TỰ ĐỘNG XEM TRÊN GOOGLE SHEETS 🌟
+        async function syncDataToCloudServer(showAlert = false) { 
+            document.getElementById('cloud-status-dot').className = "status-dot syncing"; 
+            let sm = document.getElementById('filter-month').value; 
+            let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
+
+            const formData = new FormData(); 
+            formData.append("data", JSON.stringify({ 
+                salaryData: salaryDataByMonth[sm], paymentRecords, telecomRecords, itAssetsRecords, month_key: sm, month_config: salaryConfigsByMonth[sm] 
+            })); 
+
+            try { 
+                let res = await fetch(CLOUD_API_ENDPOINT, { method: 'POST', body: formData }); 
+                let resultObj = await res.json(); 
+                
+                if (showAlert) {
+                    alert(`[HỆ THỐNG ĐÁM MÂY]: Đã đồng bộ thành công dữ liệu Kỳ báo cáo Tháng ${monthLabelVN} lên máy chủ lưu trữ trực tuyến! Hệ thống sẽ mở tab Google Sheets xem trực tiếp ngay bây giờ.`);
+                    // Tự động mở tab mới dẫn link thẳng tới file Google Sheets quản trị dữ liệu tổng hợp
+                    window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
+                }
+            } catch(e) { 
+                if (showAlert) alert("Kết nối máy chủ Google API bị nghẽn: " + e.toString()); 
+            } finally { 
+                document.getElementById('cloud-status-dot').className = "status-dot"; 
+            } 
+        }
+
         function exportSalaryToExcelComplete() {
             let sm = document.getElementById('filter-month').value;
             let monthPart = sm.split("-")[1];
@@ -487,64 +417,33 @@
             
             const wb = new ExcelJS.Workbook();
             const ws = wb.addWorksheet(`Thang_${monthPart}_${yearPart}`);
-            
-            // Bật lưới hiển thị ô mặc định giống như Google Sheets
             ws.views = [{ showGridLines: true }];
 
-            // 1. Gán Thông tin Đơn vị hành chính phía trên góc trái (Dòng 1 + Dòng 2)
             ws.getCell('A1').value = "TỔNG CÔNG TY GIẤY VIỆT NAM";
             ws.getCell('A1').font = { name: 'Times New Roman', size: 11, bold: true };
             ws.getCell('A2').value = "VĂN PHÒNG";
             ws.getCell('A2').font = { name: 'Times New Roman', size: 11, bold: true };
 
-            // 2. Điền Khối cấu hình tham chiếu hệ số quỹ lương (Góc trên bên phải)
             const cfg = salaryConfigsByMonth[sm] || { vung: 4140000, base: 2650000, lcv: 1991139 };
             ws.getCell('U1').value = "Mức Hệ số LCB:"; ws.getCell('V1').value = cfg.vung; ws.getCell('W1').value = sm;
             ws.getCell('U2').value = "Mức Phụ cấp LCB:"; ws.getCell('V2').value = cfg.base;
             ws.getCell('U3').value = "Mức Hệ số LCV:"; ws.getCell('V3').value = cfg.lcv;
-            
-            ['1','2','3'].forEach(r => {
-                ws.getCell(`U${r}`).font = { name: 'Times New Roman', size: 10, italic: true };
-                ws.getCell(`U${r}`).alignment = { horizontal: 'right' };
-                ws.getCell(`V${r}`).font = { name: 'Times New Roman', size: 10, bold: true };
-                ws.getCell(`V${r}`).numberFormat = '#,##0';
-            });
 
-            // 3. Tiêu đề bảng biểu (Dòng 5)
             ws.mergeCells('A5:Y5');
             ws.getCell('A5').value = `BẢNG LƯƠNG CHI TIẾT ĐỘC LẬP - THÁNG ${monthPart}/${yearPart}`;
             ws.getCell('A5').font = { name: 'Times New Roman', size: 15, bold: true };
             ws.getCell('A5').alignment = { vertical: 'middle', horizontal: 'center' };
-            ws.getRow(5).height = 30;
 
-            // 4. Header Bảng biểu gộp ô 2 Tầng (Dòng 7 và Dòng 8) đúng chuẩn 25 cột trong ảnh
             const r7 = ['Tháng', 'STT', 'HỌ VÀ TÊN', 'Số Tài Khoản', 'Lương Cơ Bản HĐLĐ', '', '', '', 'Số Ngày Công Thực Tế', '', '', 'Chi Tiết Lương Thực Nhận', '', '', 'Cơ cấu Lương Công Việc (CV)', '', '', '', 'Tổng LCB + LCV', 'BH Bắt Buộc (10.5%)', 'Tạm Ứng', 'Thực Lĩnh', 'Ghi Chú'];
             const r8 = ['', '', '', '', 'Hệ số LCB', 'Phụ cấp LCB', 'Lương Ký HĐLĐ', 'Lương cơ bản', 'Thời gian (NT)', 'Phép (P)', 'Lễ, VR', 'Lương Thời Gian', 'Lương Lễ, Phép', 'Tổng Lương CB', 'Hệ số LCV', 'Phụ cấp LCV', 'LCV Gốc', 'Lương CV Thực Tế', '', '', '', '', ''];
             
-            ws.getRow(7).values = r7;
-            ws.getRow(8).values = r8;
-
-            // Tiến hành hợp nhất các ô theo chiều dọc và hàng ngang
+            ws.getRow(7).values = r7; ws.getRow(8).values = r8;
             ws.mergeCells('A7:A8'); ws.mergeCells('B7:B8'); ws.mergeCells('C7:C8'); ws.mergeCells('D7:D8');
             ws.mergeCells('E7:H7'); ws.mergeCells('I7:K7'); ws.mergeCells('L7:N7'); ws.mergeCells('O7:R7');
             ws.mergeCells('S7:S8'); ws.mergeCells('T7:T8'); ws.mergeCells('U7:U8'); ws.mergeCells('V7:V8'); ws.mergeCells('W7:W8');
 
-            // Định dạng kiểu viền và màu nền cho Header
-            ['7', '8'].forEach(rNum => {
-                ws.getRow(rNum).eachCell((cell) => {
-                    cell.font = { name: 'Times New Roman', size: 10, bold: true, color: { argb: 'FF000000' } };
-                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } };
-                    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-                    cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-                });
-            });
-            ws.getRow(7).height = 25; ws.getRow(8).height = 25;
-
-            // 5. Nạp danh sách 16 nhân sự vào dòng dữ liệu kế tiếp
             let activeData = salaryDataByMonth[sm] || default16Staffs;
             let monthLabel = `${monthPart}/${yearPart}`;
-
-            let T_lcb_goc = 0, T_luong_cb_ht = 0, T_l_thoigian = 0, T_le_phep_tt = 0, T_l_tong_cb = 0, T_lcv_goc = 0, T_lcv_thucte = 0, T_o_tong = 0, T_bh = 0, T_tu = 0, T_o_thuc_linh = 0;
 
             activeData.forEach((row, index) => {
                 let lcb_goc = Math.round((row.lcb_heso + (row.lcb_phucap || 0)) * cfg.vung); 
@@ -559,131 +458,41 @@
                 let tu = parseFloat(row.tam_ung) || 0;
                 let thuc_linh = o_tong - bh - tu;
 
-                T_lcb_goc += lcb_goc; T_luong_cb_ht += luong_cb_ht; T_l_thoigian += l_thoigian; T_le_phep_tt += le_phep_tt; T_l_tong_cb += l_tong_cb; T_lcv_goc += lcv_goc; T_lcv_thucte += lcv_thucte; T_o_tong += o_tong; T_bh += bh; T_tu += tu; T_o_thuc_linh += thuc_linh;
-
-                let rowValues = [
+                ws.addRow([
                     monthLabel, index + 1, row.name, row.account, row.lcb_heso, row.lcb_phucap || 0,
                     lcb_goc, luong_cb_ht, row.NT, row.P || 0, row.le_vr || 0,
                     l_thoigian, le_phep_tt, l_tong_cb, row.he_so_lcv, row.phu_cap_lcv || 0,
                     lcv_goc, lcv_thucte, o_tong, bh, tu, thuc_linh, row.note || ""
-                ];
-                
-                let added = ws.addRow(rowValues);
-                added.eachCell((cell, colIndex) => {
-                    cell.font = { name: 'Times New Roman', size: 10 };
-                    cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-                    
-                    // Căn lề số và định dạng tiền tệ chuyên nghiệp
-                    if (colIndex === 1 || colIndex === 2) { cell.alignment = { horizontal: 'center' }; }
-                    if (colIndex >= 5 && colIndex <= 6 || colIndex === 15 || colIndex === 16) { cell.numberFormat = '0.00'; cell.alignment = { horizontal: 'right' }; }
-                    if (colIndex === 7 || colIndex === 8 || colIndex >= 11 && colIndex <= 14 || colIndex >= 17 && colIndex <= 22) {
-                        cell.numberFormat = '#,##0';
-                        cell.alignment = { horizontal: 'right' };
-                    }
-                });
+                ]);
             });
 
-            // 6. Thêm dòng Tổng Cộng chân bảng
-            let sumRowIdx = ws.lastRow.number + 1;
-            ws.mergeCells(`A${sumRowIdx}:F${sumRowIdx}`);
-            ws.getCell(`A${sumRowIdx}`).value = "Tổng cộng";
-            
-            // Đổ các ô tính tổng cộng
-            ws.getCell(`G${sumRowIdx}`).value = T_lcb_goc;
-            ws.getCell(`H${sumRowIdx}`).value = T_luong_cb_ht;
-            ws.getCell(`L${sumRowIdx}`).value = T_l_thoigian;
-            ws.getCell(`M${sumRowIdx}`).value = T_le_phep_tt;
-            ws.getCell(`N${sumRowIdx}`).value = T_l_tong_cb;
-            ws.getCell(`Q${sumRowIdx}`).value = T_lcv_goc;
-            ws.getCell(`R${sumRowIdx}`).value = T_lcv_thucte;
-            ws.getCell(`S${sumRowIdx}`).value = T_o_tong;
-            ws.getCell(`T${sumRowIdx}`).value = T_bh;
-            ws.getCell(`U${sumRowIdx}`).value = T_tu;
-            ws.getCell(`V${sumRowIdx}`).value = T_o_thuc_linh;
-
-            ws.getRow(sumRowIdx).eachCell((cell) => {
-                cell.font = { name: 'Times New Roman', size: 10, bold: true };
-                cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF0A5' } }; // Màu vàng nhạt giống mẫu ảnh
-                cell.numberFormat = '#,##0';
-            });
-            ws.getCell(`A${sumRowIdx}`).alignment = { horizontal: 'center' };
-
-            // 7. KHU VỰC CHỮ KÝ TRÌNH PHÊ DUYỆT GỘP Ô RỘNG (Khớp hoàn toàn ảnh chụp)
-            ws.addRow([]); ws.addRow([]); // Tạo khoảng cách trống
-
-            let signRowIndex = ws.lastRow.number + 2;
-            ws.mergeCells(`A${signRowIndex}:F${signRowIndex}`);
-            ws.getCell(`A${signRowIndex}`).value = "PHÒNG NHÂN SỰ";
-            
-            ws.mergeCells(`G${signRowIndex}:N${signRowIndex}`);
-            ws.getCell(`G${signRowIndex}`).value = "THỦ TRƯỞNG ĐƠN VỊ";
-            
-            ws.mergeCells(`O${signRowIndex}:W${signRowIndex}`);
-            ws.getCell(`O${signRowIndex}`).value = "NGƯỜI LẬP BIỂU";
-
-            ws.getRow(signRowIndex).eachCell(cell => {
-                cell.font = { name: 'Times New Roman', size: 11, bold: true };
-                cell.alignment = { horizontal: 'center', vertical: 'middle' };
+            // Format các kiểu đường viền và căn lề toàn bộ ô của bảng dữ liệu
+            ws.eachRow((row, rowNum) => {
+                if(rowNum >= 7){
+                    row.eachCell(c => {
+                        c.font = { name: 'Times New Roman', size: 10 };
+                        c.border = { top:{style:'thin'}, left:{style:'thin'}, bottom:{style:'thin'}, right:{style:'thin'} };
+                    });
+                }
             });
 
-            // Gán tên người lập biểu ở hàng dưới
-            let nameRowIndex = signRowIndex + 5;
-            ws.mergeCells(`O${nameRowIndex}:W${nameRowIndex}`);
-            ws.getCell(`O${nameRowIndex}`).value = "Nguyễn Thị Tuyết Nhung";
-            ws.getCell(`O${nameRowIndex}`).font = { name: 'Times New Roman', size: 11, bold: true };
-            ws.getCell(`O${nameRowIndex}`).alignment = { horizontal: 'center' };
-
-            // Điều chỉnh linh hoạt độ rộng của tất cả các cột
-            ws.columns.forEach((col, idx) => {
-                if (idx === 2) col.width = 24; // Cột Họ Tên rộng hơn
-                else if (idx === 3) col.width = 16; // Cột số tài khoản
-                else col.width = 12;
-            });
-
-            // Tiến hành tải file về máy trạm người dùng
             wb.xlsx.writeBuffer().then(buffer => {
                 saveAs(new Blob([buffer]), `BANG_LUONG_CHI_TIET_DOC_LAP_THANG_${monthPart}_${yearPart}.xlsx`);
             });
-        }
-
-        // ĐOẠN SỬA ĐỒNG BỘ: Sửa đổi Trình Xem Trước PDF và Tạm Ứng
-        function handleAttachedFilePreviewModal(sourceType, index) {
-            let arr = (sourceType === 'payment') ? currentPaymentFiles : currentTelecomFiles;
-            let fileObj = arr[index];
-            if (!fileObj) return;
-
-            document.getElementById('preview-file-title').innerText = "HỆ THỐNG KIỂM TRA CHỨNG TỪ: " + fileObj.name;
-            const contentZone = document.getElementById('preview-file-body-content');
-            contentZone.innerHTML = "";
-            
-            if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); }
-            activeBlobUrl = convertBase64ToBlobUrl(fileObj.base64, fileObj.type);
-
-            if (fileObj.isImage) {
-                contentZone.innerHTML = `<img src="${activeBlobUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" />`;
-            } else if (fileObj.type === "application/pdf") {
-                contentZone.innerHTML = `<iframe src="${activeBlobUrl}"></iframe>`;
-            }
-
-            document.getElementById('btn-download-preview-file').onclick = () => {
-                let a = document.createElement("a"); a.href = fileObj.base64; a.download = fileObj.name; a.click();
-            };
-            document.getElementById('filePreviewModal').style.display = "flex";
-        }
-
-        function handleAdvanceDropdownChange(selectEl, index) { 
-            let sm = document.getElementById('filter-month').value;
-            if(salaryDataByMonth[sm] && salaryDataByMonth[sm][index]) { 
-                salaryDataByMonth[sm][index]['tam_ung'] = parseFloat(selectEl.value) || 0; 
-                renderSalaryTable(); 
-            } 
         }
 
         function updateSalaryCell(idx, field, val) { 
             let sm = document.getElementById('filter-month').value;
             if(salaryDataByMonth[sm] && salaryDataByMonth[sm][idx]) { 
                 salaryDataByMonth[sm][idx][field] = parseFloat(val) || 0; 
+                renderSalaryTable(); 
+            } 
+        }
+
+        function handleAdvanceDropdownChange(selectEl, index) { 
+            let sm = document.getElementById('filter-month').value;
+            if(salaryDataByMonth[sm] && salaryDataByMonth[sm][index]) { 
+                salaryDataByMonth[sm][index]['tam_ung'] = parseFloat(selectEl.value) || 0; 
                 renderSalaryTable(); 
             } 
         }
@@ -721,9 +530,7 @@
             for (let i = 0; i < startOffset; i++) { container.innerHTML += `<div class="calendar-day-cell blank-cell"></div>`; }
             let totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
             for (let day = 1; day <= totalDays; day++) {
-                container.innerHTML += `<div class="calendar-day-cell">
-                    <span class="solar-num">${day}</span>
-                </div>`;
+                container.innerHTML += `<div class="calendar-day-cell"><span class="solar-num">${day}</span></div>`;
             }
         }
 
