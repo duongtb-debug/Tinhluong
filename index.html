@@ -389,7 +389,7 @@
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀNET INTERNET</div>
+                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</div>
                     <div class="table-responsive">
                         <table class="main-table">
                             <thead>
@@ -410,7 +410,7 @@
                 </div>
             </div>
 
-            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT & TỰ ĐỘNG TẠO MÃ QR (ĐẦY ĐỦ PHIÊN BẢN HỆ ĐIỀU HÀNH & OFFICE) -->
+            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT, MÃ QR & TỰ ĐỘNG SINH MÃ TÀI SẢN (ASSET ID) -->
             <div id="tab-it-assets" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" id="it-form-title">Cập nhật danh mục hồ sơ quản lý Trang thiết bị CNTT & Mã Định Danh QR Asset</div>
@@ -419,14 +419,25 @@
                         <div class="grid-form">
                             <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required></div>
                             <div class="form-group"><label>Bộ phận sử dụng</label><input type="text" id="it-dept" required></div>
-                            <div class="form-group"><label>Mã tài sản định danh / Số Serial (S/N)</label><input type="text" id="it-serial-id" placeholder="VD: PC-2026-001 hoặc Serial máy" required></div>
-                            <div class="form-group"><label>Tên thiết bị tài sản</label><input type="text" id="it-name" required></div>
+                            <div class="form-group">
+                                <label>Phân loại Thiết bị phần cứng</label>
+                                <select id="it-device-type" onchange="autoGenerateAssetID()">
+                                    <option value="LAP" selected>Máy tính xách tay (Laptop)</option>
+                                    <option value="PC">Máy tính để bàn (PC)</option>
+                                    <option value="SRV">Máy chủ hệ thống (Server)</option>
+                                    <option value="NET">Thiết bị mạng (Router/Switch/Firewall)</option>
+                                    <option value="PRN">Máy in / Thiết bị văn phòng (Printer)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="color:var(--purple); font-weight:bold;">Mã tài sản định danh (Tự sinh)</label>
+                                <input type="text" id="it-serial-id" readonly style="background:#f1f5f9; font-weight:bold; color:var(--purple); border:1px solid var(--purple);" placeholder="Hệ thống tự cấp mã...">
+                            </div>
                         </div>
                         <div class="grid-form">
+                            <div class="form-group"><label>Tên thiết bị cụ thể (Model)</label><input type="text" id="it-name" required></div>
                             <div class="form-group"><label>Thông số cấu hình phần cứng</label><input type="text" id="it-config" required></div>
-                            <div class="form-group"><label>Số lượng</label><input type="number" id="it-qty" value="1" min="1" required></div>
-                            
-                            <!-- BỔ SUNG ĐẦY ĐỦ TẤT CẢ CÁC PHIÊN BẢN HỆ ĐIỀU HÀNH TỪ TRƯỚC ĐẾN NAY -->
+                            <div class="form-group"><label>Số lượng cấp phát</label><input type="number" id="it-qty" value="1" min="1" required></div>
                             <div class="form-group">
                                 <label>Hệ điều hành (HĐH) Toàn tập</label>
                                 <select id="it-os">
@@ -487,7 +498,9 @@
                                     </optgroup>
                                 </select>
                             </div>
-                            
+                        </div>
+                        
+                        <div class="grid-form">
                             <div class="form-group">
                                 <label>Bản quyền HĐH</label>
                                 <select id="it-os-license">
@@ -498,10 +511,6 @@
                                     <option value="Môi trường Mã nguồn mở (Open-Source Free)">Môi trường Mã nguồn mở (Open-Source Free)</option>
                                 </select>
                             </div>
-                        </div>
-                        
-                        <div class="grid-form">
-                            <!-- BỔ SUNG ĐẦY ĐỦ TẤT CẢ CÁC PHIÊN BẢN MICROSOFT OFFICE TỪ TRƯỚC ĐẾN NAY -->
                             <div class="form-group">
                                 <label>Bộ ứng dụng Microsoft Office</label>
                                 <select id="it-office">
@@ -570,7 +579,7 @@
                                     <th class="text-center">STT</th>
                                     <th>Người sử dụng</th>
                                     <th>Bộ phận sử dụng</th>
-                                    <th>Mã định danh định vị (QR)</th>
+                                    <th>Mã định danh tự sinh (QR ID)</th>
                                     <th>Tên thiết bị</th>
                                     <th>Cấu hình phần cứng</th>
                                     <th>Hệ Điều Hành & Bản Quyền</th>
@@ -698,8 +707,8 @@
         let currentPaymentFiles = []; let currentTelecomFiles = [];
         let salaryData = []; let paymentRecords = []; let telecomRecords = []; 
         let itAssetsRecords = [
-            {user: "Nguyễn Minh Ngọc", dept: "Hành chính", serialId: "LAP-2026-N01", name: "Laptop Dell Vostro 5410", config: "Core i5, 16GB RAM, 512GB SSD", os: "Windows 11 Pro 64-bit", osLicense: "Đã kích hoạt bản quyền OEM", office: "Office 2021 LTSC Enterprise", officeLicense: "Bản quyền Tài khoản Cloud", software: "Chưa cấu hình nghiệp vụ", qty: 1},
-            {user: "Phạm Huy Chiến", dept: "IT Kỹ thuật", serialId: "SRV-ENTER-99", name: "Máy chủ Dell PowerEdge R750", config: "Xeon Silver, 64GB RAM, 2TB HDD", os: "Windows 11 Pro 64-bit", osLicense: "Bản quyền Enterprise Volume", office: "Office 2021 LTSC Enterprise", officeLicense: "Chưa có bản quyền", software: "Asia ERP Enterprise System", qty: 1}
+            {user: "Nguyễn Minh Ngọc", dept: "Hành chính", serialId: "LAP-2026-001", name: "Laptop Dell Vostro 5410", config: "Core i5, 16GB RAM, 512GB SSD", os: "Windows 11 Pro 64-bit", osLicense: "Đã kích hoạt bản quyền OEM", office: "Office 2021 LTSC Enterprise", officeLicense: "Bản quyền Tài khoản Cloud", software: "Chưa cấu hình nghiệp vụ", qty: 1},
+            {user: "Phạm Huy Chiến", dept: "IT Kỹ thuật", serialId: "SRV-2026-002", name: "Máy chủ Dell PowerEdge R750", config: "Xeon Silver, 64GB RAM, 2TB HDD", os: "Windows 11 Pro 64-bit", osLicense: "Bản quyền Enterprise Volume", office: "Office 2021 LTSC Enterprise", officeLicense: "Chưa có bản quyền", software: "Asia ERP Enterprise System", qty: 1}
         ];
 
         const default16Staffs = [
@@ -832,7 +841,31 @@
         function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; currentTelecomFiles = []; renderThumbnails('telecom'); }
 
-        // ================= PHÂN HỆ KIỂM KÊ THIẾT BỊ CNTT & ENGINE QR CODE AUTOMATION =================
+        // ================= PHÂN HỆ KIỂM KÊ THIẾT BỊ CNTT & AUTOMATIC ASSET ID GENERATOR =================
+        function autoGenerateAssetID() {
+            let editIdx = parseInt(document.getElementById('it-edit-index').value);
+            // Nếu đang chế độ sửa một thiết bị có sẵn, không tự sinh đè mã cũ
+            if (editIdx !== -1) return;
+
+            let prefix = document.getElementById('it-device-type').value;
+            let currentYear = 2026;
+            
+            // Tìm số thứ tự lớn nhất hiện tại của prefix này trong mảng
+            let maxNum = 0;
+            itAssetsRecords.forEach(rec => {
+                if (rec.serialId && rec.serialId.startsWith(prefix + "-" + currentYear + "-")) {
+                    let parts = rec.serialId.split("-");
+                    let num = parseInt(parts[parts.length - 1]);
+                    if (!isNaN(num) && num > maxNum) { maxNum = num; }
+                }
+            });
+            
+            let nextNum = maxNum + 1;
+            let formattedNum = String(nextNum).padStart(3, '0'); // Định dạng 3 chữ số: 001, 002...
+            
+            document.getElementById('it-serial-id').value = `${prefix}-${currentYear}-${formattedNum}`;
+        }
+
         function saveITRecord(e) { 
             e.preventDefault(); 
             let idx = parseInt(document.getElementById('it-edit-index').value); 
@@ -925,9 +958,14 @@
             document.getElementById('it-office-license').value = rec.officeLicense; 
             document.getElementById('it-software-select').value = rec.software; 
             document.getElementById('it-qty').value = rec.qty; 
+            
+            // Tìm và đặt tiền tố select box tương ứng với mã tài sản đang sửa
+            let prefix = rec.serialId.split("-")[0];
+            let selectBox = document.getElementById('it-device-type');
+            for(let option of selectBox.options){ if(option.value === prefix){ selectBox.value = prefix; break; } }
         }
         function deleteITAsset(i) { itAssetsRecords.splice(i,1); renderITTable(); }
-        function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; }
+        function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; autoGenerateAssetID(); }
 
         async function saveSalaryToCloudGlobal() { alert("Đã phát lệnh đồng bộ lên Live Cloud!"); }
 
