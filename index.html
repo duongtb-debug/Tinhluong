@@ -322,7 +322,15 @@
                             </div>
                         </div>
                         <div class="grid-form">
-                            <div class="form-group"><label>Trạng thái bản quyền HĐH</label><select id="it-os-license" onchange="triggerRealtimeFormQR()"><option value="Bản quyền 1 năm (1YR)">Bản quyền thuê bao 1 năm (1YR)</option><option value="Bản quyền Vĩnh viễn (OEM/FPP)" selected>Bản quyền Vĩnh viễn (OEM/FPP)</option></select></div>
+                            <!-- ƯU TIÊN TRẠNG THÁI CHƯA CÓ BẢN QUYỀN LÊN ĐẦU CHO HỆ ĐIỀU HÀNH -->
+                            <div class="form-group">
+                                <label>Trạng thái bản quyền HĐH</label>
+                                <select id="it-os-license" onchange="triggerRealtimeFormQR()">
+                                    <option value="⚠️ Chưa có bản quyền (Bản dùng thử / Crack)" selected>⚠️ Chưa có bản quyền (Bản dùng thử / Crack)</option>
+                                    <option value="✅ Bản quyền Vĩnh viễn (OEM/FPP)">✅ Bản quyền Vĩnh viễn (OEM/FPP)</option>
+                                    <option value="✅ Bản quyền Thuê bao 1 năm (1YR)">✅ Bản quyền Thuê bao 1 năm (1YR)</option>
+                                </select>
+                            </div>
                             <div class="form-group">
                                 <label>Bộ ứng dụng văn phòng Office (Từ cũ đến mới)</label>
                                 <select id="it-office" onchange="triggerRealtimeFormQR()">
@@ -338,7 +346,15 @@
                                     <option value="Microsoft 365 Family / Apps for Business">Microsoft 365 Enterprise Cloud</option>
                                 </select>
                             </div>
-                            <div class="form-group"><label>Bản quyền bộ Office</label><select id="it-office-license" onchange="triggerRealtimeFormQR()"><option value="Bản quyền 1 năm (1YR Subscr)">Bản quyền thuê bao 1 năm (1YR Subscr)</option><option value="Bản quyền Vĩnh viễn" selected>Bản quyền Giấy phép vĩnh viễn</option></select></div>
+                            <!-- ƯU TIÊN TRẠNG THÁI CHƯA CÓ BẢN QUYỀN LÊN ĐẦU CHO OFFICE -->
+                            <div class="form-group">
+                                <label>Bản quyền bộ Office</label>
+                                <select id="it-office-license" onchange="triggerRealtimeFormQR()">
+                                    <option value="⚠️ Chưa có bản quyền (Bản dùng thử / Crack)" selected>⚠️ Chưa có bản quyền (Bản dùng thử / Crack)</option>
+                                    <option value="✅ Bản quyền Giấy phép vĩnh viễn">✅ Bản quyền Giấy phép vĩnh viễn</option>
+                                    <option value="✅ Bản quyền Thuê bao 1 năm (1YR Subscr)">✅ Bản quyền Thuê bao 1 năm (1YR Subscr)</option>
+                                </select>
+                            </div>
                             <div class="form-group">
                                 <label>Phần mềm nghiệp vụ khác</label>
                                 <select id="it-software-select" onchange="triggerRealtimeFormQR()">
@@ -354,7 +370,7 @@
                             </div>
                         </div>
                         <div class="grid-form">
-                            <!-- BỔ SUNG HIỆN TRẠNG BẢN QUYỀN PHẦN MỀM KHÁC ƯU TIÊN CHƯA CÓ BẢN QUYỀN TRÊN ĐẦU -->
+                            <!-- ƯU TIÊN TRẠNG THÁI CHƯA CÓ BẢN QUYỀN LÊN ĐẦU CHO PHẦN MỀM NGHIỆP VỤ KHÁC -->
                             <div class="form-group">
                                 <label>Bản quyền Phần mềm nghiệp vụ khác</label>
                                 <select id="it-software-license" onchange="triggerRealtimeFormQR()">
@@ -606,14 +622,16 @@
             let n = document.getElementById('it-name').value.trim() || "(Chưa nhập model)"; 
             let c = document.getElementById('it-config').value.trim() || "(Chưa nhập cấu hình)"; 
             let os = document.getElementById('it-os').value; 
+            let os_lic = document.getElementById('it-os-license').value; 
             let off = document.getElementById('it-office').value; 
+            let off_lic = document.getElementById('it-office-license').value; 
             let sw = document.getElementById('it-software-select').value; 
             let sw_lic = document.getElementById('it-software-license').value; 
             
-            let payloadText = `Mã TS: ${s}\nSử dụng: ${u}\nBộ phận: ${d}\nThiết bị: ${n}\nCấu hình: ${c}\nHĐH: ${os}\nOffice: ${off}\nPhần mềm: ${sw}\nBản quyền PM khác: ${sw_lic}`; 
+            let payloadText = `Mã TS: ${s}\nSử dụng: ${u}\nBộ phận: ${d}\nThiết bị: ${n}\nCấu hình: ${c}\nHĐH: ${os} (${os_lic})\nOffice: ${off} (${off_lic})\nPhần mềm: ${sw} (${sw_lic})`; 
             document.getElementById('form-realtime-qr-zone').innerHTML = ""; 
             realtimeQrEngine = new QRCode(document.getElementById('form-realtime-qr-zone'), { text: payloadText, width: 100, height: 100, colorDark: "#4c1d95", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); 
-            document.getElementById('form-realtime-text-preview').innerHTML = `Mã: <strong>${s}</strong> - Nhân sự: <b>${u}</b><br>Phòng: ${d}<br>PM khác: ${sw} (${sw_lic})`; 
+            document.getElementById('form-realtime-text-preview').innerHTML = `Mã: <strong>${s}</strong> - Nhân sự: <b>${u}</b><br>HĐH: ${os_lic}<br>Office: ${off_lic}`; 
         }
 
         function exportITSummaryReportGoogleSheet() { if(itAssetsRecords.length === 0) return alert("Không có dữ liệu thiết bị!"); syncDataToCloudServer(false); window.open(CLOUD_API_ENDPOINT + "?action=export_it_report", '_blank'); }
@@ -651,9 +669,10 @@
                 if(rec.osLicense.includes("1 năm") || rec.osLicense.includes("1YR")) licenseMap["HĐH 1 Năm (1YR)"] += rec.qty; 
                 if(rec.officeLicense.includes("1 năm") || rec.officeLicense.includes("1YR")) licenseMap["Office 1 Năm (1YR)"] += rec.qty; 
                 
-                // Hiển thị màu cảnh báo đỏ nếu phần mềm khác ở trạng thái "Chưa có bản quyền"
-                let isUnlicensed = rec.softwareLicense.includes("⚠️");
-                let licStyle = isUnlicensed ? "color:var(--red); font-weight:bold; background:#fef2f2; padding:2px 4px; border-radius:4px;" : "color:var(--green);";
+                // Định dạng cảnh báo đỏ trực quan nếu bất kì phần mềm nào chưa được kích hoạt bản quyền
+                let osLicStyle = rec.osLicense.includes("⚠️") ? "color:var(--red); font-weight:bold; background:#fef2f2; padding:1px 3px; border-radius:4px;" : "color:var(--green);";
+                let offLicStyle = rec.officeLicense.includes("⚠️") ? "color:var(--red); font-weight:bold; background:#fef2f2; padding:1px 3px; border-radius:4px;" : "color:var(--green);";
+                let swLicStyle = rec.softwareLicense.includes("⚠️") ? "color:var(--red); font-weight:bold; background:#fef2f2; padding:1px 3px; border-radius:4px;" : "color:var(--green);";
 
                 tbody.innerHTML += `<tr>
                     <td>${i+1}</td>
@@ -662,16 +681,16 @@
                     <td class="font-bold">${rec.serialId}</td>
                     <td><b>${rec.name}</b></td>
                     <td>${rec.config}</td>
-                    <td>${rec.os}<br><small style="color:#64748b">${rec.osLicense}</small></td>
-                    <td>${rec.office}<br><small style="color:#64748b">${rec.officeLicense}</small></td>
-                    <td><span style="color:var(--purple);font-weight:bold;">${rec.software}</span><br><small style="${licStyle}">${rec.softwareLicense}</small></td>
+                    <td>${rec.os}<br><small style="${osLicStyle}">${rec.osLicense}</small></td>
+                    <td>${rec.office}<br><small style="${offLicStyle}">${rec.officeLicense}</small></td>
+                    <td><span style="color:var(--purple);font-weight:bold;">${rec.software}</span><br><small style="${swLicStyle}">${rec.softwareLicense}</small></td>
                     <td class="text-center font-bold">${rec.qty}</td>
                     <td class="text-center"><div class="table-qr-holder" id="table-qr-zone-${i}"></div><br><a href="#" style="font-size:10px;font-weight:bold;color:var(--blue);text-decoration:none;" onclick="triggerPrintSingleQR('${rec.serialId}', '${rec.user}', '${rec.name}'); return false;">[In Tem Đắp]</a></td>
                     <td><button class="btn-action-delete" type="button" onclick="itAssetsRecords.splice(${i},1); renderITTable(); syncDataToCloudServer(false);">Xóa</button></td>
                 </tr>`; 
             }); 
             
-            itAssetsRecords.forEach((rec, i) => { new QRCode(document.getElementById(`table-qr-zone-${i}`), { text: `Mã TS: ${rec.serialId}\nSử dụng: ${rec.user}\nBộ phận: ${rec.dept}\nThiết bị: ${rec.name}\nCấu hình: ${rec.config}\nHĐH: ${rec.os}\nOffice: ${rec.office}\nPhần mềm khác: ${rec.software} (${rec.softwareLicense})`, width: 45, height: 45, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); });
+            itAssetsRecords.forEach((rec, i) => { new QRCode(document.getElementById(`table-qr-zone-${i}`), { text: `Mã TS: ${rec.serialId}\nSử dụng: ${rec.user}\nBộ phận: ${rec.dept}\nThiết bị: ${rec.name}\nCấu hình: ${rec.config}\nHĐH: ${rec.os} (${rec.osLicense})\nOffice: ${rec.office} (${rec.officeLicense})\nPhần mềm khác: ${rec.software} (${rec.softwareLicense})`, width: 45, height: 45, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); });
             document.getElementById('sum-it-dept').innerHTML = Object.keys(depts).map(k => `<li><span>${k}:</span> <b>${depts[k]} máy</b></li>`).join(''); document.getElementById('sum-it-os').innerHTML = Object.keys(osMap).map(k => `<li><span>${k}:</span> <b>${osMap[k]} máy</b></li>`).join(''); document.getElementById('sum-it-office').innerHTML = Object.keys(officeMap).map(k => `<li><span>${k}:</span> <b>${officeMap[k]} bản</b></li>`).join(''); document.getElementById('sum-it-license').innerHTML = Object.keys(licenseMap).map(k => `<li><span>${k}:</span> <b style="color:var(--orange);">${licenseMap[k]} gói</b></li>`).join(''); document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.reduce((acc, r) => acc + r.qty, 0) + " Thiết bị"; 
         }
 
@@ -764,9 +783,9 @@
                     name: "Dell Latitude 5430", 
                     config: "Core i5/16GB/512GB SSD", 
                     os: "Windows 11 Pro 64-bit", 
-                    osLicense: "Bản quyền Vĩnh viễn (OEM/FPP)", 
+                    osLicense: "⚠️ Chưa có bản quyền (Bản dùng thử / Crack)", 
                     office: "Microsoft Office 2024 Professional Plus LTSC", 
-                    officeLicense: "Bản quyền Giấy phép vĩnh viễn", 
+                    officeLicense: "⚠️ Chưa có bản quyền (Bản dùng thử / Crack)", 
                     software: "Phần mềm thiết kế Autodesk AutoCAD 2024", 
                     softwareLicense: "⚠️ Chưa có bản quyền (Bản dùng thử / Crack)", 
                     qty: 1 
