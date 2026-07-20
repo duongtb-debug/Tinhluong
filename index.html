@@ -69,11 +69,9 @@
         .progress-bar-bg { background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 4px; }
         .progress-bar-fill { background: var(--blue); height: 100%; width: 0%; transition: width 0.4s; }
 
-        /* ĐỔI MỚI HỆ THỐNG NAVIGATION TABS - TỰ ĐỘNG PHÂN BIỆT MÀU SẮC ĐẶC TRƯNG */
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; flex-wrap: wrap; }
         .nav-tabs .nav-tab { padding: 10px 15px; border: none; background: #f1f5f9; font-weight: bold; color: #64748b; cursor: pointer; transition: all 0.2s ease; font-size: 13px; outline: none; font-family: 'Times New Roman'; border-radius: 6px 6px 0 0; border: 1px solid transparent; border-bottom: none; }
         
-        /* Cấu hình màu sắc riêng biệt cho từng Tab khi Active */
         .nav-tabs .nav-tab[data-tab="salary"].active { color: var(--blue); background: white; border-color: var(--border-color); border-bottom: 3px solid var(--blue); }
         .nav-tabs .nav-tab[data-tab="payment"].active { color: var(--green); background: white; border-color: var(--border-color); border-bottom: 3px solid var(--green); }
         .nav-tabs .nav-tab[data-tab="telecom"].active { color: var(--orange); background: white; border-color: var(--border-color); border-bottom: 3px solid var(--orange); }
@@ -167,6 +165,12 @@
         .vannien-row:last-child { border: none; }
         .vannien-row span:first-child { color: #64748b; font-weight: bold; }
         .vannien-row span:last-child { color: var(--primary); font-weight: bold; text-align: right; }
+
+        /* THỐNG KÊ TỔNG HỢP CNTT */
+        .summary-box-it { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; background: #f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .summary-box-it h4 { font-size: 12px; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 3px; font-weight: bold; text-transform: uppercase; }
+        .summary-list { list-style: none; font-size: 11px; display: flex; flex-direction: column; gap: 4px; }
+        .summary-list li { display: flex; justify-content: space-between; background: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
 
         /* LIGHTBOX MODAL */
         .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); align-items: center; justify-content: center; padding: 15px; }
@@ -421,15 +425,31 @@
                 </div>
             </div>
 
-            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT -->
+            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT & BÁO CÁO TỔNG HỢP -->
             <div id="tab-it-assets" class="tab-content">
                 <div class="main-card">
-                    <div class="card-title" id="it-form-title" style="border-left-color: var(--purple);">Cập nhật danh mục quản lý Trang thiết bị CNTT & Bản quyền phần mềm</div>
+                    <div class="card-title" id="it-form-title" style="border-left-color: var(--purple);">
+                        <span>Cập nhật danh mục quản lý Trang thiết bị CNTT & Bản quyền phần mềm</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn btn-primary" style="background: var(--green);" onclick="exportITSummaryReportExcel()"><i class="fa-solid fa-file-excel"></i> Xuất Báo Cáo Thống Kê</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Form thêm/sửa thiết bị -->
                     <form id="it-main-form" onsubmit="saveITRecord(event)">
                         <input type="hidden" id="it-edit-index" value="-1">
                         <div class="grid-form">
                             <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required></div>
-                            <div class="form-group"><label>Bộ phận sử dụng</label><input type="text" id="it-dept" required></div>
+                            <div class="form-group">
+                                <label>Bộ phận sử dụng (Đơn vị)</label>
+                                <select id="it-dept">
+                                    <option value="Khối Văn Phòng">Khối Văn Phòng</option>
+                                    <option value="Phòng Kế Toán">Phòng Kế Toán</option>
+                                    <option value="Phòng Kỹ Thuật">Phòng Kỹ Thuật</option>
+                                    <option value="Trung Tâm Công Nghệ">Trung Tâm Công Nghệ</option>
+                                    <option value="Ban Giám Đốc">Ban Giám Đốc</option>
+                                </select>
+                            </div>
                             <div class="form-group">
                                 <label>Phân loại Phần cứng</label>
                                 <select id="it-device-type" onchange="autoGenerateAssetID()">
@@ -452,17 +472,17 @@
                             <div class="form-group">
                                 <label>Hệ điều hành</label>
                                 <select id="it-os">
-                                    <optgroup label="Các phiên bản Windows Hiện Đại">
+                                    <optgroup label="Windows Hiện Đại">
                                         <option value="Windows 11 Pro 64-bit" selected>Windows 11 Pro 64-bit</option>
                                         <option value="Windows 11 Home">Windows 11 Home</option>
                                         <option value="Windows 10 Pro 64-bit">Windows 10 Pro 64-bit</option>
                                     </optgroup>
-                                    <optgroup label="Các phiên bản Windows Lịch Sử">
+                                    <optgroup label="Windows Lịch Sử">
                                         <option value="Windows 8.1 Pro">Windows 8.1</option>
                                         <option value="Windows 7 Ultimate">Windows 7</option>
                                         <option value="Windows XP Pro">Windows XP</option>
                                     </optgroup>
-                                    <optgroup label="Windows Server / Linux / Mac">
+                                    <optgroup label="Hệ Thống Khác">
                                         <option value="Windows Server 2022">Windows Server 2022</option>
                                         <option value="macOS Sequoia">macOS Sequoia</option>
                                         <option value="Ubuntu Desktop LTS">Ubuntu LTS</option>
@@ -472,30 +492,48 @@
                         </div>
                         <div class="grid-form">
                             <div class="form-group">
-                                <label>Bản quyền HĐH</label>
+                                <label>Bản quyền HĐH (Thời hạn)</label>
                                 <select id="it-os-license">
-                                    <option value="Chưa có bản quyền">Chưa có bản quyền</option>
-                                    <option value="Đã kích hoạt bản quyền OEM" selected>Đã kích hoạt bản quyền OEM</option>
+                                    <option value="Bản quyền 1 năm (1YR)" selected>Bản quyền Thuê bao 1 năm (1YR)</option>
+                                    <option value="Bản quyền Vĩnh viễn (OEM/FPP)">Bản quyền Vĩnh viễn (OEM/Retail)</option>
                                     <option value="Bản quyền Enterprise Volume">Bản quyền Enterprise Volume</option>
-                                    <option value="Mã nguồn mở miễn phí">Mã nguồn mở miễn phí</option>
+                                    <option value="Chưa kích hoạt / Mã nguồn mở">Không có Key / Mã nguồn mở</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Bộ ứng dụng Văn phòng Microsoft Office</label>
+                                <label>Bộ ứng dụng Microsoft Office (Toàn Lịch Sử)</label>
                                 <select id="it-office">
-                                    <option value="Microsoft 365 Enterprise Cloud" selected>Microsoft 365 Enterprise Cloud</option>
-                                    <option value="Office 2024 Enterprise">Office 2024 Enterprise</option>
-                                    <option value="Office 2021 LTSC Pro Plus">Office 2021 LTSC Pro Plus</option>
-                                    <option value="Office 2019 Pro Plus">Office 2019 Pro Plus</option>
-                                    <option value="WPS Office Enterprise">WPS Office Enterprise</option>
+                                    <optgroup label="Hệ Sinh Thái Đám Mây Hiện Đại">
+                                        <option value="Microsoft 365 Personal Cloud (1YR)" selected>Microsoft 365 Personal (Thuê bao 1 năm)</option>
+                                        <option value="Microsoft 365 Family Cloud (1YR)">Microsoft 365 Family (Thuê bao 1 năm)</option>
+                                        <option value="Microsoft 365 Business / Enterprise (1YR)">Microsoft 365 Enterprise (Thuê bao 1 năm)</option>
+                                    </optgroup>
+                                    <optgroup label="Microsoft Office LTSC vĩnh viễn">
+                                        <option value="Office 2024 Home & Business">Office 2024 Home & Business</option>
+                                        <option value="Office 2021 LTSC Pro Plus">Office 2021 LTSC Pro Plus</option>
+                                        <option value="Office 2019 Professional Plus">Office 2019 Professional Plus</option>
+                                    </optgroup>
+                                    <optgroup label="Các Phiên Bản Office Cổ Điển / Lịch Sử">
+                                        <option value="Office 2016 Professional Plus">Office 2016 Professional Plus</option>
+                                        <option value="Office 2013 / 2010 Professional">Office 2013 / 2010</option>
+                                        <option value="Office 2007 Ultimate / 2003 Pro">Office 2007 / 2003 Pro</option>
+                                        <option value="Office XP (2002) / Office 2000">Office XP / 2000</option>
+                                        <option value="Office 97 / Office 95">Office 97 / Office 95</option>
+                                        <option value="Microsoft Office v4.3 / v3.0 / v1.0">Office v1.0 - v4.x (Cổ xưa)</option>
+                                    </optgroup>
+                                    <optgroup label="Giải pháp thay thế khác">
+                                        <option value="WPS Office Enterprise">WPS Office Enterprise</option>
+                                        <option value="Không cài đặt Office">❌ Không sử dụng bộ văn phòng</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Bản quyền Bộ Office</label>
+                                <label>Bản quyền Bộ Office (Thời hạn)</label>
                                 <select id="it-office-license">
-                                    <option value="Chưa kích hoạt">Chưa kích hoạt</option>
-                                    <option value="Bản quyền Tài khoản Cloud" selected>Bản quyền Tài khoản Cloud</option>
+                                    <option value="Bản quyền 1 năm (1YR Subscr)" selected>Bản quyền Thuê bao 1 năm (1YR Subscr)</option>
+                                    <option value="Bản quyền Vĩnh viễn (Retail/Key)">Bản quyền Vĩnh viễn (Retail Key)</option>
                                     <option value="Kích hoạt qua khóa KMS Volume">Kích hoạt qua khóa KMS Volume</option>
+                                    <option value="Chưa kích hoạt / Bản dùng thử">Chưa kích hoạt / Dùng thử</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -504,20 +542,40 @@
                                     <option value="Chưa cấu hình nghiệp vụ chuyên môn" selected>❌ Không cài đặt</option>
                                     <option value="MISA SME 2023 Enterprise">MISA SME 2023 Enterprise</option>
                                     <option value="Asia ERP Enterprise System">Asia ERP Enterprise System</option>
-                                    <option value="Autodesk AutoCAD">Autodesk AutoCAD</option>
-                                    <option value="Adobe Creative Cloud Pack">Adobe Creative Cloud</option>
+                                    <option value="Autodesk AutoCAD 2024">Autodesk AutoCAD 2024</option>
+                                    <option value="Adobe Creative Cloud Pack">Adobe Creative Cloud Pack</option>
                                 </select>
                             </div>
                         </div>
                         <div style="display: flex; gap: 10px;">
-                            <button type="submit" class="btn btn-purple">💾 Lưu Thiết Bị & Đồng bộ Cloud</button>
+                            <button type="submit" class="btn btn-purple">💾 Lưu Thiết Bị & Cập Nhật Thống Kê</button>
                             <button type="button" class="btn btn-danger" onclick="resetITForm()">Hủy</button>
                         </div>
                     </form>
+
+                    <!-- Khung tổng hợp dữ liệu thời gian thực -->
+                    <div class="summary-box-it">
+                        <div>
+                            <h4>🏢 Theo Đơn Vị (Số Máy)</h4>
+                            <ul class="summary-list" id="sum-it-dept"></ul>
+                        </div>
+                        <div>
+                            <h4>💿 Theo Hệ Điều Hành</h4>
+                            <ul class="summary-list" id="sum-it-os"></ul>
+                        </div>
+                        <div>
+                            <h4>📊 Theo Phiên Bản Office</h4>
+                            <ul class="summary-list" id="sum-it-office"></ul>
+                        </div>
+                        <div>
+                            <h4>🔑 Bản Quyền 1 Năm (1YR)</h4>
+                            <ul class="summary-list" id="sum-it-license"></ul>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="main-card">
-                    <div class="card-title" style="border-left-color: var(--purple);">BẢNG TỔNG HỢP KIỂM KÊ TRANG THIẾT BỊ CÔNG NGHỆ THÔNG TIN VÀ BẢN QUYỀN SOFTWARE</div>
+                    <div class="card-title">BẢNG TỔNG HỢP KIỂM KÊ TRANG THIẾT BỊ CÔNG NGHỆ THÔNG TIN VÀ BẢN QUYỀN SOFTWARE</div>
                     <div class="table-responsive">
                         <table class="main-table" id="main-it-table">
                             <thead>
@@ -575,7 +633,7 @@
     </div>
 
     <script>
-        // ENGINE TÍNH TOÁN LỊCH VẠN NIÊN THÔNG MINH MỞ RỘNG THÔNG TIN
+        // ENGINE TÍNH TOÁN LỊCH VẠN NIÊN
         function getComprehensiveLunarDetails(d, m, y) {
             let offset = (new Date(y, m - 1, d) - new Date(2026, 0, 1)) / (1000 * 60 * 60 * 24);
             let dAm = d - 14; let mAm = m - 1; 
@@ -638,14 +696,10 @@
                 <div class="vannien-row"><span>Ngày Can Chi:</span><span>${info.canChiNgay}</span></div>
                 <div class="vannien-row"><span>Tiết khí:</span><span>${info.tietKhi}</span></div>
                 <div class="vannien-row"><span>Hướng xuất hành:</span><span style="color:var(--green);">${info.huongXuatHanh}</span></div>
-                <div class="vannien-row" style="flex-direction:column; align-items:flex-start; gap:4px; border:none; padding-top:6px;">
-                    <span>Giờ Hoàng Đạo:</span>
-                    <span style="color:var(--orange); font-size:11px; text-align:left;">${info.gioHoangDao}</span>
-                </div>
             `; 
         }
 
-        // ================= KẾT NỐI API GOOGLE APPS SCRIPT ĐÁM MÂY CHÍNH THỨC =================
+        // ================= KẾT NỐI API GOOGLE SHEETS =================
         const CLOUD_API_ENDPOINT = "https://script.google.com/macros/s/AKfycby-v7F6eASHtW9IHW_m_VcOMwuOJ5Gio1LVxnu3DKMZA9JCOjDha_8BbZV66v9fOo1w/exec";
         
         let salaryConfigsByMonth = { "2026-06": { vung: 4140000, base: 2530000, lcv: 2087970 } };
@@ -656,21 +710,16 @@
         let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_records')) || [];
         let itAssetsRecords = JSON.parse(localStorage.getItem('sys_it_records')) || [];
 
-        // HÀM ĐỒNG BỘ ĐẨY DỮ LIỆU LÊN GOOGLE SHEETS CLOUD
         async function syncDataToCloudServer() {
             document.getElementById('cloud-status-dot').className = "status-dot syncing";
-            document.getElementById('cloud-status-text').innerText = "Hệ thống đang đồng bộ toàn bộ dữ liệu lên đám mây...";
+            document.getElementById('cloud-status-text').innerText = "Hệ thống đang đồng bộ dữ liệu...";
             
             localStorage.setItem('sys_salary_data', JSON.stringify(salaryData));
             localStorage.setItem('sys_payment_records', JSON.stringify(paymentRecords));
             localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
             localStorage.setItem('sys_it_records', JSON.stringify(itAssetsRecords));
 
-            const fullPayload = {
-                salaryData: salaryData, paymentRecords: paymentRecords,
-                telecomRecords: telecomRecords, itAssetsRecords: itAssetsRecords
-            };
-
+            const fullPayload = { salaryData: salaryData, paymentRecords: paymentRecords, telecomRecords: telecomRecords, itAssetsRecords: itAssetsRecords };
             const formData = new FormData();
             formData.append("data", JSON.stringify(fullPayload));
 
@@ -678,17 +727,13 @@
                 await fetch(CLOUD_API_ENDPOINT, { method: 'POST', mode: 'no-cors', body: formData });
                 document.getElementById('live-sync-lbl').innerText = "ĐÃ ĐỒNG BỘ CLOUD";
                 document.getElementById('live-sync-lbl').style.color = "var(--green)";
-                alert("🎉 Đồng bộ trực tuyến thành công! Toàn bộ dữ liệu viễn thông/lương/thiết bị đã được lưu vĩnh viễn.");
-            } catch (err) {
-                console.error("Lỗi đồng bộ trực tuyến:", err);
-                alert("⚠️ Đã sao lưu dữ liệu cục bộ an toàn trên thiết bị này!");
-            } finally {
+            } catch (err) { console.error("Lỗi đồng bộ mạng:", err); }
+            finally {
                 document.getElementById('cloud-status-dot').className = "status-dot";
                 document.getElementById('cloud-status-text').innerText = "Hệ thống ERP Google Đám Mây - Trực Tuyến Sẵn Sàng";
             }
         }
 
-        // HÀM TẢI DỮ LIỆU TỪ MÁY CHỦ CLOUD
         async function fetchDataFromCloudServer() {
             try {
                 const response = await fetch(CLOUD_API_ENDPOINT + "?action=read");
@@ -699,92 +744,42 @@
                     telecomRecords = cloudData.telecomRecords || [];
                     itAssetsRecords = cloudData.itAssetsRecords || [];
                 }
-            } catch(e) { console.log("Đang chạy chế độ dữ liệu sao lưu máy."); }
+            } catch(e) { console.log("Chạy dự phòng máy chủ."); }
             if(salaryData.length === 0) salaryData = JSON.parse(JSON.stringify(default16Staffs));
+            if(itAssetsRecords.length === 0) {
+                // Tạo mẫu dữ liệu ban đầu bao gồm bản quyền thuê bao 1 năm giống hóa đơn đính kèm
+                itAssetsRecords = [
+                    { user: "Trần Bình Dương", dept: "Trung Tâm Công Nghệ", serialId: "LAP-2026-001", name: "Dell Latitude 5430", config: "Core i5/16GB/512GB SSD", os: "Windows 11 Pro 64-bit", osLicense: "Bản quyền 1 năm (1YR)", office: "Microsoft 365 Personal Cloud (1YR)", officeLicense: "Bản quyền 1 năm (1YR Subscr)", software: "Autodesk AutoCAD 2024", qty: 1 },
+                    { user: "Nguyễn Minh Ngọc", dept: "Phòng Kế Toán", serialId: "PC-2026-001", name: "HP ProDesk 400 G9", config: "Core i7/16GB/256GB SSD", os: "Windows 10 Pro 64-bit", osLicense: "Bản quyền Vĩnh viễn (OEM/FPP)", office: "Office 2024 Home & Business", officeLicense: "Bản quyền Vĩnh viễn (Retail/Key)", software: "MISA SME 2023 Enterprise", qty: 1 }
+                ];
+            }
             renderSalaryTable(); renderPaymentTable(); renderTelecomTable(); renderITTable();
         }
 
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
-            {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "105004242307"},
-            {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "102005035542"},
-            {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106004294441"},
-            {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "106004359838"},
-            {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106868653975"},
-            {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "105004294439"},
-            {"stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "102004797815"},
-            {"stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.80, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "104004583045"},
-            {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "100006166724"},
-            {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "100004797831"},
-            {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "101004882063"},
-            {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106869104133"},
-            {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "106873586343"},
-            {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0, "tam_ung": 3000000, "account": "107002654931"},
-            {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "102004830132"}
+            {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "105004242307"}
         ];
 
         function updateSalaryCell(idx, f, v) { if(salaryData[idx]) { salaryData[idx][f] = parseFloat(v) || 0; renderSalaryTable(); } }
         function updateContractSalaryCell(idx, val) { if(salaryData[idx]) { salaryData[idx]['lcb_goc'] = parseFloat(val) || 0; salaryData[idx]['is_edited_manually'] = true; renderSalaryTable(); } }
         function handleAdvanceLiveMoneyInput(inputEl, index) { let cleanVal = inputEl.value.replace(/,/g, ''); let num = parseFloat(cleanVal) || 0; if(salaryData[index]) { salaryData[index]['tam_ung'] = num; renderSalaryTable(); } }
-        function deleteSalary(i) { salaryData.splice(i,1); renderSalaryTable(); }
-
-        function handleMonthChangeSelect() {
-            let selectedMonth = document.getElementById('filter-month').value;
-            let splitMonth = selectedMonth.split("-"); 
-            document.getElementById('visual-current-month-lbl').innerText = splitMonth[1] + "/" + splitMonth[0];
-            if (!salaryConfigsByMonth[selectedMonth]) { salaryConfigsByMonth[selectedMonth] = { vung: 4140000, base: 2530000, lcv: 2087970 }; }
-            document.getElementById('config-vung-pay').value = salaryConfigsByMonth[selectedMonth].vung;
-            document.getElementById('config-base-pay').value = salaryConfigsByMonth[selectedMonth].base;
-            document.getElementById('config-lcv-pay').value = salaryConfigsByMonth[selectedMonth].lcv;
-            renderSalaryTable();
-        }
-
-        function handleConfigChangeLive() {
-            let selectedMonth = document.getElementById('filter-month').value;
-            if(!salaryConfigsByMonth[selectedMonth]) salaryConfigsByMonth[selectedMonth] = { vung: 4140000, base: 2530000, lcv: 2087970 };
-            salaryConfigsByMonth[selectedMonth].vung = parseFloat(document.getElementById('config-vung-pay').value) || 0;
-            salaryConfigsByMonth[selectedMonth].base = parseFloat(document.getElementById('config-base-pay').value) || 0;
-            salaryConfigsByMonth[selectedMonth].lcv = parseFloat(document.getElementById('config-lcv-pay').value) || 0;
-            renderSalaryTable();
-        }
-
         function renderSalaryTable() {
             let selectedMonth = document.getElementById('filter-month').value; 
             const tbody = document.getElementById('tbody-salary'); if(!tbody) return; tbody.innerHTML = ""; 
             let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0;
             const cfg = salaryConfigsByMonth[selectedMonth] || { vung: 4140000, base: 2530000, lcv: 2087970 };
-            const CURRENT_VUNG_PRICE = cfg.vung; const CURRENT_BASE_PRICE = cfg.base; const CURRENT_LCV_PRICE  = cfg.lcv;
-
             salaryData.forEach((row, index) => {
-                if (!row.lcb_goc) { row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * CURRENT_VUNG_PRICE); }
-                const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * CURRENT_BASE_PRICE);
+                if (!row.lcb_goc) { row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * cfg.vung); }
+                const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * cfg.base);
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
                 row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt; sum_lcb_thucte += l_tong_cb;
-                row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * CURRENT_LCV_PRICE);
+                row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * cfg.lcv);
                 row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT)); sum_lcv_thucte += row.lcv_thucte;
                 const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; row.bao_hiem = Math.round(row.lcb_goc * 0.105); 
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung || 0); sum_thuc_linh += o_thuc_linh;
-
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td>${row.account}</td>
-                    <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td>
-                    <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap || 0}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
-                    <td><input type="number" class="input-contract" value="${row.lcb_goc}" onchange="updateContractSalaryCell(${index}, this.value)"></td>
-                    <td class="text-right">${luong_cb_he_thong.toLocaleString()}</td>
-                    <td><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td>
-                    <td><input type="number" class="input-salary-day" value="${row.P || 0}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td>
-                    <td><input type="number" class="input-salary-day" value="${row.le_vr || 0}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td>
-                    <td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold">${l_tong_cb.toLocaleString()}</td>
-                    <td><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td>
-                    <td><input type="number" step="0.01" class="input-edit" value="${row.phu_cap_lcv || 0}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td>
-                    <td class="text-right" style="background:#f8fafc; font-weight:bold;">${row.lcv_goc.toLocaleString()}</td>
-                    <td class="text-right" style="background:#f3e8ff; font-weight:bold; color:var(--purple);">${row.lcv_thucte.toLocaleString()}</td>
-                    <td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right" style="color:var(--red); font-weight:bold;">${row.bao_hiem.toLocaleString()}</td>
-                    <td class="text-center"><input type="text" class="input-advance-money" value="${Math.round(row.tam_ung || 0).toLocaleString('en-US')}" oninput="handleAdvanceLiveMoneyInput(this, ${index})"></td>
-                    <td class="text-right font-bold" style="background:#fef08a;">${o_thuc_linh.toLocaleString()}</td>
-                    <td class="text-center"><button type="button" class="btn-action-delete" onclick="deleteSalary(${index})">Xóa</button></td>
-                </tr>`;
+                tbody.innerHTML += `<tr><td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td>${row.account}</td><td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td><td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap || 0}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td><td><input type="number" class="input-contract" value="${row.lcb_goc}" onchange="updateContractSalaryCell(${index}, this.value)"></td><td class="text-right">${luong_cb_he_thong.toLocaleString()}</td><td><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td><td><input type="number" class="input-salary-day" value="${row.P || 0}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td><td><input type="number" class="input-salary-day" value="${row.le_vr || 0}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td><td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold">${l_tong_cb.toLocaleString()}</td><td><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td><td><input type="number" step="0.01" class="input-edit" value="${row.phu_cap_lcv || 0}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td><td class="text-right" style="background:#f8fafc; font-weight:bold;">${row.lcv_goc.toLocaleString()}</td><td class="text-right" style="background:#f3e8ff; font-weight:bold; color:var(--purple);">${row.lcv_thucte.toLocaleString()}</td><td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right" style="color:var(--red); font-weight:bold;">${row.bao_hiem.toLocaleString()}</td><td class="text-center"><input type="text" class="input-advance-money" value="${Math.round(row.tam_ung || 0).toLocaleString('en-US')}" oninput="handleAdvanceLiveMoneyInput(this, ${index})"></td><td class="text-right font-bold" style="background:#fef08a;">${o_thuc_linh.toLocaleString()}</td><td class="text-center"><button type="button" class="btn-action-delete" onclick="salaryData.splice(${index},1); renderSalaryTable();">Xóa</button></td></tr>`;
             });
             document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString() + " VND";
             document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND";
@@ -792,86 +787,44 @@
             document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
         }
 
-        // ================= XỬ LÝ ĐÍNH KÈM & BLOB CONVERT =================
-        function processAttachedFilesMulti(inputEl, moduleType) {
-            const files = inputEl.files; if (files.length === 0) return;
-            let targetArray = moduleType === 'payment' ? currentPaymentFiles : currentTelecomFiles;
-            Array.from(files).forEach(file => {
+        // ================= XỬ LÝ CHỨNG TỪ =================
+        function processAttachedFilesMulti(inputEl, mType) {
+            let tArray = mType === 'payment' ? currentPaymentFiles : currentTelecomFiles;
+            Array.from(inputEl.files).forEach(file => {
                 const reader = new FileReader();
-                reader.onload = function(e) { targetArray.push({ name: file.name, type: file.type, base64: e.target.result }); renderThumbnails(moduleType); };
+                reader.onload = function(e) { tArray.push({ name: file.name, type: file.type, base64: e.target.result }); renderThumbnails(mType); };
                 reader.readAsDataURL(file);
             });
         }
-
-        function renderThumbnails(moduleType) {
-            const thumbZone = document.getElementById(moduleType === 'payment' ? 'payment-thumbnails-zone' : 'telecom-thumbnails-zone');
-            const statusLbl = document.getElementById(moduleType === 'payment' ? 'pay-upload-status-lbl' : 'tel-upload-status-lbl');
-            let targetArray = moduleType === 'payment' ? currentPaymentFiles : currentTelecomFiles;
-            if(targetArray.length === 0) { thumbZone.style.display = 'none'; statusLbl.innerText = "Chưa chọn tệp"; return; }
-            thumbZone.style.display = 'flex'; statusLbl.innerText = `Đã đính kèm ${targetArray.length} tệp`; thumbZone.innerHTML = "";
-            targetArray.forEach((file, idx) => {
-                let innerContent = file.type.startsWith('image/') ? `<img src="${file.base64}" alt="thumb">` : `<div class="file-icon-box"><i class="fa-solid fa-file-pdf"></i></div>`;
-                thumbZone.innerHTML += `<div class="thumb-wrapper" onclick="openSingleFileLightbox('${file.base64}')"><button type="button" class="btn-remove-thumb" onclick="removeSelectedThumb(event, ${idx}, '${moduleType}')">&times;</button>${innerContent}<div class="thumb-name">${file.name}</div></div>`;
+        function renderThumbnails(mType) {
+            const zone = document.getElementById(mType === 'payment' ? 'payment-thumbnails-zone' : 'telecom-thumbnails-zone');
+            let tArray = mType === 'payment' ? currentPaymentFiles : currentTelecomFiles;
+            if(tArray.length === 0) { zone.style.display = 'none'; return; }
+            zone.style.display = 'flex'; zone.innerHTML = "";
+            tArray.forEach((f, idx) => {
+                let ic = f.type.startsWith('image/') ? `<img src="${f.base64}">` : `<div class="file-icon-box"><i class="fa-solid fa-file-pdf"></i></div>`;
+                zone.innerHTML += `<div class="thumb-wrapper">${ic}<div class="thumb-name">${f.name}</div></div>`;
             });
         }
+        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
 
-        function removeSelectedThumb(event, idx, moduleType) { event.stopPropagation(); if(moduleType === 'payment') currentPaymentFiles.splice(idx, 1); else currentTelecomFiles.splice(idx, 1); renderThumbnails(moduleType); }
-        
-        function openSingleFileLightbox(base64Data) { 
-            const modal = document.getElementById('document-preview-modal'); const viewBody = document.getElementById('modal-preview-body'); 
-            if (currentActiveBlobUrl) { URL.revokeObjectURL(currentActiveBlobUrl); }
-            const parts = base64Data.split(';base64,'); const contentType = parts[0].split(':')[1];
-            const raw = window.atob(parts[1]); const uInt8Array = new Uint8Array(raw.length);
-            for (let i = 0; i < raw.length; ++i) { uInt8Array[i] = raw.charCodeAt(i); }
-            const blob = new Blob([uInt8Array], { type: contentType });
-            currentActiveBlobUrl = URL.createObjectURL(blob);
-            viewBody.innerHTML = `<iframe src="${currentActiveBlobUrl}" class="preview-file-render-frame"></iframe>`;
-            modal.style.display = 'flex'; 
-        }
+        // ================= QUẢN LÝ THANH TOÁN & VIỄN THÔNG =================
+        function savePaymentRecord(e) { e.preventDefault(); paymentRecords.push({ content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value, account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value, qty: parseInt(document.getElementById('pay-qty').value)||1, pretax: parseFloat(document.getElementById('pay-pretax-input').value)||0, status: document.getElementById('pay-status').value, files: [...currentPaymentFiles] }); document.getElementById('payment-main-form').reset(); currentPaymentFiles=[]; renderThumbnails('payment'); renderPaymentTable(); syncDataToCloudServer(); }
+        function renderPaymentTable() { const tbody = document.getElementById('tbody-payment'); if(!tbody) return; tbody.innerHTML = ""; let total = 0; paymentRecords.forEach((r, i) => { let sum = r.pretax * r.qty; total += sum; tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.content}</td><td>${r.beneficiary}</td><td>${r.account}</td><td class="text-center">${r.qty}</td><td class="text-right">${r.pretax.toLocaleString()}</td><td class="text-right">0</td><td class="text-right font-bold">${sum.toLocaleString()}</td><td class="text-center">Có</td><td class="text-center">${r.status}</td><td class="text-center"><button class="btn-action-delete" onclick="paymentRecords.splice(${i},1); renderPaymentTable(); syncDataToCloudServer();">Xóa</button></td></tr>`; }); document.getElementById('dash-paid-pay').innerText = total.toLocaleString() + " VND"; }
+        function saveTelecomRecord(e) { e.preventDefault(); telecomRecords.push({ id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value)||0, status: document.getElementById('tel-status').value, files: [...currentTelecomFiles] }); document.getElementById('telecom-main-form').reset(); currentTelecomFiles=[]; renderThumbnails('telecom'); renderTelecomTable(); syncDataToCloudServer(); }
+        function renderTelecomTable() { const tbody = document.getElementById('tbody-telecom'); if(!tbody) return; tbody.innerHTML = ""; let total = 0; telecomRecords.forEach((r, i) => { total += r.cost; tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.id}</td><td>${r.provider}</td><td class="text-center">${r.period}</td><td class="text-right">${r.cost.toLocaleString()} VND</td><td class="text-center">Có</td><td class="text-center">${r.status}</td><td class="text-center"><button class="btn-action-delete" onclick="telecomRecords.splice(${i},1); renderTelecomTable(); syncDataToCloudServer();">Xóa</button></td></tr>`; }); document.getElementById('dash-pending-pay').innerText = total.toLocaleString() + " VND"; }
 
-        function openMultiFileView(recordsArrayStr, index) { 
-            let records = recordsArrayStr === 'payment' ? paymentRecords : telecomRecords; 
-            let files = records[index].files || []; if(files.length === 0) return alert("Không tìm thấy tệp chứng từ!"); 
-            if(files.length === 1) { openSingleFileLightbox(files[0].base64); } else { 
-                const modal = document.getElementById('document-preview-modal'); const viewBody = document.getElementById('modal-preview-body'); 
-                let listHtml = `<div style="display:flex; flex-direction:column; width:100%; gap:15px; height:100%;"><div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; border-bottom:1px solid #cbd5e1; flex-shrink:0;">`;
-                files.forEach((f, i) => { listHtml += `<button type="button" class="btn btn-purple" style="padding:6px 12px; font-size:12px;" onclick="openSingleFileLightbox('${f.base64}')">📄 Tệp ${i+1}: ${f.name}</button>`; }); 
-                listHtml += `</div><div id="multi-view-render-zone" style="width:100%; flex-grow:1; background:white;"></div></div>`; 
-                viewBody.innerHTML = listHtml; modal.style.display = 'flex'; openSingleFileLightbox(files[0].base64);
-            } 
-        }
-
-        function printActiveDocument() { if(currentActiveBlobUrl) { window.open(currentActiveBlobUrl).print(); } }
-        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; if(currentActiveBlobUrl) { URL.revokeObjectURL(currentActiveBlobUrl); currentActiveBlobUrl = null; } }
-
-        // ================= THANH TOÁN VÀ VIỄN THÔNG =================
-        function calculateFlexibleTax() { const pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0; const rate = parseFloat(document.getElementById('pay-tax-rate').value) || 0; let tax = document.getElementById('pay-tax-toggle').checked ? Math.round(pretax * (rate / 100)) : 0; document.getElementById('pay-tax-amount').value = tax.toLocaleString() + " VND"; document.getElementById('pay-total').value = (pretax + tax).toLocaleString() + " VND"; }
-        function toggleTaxFields() { document.getElementById('pay-tax-rate').disabled = !document.getElementById('pay-tax-toggle').checked; calculateFlexibleTax(); }
-        function handleTaxRateSelectChange() { calculateFlexibleTax(); }
-        function savePaymentRecord(e) { e.preventDefault(); const editIdx = parseInt(document.getElementById('payment-edit-index').value); const record = { content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value, account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value, qty: document.getElementById('pay-qty').value, pretax: parseFloat(document.getElementById('pay-pretax-input').value) || 0, status: document.getElementById('pay-status').value, files: [...currentPaymentFiles] }; if(editIdx === -1) paymentRecords.push(record); else paymentRecords[editIdx] = record; resetPaymentForm(); renderPaymentTable(); syncDataToCloudServer(); }
-        function renderPaymentTable() { const tbody = document.getElementById('tbody-payment'); if(!tbody) return; tbody.innerHTML = ""; let totalChi = 0; paymentRecords.forEach((r, i) => { let tax = document.getElementById('pay-tax-toggle').checked ? Math.round(r.pretax * r.qty * (parseFloat(document.getElementById('pay-tax-rate').value)/100)) : 0; let sum = (r.pretax * r.qty) + tax; totalChi += sum; let btnFile = r.files && r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="openMultiFileView('payment', ${i})"><i class="fa-solid fa-images"></i> Xem Nội Dung (${r.files.length})</button>` : `<span style="color:#94a3b8">Không có tệp</span>`; tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.content}</td><td>${r.beneficiary}</td><td>${r.account} (${r.bank})</td><td class="text-center">${r.qty}</td><td class="text-right">${r.pretax.toLocaleString()}</td><td class="text-right">${tax.toLocaleString()}</td><td class="text-right font-bold">${sum.toLocaleString()}</td><td class="text-center">${btnFile}</td><td class="text-center"><span class="badge-status ${r.status==='Đã duyệt chi'?'badge-approved':'badge-pending'}">${r.status}</span></td><td class="text-center"><button class="btn-action-edit" onclick="editPayment(${i})">Sửa</button> <button class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button></td></tr>`; }); document.getElementById('dash-paid-pay').innerText = totalChi.toLocaleString() + " VND"; }
-        function editPayment(i) { const r = paymentRecords[i]; document.getElementById('payment-edit-index').value = i; document.getElementById('pay-content').value = r.content; document.getElementById('pay-beneficiary').value = r.beneficiary; document.getElementById('pay-account').value = r.account; document.getElementById('pay-bank').value = r.bank; document.getElementById('pay-qty').value = r.qty; document.getElementById('pay-pretax-input').value = r.pretax; document.getElementById('pay-status').value = r.status; currentPaymentFiles = [...(r.files || [])]; renderThumbnails('payment'); calculateFlexibleTax(); }
-        function deletePayment(i) { paymentRecords.splice(i,1); renderPaymentTable(); syncDataToCloudServer(); }
-        function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; currentPaymentFiles = []; renderThumbnails('payment'); calculateFlexibleTax(); }
-
-        function formatVietnamesePeriod(periodStr) { if (!periodStr || !periodStr.includes("-")) return periodStr; let parts = periodStr.split("-"); return `Tháng ${parts[1]} / ${parts[0]}`; }
-        function saveTelecomRecord(e) { e.preventDefault(); const editIdx = parseInt(document.getElementById('telecom-edit-index').value); const record = { id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value) || 0, status: document.getElementById('tel-status').value, files: [...currentTelecomFiles] }; if(editIdx === -1) telecomRecords.push(record); else telecomRecords[editIdx] = record; resetTelecomForm(); renderTelecomTable(); syncDataToCloudServer(); }
-        function renderTelecomTable() { const tbody = document.getElementById('tbody-telecom'); if(!tbody) return; tbody.innerHTML = ""; let totalCuoc = 0; telecomRecords.forEach((r, i) => { totalCuoc += r.cost; let btnFile = r.files && r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="openMultiFileView('telecom', ${i})"><i class="fa-solid fa-images"></i> Xem Nội Dung (${r.files.length})</button>` : `<span style="color:#94a3b8">Không có tệp</span>`; let vnPeriod = formatVietnamesePeriod(r.period); tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.id}</td><td>${r.provider}</td><td class="text-center font-bold" style="color:var(--blue);">${vnPeriod}</td><td class="text-right font-bold">${r.cost.toLocaleString()} VND</td><td class="text-center">${btnFile}</td><td class="text-center"><span class="badge-status ${r.status==='Đã thanh toán'?'badge-approved':'badge-pending'}">${r.status}</span></td><td class="text-center"><button class="btn-action-edit" onclick="editTelecom(${i})">Sửa</button> <button class="btn-action-delete" onclick="deleteTelecom(${i})">Xóa</button></td></tr>`; }); document.getElementById('dash-pending-pay').innerText = totalCuoc.toLocaleString() + " VND"; }
-        function editTelecom(i) { const r = telecomRecords[i]; document.getElementById('telecom-edit-index').value = i; document.getElementById('tel-id').value = r.id; document.getElementById('tel-provider').value = r.provider; document.getElementById('tel-period').value = r.period; document.getElementById('tel-cost').value = r.cost; document.getElementById('tel-status').value = r.status; currentTelecomFiles = [...(r.files || [])]; renderThumbnails('telecom'); }
-        function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); syncDataToCloudServer(); }
-        function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; currentTelecomFiles = []; renderThumbnails('telecom'); }
-
-        // ================= XỬ LÝ QUẢN LÝ THIẾT BỊ CNTT =================
+        // ================= MODULE CNTT - THỐNG KÊ TỔNG HỢP & XUẤT EXCEL CHUYÊN NGHIỆP =================
         function autoGenerateAssetID() { 
-            let editIdx = parseInt(document.getElementById('it-edit-index').value); if (editIdx !== -1) return; 
-            let prefix = document.getElementById('it-device-type').value; let maxNum = 0; 
-            itAssetsRecords.forEach(rec => { if (rec.serialId && rec.serialId.startsWith(prefix + "-2026-")) { let parts = rec.serialId.split("-"); let num = parseInt(parts[parts.length - 1]); if (!isNaN(num) && num > maxNum) { maxNum = num; } } }); 
-            let nextNum = maxNum + 1; document.getElementById('it-serial-id').value = `${prefix}-2026-${String(nextNum).padStart(3, '0')}`; 
+            let p = document.getElementById('it-device-type').value; let max = 0; 
+            itAssetsRecords.forEach(r => { if (r.serialId && r.serialId.startsWith(p)) { let n = parseInt(r.serialId.split("-")[2]); if (n > max) max = n; } }); 
+            document.getElementById('it-serial-id').value = `${p}-2026-${String(max + 1).padStart(3, '0')}`; 
         }
 
         function saveITRecord(e) { 
-            e.preventDefault(); let idx = parseInt(document.getElementById('it-edit-index').value); 
-            let dataObj = { 
+            e.preventDefault(); 
+            let idx = parseInt(document.getElementById('it-edit-index').value); 
+            let obj = { 
                 user: document.getElementById('it-user').value, dept: document.getElementById('it-dept').value, 
                 serialId: document.getElementById('it-serial-id').value, name: document.getElementById('it-name').value, 
                 config: document.getElementById('it-config').value, os: document.getElementById('it-os').value,
@@ -879,33 +832,45 @@
                 officeLicense: document.getElementById('it-office-license').value, software: document.getElementById('it-software-select').value,
                 qty: parseInt(document.getElementById('it-qty').value) || 1 
             }; 
-            if(idx === -1) itAssetsRecords.push(dataObj); else itAssetsRecords[idx] = dataObj; 
+            if(idx === -1) itAssetsRecords.push(obj); else itAssetsRecords[idx] = obj; 
             resetITForm(); renderITTable(); syncDataToCloudServer(); 
         }
 
         function renderITTable() { 
             const tbody = document.getElementById('tbody-it-assets'); if(!tbody) return; tbody.innerHTML = ""; 
+            
+            // Đối tượng gom nhóm thống kê tổng hợp thời gian thực
+            let depts = {}, osMap = {}, officeMap = {}, licenseMap = { "HĐH 1 Năm (1YR)": 0, "Office 1 Năm (1YR)": 0 };
+
             itAssetsRecords.forEach((rec, i) => { 
+                // Xử lý gom nhóm đếm tổng số lượng máy/phần mềm
+                depts[rec.dept] = (depts[rec.dept] || 0) + rec.qty;
+                osMap[rec.os] = (osMap[rec.os] || 0) + rec.qty;
+                officeMap[rec.office] = (officeMap[rec.office] || 0) + rec.qty;
+                
+                if(rec.osLicense.includes("1 năm") || rec.osLicense.includes("1YR")) licenseMap["HĐH 1 Năm (1YR)"] += rec.qty;
+                if(rec.officeLicense.includes("1 năm") || rec.officeLicense.includes("1YR")) licenseMap["Office 1 Năm (1YR)"] += rec.qty;
+
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${i+1}</td><td class="font-bold">${rec.user}</td><td>${rec.dept}</td>
                     <td style="color:var(--purple); font-weight:bold;">${rec.serialId}</td><td><b>${rec.name}</b></td><td>${rec.config}</td>
-                    <td>${rec.os}<br><span class="badge-status badge-approved" style="font-size:10px;">${rec.osLicense}</span></td>
-                    <td>${rec.office}<br><span class="badge-status badge-approved" style="font-size:10px;">${rec.officeLicense}</span></td>
-                    <td><span class="badge-status ${rec.software.includes('Không')?'badge-pending':'badge-approved'}">${rec.software}</span></td>
+                    <td>${rec.os}<br><span class="badge-status badge-approved" style="font-size:10px; background:#eff6ff; color:var(--blue); border-color:#cbd5e1;">${rec.osLicense}</span></td>
+                    <td>${rec.office}<br><span class="badge-status badge-approved" style="font-size:10px; background:#f0fdf4; color:var(--green); border-color:#cbd5e1;">${rec.officeLicense}</span></td>
+                    <td><span class="badge-status badge-approved">${rec.software}</span></td>
                     <td class="text-center font-bold">${rec.qty}</td>
-                    <td class="text-center"><button type="button" class="btn-action-qr" onclick="popupDeviceQRCode(${i})"><i class="fa-solid fa-qrcode"></i> Quét QR</button></td>
-                    <td class="text-center"><button type="button" class="btn-action-edit" onclick="editITAsset(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="deleteITAsset(${i})">Xóa</button></td>
+                    <td class="text-center"><button type="button" class="btn-action-qr" onclick="popupDeviceQRCode(${i})"><i class="fa-solid fa-qrcode"></i> QR</button></td>
+                    <td class="text-center"><button type="button" class="btn-action-edit" onclick="editITAsset(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="itAssetsRecords.splice(${i},1); renderITTable(); syncDataToCloudServer();">Xóa</button></td>
                 </tr>`; 
             }); 
-            document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị"; 
-            document.getElementById('dash-it-count').innerText = itAssetsRecords.length + " người khai báo"; 
-        }
+            
+            // Hiển thị trực quan dữ liệu tổng hợp
+            document.getElementById('sum-it-dept').innerHTML = Object.keys(depts).map(k => `<li><span>${k}:</span><b>${depts[k]} máy</b></li>`).join('');
+            document.getElementById('sum-it-os').innerHTML = Object.keys(osMap).map(k => `<li><span>${k}:</span><b>${osMap[k]} máy</b></li>`).join('');
+            document.getElementById('sum-it-office').innerHTML = Object.keys(officeMap).map(k => `<li><span>${k}:</span><b>${officeMap[k]} bản</b></li>`).join('');
+            document.getElementById('sum-it-license').innerHTML = Object.keys(licenseMap).map(k => `<li><span>${k}:</span><b style="color:var(--orange);">${licenseMap[k]} gói</b></li>`).join('');
 
-        function popupDeviceQRCode(index) { 
-            let rec = itAssetsRecords[index]; const modal = document.getElementById('document-preview-modal'); const viewBody = document.getElementById('modal-preview-body'); 
-            let rawQRText = `MÃ TÀI SẢN: ${rec.serialId}\nTHIẾT BỊ: ${rec.name}\nHĐH: ${rec.os}\nOFFICE: ${rec.office}\nNGƯỜI DÙNG: ${rec.user}`; 
-            viewBody.innerHTML = `<div class="qr-modal-body"><h3>MÃ QR ĐỊNH DANH TÀI SẢN CNTT</h3><div class="qr-box-render" id="modal-qrcode-target"></div></div>`; 
-            new QRCode(document.getElementById("modal-qrcode-target"), { text: rawQRText, width: 160, height: 160 }); modal.style.display = 'flex'; 
+            document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.reduce((acc, r) => acc + r.qty, 0) + " Thiết bị"; 
+            document.getElementById('dash-it-count').innerText = itAssetsRecords.length + " người khai báo"; 
         }
 
         function editITAsset(i) { 
@@ -918,21 +883,81 @@
             document.getElementById('it-software-select').value = rec.software;
         }
 
-        function deleteITAsset(i) { itAssetsRecords.splice(i,1); renderITTable(); syncDataToCloudServer(); }
         function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; autoGenerateAssetID(); }
         
-        // HÀM CHUYỂN TAB ĐÃ ĐƯỢC TỐI ƯU ĐỂ THAY ĐỔI LỚP ACTIVE CHO PHÂN BIỆT MÀU SẮC
-        function switchMainTab(tabName) { 
+        // HÀM XUẤT EXCEL THỐNG KÊ CHUYÊN NGHIỆP TẬP TRUNG BẢN QUYỀN 1 NĂM (1YR) VÀ PHIÊN BẢN
+        function exportITSummaryReportExcel() {
+            if(itAssetsRecords.length === 0) return alert("Không có dữ liệu thiết bị phần mềm để xuất báo cáo!");
+            
+            let wb = XLSX.utils.book_new();
+            
+            // Trang 1: Chi tiết kiểm kê danh mục tài sản và giấy phép ứng dụng văn phòng
+            let wsData1 = [
+                ["BÁO CÁO CHI TIẾT KIỂM KÊ THIẾT BỊ CNTT VÀ BẢN QUYỀN PHẦN MỀM"],
+                ["Ngày xuất báo cáo: " + new Date().toLocaleDateString('vi-VN'), "", "", "", "", "", "", "", ""],
+                [],
+                ["STT", "Mã Định Danh", "Người Sử Dụng", "Đơn Vị/Bộ Phận", "Tên Thiết Bị (Model)", "Cấu Hình Chi Tiết", "Hệ Điều Hành", "Giấy Phép HĐH", "Phiên Bản Office", "Bản Quyền Office", "Phần Mềm Chuyên Dụng", "SL"]
+            ];
+            
+            itAssetsRecords.forEach((r, idx) => {
+                wsData1.push([idx+1, r.serialId, r.user, r.dept, r.name, r.config, r.os, r.osLicense, r.office, r.officeLicense, r.software, r.qty]);
+            });
+            
+            let ws1 = XLSX.utils.aoa_to_sheet(wsData1);
+            XLSX.utils.book_append_sheet(wb, ws1, "Danh Muc Chi Tiet");
+
+            // Trang 2: Bảng Tổng Hợp Tiêu Điểm Bản Quyền 1 Năm (1YR) & Gom Nhóm Thống Kê
+            let wsData2 = [
+                ["BẢNG TỔNG HỢP GOM NHÓM TIÊU ĐIỂM BẢN QUYỀN VÀ SỐ LƯỢNG MÁY"],
+                [],
+                ["1. TỔNG HỢP SỐ LƯỢNG THIẾT BỊ THEO ĐƠN VỊ (BỘ PHẬN)"],
+                ["Tên Đơn Vị/Bộ Phận", "Tổng Số Lượng Máy Cấp Phát"]
+            ];
+            
+            let depts = {}, osMap = {}, officeMap = {}, sub1YrOS = 0, sub1YrOffice = 0;
+            itAssetsRecords.forEach(r => {
+                depts[r.dept] = (depts[r.dept] || 0) + r.qty;
+                osMap[r.os] = (osMap[r.os] || 0) + r.qty;
+                officeMap[r.office] = (officeMap[r.office] || 0) + r.qty;
+                if(r.osLicense.includes("1 năm") || r.osLicense.includes("1YR")) sub1YrOS += r.qty;
+                if(r.officeLicense.includes("1 năm") || r.officeLicense.includes("1YR")) sub1YrOffice += r.qty;
+            });
+
+            Object.keys(depts).forEach(k => wsData2.push([k, depts[k]]));
+            
+            wsData2.push([], ["2. THỐNG KÊ TỶ LỆ PHIÊN BẢN HỆ ĐIỀU HÀNH"], ["Tên Phiên Bản HĐH", "Số Lượng Máy Cài Đặt"]);
+            Object.keys(osMap).forEach(k => wsData2.push([k, osMap[k]]));
+
+            wsData2.push([], ["3. THỐNG KÊ PHIÊN BẢN MICROSOFT OFFICE QUA CÁC THỜI KỲ"], ["Tên Phiên Bản Office", "Số Lượng Giấy Phép"]);
+            Object.keys(officeMap).forEach(k => wsData2.push([k, officeMap[k]]));
+
+            wsData2.push([], ["4. TỔNG HỢP GÓI GIẤY PHÉP BẢN QUYỀN THUÊ BAO 1 NĂM (1YR)"], ["Phân Loại Phần Mềm", "Số Lượng Đang Sử Dụng (1YR Subscr)"]);
+            wsData2.push(["Hệ Điều Hành Bản Quyền Thuê Bao 1 Năm", sub1YrOS]);
+            wsData2.push(["Microsoft Office Bản Quyền Thuê Bao 1 Năm (M365 1YR)", sub1YrOffice]);
+
+            let ws2 = XLSX.utils.aoa_to_sheet(wsData2);
+            XLSX.utils.book_append_sheet(wb, ws2, "Du Lieu Tong Hop");
+            
+            XLSX.writeFile(wb, "Bao_Cao_Thong_Ke_Thiet_Bi_Banquyen_1YR.xlsx");
+        }
+
+        function popupDeviceQRCode(index) { 
+            let rec = itAssetsRecords[index]; const modal = document.getElementById('document-preview-modal'); const viewBody = document.getElementById('modal-preview-body'); 
+            let raw = `MÃ TÀI SẢN: ${rec.serialId}\nTHIẾT BỊ: ${rec.name}\nHĐH: ${rec.os}\nOFFICE: ${rec.office}\nNGƯỜI DÙNG: ${rec.user}`; 
+            viewBody.innerHTML = `<div class="qr-modal-body"><h3>MÃ QR ĐỊNH DANH TÀI SẢN</h3><div class="qr-box-render" id="modal-qrcode-target"></div></div>`; 
+            new QRCode(document.getElementById("modal-qrcode-target"), { text: raw, width: 160, height: 160 }); modal.style.display = 'flex'; 
+        }
+
+        function switchMainTab(tName) { 
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
             document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById('tab-' + tabName).classList.add('active'); 
-            document.querySelector(`.nav-tabs .nav-tab[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById('tab-' + tName).classList.add('active'); 
+            document.querySelector(`.nav-tabs .nav-tab[data-tab="${tName}"]`).classList.add('active');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            fetchDataFromCloudServer(); 
-            buildWidgetCalendar(currentMonth, currentYear);
+            fetchDataFromCloudServer(); buildWidgetCalendar(currentMonth, currentYear);
+            autoGenerateAssetID();
             setInterval(() => { document.getElementById('live-system-clock').innerText = new Date().toLocaleString('vi-VN'); }, 1000);
         });
     </script>
