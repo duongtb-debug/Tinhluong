@@ -322,7 +322,6 @@
                             </div>
                         </div>
                         <div class="grid-form">
-                            <!-- BẢN QUYỀN HĐH: ƯU TIÊN CHƯA CÓ BẢN QUYỀN ĐẦU TIÊN -->
                             <div class="form-group">
                                 <label>Trạng thái bản quyền HĐH</label>
                                 <select id="it-os-license" onchange="triggerRealtimeFormQR()">
@@ -346,7 +345,6 @@
                                     <option value="Microsoft 365 Family / Apps for Business">Microsoft 365 Enterprise Cloud</option>
                                 </select>
                             </div>
-                            <!-- BẢN QUYỀN OFFICE: ƯU TIÊN CHƯA CÓ BẢN QUYỀN ĐẦU TIÊN -->
                             <div class="form-group">
                                 <label>Bản quyền bộ Office</label>
                                 <select id="it-office-license" onchange="triggerRealtimeFormQR()">
@@ -370,7 +368,6 @@
                             </div>
                         </div>
                         <div class="grid-form">
-                            <!-- BẢN QUYỀN PHẦN MỀM KHÁC: ƯU TIÊN CHƯA CÓ BẢN QUYỀN ĐẦU TIÊN -->
                             <div class="form-group">
                                 <label>Bản quyền Phần mềm nghiệp vụ khác</label>
                                 <select id="it-software-license" onchange="triggerRealtimeFormQR()">
@@ -472,7 +469,6 @@
             {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "102004830132"}
         ];
 
-        // SỬA ĐỔI TRIỆT ĐỂ: Hàm chuyển đổi tháng cắt đứt hoàn toàn liên kết tham chiếu
         function handleMonthChangeSelect() { 
             let selectedMonth = document.getElementById('filter-month').value; 
             if (!salaryConfigsByMonth[selectedMonth]) { 
@@ -497,7 +493,6 @@
             renderSalaryTable(); 
         }
 
-        // RÀNG BUỘC CHẶT CHẼ VÀO MẢNG BIỆT LẬP THEO MONTH_KEY
         function updateSalaryCell(idx, field, val) { 
             let selectedMonth = document.getElementById('filter-month').value;
             if(salaryDataByMonth[selectedMonth] && salaryDataByMonth[selectedMonth][idx]) { 
@@ -525,7 +520,6 @@
             let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0; 
             const cfg = salaryConfigsByMonth[selectedMonth] || { vung: 4140000, base: 2530000, lcv: 2087970 };
             
-            // Lấy dữ liệu cô lập sâu của chính tháng được chọn
             let currentActiveSalaryData = salaryDataByMonth[selectedMonth] || [];
             
             currentActiveSalaryData.forEach((row, index) => {
@@ -720,12 +714,10 @@
         async function fetchDataFromCloudServer() { 
             let selectedMonth = document.getElementById('filter-month').value;
             
-            // Khởi tạo mảng sâu độc lập, không dùng chung bộ nhớ đệm
-            if (!salaryDataByMonth[selectedMonth]) {
-                salaryDataByMonth[selectedMonth] = JSON.parse(JSON.stringify(default16Staffs)).map(staff => ({
-                    ...staff, NT: 22, P: 0, le_vr: 0, tam_ung: 0
-                }));
-            }
+            // ĐIỀU CHỈNH CHÌA KHÓA: Hard-reset dữ liệu tháng được chọn về mặc định gốc (22 công), cắt đứt hoàn toàn vết tích cũ
+            salaryDataByMonth[selectedMonth] = JSON.parse(JSON.stringify(default16Staffs)).map(staff => ({
+                ...staff, NT: 22, P: 0, le_vr: 0, tam_ung: 0
+            }));
             
             try { 
                 const res = await fetch(CLOUD_API_ENDPOINT + "?action=read&month=" + selectedMonth); 
@@ -737,6 +729,8 @@
                     document.getElementById('config-base-pay').value = d.month_config.base;
                     document.getElementById('config-lcv-pay').value = d.month_config.lcv;
                 }
+                
+                // Nếu Cloud phản hồi có dữ liệu thực của tháng này, mới thực hiện chèn đè lên
                 if(d && d.salaryData && d.salaryData.length > 0) { 
                     let cleanMonthData = JSON.parse(JSON.stringify(default16Staffs)).map(st => ({...st, NT:0, P:0, le_vr:0, tam_ung:0}));
                     d.salaryData.forEach(cloudRow => {
@@ -745,8 +739,14 @@
                     });
                     salaryDataByMonth[selectedMonth] = cleanMonthData;
                 }
-                if(d) { itAssetsRecords = d.itAssetsRecords||[]; paymentRecords = d.paymentRecords||[]; telecomRecords = d.telecomRecords||[]; }
-            } catch(e) {} 
+                if(d) { 
+                    itAssetsRecords = d.itAssetsRecords||[]; 
+                    paymentRecords = d.paymentRecords||[]; 
+                    telecomRecords = d.telecomRecords||[]; 
+                }
+            } catch(e) {
+                console.log("Thao tác ngoại tuyến hoặc kì tháng chưa tồn tại trên Cloud Server.");
+            } 
             
             if(itAssetsRecords.length === 0) { 
                 itAssetsRecords = [{ 
