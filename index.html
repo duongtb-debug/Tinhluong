@@ -221,34 +221,37 @@
                 <button type="button" class="nav-tab" onclick="switchMainTab('it-assets')">💻 Thiết Bị Công Nghệ Thông Tin</button>
             </div>
 
-            <!-- TAB 1: BẢNG LƯƠNG -->
+            <!-- TAB 1: BẢNG LƯƠNG & LƯU TRỮ LỊCH SỬ CHỈ SỐ THEO THÁNG BIỆT LẬP -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
-                    <div class="card-title">Hành động phân hệ và Cấu hình Quỹ lương chung</div>
+                    <div class="card-title" style="color:var(--orange); border-left-color:var(--orange);">
+                        <span><i class="fa-solid fa-business-time"></i> Bảng Cấu Cấu Lịch Lương Lịch Sử Từng Tháng Biệt Lập</span>
+                        <span style="font-size: 11px; font-weight: normal; color: #64748b;">(Tháng nào thay đổi giữ nguyên cấu trúc tháng đó)</span>
+                    </div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
-                        <div class="form-group" style="min-width: 110px;">
-                            <label>Tháng báo cáo</label>
-                            <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
+                        <div class="form-group" style="min-width: 120px;">
+                            <label style="font-weight: bold; color: var(--blue);">Tháng báo cáo</label>
+                            <input type="month" id="filter-month" value="2026-05" onchange="handleMonthChangeSelect()">
                         </div>
-                        <div class="form-group" style="min-width: 130px;">
+                        <div class="form-group" style="min-width: 140px;">
                             <label style="color:var(--orange); font-weight:bold;">Lương Tối Thiểu Vùng</label>
-                            <input type="number" id="config-vung-pay" value="4140000" oninput="handleMinRegionPayChange()" style="border-color:var(--orange); font-weight:bold;">
+                            <input type="number" id="config-vung-pay" value="4140000" oninput="handleConfigChangeLive()" style="border-color:var(--orange); font-weight:bold; background: #fff7ed;">
                         </div>
-                        <div class="form-group" style="min-width: 130px;">
+                        <div class="form-group" style="min-width: 140px;">
                             <label style="color:var(--blue); font-weight:bold;">Lương Cơ Sở Hệ Thống</label>
-                            <input type="number" id="config-base-pay" value="2530000" oninput="renderSalaryTable()" style="border-color:var(--blue); font-weight:bold;">
+                            <input type="number" id="config-base-pay" value="2530000" oninput="handleConfigChangeLive()" style="border-color:var(--blue); font-weight:bold; background: #eff6ff;">
                         </div>
-                        <div class="form-group" style="min-width: 130px;">
+                        <div class="form-group" style="min-width: 140px;">
                             <label style="color:var(--purple); font-weight:bold;">Đơn Giá Lương CV gốc</label>
-                            <input type="number" id="config-lcv-pay" value="2087970" oninput="renderSalaryTable()" style="border-color:var(--purple); font-weight:bold;">
+                            <input type="number" id="config-lcv-pay" value="2087970" oninput="handleConfigChangeLive()" style="border-color:var(--purple); font-weight:bold; background: #faf5ff;">
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại</button>
+                        <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Lương Gốc</button>
                         <button type="button" class="btn btn-purple" onclick="saveSalaryToCloudGlobal()">💾 Đẩy Lên Cloud</button>
                     </div>
                 </div>
 
                 <div class="main-card">
-                    <div class="card-title"><i class="fa-solid fa-chart-pie" style="color:var(--blue);"></i> TỔNG QUAN TRỰC QUAN CƠ CẤU CHI TRẢ QUỸ LƯƠNG</div>
+                    <div class="card-title"><i class="fa-solid fa-chart-pie" style="color:var(--blue);"></i> TỔNG QUAN TRỰC QUAN CƠ CẤU CHI TRẢ QUỸ LƯƠNG THÁNG <span id="visual-current-month-lbl">05/2026</span></div>
                     <div class="salary-visual-summary">
                         <div class="visual-mini-card">
                             <div class="visual-lbl"><span>TỔNG LƯƠNG CƠ BẢN THỰC TẾ</span><span style="color:var(--blue);" id="pct-lcb">0%</span></div>
@@ -267,7 +270,7 @@
                         </div>
                     </div>
 
-                    <div class="card-title">BẢNG TỔNG HỢP CHI TRẢ LƯƠNG CỦA 16 NHÂN VIÊN</div>
+                    <div class="card-title">BẢNG TỔNG HỢP CHI TRẢ LƯƠNG CỦA 16 NHÂN VIÊN (DỮ LIỆU TĨNH THEO THÁNG)</div>
                     <div class="table-responsive">
                         <table class="main-table" id="main-salary-table" style="font-size: 11px;">
                             <thead>
@@ -703,7 +706,12 @@
             `;
         }
 
-        // ================= BIẾN QUẢN LÝ DỮ LIỆU CƠ SỞ =================
+        // ================= KHO ĐĂNG KÝ HỒ SƠ LỊCH SỬ CHỈ SỐ THEO THÁNG BIỆT LẬP =================
+        let salaryConfigsByMonth = {
+            "2026-05": { vung: 4140000, base: 2530000, lcv: 2087970 },
+            "2026-06": { vung: 4140000, base: 2530000, lcv: 2087970 }
+        };
+
         let currentPaymentFiles = []; let currentTelecomFiles = [];
         let salaryData = []; let paymentRecords = []; let telecomRecords = []; 
         let itAssetsRecords = [
@@ -737,29 +745,72 @@
             event.target.classList.add('active');
         }
 
-        // ================= ENGINE TÍNH TOÁN PHÂN HỆ LƯƠNG =================
-        function handleMinRegionPayChange() { reCalculateContractSalaries(); }
+        // ================= ENGINE PHÂN TÁCH CẤU HÌNH BIỆT LẬP THEO THÁNG =================
+        function handleMonthChangeSelect() {
+            let selectedMonth = document.getElementById('filter-month').value;
+            
+            // Định dạng text trực quan trên Dashboard cơ cấu chi trả
+            let splitMonth = selectedMonth.split("-");
+            document.getElementById('visual-current-month-lbl').innerText = splitMonth[1] + "/" + splitMonth[0];
+
+            // Nếu tháng này chưa từng có cấu hình lịch sử, kế thừa từ cấu hình mặc định cơ sở
+            if (!salaryConfigsByMonth[selectedMonth]) {
+                salaryConfigsByMonth[selectedMonth] = { vung: 4140000, base: 2530000, lcv: 2087970 };
+            }
+
+            // Đẩy giá trị lịch sử của tháng lên form input hiển thị bên trên
+            document.getElementById('config-vung-pay').value = salaryConfigsByMonth[selectedMonth].vung;
+            document.getElementById('config-base-pay').value = salaryConfigsByMonth[selectedMonth].base;
+            document.getElementById('config-lcv-pay').value = salaryConfigsByMonth[selectedMonth].lcv;
+
+            // Chạy lại bảng lương tĩnh theo các thông số cấu hình riêng biệt của tháng đó
+            reCalculateContractSalaries();
+        }
+
+        function handleConfigChangeLive() {
+            let selectedMonth = document.getElementById('filter-month').value;
+            
+            // Cập nhật giá trị vào đúng ô nhớ lưu trữ của tháng đang được chọn
+            salaryConfigsByMonth[selectedMonth].vung = parseFloat(document.getElementById('config-vung-pay').value) || 0;
+            salaryConfigsByMonth[selectedMonth].base = parseFloat(document.getElementById('config-base-pay').value) || 0;
+            salaryConfigsByMonth[selectedMonth].lcv = parseFloat(document.getElementById('config-lcv-pay').value) || 0;
+
+            reCalculateContractSalaries();
+        }
+
         function reCalculateContractSalaries() {
-            const TOI_THIEU_VUNG = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
-            salaryData.forEach(row => { if (!row.is_edited_manually) { row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG); } });
+            let selectedMonth = document.getElementById('filter-month').value;
+            const CURRENT_VUNG_PRICE = salaryConfigsByMonth[selectedMonth].vung;
+            
+            salaryData.forEach(row => { 
+                if (!row.is_edited_manually) { 
+                    row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * CURRENT_VUNG_PRICE); 
+                } 
+            });
             renderSalaryTable();
         }
 
         function renderSalaryTable() {
+            let selectedMonth = document.getElementById('filter-month').value;
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
+            
             let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0;
-            const TOI_THIEU_VUNG = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
-            const LUONG_CO_BAN_PRICE = parseFloat(document.getElementById('config-base-pay').value) || 2530000;
-            const LUONG_CONG_VIEC_PRICE = parseFloat(document.getElementById('config-lcv-pay').value) || 2087970;
+            
+            // Lấy bộ ba chỉ số độc lập từ tháng hiện hành
+            const CURRENT_VUNG_PRICE = salaryConfigsByMonth[selectedMonth].vung;
+            const CURRENT_BASE_PRICE = salaryConfigsByMonth[selectedMonth].base;
+            const CURRENT_LCV_PRICE  = salaryConfigsByMonth[selectedMonth].lcv;
 
             salaryData.forEach((row, index) => {
-                if (row.lcb_goc === undefined || row.lcb_goc === null || row.lcb_goc === 0) { row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG); }
-                const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * LUONG_CO_BAN_PRICE);
+                if (row.lcb_goc === undefined || row.lcb_goc === null || row.lcb_goc === 0) { 
+                    row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * CURRENT_VUNG_PRICE); 
+                }
+                const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * CURRENT_BASE_PRICE);
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
                 row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt; sum_lcb_thucte += l_tong_cb;
                 
-                row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * LUONG_CONG_VIEC_PRICE);
+                row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * CURRENT_LCV_PRICE);
                 row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT)); sum_lcv_thucte += row.lcv_thucte;
                 const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; row.bao_hiem = Math.round(row.lcb_goc * 0.105); 
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung || 0); sum_thuc_linh += o_thuc_linh;
@@ -791,10 +842,10 @@
         }
 
         function updateContractSalaryCell(idx, val) { salaryData[idx]['lcb_goc'] = parseFloat(val) || 0; salaryData[idx]['is_edited_manually'] = true; renderSalaryTable(); }
-        function updateSalaryCell(idx, f, v) { salaryData[idx][f] = parseFloat(v) || 0; if (f === 'lcb_heso' || f === 'lcb_phucap') { const TOI_THIEU_VUNG = parseFloat(document.getElementById('config-vung-pay').value) || 4140000; salaryData[idx]['lcb_goc'] = Math.round((parseFloat(salaryData[idx]['lcb_heso']) + parseFloat(salaryData[idx]['lcb_phucap'] || 0)) * TOI_THIEU_VUNG); salaryData[idx]['is_edited_manually'] = false; } renderSalaryTable(); }
+        function updateSalaryCell(idx, f, v) { salaryData[idx][f] = parseFloat(v) || 0; if (f === 'lcb_heso' || f === 'lcb_phucap') { let selectedMonth = document.getElementById('filter-month').value; salaryData[idx]['lcb_goc'] = Math.round((parseFloat(salaryData[idx]['lcb_heso']) + parseFloat(salaryData[idx]['lcb_phucap'] || 0)) * salaryConfigsByMonth[selectedMonth].vung); salaryData[idx]['is_edited_manually'] = false; } renderSalaryTable(); }
         function handleAdvanceLiveMoneyInput(inputEl, index) { let cleanVal = inputEl.value.replace(/,/g, ''); let num = parseFloat(cleanVal) || 0; salaryData[index]['tam_ung'] = num; inputEl.value = num.toLocaleString('en-US'); renderSalaryTable(); }
         function deleteSalary(i) { salaryData.splice(i,1); renderSalaryTable(); }
-        function loadSalaryFromCloud() { salaryData = JSON.parse(JSON.stringify(default16Staffs)); reCalculateContractSalaries(); }
+        function loadSalaryFromCloud() { salaryData = JSON.parse(JSON.stringify(default16Staffs)); handleMonthChangeSelect(); }
 
         // ================= ENGINE ĐÍNH KÈM CHỨNG TỪ =================
         function processAttachedFilesMulti(inputEl, moduleType) {
@@ -844,26 +895,18 @@
         // ================= PHÂN HỆ KIỂM KÊ THIẾT BỊ CNTT & AUTOMATIC ASSET ID GENERATOR =================
         function autoGenerateAssetID() {
             let editIdx = parseInt(document.getElementById('it-edit-index').value);
-            // Nếu đang chế độ sửa một thiết bị có sẵn, không tự sinh đè mã cũ
             if (editIdx !== -1) return;
-
             let prefix = document.getElementById('it-device-type').value;
-            let currentYear = 2026;
-            
-            // Tìm số thứ tự lớn nhất hiện tại của prefix này trong mảng
             let maxNum = 0;
             itAssetsRecords.forEach(rec => {
-                if (rec.serialId && rec.serialId.startsWith(prefix + "-" + currentYear + "-")) {
+                if (rec.serialId && rec.serialId.startsWith(prefix + "-2026-")) {
                     let parts = rec.serialId.split("-");
                     let num = parseInt(parts[parts.length - 1]);
                     if (!isNaN(num) && num > maxNum) { maxNum = num; }
                 }
             });
-            
             let nextNum = maxNum + 1;
-            let formattedNum = String(nextNum).padStart(3, '0'); // Định dạng 3 chữ số: 001, 002...
-            
-            document.getElementById('it-serial-id').value = `${prefix}-${currentYear}-${formattedNum}`;
+            document.getElementById('it-serial-id').value = `${prefix}-2026-${String(nextNum).padStart(3, '0')}`;
         }
 
         function saveITRecord(e) { 
@@ -891,23 +934,14 @@
             const tbody = document.getElementById('tbody-it-assets'); tbody.innerHTML = ""; 
             itAssetsRecords.forEach((rec, i) => { 
                 tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="font-bold">${rec.user}</td>
-                    <td>${rec.dept}</td>
-                    <td style="color:var(--purple); font-weight:bold;">${rec.serialId}</td>
-                    <td><b>${rec.name}</b></td>
-                    <td>${rec.config}</td>
+                    <td class="text-center">${i+1}</td><td class="font-bold">${rec.user}</td><td>${rec.dept}</td>
+                    <td style="color:var(--purple); font-weight:bold;">${rec.serialId}</td><td><b>${rec.name}</b></td><td>${rec.config}</td>
                     <td>${rec.os} <br><span class="badge-status badge-approved">${rec.osLicense}</span></td>
                     <td>${rec.office} <br><span class="badge-status badge-approved">${rec.officeLicense}</span></td>
                     <td><span class="badge-status ${rec.software.includes('Không')?'badge-pending':'badge-approved'}">${rec.software}</span></td>
                     <td class="text-center font-bold">${rec.qty}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn-action-qr" onclick="popupDeviceQRCode(${i})"><i class="fa-solid fa-qrcode"></i> Quét QR</button>
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn-action-edit" onclick="editITAsset(${i})">Sửa</button> 
-                        <button type="button" class="btn-action-delete" onclick="deleteITAsset(${i})">Xóa</button>
-                    </td>
+                    <td class="text-center"><button type="button" class="btn-action-qr" onclick="popupDeviceQRCode(${i})"><i class="fa-solid fa-qrcode"></i> Quét QR</button></td>
+                    <td class="text-center"><button type="button" class="btn-action-edit" onclick="editITAsset(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="deleteITAsset(${i})">Xóa</button></td>
                 </tr>`; 
             }); 
             document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị"; 
@@ -918,7 +952,6 @@
             let rec = itAssetsRecords[index];
             const modal = document.getElementById('document-preview-modal');
             const viewBody = document.getElementById('modal-preview-body');
-            
             let rawQRText = `MÃ TÀI SẢN: ${rec.serialId}\nTHIẾT BỊ: ${rec.name}\nCẤU HÌNH: ${rec.config}\nHĐH: ${rec.os}\nOFFICE: ${rec.office}\nNGƯỜI DÙNG: ${rec.user} (${rec.dept})`;
             
             viewBody.innerHTML = `
@@ -931,16 +964,7 @@
                     </div>
                 </div>
             `;
-            
-            new QRCode(document.getElementById("modal-qrcode-target"), {
-                text: rawQRText,
-                width: 160,
-                height: 160,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-            
+            new QRCode(document.getElementById("modal-qrcode-target"), { text: rawQRText, width: 160, height: 160, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
             modal.style.display = 'flex';
         }
 
@@ -958,8 +982,6 @@
             document.getElementById('it-office-license').value = rec.officeLicense; 
             document.getElementById('it-software-select').value = rec.software; 
             document.getElementById('it-qty').value = rec.qty; 
-            
-            // Tìm và đặt tiền tố select box tương ứng với mã tài sản đang sửa
             let prefix = rec.serialId.split("-")[0];
             let selectBox = document.getElementById('it-device-type');
             for(let option of selectBox.options){ if(option.value === prefix){ selectBox.value = prefix; break; } }
@@ -967,7 +989,7 @@
         function deleteITAsset(i) { itAssetsRecords.splice(i,1); renderITTable(); }
         function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; autoGenerateAssetID(); }
 
-        async function saveSalaryToCloudGlobal() { alert("Đã phát lệnh đồng bộ lên Live Cloud!"); }
+        async function saveSalaryToCloudGlobal() { alert("Đã phát lệnh đồng bộ chỉ số và dữ liệu bảng lương tháng lên Live Cloud!"); }
 
         document.addEventListener('DOMContentLoaded', () => {
             loadSalaryFromCloud(); toggleTaxFields(); resetITForm(); renderITTable(); buildWidgetCalendar(currentMonth, currentYear);
