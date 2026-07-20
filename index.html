@@ -425,17 +425,16 @@
                 </div>
             </div>
 
-            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT & BÁO CÁO TỔNG HỢP -->
+            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT & BÁO CÁO CHUYÊN NGHIỆP -->
             <div id="tab-it-assets" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" id="it-form-title" style="border-left-color: var(--purple);">
                         <span>Cập nhật danh mục quản lý Trang thiết bị CNTT & Bản quyền phần mềm</span>
                         <div style="display: flex; gap: 8px;">
-                            <button type="button" class="btn btn-primary" style="background: var(--green);" onclick="exportITSummaryReportExcel()"><i class="fa-solid fa-file-excel"></i> Xuất Báo Cáo Thống Kê</button>
+                            <button type="button" class="btn btn-primary" style="background: var(--green);" onclick="exportITSummaryReportExcel()"><i class="fa-solid fa-file-excel"></i> Xuất Báo Cáo Thống Kê Smart Excel</button>
                         </div>
                     </div>
                     
-                    <!-- Form thêm/sửa thiết bị -->
                     <form id="it-main-form" onsubmit="saveITRecord(event)">
                         <input type="hidden" id="it-edit-index" value="-1">
                         <div class="grid-form">
@@ -553,7 +552,6 @@
                         </div>
                     </form>
 
-                    <!-- Khung tổng hợp dữ liệu thời gian thực -->
                     <div class="summary-box-it">
                         <div>
                             <h4>🏢 Theo Đơn Vị (Số Máy)</h4>
@@ -633,75 +631,35 @@
     </div>
 
     <script>
-        // ENGINE TÍNH TOÁN LỊCH VẠN NIÊN
+        // ENGINE LỊCH VẠN NIÊN
         function getComprehensiveLunarDetails(d, m, y) {
             let offset = (new Date(y, m - 1, d) - new Date(2026, 0, 1)) / (1000 * 60 * 60 * 24);
-            let dAm = d - 14; let mAm = m - 1; 
-            if(dAm <= 0) { dAm += 30; mAm -= 1; } 
-            if(mAm <= 0) mAm = 12;
-            
+            let dAm = d - 14; let mAm = m - 1; if(dAm <= 0) { dAm += 30; mAm -= 1; } if(mAm <= 0) mAm = 12;
             const CAN_NGAY = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
             const CHI_NGAY = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
-            
-            let idxCan = Math.abs(Math.floor(offset + 2)) % 10; 
-            let idxChi = Math.abs(Math.floor(offset + 4)) % 12;
-            
+            let idxCan = Math.abs(Math.floor(offset + 2)) % 10; let idxChi = Math.abs(Math.floor(offset + 4)) % 12;
             const TIET_KHI = ["Tiểu Hàn", "Đại Hàn", "Lập Xuân", "Vũ Thủy", "Kinh Trập", "Xuân Phân", "Thanh Minh", "Cốc Vũ", "Lập Hạ", "Tiểu Mãn", "Mang Chủng", "Hạ Chí", "Tiểu Thử", "Đại Thử", "Lập Thu", "Xử Thử", "Bạch Lộ", "Thu Phân", "Hàn Lộ", "Sương Giáng", "Lập Đông", "Tiểu Tuyết", "Đại Tuyết", "Đông Chí"];
-            let tietKhiHienTai = TIET_KHI[Math.floor((m * 2 + (d > 15 ? 1 : 0)) % 24)];
-            
-            return { 
-                lunarDay: dAm, lunarMonth: mAm, lunarYear: "Bính Ngọ", 
-                canChiNgay: CAN_NGAY[idxCan] + " " + CHI_NGAY[idxChi], 
-                huongXuatHanh: idxCan % 2 === 0 ? "Chính Đông (Tài Thần)" : "Tây Nam (Hỷ Thần)",
-                tietKhi: tietKhiHienTai,
-                gioHoangDao: "Tý (23h-1h), Sửu (1h-3h), Mão (5h-7h), Ngọ (11h-13h)"
-            };
+            return { lunarDay: dAm, lunarMonth: mAm, lunarYear: "Bính Ngọ", canChiNgay: CAN_NGAY[idxCan] + " " + CHI_NGAY[idxChi], tietKhi: TIET_KHI[Math.floor((m * 2 + (d > 15 ? 1 : 0)) % 24)] };
         }
 
         let sysDate = new Date(); let currentYear = 2026; let currentMonth = sysDate.getMonth(); let todayRealDay = sysDate.getDate();
-        
         function buildWidgetCalendar(month, year) {
-            const container = document.getElementById('calendar-body-days'); if(!container) return;
-            container.innerHTML = "";
+            const container = document.getElementById('calendar-body-days'); if(!container) return; container.innerHTML = "";
             document.getElementById('calendar-view-label').innerText = `Tháng ${String(month + 1).padStart(2,'0')} / ${year}`;
-            let firstDayIndex = new Date(year, month, 1).getDay(); 
-            let blanksCount = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+            let firstDayIndex = new Date(year, month, 1).getDay(); let blanksCount = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
             for (let b = 0; b < blanksCount; b++) { container.innerHTML += `<div class="calendar-day-cell blank-cell"></div>`; }
             let totalDays = new Date(year, month + 1, 0).getDate();
             for (let day = 1; day <= totalDays; day++) {
-                let details = getComprehensiveLunarDetails(day, month + 1, year); 
-                let isToday = (day === todayRealDay && month === sysDate.getMonth() && year === currentYear);
-                container.innerHTML += `<div class="calendar-day-cell ${isToday ? 'active-today' : ''}" onclick="showDayVanNienInfo(${day}, ${month+1}, ${year})">
-                    <div style="font-weight:bold; font-size:12px;">${day}</div>
-                    <div class="lunar-num" style="font-size:9px; color:var(--red); font-weight:bold;">${details.lunarDay}</div>
-                </div>`;
+                let details = getComprehensiveLunarDetails(day, month + 1, year); let isToday = (day === todayRealDay && month === sysDate.getMonth() && year === currentYear);
+                container.innerHTML += `<div class="calendar-day-cell ${isToday ? 'active-today' : ''}" onclick="showDayVanNienInfo(${day}, ${month+1}, ${year})"><div style="font-weight:bold; font-size:12px;">${day}</div><div class="lunar-num" style="font-size:9px; color:var(--red); font-weight:bold;">${details.lunarDay}</div></div>`;
             }
             showDayVanNienInfo(todayRealDay, sysDate.getMonth() + 1, currentYear);
         }
+        function navigateWidgetMonth(dir) { currentMonth += dir; if(currentMonth > 11) { currentMonth = 0; currentYear++; } else if(currentMonth < 0) { currentMonth = 11; currentYear--; } buildWidgetCalendar(currentMonth, currentYear); }
+        function showDayVanNienInfo(d, m, y) { let info = getComprehensiveLunarDetails(d, m, y); const targetDiv = document.getElementById('van-nien-live-data'); if(!targetDiv) return; targetDiv.innerHTML = `<div class="vannien-title"><i class="fa-solid fa-circle-info"></i> Chi tiết Ngày Vạn Niên</div><div class="vannien-row"><span>Dương lịch:</span><span>${d}/${m}/${y}</span></div><div class="vannien-row"><span>Âm lịch:</span><span style="color:var(--red);">Ngày ${info.lunarDay} tháng ${info.lunarMonth}, ${info.lunarYear}</span></div><div class="vannien-row"><span>Ngày Can Chi:</span><span>${info.canChiNgay}</span></div><div class="vannien-row"><span>Tiết khí:</span><span>${info.tietKhi}</span></div>`; }
 
-        function navigateWidgetMonth(dir) { 
-            currentMonth += dir; 
-            if(currentMonth > 11) { currentMonth = 0; currentYear++; } 
-            else if(currentMonth < 0) { currentMonth = 11; currentYear--; } 
-            buildWidgetCalendar(currentMonth, currentYear); 
-        }
-
-        function showDayVanNienInfo(d, m, y) { 
-            let info = getComprehensiveLunarDetails(d, m, y); 
-            const targetDiv = document.getElementById('van-nien-live-data'); if(!targetDiv) return;
-            targetDiv.innerHTML = `
-                <div class="vannien-title"><i class="fa-solid fa-circle-info"></i> Chi tiết Ngày Vạn Niên</div>
-                <div class="vannien-row"><span>Dương lịch:</span><span>${d}/${m}/${y}</span></div>
-                <div class="vannien-row"><span>Âm lịch:</span><span style="color:var(--red);">Ngày ${info.lunarDay} tháng ${info.lunarMonth}, ${info.lunarYear}</span></div>
-                <div class="vannien-row"><span>Ngày Can Chi:</span><span>${info.canChiNgay}</span></div>
-                <div class="vannien-row"><span>Tiết khí:</span><span>${info.tietKhi}</span></div>
-                <div class="vannien-row"><span>Hướng xuất hành:</span><span style="color:var(--green);">${info.huongXuatHanh}</span></div>
-            `; 
-        }
-
-        // ================= KẾT NỐI API GOOGLE SHEETS =================
+        // ================= KẾT NỐI API GOOGLE APPS SCRIPT =================
         const CLOUD_API_ENDPOINT = "https://script.google.com/macros/s/AKfycby-v7F6eASHtW9IHW_m_VcOMwuOJ5Gio1LVxnu3DKMZA9JCOjDha_8BbZV66v9fOo1w/exec";
-        
         let salaryConfigsByMonth = { "2026-06": { vung: 4140000, base: 2530000, lcv: 2087970 } };
         let currentPaymentFiles = []; let currentTelecomFiles = []; let currentActiveBlobUrl = null;
 
@@ -712,42 +670,19 @@
 
         async function syncDataToCloudServer() {
             document.getElementById('cloud-status-dot').className = "status-dot syncing";
-            document.getElementById('cloud-status-text').innerText = "Hệ thống đang đồng bộ dữ liệu...";
-            
             localStorage.setItem('sys_salary_data', JSON.stringify(salaryData));
             localStorage.setItem('sys_payment_records', JSON.stringify(paymentRecords));
             localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
             localStorage.setItem('sys_it_records', JSON.stringify(itAssetsRecords));
-
-            const fullPayload = { salaryData: salaryData, paymentRecords: paymentRecords, telecomRecords: telecomRecords, itAssetsRecords: itAssetsRecords };
-            const formData = new FormData();
-            formData.append("data", JSON.stringify(fullPayload));
-
-            try {
-                await fetch(CLOUD_API_ENDPOINT, { method: 'POST', mode: 'no-cors', body: formData });
-                document.getElementById('live-sync-lbl').innerText = "ĐÃ ĐỒNG BỘ CLOUD";
-                document.getElementById('live-sync-lbl').style.color = "var(--green)";
-            } catch (err) { console.error("Lỗi đồng bộ mạng:", err); }
-            finally {
-                document.getElementById('cloud-status-dot').className = "status-dot";
-                document.getElementById('cloud-status-text').innerText = "Hệ thống ERP Google Đám Mây - Trực Tuyến Sẵn Sàng";
-            }
+            const formData = new FormData(); formData.append("data", JSON.stringify({ salaryData, paymentRecords, telecomRecords, itAssetsRecords }));
+            try { await fetch(CLOUD_API_ENDPOINT, { method: 'POST', mode: 'no-cors', body: formData }); document.getElementById('live-sync-lbl').style.color = "var(--green)"; } catch (e) {}
+            finally { document.getElementById('cloud-status-dot').className = "status-dot"; }
         }
 
         async function fetchDataFromCloudServer() {
-            try {
-                const response = await fetch(CLOUD_API_ENDPOINT + "?action=read");
-                const cloudData = await response.json();
-                if(cloudData) {
-                    salaryData = cloudData.salaryData || [];
-                    paymentRecords = cloudData.paymentRecords || [];
-                    telecomRecords = cloudData.telecomRecords || [];
-                    itAssetsRecords = cloudData.itAssetsRecords || [];
-                }
-            } catch(e) { console.log("Chạy dự phòng máy chủ."); }
+            try { const res = await fetch(CLOUD_API_ENDPOINT + "?action=read"); const d = await res.json(); if(d) { salaryData = d.salaryData||[]; paymentRecords = d.paymentRecords||[]; telecomRecords = d.telecomRecords||[]; itAssetsRecords = d.itAssetsRecords||[]; } } catch(e) {}
             if(salaryData.length === 0) salaryData = JSON.parse(JSON.stringify(default16Staffs));
             if(itAssetsRecords.length === 0) {
-                // Tạo mẫu dữ liệu ban đầu bao gồm bản quyền thuê bao 1 năm giống hóa đơn đính kèm
                 itAssetsRecords = [
                     { user: "Trần Bình Dương", dept: "Trung Tâm Công Nghệ", serialId: "LAP-2026-001", name: "Dell Latitude 5430", config: "Core i5/16GB/512GB SSD", os: "Windows 11 Pro 64-bit", osLicense: "Bản quyền 1 năm (1YR)", office: "Microsoft 365 Personal Cloud (1YR)", officeLicense: "Bản quyền 1 năm (1YR Subscr)", software: "Autodesk AutoCAD 2024", qty: 1 },
                     { user: "Nguyễn Minh Ngọc", dept: "Phòng Kế Toán", serialId: "PC-2026-001", name: "HP ProDesk 400 G9", config: "Core i7/16GB/256GB SSD", os: "Windows 10 Pro 64-bit", osLicense: "Bản quyền Vĩnh viễn (OEM/FPP)", office: "Office 2024 Home & Business", officeLicense: "Bản quyền Vĩnh viễn (Retail/Key)", software: "MISA SME 2023 Enterprise", qty: 1 }
@@ -764,57 +699,31 @@
         function updateSalaryCell(idx, f, v) { if(salaryData[idx]) { salaryData[idx][f] = parseFloat(v) || 0; renderSalaryTable(); } }
         function updateContractSalaryCell(idx, val) { if(salaryData[idx]) { salaryData[idx]['lcb_goc'] = parseFloat(val) || 0; salaryData[idx]['is_edited_manually'] = true; renderSalaryTable(); } }
         function handleAdvanceLiveMoneyInput(inputEl, index) { let cleanVal = inputEl.value.replace(/,/g, ''); let num = parseFloat(cleanVal) || 0; if(salaryData[index]) { salaryData[index]['tam_ung'] = num; renderSalaryTable(); } }
+        
         function renderSalaryTable() {
-            let selectedMonth = document.getElementById('filter-month').value; 
-            const tbody = document.getElementById('tbody-salary'); if(!tbody) return; tbody.innerHTML = ""; 
-            let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0;
-            const cfg = salaryConfigsByMonth[selectedMonth] || { vung: 4140000, base: 2530000, lcv: 2087970 };
+            let selectedMonth = document.getElementById('filter-month').value; const tbody = document.getElementById('tbody-salary'); if(!tbody) return; tbody.innerHTML = ""; 
+            let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0; const cfg = salaryConfigsByMonth[selectedMonth] || { vung: 4140000, base: 2530000, lcv: 2087970 };
             salaryData.forEach((row, index) => {
                 if (!row.lcb_goc) { row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * cfg.vung); }
                 const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * cfg.base);
-                row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
-                row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
-                const l_tong_cb = row.l_thoigian + row.le_phep_tt; sum_lcb_thucte += l_tong_cb;
-                row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * cfg.lcv);
-                row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT)); sum_lcv_thucte += row.lcv_thucte;
-                const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; row.bao_hiem = Math.round(row.lcb_goc * 0.105); 
+                row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT)); row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
+                const l_tong_cb = row.l_thoigian + row.le_phep_tt; sum_lcb_thucte += l_tong_cb; row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * cfg.lcv);
+                row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT)); sum_lcv_thucte += row.lcv_thucte; const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; row.bao_hiem = Math.round(row.lcb_goc * 0.105); 
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung || 0); sum_thuc_linh += o_thuc_linh;
                 tbody.innerHTML += `<tr><td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td>${row.account}</td><td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td><td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap || 0}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td><td><input type="number" class="input-contract" value="${row.lcb_goc}" onchange="updateContractSalaryCell(${index}, this.value)"></td><td class="text-right">${luong_cb_he_thong.toLocaleString()}</td><td><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td><td><input type="number" class="input-salary-day" value="${row.P || 0}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td><td><input type="number" class="input-salary-day" value="${row.le_vr || 0}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td><td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold">${l_tong_cb.toLocaleString()}</td><td><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td><td><input type="number" step="0.01" class="input-edit" value="${row.phu_cap_lcv || 0}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td><td class="text-right" style="background:#f8fafc; font-weight:bold;">${row.lcv_goc.toLocaleString()}</td><td class="text-right" style="background:#f3e8ff; font-weight:bold; color:var(--purple);">${row.lcv_thucte.toLocaleString()}</td><td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right" style="color:var(--red); font-weight:bold;">${row.bao_hiem.toLocaleString()}</td><td class="text-center"><input type="text" class="input-advance-money" value="${Math.round(row.tam_ung || 0).toLocaleString('en-US')}" oninput="handleAdvanceLiveMoneyInput(this, ${index})"></td><td class="text-right font-bold" style="background:#fef08a;">${o_thuc_linh.toLocaleString()}</td><td class="text-center"><button type="button" class="btn-action-delete" onclick="salaryData.splice(${index},1); renderSalaryTable();">Xóa</button></td></tr>`;
             });
             document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString() + " VND";
-            document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND";
-            document.getElementById('v-total-lcv-text').innerText = sum_lcv_thucte.toLocaleString() + " VND";
-            document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
+            document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND"; document.getElementById('v-total-lcv-text').innerText = sum_lcv_thucte.toLocaleString() + " VND"; document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
         }
 
-        // ================= XỬ LÝ CHỨNG TỪ =================
-        function processAttachedFilesMulti(inputEl, mType) {
-            let tArray = mType === 'payment' ? currentPaymentFiles : currentTelecomFiles;
-            Array.from(inputEl.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) { tArray.push({ name: file.name, type: file.type, base64: e.target.result }); renderThumbnails(mType); };
-                reader.readAsDataURL(file);
-            });
-        }
-        function renderThumbnails(mType) {
-            const zone = document.getElementById(mType === 'payment' ? 'payment-thumbnails-zone' : 'telecom-thumbnails-zone');
-            let tArray = mType === 'payment' ? currentPaymentFiles : currentTelecomFiles;
-            if(tArray.length === 0) { zone.style.display = 'none'; return; }
-            zone.style.display = 'flex'; zone.innerHTML = "";
-            tArray.forEach((f, idx) => {
-                let ic = f.type.startsWith('image/') ? `<img src="${f.base64}">` : `<div class="file-icon-box"><i class="fa-solid fa-file-pdf"></i></div>`;
-                zone.innerHTML += `<div class="thumb-wrapper">${ic}<div class="thumb-name">${f.name}</div></div>`;
-            });
-        }
-        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
+        function processAttachedFilesMulti(el, type) { let arr = type==='payment'?currentPaymentFiles:currentTelecomFiles; Array.from(el.files).forEach(f => { const r = new FileReader(); r.onload = function(e){ arr.push({name:f.name, type:f.type, base64:e.target.result}); renderThumbnails(type); }; r.readAsDataURL(f); }); }
+        function renderThumbnails(type) { const z = document.getElementById(type==='payment'?'payment-thumbnails-zone':'telecom-thumbnails-zone'); let arr = type==='payment'?currentPaymentFiles:currentTelecomFiles; if(arr.length===0){ z.style.display='none'; return; } z.style.display='flex'; z.innerHTML=""; arr.forEach(f => { z.innerHTML += `<div class="thumb-wrapper"><div class="thumb-name">${f.name}</div></div>`; }); }
+        function savePaymentRecord(e){ e.preventDefault(); paymentRecords.push({ content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value, account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value, qty: parseInt(document.getElementById('pay-qty').value)||1, pretax: parseFloat(document.getElementById('pay-pretax-input').value)||0, status: document.getElementById('pay-status').value, files:[...currentPaymentFiles] }); document.getElementById('payment-main-form').reset(); currentPaymentFiles=[]; renderThumbnails('payment'); renderPaymentTable(); syncDataToCloudServer(); }
+        function renderPaymentTable(){ const tbody = document.getElementById('tbody-payment'); if(!tbody) return; tbody.innerHTML=""; let total=0; paymentRecords.forEach((r,i)=>{ let sum = r.pretax*r.qty; total+=sum; tbody.innerHTML+=`<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.content}</td><td>${r.beneficiary}</td><td>${r.account}</td><td class="text-center">${r.qty}</td><td class="text-right">${r.pretax.toLocaleString()}</td><td class="text-right">0</td><td class="text-right font-bold">${sum.toLocaleString()}</td><td class="text-center">Có</td><td class="text-center">${r.status}</td><td class="text-center"><button class="btn-action-delete" onclick="paymentRecords.splice(${i},1); renderPaymentTable(); syncDataToCloudServer();">Xóa</button></td></tr>`; }); document.getElementById('dash-paid-pay').innerText = total.toLocaleString() + " VND"; }
+        function saveTelecomRecord(e){ e.preventDefault(); telecomRecords.push({ id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value)||0, status: document.getElementById('tel-status').value, files:[...currentTelecomFiles] }); document.getElementById('telecom-main-form').reset(); currentTelecomFiles=[]; renderThumbnails('telecom'); renderTelecomTable(); syncDataToCloudServer(); }
+        function renderTelecomTable(){ const tbody = document.getElementById('tbody-telecom'); if(!tbody) return; tbody.innerHTML=""; let total=0; telecomRecords.forEach((r,i)=>{ total+=r.cost; tbody.innerHTML+=`<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.id}</td><td>${r.provider}</td><td class="text-center">${r.period}</td><td class="text-right">${r.cost.toLocaleString()} VND</td><td class="text-center">Có</td><td class="text-center">${r.status}</td><td class="text-center"><button class="btn-action-delete" onclick="telecomRecords.splice(${i},1); renderTelecomTable(); syncDataToCloudServer();">Xóa</button></td></tr>`; }); document.getElementById('dash-pending-pay').innerText = total.toLocaleString() + " VND"; }
 
-        // ================= QUẢN LÝ THANH TOÁN & VIỄN THÔNG =================
-        function savePaymentRecord(e) { e.preventDefault(); paymentRecords.push({ content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value, account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value, qty: parseInt(document.getElementById('pay-qty').value)||1, pretax: parseFloat(document.getElementById('pay-pretax-input').value)||0, status: document.getElementById('pay-status').value, files: [...currentPaymentFiles] }); document.getElementById('payment-main-form').reset(); currentPaymentFiles=[]; renderThumbnails('payment'); renderPaymentTable(); syncDataToCloudServer(); }
-        function renderPaymentTable() { const tbody = document.getElementById('tbody-payment'); if(!tbody) return; tbody.innerHTML = ""; let total = 0; paymentRecords.forEach((r, i) => { let sum = r.pretax * r.qty; total += sum; tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.content}</td><td>${r.beneficiary}</td><td>${r.account}</td><td class="text-center">${r.qty}</td><td class="text-right">${r.pretax.toLocaleString()}</td><td class="text-right">0</td><td class="text-right font-bold">${sum.toLocaleString()}</td><td class="text-center">Có</td><td class="text-center">${r.status}</td><td class="text-center"><button class="btn-action-delete" onclick="paymentRecords.splice(${i},1); renderPaymentTable(); syncDataToCloudServer();">Xóa</button></td></tr>`; }); document.getElementById('dash-paid-pay').innerText = total.toLocaleString() + " VND"; }
-        function saveTelecomRecord(e) { e.preventDefault(); telecomRecords.push({ id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value)||0, status: document.getElementById('tel-status').value, files: [...currentTelecomFiles] }); document.getElementById('telecom-main-form').reset(); currentTelecomFiles=[]; renderThumbnails('telecom'); renderTelecomTable(); syncDataToCloudServer(); }
-        function renderTelecomTable() { const tbody = document.getElementById('tbody-telecom'); if(!tbody) return; tbody.innerHTML = ""; let total = 0; telecomRecords.forEach((r, i) => { total += r.cost; tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.id}</td><td>${r.provider}</td><td class="text-center">${r.period}</td><td class="text-right">${r.cost.toLocaleString()} VND</td><td class="text-center">Có</td><td class="text-center">${r.status}</td><td class="text-center"><button class="btn-action-delete" onclick="telecomRecords.splice(${i},1); renderTelecomTable(); syncDataToCloudServer();">Xóa</button></td></tr>`; }); document.getElementById('dash-pending-pay').innerText = total.toLocaleString() + " VND"; }
-
-        // ================= MODULE CNTT - THỐNG KÊ TỔNG HỢP & XUẤT EXCEL CHUYÊN NGHIỆP =================
+        // ================= PHÂN HỆ CNTT ENGINE =================
         function autoGenerateAssetID() { 
             let p = document.getElementById('it-device-type').value; let max = 0; 
             itAssetsRecords.forEach(r => { if (r.serialId && r.serialId.startsWith(p)) { let n = parseInt(r.serialId.split("-")[2]); if (n > max) max = n; } }); 
@@ -822,8 +731,7 @@
         }
 
         function saveITRecord(e) { 
-            e.preventDefault(); 
-            let idx = parseInt(document.getElementById('it-edit-index').value); 
+            e.preventDefault(); let idx = parseInt(document.getElementById('it-edit-index').value); 
             let obj = { 
                 user: document.getElementById('it-user').value, dept: document.getElementById('it-dept').value, 
                 serialId: document.getElementById('it-serial-id').value, name: document.getElementById('it-name').value, 
@@ -838,82 +746,30 @@
 
         function renderITTable() { 
             const tbody = document.getElementById('tbody-it-assets'); if(!tbody) return; tbody.innerHTML = ""; 
-            
-            // Đối tượng gom nhóm thống kê tổng hợp thời gian thực
             let depts = {}, osMap = {}, officeMap = {}, licenseMap = { "HĐH 1 Năm (1YR)": 0, "Office 1 Năm (1YR)": 0 };
-
             itAssetsRecords.forEach((rec, i) => { 
-                // Xử lý gom nhóm đếm tổng số lượng máy/phần mềm
-                depts[rec.dept] = (depts[rec.dept] || 0) + rec.qty;
-                osMap[rec.os] = (osMap[rec.os] || 0) + rec.qty;
-                officeMap[rec.office] = (officeMap[rec.office] || 0) + rec.qty;
-                
+                depts[rec.dept] = (depts[rec.dept] || 0) + rec.qty; osMap[rec.os] = (osMap[rec.os] || 0) + rec.qty; officeMap[rec.office] = (officeMap[rec.office] || 0) + rec.qty;
                 if(rec.osLicense.includes("1 năm") || rec.osLicense.includes("1YR")) licenseMap["HĐH 1 Năm (1YR)"] += rec.qty;
                 if(rec.officeLicense.includes("1 năm") || rec.officeLicense.includes("1YR")) licenseMap["Office 1 Năm (1YR)"] += rec.qty;
 
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td><td class="font-bold">${rec.user}</td><td>${rec.dept}</td>
-                    <td style="color:var(--purple); font-weight:bold;">${rec.serialId}</td><td><b>${rec.name}</b></td><td>${rec.config}</td>
-                    <td>${rec.os}<br><span class="badge-status badge-approved" style="font-size:10px; background:#eff6ff; color:var(--blue); border-color:#cbd5e1;">${rec.osLicense}</span></td>
-                    <td>${rec.office}<br><span class="badge-status badge-approved" style="font-size:10px; background:#f0fdf4; color:var(--green); border-color:#cbd5e1;">${rec.officeLicense}</span></td>
-                    <td><span class="badge-status badge-approved">${rec.software}</span></td>
-                    <td class="text-center font-bold">${rec.qty}</td>
-                    <td class="text-center"><button type="button" class="btn-action-qr" onclick="popupDeviceQRCode(${i})"><i class="fa-solid fa-qrcode"></i> QR</button></td>
-                    <td class="text-center"><button type="button" class="btn-action-edit" onclick="editITAsset(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="itAssetsRecords.splice(${i},1); renderITTable(); syncDataToCloudServer();">Xóa</button></td>
-                </tr>`; 
+                tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${rec.user}</td><td>${rec.dept}</td><td style="color:var(--purple); font-weight:bold;">${rec.serialId}</td><td><b>${rec.name}</b></td><td>${rec.config}</td><td>${rec.os}<br><span class="badge-status badge-approved" style="font-size:10px;">${rec.osLicense}</span></td><td>${rec.office}<br><span class="badge-status badge-approved" style="font-size:10px;">${rec.officeLicense}</span></td><td><span class="badge-status badge-approved">${rec.software}</span></td><td class="text-center font-bold">${rec.qty}</td><td class="text-center"><button type="button" class="btn-action-qr" onclick="popupDeviceQRCode(${i})">QR</button></td><td class="text-center"><button type="button" class="btn-action-edit" onclick="editITAsset(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="itAssetsRecords.splice(${i},1); renderITTable(); syncDataToCloudServer();">Xóa</button></td></tr>`; 
             }); 
-            
-            // Hiển thị trực quan dữ liệu tổng hợp
             document.getElementById('sum-it-dept').innerHTML = Object.keys(depts).map(k => `<li><span>${k}:</span><b>${depts[k]} máy</b></li>`).join('');
             document.getElementById('sum-it-os').innerHTML = Object.keys(osMap).map(k => `<li><span>${k}:</span><b>${osMap[k]} máy</b></li>`).join('');
             document.getElementById('sum-it-office').innerHTML = Object.keys(officeMap).map(k => `<li><span>${k}:</span><b>${officeMap[k]} bản</b></li>`).join('');
             document.getElementById('sum-it-license').innerHTML = Object.keys(licenseMap).map(k => `<li><span>${k}:</span><b style="color:var(--orange);">${licenseMap[k]} gói</b></li>`).join('');
-
             document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.reduce((acc, r) => acc + r.qty, 0) + " Thiết bị"; 
-            document.getElementById('dash-it-count').innerText = itAssetsRecords.length + " người khai báo"; 
         }
 
-        function editITAsset(i) { 
-            let rec = itAssetsRecords[i]; document.getElementById('it-edit-index').value = i; 
-            document.getElementById('it-user').value = rec.user; document.getElementById('it-dept').value = rec.dept; 
-            document.getElementById('it-serial-id').value = rec.serialId; document.getElementById('it-name').value = rec.name; 
-            document.getElementById('it-config').value = rec.config; document.getElementById('it-qty').value = rec.qty;
-            document.getElementById('it-os').value = rec.os; document.getElementById('it-os-license').value = rec.osLicense;
-            document.getElementById('it-office').value = rec.office; document.getElementById('it-office-license').value = rec.officeLicense;
-            document.getElementById('it-software-select').value = rec.software;
-        }
-
-        function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; autoGenerateAssetID(); }
-        
-        // HÀM XUẤT EXCEL THỐNG KÊ CHUYÊN NGHIỆP TẬP TRUNG BẢN QUYỀN 1 NĂM (1YR) VÀ PHIÊN BẢN
-        function exportITSummaryReportExcel() {
-            if(itAssetsRecords.length === 0) return alert("Không có dữ liệu thiết bị phần mềm để xuất báo cáo!");
+        // ================= NÂNG CẤP ENGINE XUẤT FILE EXCEL ĐA SHEET CHUYÊN NGHIỆP =================
+        async function exportITSummaryReportExcel() {
+            if(itAssetsRecords.length === 0) return alert("Không có dữ liệu thiết bị phần mềm để xuất!");
             
-            let wb = XLSX.utils.book_new();
+            // Khởi tạo Workbook nâng cao qua ExcelJS
+            const workbook = new ExcelJS.Workbook();
+            workbook.creator = 'Enterprise Cloud System';
             
-            // Trang 1: Chi tiết kiểm kê danh mục tài sản và giấy phép ứng dụng văn phòng
-            let wsData1 = [
-                ["BÁO CÁO CHI TIẾT KIỂM KÊ THIẾT BỊ CNTT VÀ BẢN QUYỀN PHẦN MỀM"],
-                ["Ngày xuất báo cáo: " + new Date().toLocaleDateString('vi-VN'), "", "", "", "", "", "", "", ""],
-                [],
-                ["STT", "Mã Định Danh", "Người Sử Dụng", "Đơn Vị/Bộ Phận", "Tên Thiết Bị (Model)", "Cấu Hình Chi Tiết", "Hệ Điều Hành", "Giấy Phép HĐH", "Phiên Bản Office", "Bản Quyền Office", "Phần Mềm Chuyên Dụng", "SL"]
-            ];
-            
-            itAssetsRecords.forEach((r, idx) => {
-                wsData1.push([idx+1, r.serialId, r.user, r.dept, r.name, r.config, r.os, r.osLicense, r.office, r.officeLicense, r.software, r.qty]);
-            });
-            
-            let ws1 = XLSX.utils.aoa_to_sheet(wsData1);
-            XLSX.utils.book_append_sheet(wb, ws1, "Danh Muc Chi Tiet");
-
-            // Trang 2: Bảng Tổng Hợp Tiêu Điểm Bản Quyền 1 Năm (1YR) & Gom Nhóm Thống Kê
-            let wsData2 = [
-                ["BẢNG TỔNG HỢP GOM NHÓM TIÊU ĐIỂM BẢN QUYỀN VÀ SỐ LƯỢNG MÁY"],
-                [],
-                ["1. TỔNG HỢP SỐ LƯỢNG THIẾT BỊ THEO ĐƠN VỊ (BỘ PHẬN)"],
-                ["Tên Đơn Vị/Bộ Phận", "Tổng Số Lượng Máy Cấp Phát"]
-            ];
-            
+            // Gom dữ liệu phân tích trước
             let depts = {}, osMap = {}, officeMap = {}, sub1YrOS = 0, sub1YrOffice = 0;
             itAssetsRecords.forEach(r => {
                 depts[r.dept] = (depts[r.dept] || 0) + r.qty;
@@ -923,41 +779,99 @@
                 if(r.officeLicense.includes("1 năm") || r.officeLicense.includes("1YR")) sub1YrOffice += r.qty;
             });
 
-            Object.keys(depts).forEach(k => wsData2.push([k, depts[k]]));
+            // ---------------- SHEET 1: DASHBOARD TỔNG HỢP ----------------
+            const wsDash = workbook.addWorksheet('Dashboard Tổng Hợp');
+            wsDash.views = [{ showGridLines: true }];
             
-            wsData2.push([], ["2. THỐNG KÊ TỶ LỆ PHIÊN BẢN HỆ ĐIỀU HÀNH"], ["Tên Phiên Bản HĐH", "Số Lượng Máy Cài Đặt"]);
-            Object.keys(osMap).forEach(k => wsData2.push([k, osMap[k]]));
+            wsDash.mergeCells('A1:D1');
+            const titleCell = wsDash.getCell('A1');
+            titleCell.value = 'BÁO CÁO TỔNG HỢP TRẠNG THÁI TÀI SẢN CNTT & BẢN QUYỀN PHẦN MỀM';
+            titleCell.font = { name: 'Times New Roman', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+            titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+            titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E293B' } };
+            wsDash.getRow(1).height = 40;
 
-            wsData2.push([], ["3. THỐNG KÊ PHIÊN BẢN MICROSOFT OFFICE QUA CÁC THỜI KỲ"], ["Tên Phiên Bản Office", "Số Lượng Giấy Phép"]);
-            Object.keys(officeMap).forEach(k => wsData2.push([k, officeMap[k]]));
+            wsDash.getCell('A3').value = 'CHỈ SỐ KEY KPI BẢN QUYỀN THUÊ BAO 1 NĂM (1YR)';
+            wsDash.getCell('A3').font = { name: 'Times New Roman', size: 12, bold: true, color: { argb: 'FFEA580C' } };
 
-            wsData2.push([], ["4. TỔNG HỢP GÓI GIẤY PHÉP BẢN QUYỀN THUÊ BAO 1 NĂM (1YR)"], ["Phân Loại Phần Mềm", "Số Lượng Đang Sử Dụng (1YR Subscr)"]);
-            wsData2.push(["Hệ Điều Hành Bản Quyền Thuê Bao 1 Năm", sub1YrOS]);
-            wsData2.push(["Microsoft Office Bản Quyền Thuê Bao 1 Năm (M365 1YR)", sub1YrOffice]);
+            wsDash.addRows([
+                [],
+                ['Chỉ số kiểm kê phần mềm', 'Số lượng hiện tại', 'Trạng thái theo dõi bản quyền'],
+                ['Tổng số Hệ điều hành Thuê bao 1 năm (1YR)', sub1YrOS, sub1YrOS > 0 ? 'Cần rà soát hạn gia hạn' : 'An toàn'],
+                ['Tổng số Microsoft Office Thuê bao 1 năm (M365)', sub1YrOffice, sub1YrOffice > 0 ? 'Cần rà soát hạn gia hạn' : 'An toàn']
+            ]);
 
-            let ws2 = XLSX.utils.aoa_to_sheet(wsData2);
-            XLSX.utils.book_append_sheet(wb, ws2, "Du Lieu Tong Hop");
+            // Định dạng bảng Dashboard
+            wsDash.getRow(5).font = { bold: true };
+            wsDash.getRow(5).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } };
+            for(let i=5; i<=7; i++) {
+                wsDash.getRow(i).border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
+            }
+
+            // ---------------- SHEET 2: THEO BỘ PHẬN ----------------
+            const wsDept = workbook.addWorksheet('Báo Cáo Theo Bộ Phận');
+            wsDept.addRow(['BẢNG TỔNG HỢP PHÂN BỔ THIẾT BỊ THEO ĐƠN VỊ BỘ PHẬN']).font = { size: 14, bold: true };
+            wsDept.addRow([]);
+            wsDept.addRow(['STT', 'Tên Bộ Phận / Đơn Vị Sử Dụng', 'Tổng Số Lượng Máy Cấp Phát']);
+            wsDept.getRow(3).font = { bold: true };
+            wsDept.getRow(3).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2563EB' } };
+            wsDept.getRow(3).values.forEach((v, idx) => { if(idx > 0) wsDept.getCell(3, idx).font = { color: { argb: 'FFFFFFFF' }, bold: true }; });
             
-            XLSX.writeFile(wb, "Bao_Cao_Thong_Ke_Thiet_Bi_Banquyen_1YR.xlsx");
+            Object.keys(depts).forEach((k, idx) => {
+                wsDept.addRow([idx+1, k, depts[k]]);
+            });
+
+            // ---------------- SHEET 3: TRẠNG THÁI PHIÊN BẢN ----------------
+            const wsVer = workbook.addWorksheet('Trạng Thái Bản Quyền & OS');
+            wsVer.addRow(['THỐNG KÊ CHI TIẾT PHIÊN BẢN PHẦN MỀM HỆ THỐNG VÀ VĂN PHÒNG']).font = { size: 14, bold: true };
+            wsVer.addRow([]);
+            wsVer.addRow(['DANH SÁCH CÁC PHIÊN BẢN HỆ ĐIỀU HÀNH HIỆN HÀNH']);
+            wsVer.getCell('A3').font = { bold: true, color: { argb: 'FF7C3AED' } };
+            wsVer.addRow(['Tên Phiên Bản Hệ Điều Hành', 'Số Lượng Máy Máy Tính Đang Chạy']);
+            Object.keys(osMap).forEach(k => wsVer.addRow([k, osMap[k]]));
+
+            wsVer.addRow([]);
+            wsVer.addRow(['DANH SÁCH PHIÊN BẢN MICROSOFT OFFICE QUA CÁC THỜI KỲ (TẬP TRUNG BẢN 1 NĂM)']);
+            wsVer.getCell('A' + (Object.keys(osMap).length + 6)).font = { bold: true, color: { argb: 'FF059669' } };
+            wsVer.addRow(['Phiên Bản Cấu Hình Văn Phòng (Office)', 'Số Lượng Bản Quyền Đang Kích Hoạt']);
+            Object.keys(officeMap).forEach(k => wsVer.addRow([k, officeMap[k]]));
+
+            // ---------------- SHEET 4: DANH MỤC CHI TIẾT ----------------
+            const wsDetail = workbook.addWorksheet('Danh Mục Cấp Phát Chi Tiết');
+            wsDetail.addRow(['STT', 'Mã Tài Sản', 'Người Sử Dụng', 'Đơn Vị', 'Thiết Bị', 'Cấu Hình Phần Cứng', 'Hệ Điều Hành', 'Giấy Phép HĐH', 'Bộ Office', 'Giấy Phép Office', 'Phần Mềm Chuyên Ngành', 'Số Lượng']);
+            wsDetail.getRow(1).font = { bold: true };
+            wsDetail.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F172A' } };
+            wsDetail.getRow(1).values.forEach((v, idx) => { if(idx > 0) wsDetail.getCell(1, idx).font = { color: { argb: 'FFFFFFFF' }, bold: true }; });
+
+            itAssetsRecords.forEach((r, idx) => {
+                wsDetail.addRow([idx+1, r.serialId, r.user, r.dept, r.name, r.config, r.os, r.osLicense, r.office, r.officeLicense, r.software, r.qty]);
+            });
+
+            // Tự động căn rộng cột thông minh cho toàn bộ các trang tính chống tràn chữ (###)
+            workbook.worksheets.forEach(ws => {
+                ws.columns.forEach(col => {
+                    let maxLen = 0;
+                    col.eachCell({ includeEmpty: true }, cell => {
+                        let cellLen = cell.value ? cell.value.toString().length : 0;
+                        if (cellLen > maxLen) maxLen = cellLen;
+                    });
+                    col.width = maxLen < 12 ? 12 : maxLen + 4;
+                });
+            });
+
+            // Tiến hành đóng gói và kích hoạt lưu file trực tiếp xuống máy tính
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), "Bao_Cao_Giam_Sat_Tai_San_CNTT_1YR_Professional.xlsx");
+            alert("📊 Xuất báo cáo cấu trúc Đa Tab Google Sheets thành công! File đã được lưu xuống máy.");
         }
 
-        function popupDeviceQRCode(index) { 
-            let rec = itAssetsRecords[index]; const modal = document.getElementById('document-preview-modal'); const viewBody = document.getElementById('modal-preview-body'); 
-            let raw = `MÃ TÀI SẢN: ${rec.serialId}\nTHIẾT BỊ: ${rec.name}\nHĐH: ${rec.os}\nOFFICE: ${rec.office}\nNGƯỜI DÙNG: ${rec.user}`; 
-            viewBody.innerHTML = `<div class="qr-modal-body"><h3>MÃ QR ĐỊNH DANH TÀI SẢN</h3><div class="qr-box-render" id="modal-qrcode-target"></div></div>`; 
-            new QRCode(document.getElementById("modal-qrcode-target"), { text: raw, width: 160, height: 160 }); modal.style.display = 'flex'; 
-        }
-
-        function switchMainTab(tName) { 
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
-            document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tName).classList.add('active'); 
-            document.querySelector(`.nav-tabs .nav-tab[data-tab="${tName}"]`).classList.add('active');
-        }
+        function popupDeviceQRCode(i) { let r = itAssetsRecords[i]; const modal = document.getElementById('document-preview-modal'); const viewBody = document.getElementById('modal-preview-body'); let raw = `MÃ TÀI SẢN: ${r.serialId}\nTHIẾT BỊ: ${r.name}\nNGƯỜI DÙNG: ${r.user}`; viewBody.innerHTML = `<div class="qr-modal-body"><h3>MÃ QR CODE TÀI SẢN</h3><div class="qr-box-render" id="modal-qrcode-target"></div></div>`; new QRCode(document.getElementById("modal-qrcode-target"), { text: raw, width: 140, height: 140 }); modal.style.display = 'flex'; }
+        function editITAsset(i) { let rec = itAssetsRecords[i]; document.getElementById('it-edit-index').value = i; document.getElementById('it-user').value = rec.user; document.getElementById('it-dept').value = rec.dept; document.getElementById('it-serial-id').value = rec.serialId; document.getElementById('it-name').value = rec.name; document.getElementById('it-config').value = rec.config; document.getElementById('it-qty').value = rec.qty; document.getElementById('it-os').value = rec.os; document.getElementById('it-os-license').value = rec.osLicense; document.getElementById('it-office').value = rec.office; document.getElementById('it-office-license').value = rec.officeLicense; document.getElementById('it-software-select').value = rec.software; }
+        function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; autoGenerateAssetID(); }
+        function switchMainTab(name) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active')); document.getElementById('tab-' + name).classList.add('active'); document.querySelector(`.nav-tabs .nav-tab[data-tab="${name}"]`).classList.add('active'); }
 
         document.addEventListener('DOMContentLoaded', () => {
-            fetchDataFromCloudServer(); buildWidgetCalendar(currentMonth, currentYear);
-            autoGenerateAssetID();
+            fetchDataFromCloudServer(); buildWidgetCalendar(currentMonth, currentYear); autoGenerateAssetID();
             setInterval(() => { document.getElementById('live-system-clock').innerText = new Date().toLocaleString('vi-VN'); }, 1000);
         });
     </script>
