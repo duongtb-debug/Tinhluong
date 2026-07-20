@@ -182,7 +182,7 @@
             <!-- TAB 1: BẢNG LƯƠNG 16 NHÂN VIÊN ĐẦY ĐỦ -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
-                    <div class="card-title" style="color:var(--orange); border-left-color:var(--orange);"><span><i class="fa-solid fa-business-time"></i> Cấu Hình Quỹ Lương Biệt Lập Hàng Tháng (Tự động tải khi mở trang)</span></div>
+                    <div class="card-title" style="color:var(--orange); border-left-color:var(--orange);"><span><i class="fa-solid fa-business-time"></i> Cấu Hiện Quỹ Lương Biệt Lập Hàng Tháng</span></div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
                         <div class="form-group"><label>Tháng báo cáo</label><input type="month" id="filter-month" value="2026-06" onchange="handleMonthChangeSelect()"></div>
                         <div class="form-group"><label>Lương Tối Thiểu Vùng</label><input type="number" id="config-vung-pay" value="4140000" oninput="handleConfigChangeLive()"></div>
@@ -322,7 +322,7 @@
                             </div>
                         </div>
                         <div class="grid-form">
-                            <!-- ƯU TIÊN TRẠNG THÁI CHƯA CÓ BẢN QUYỀN LÊN ĐẦU CHO HỆ ĐIỀU HÀNH -->
+                            <!-- BẢN QUYỀN HĐH: ƯU TIÊN CHƯA CÓ BẢN QUYỀN ĐẦU TIÊN -->
                             <div class="form-group">
                                 <label>Trạng thái bản quyền HĐH</label>
                                 <select id="it-os-license" onchange="triggerRealtimeFormQR()">
@@ -346,7 +346,7 @@
                                     <option value="Microsoft 365 Family / Apps for Business">Microsoft 365 Enterprise Cloud</option>
                                 </select>
                             </div>
-                            <!-- ƯU TIÊN TRẠNG THÁI CHƯA CÓ BẢN QUYỀN LÊN ĐẦU CHO OFFICE -->
+                            <!-- BẢN QUYỀN OFFICE: ƯU TIÊN CHƯA CÓ BẢN QUYỀN ĐẦU TIÊN -->
                             <div class="form-group">
                                 <label>Bản quyền bộ Office</label>
                                 <select id="it-office-license" onchange="triggerRealtimeFormQR()">
@@ -370,7 +370,7 @@
                             </div>
                         </div>
                         <div class="grid-form">
-                            <!-- ƯU TIÊN TRẠNG THÁI CHƯA CÓ BẢN QUYỀN LÊN ĐẦU CHO PHẦN MỀM NGHIỆP VỤ KHÁC -->
+                            <!-- BẢN QUYỀN PHẦN MỀM KHÁC: ƯU TIÊN CHƯA CÓ BẢN QUYỀN ĐẦU TIÊN -->
                             <div class="form-group">
                                 <label>Bản quyền Phần mềm nghiệp vụ khác</label>
                                 <select id="it-software-license" onchange="triggerRealtimeFormQR()">
@@ -383,7 +383,6 @@
                             <div class="form-group" style="grid-column: span 3;"></div>
                         </div>
 
-                        <!-- KHU VỰC TẠO VÀ HIỂN THỊ MÃ QR ĐỒNG THỜI -->
                         <div class="realtime-qr-wrapper">
                             <div class="realtime-qr-box" id="form-realtime-qr-zone"></div>
                             <div class="realtime-qr-desc">
@@ -418,7 +417,6 @@
             </div>
         </div>
 
-        <!-- CỘT LỊCH VẠN NIÊN PHÍA PHẢI -->
         <div class="calendar-sidebar">
             <div class="calendar-widget-title"><i class="fa-solid fa-calendar-days"></i> LỊCH VẠN NIÊN THÔNG MINH</div>
             <div class="calendar-month-selector"><button type="button" onclick="navigateWidgetMonth(-1)">◀</button><span id="calendar-view-label">Tháng 07 / 2026</span><button type="button" onclick="navigateWidgetMonth(1)">▶</button></div>
@@ -428,12 +426,10 @@
         </div>
     </div>
 
-    <!-- KHUNG XEM CHI TIẾT FILE KHÔNG LỖI Ô TRẮNG -->
     <div id="filePreviewModal" class="modal" onclick="closeFilePreviewModal()">
         <div class="modal-content" style="max-width: 800px; width:95%;" onclick="event.stopPropagation()">
             <div class="card-title" id="preview-file-title">XEM CHI TIẾT TỆP ĐÍNH KÈM CHỨNG TỪ TRỰC TIẾP</div>
             <div id="preview-file-body-content" style="width:100%; height:520px; display:flex; align-items:center; justify-content:center; background:#f1f5f9; border-radius:6px; overflow:hidden; border:1px solid var(--border-color);"></div>
-            
             <div style="display:flex; justify-content:center; gap:15px; margin-top:15px;">
                 <a id="btn-download-raw-file" href="#" download="file_goc" class="btn btn-green" style="text-decoration:none;"><i class="fa-solid fa-cloud-arrow-down"></i> TẢI XUỐNG TỆP GỐC</a>
                 <button type="button" class="btn btn-danger" onclick="closeFilePreviewModal()">Đóng Trình Xem</button>
@@ -441,7 +437,6 @@
         </div>
     </div>
 
-    <!-- MODAL HIỂN THỊ PHIẾU LƯƠNG QR -->
     <div id="payslipModal" class="modal" onclick="closePayslipModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="card-title" id="modal-qr-title">PHIẾU LƯƠNG</div><div style="display:flex;justify-content:center;margin:10px 0;" id="qrcode-canvas-zone"></div><div class="payslip-details-box" id="payslip-text-details"></div><button type="button" class="btn btn-danger" style="margin-top:15px;" onclick="closePayslipModal()">Đóng cửa sổ</button></div></div>
 
     <script>
@@ -453,12 +448,10 @@
         };
         
         let salaryDataByMonth = {}; 
-
-        let salaryData = []; let paymentRecords = []; let telecomRecords = []; let itAssetsRecords = [];
+        let paymentRecords = []; let telecomRecords = []; let itAssetsRecords = [];
         let currentPaymentFiles = []; let currentTelecomFiles = [];
         let currentYear = 2026; let currentMonth = 6;
-        let realtimeQrEngine = null;
-        let activeBlobUrl = null;
+        let realtimeQrEngine = null; let activeBlobUrl = null;
 
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
@@ -479,6 +472,7 @@
             {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "102004830132"}
         ];
 
+        // SỬA ĐỔI TRIỆT ĐỂ: Hàm chuyển đổi tháng cắt đứt hoàn toàn liên kết tham chiếu
         function handleMonthChangeSelect() { 
             let selectedMonth = document.getElementById('filter-month').value; 
             if (!salaryConfigsByMonth[selectedMonth]) { 
@@ -503,11 +497,11 @@
             renderSalaryTable(); 
         }
 
+        // RÀNG BUỘC CHẶT CHẼ VÀO MẢNG BIỆT LẬP THEO MONTH_KEY
         function updateSalaryCell(idx, field, val) { 
             let selectedMonth = document.getElementById('filter-month').value;
             if(salaryDataByMonth[selectedMonth] && salaryDataByMonth[selectedMonth][idx]) { 
                 salaryDataByMonth[selectedMonth][idx][field] = parseFloat(val) || 0; 
-                salaryData = salaryDataByMonth[selectedMonth];
                 renderSalaryTable(); 
             } 
         }
@@ -518,7 +512,6 @@
             let num = parseFloat(cleanVal) || 0; 
             if(salaryDataByMonth[selectedMonth] && salaryDataByMonth[selectedMonth][index]) { 
                 salaryDataByMonth[selectedMonth][index]['tam_ung'] = num; 
-                salaryData = salaryDataByMonth[selectedMonth];
                 renderSalaryTable(); 
             } 
         }
@@ -532,9 +525,10 @@
             let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0; 
             const cfg = salaryConfigsByMonth[selectedMonth] || { vung: 4140000, base: 2530000, lcv: 2087970 };
             
-            salaryData = salaryDataByMonth[selectedMonth] || [];
+            // Lấy dữ liệu cô lập sâu của chính tháng được chọn
+            let currentActiveSalaryData = salaryDataByMonth[selectedMonth] || [];
             
-            salaryData.forEach((row, index) => {
+            currentActiveSalaryData.forEach((row, index) => {
                 row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * cfg.vung); 
                 const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * cfg.base);
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT)); 
@@ -654,10 +648,7 @@
             }; 
             itAssetsRecords.push(obj); 
             document.getElementById('it-main-form').reset(); 
-            autoGenerateAssetID(); 
-            renderITTable(); 
-            triggerRealtimeFormQR(); 
-            syncDataToCloudServer(false); 
+            autoGenerateAssetID(); renderITTable(); triggerRealtimeFormQR(); syncDataToCloudServer(false); 
         }
 
         function renderITTable() { 
@@ -669,7 +660,6 @@
                 if(rec.osLicense.includes("1 năm") || rec.osLicense.includes("1YR")) licenseMap["HĐH 1 Năm (1YR)"] += rec.qty; 
                 if(rec.officeLicense.includes("1 năm") || rec.officeLicense.includes("1YR")) licenseMap["Office 1 Năm (1YR)"] += rec.qty; 
                 
-                // Định dạng cảnh báo đỏ trực quan nếu bất kì phần mềm nào chưa được kích hoạt bản quyền
                 let osLicStyle = rec.osLicense.includes("⚠️") ? "color:var(--red); font-weight:bold; background:#fef2f2; padding:1px 3px; border-radius:4px;" : "color:var(--green);";
                 let offLicStyle = rec.officeLicense.includes("⚠️") ? "color:var(--red); font-weight:bold; background:#fef2f2; padding:1px 3px; border-radius:4px;" : "color:var(--green);";
                 let swLicStyle = rec.softwareLicense.includes("⚠️") ? "color:var(--red); font-weight:bold; background:#fef2f2; padding:1px 3px; border-radius:4px;" : "color:var(--green);";
@@ -695,7 +685,7 @@
         }
 
         function triggerPrintSingleQR(serialId, user, name) { let printWindow = window.open('', '_blank', 'width=350,height=350'); printWindow.document.write(`<html><head><title>In Mã Tem Tài Sản</title><style>body{font-family:Arial;text-align:center;padding:15px;}</style></head><body><h5 style="margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.5px;">TÀI SẢN CNTT DOANH NGHIỆP</h5><div id="print-qr" style="display:inline-block;margin-bottom:5px;"></div><div style="font-size:12px;font-weight:bold;color:#1e293b;">MÃ ID: ${serialId}</div><div style="font-size:11px;color:#475569;margin-top:2px;">Sử dụng: ${user} - ${name}</div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script><script>setTimeout(function(){ new QRCode(document.getElementById('print-qr'), { text: 'Mã TS: ${serialId}', width: 130, height: 130 }); setTimeout(function(){ window.print(); window.close(); }, 350); }, 200);<\/script></body></html>`); printWindow.document.close(); }
-        function openIndividualPayslipModal(index) { let row = salaryData[index]; if(!row) return; document.getElementById('payslipModal').style.display = "flex"; document.getElementById('qrcode-canvas-zone').innerHTML = ""; let thuclinh = Math.round(row.l_thoigian + row.le_phep_tt + row.lcv_thucte - row.bao_hiem - row.tam_ung); document.getElementById('modal-qr-title').innerText = "PHIẾU LƯƠNG: " + row.name.toUpperCase(); new QRCode(document.getElementById('qrcode-canvas-zone'), { text: `NHÂN VIÊN: ${row.name}\nSỐ TÀI KHOẢN: ${row.account}\nNGÀY CÔNG NT: ${row.NT}\nTHỰC LĨNH NET: ${thuclinh.toLocaleString()} VND`, width: 135, height: 135 }); document.getElementById('payslip-text-details').innerHTML = `<b>Họ và tên:</b> ${row.name}<br><b>Tài khoản ngân hàng:</b> ${row.account}<br><b>Số ngày công thực tế (NT):</b> ${row.NT} ngày<br><b>Lương thời gian:</b> ${row.l_thoigian.toLocaleString()} VND<br><b>Lương lễ phép:</b> ${row.le_phep_tt.toLocaleString()} VND<br><b>Lương công việc thực nhận:</b> ${row.lcv_thucte.toLocaleString()} VND<br><b>Trích trừ BHXH (10.5%):</b> -${row.bao_hiem.toLocaleString()} VND<br><b>Khoản tạm ứng:</b> -${row.tam_ung.toLocaleString()} VND<br><hr style="border:none; border-top:1px dashed #cbd5e1; margin:6px 0;"><span style="color:var(--blue);font-weight:bold;font-size:13px;">THỰC LĨNH NET: ${thuclinh.toLocaleString()} VND</span>`; }
+        function openIndividualPayslipModal(index) { let selectedMonth = document.getElementById('filter-month').value; let row = salaryDataByMonth[selectedMonth][index]; if(!row) return; document.getElementById('payslipModal').style.display = "flex"; document.getElementById('qrcode-canvas-zone').innerHTML = ""; let thuclinh = Math.round(row.l_thoigian + row.le_phep_tt + row.lcv_thucte - row.bao_hiem - row.tam_ung); document.getElementById('modal-qr-title').innerText = "PHIẾU LƯƠNG: " + row.name.toUpperCase(); new QRCode(document.getElementById('qrcode-canvas-zone'), { text: `NHÂN VIÊN: ${row.name}\nSỐ TÀI KHOẢN: ${row.account}\nNGÀY CÔNG NT: ${row.NT}\nTHỰC LĨNH NET: ${thuclinh.toLocaleString()} VND`, width: 135, height: 135 }); document.getElementById('payslip-text-details').innerHTML = `<b>Họ và tên:</b> ${row.name}<br><b>Tài khoản ngân hàng:</b> ${row.account}<br><b>Số ngày công thực tế (NT):</b> ${row.NT} ngày<br><b>Lương thời gian:</b> ${row.l_thoigian.toLocaleString()} VND<br><b>Lương lễ phép:</b> ${row.le_phep_tt.toLocaleString()} VND<br><b>Lương công việc thực nhận:</b> ${row.lcv_thucte.toLocaleString()} VND<br><b>Trích trừ BHXH (10.5%):</b> -${row.bao_hiem.toLocaleString()} VND<br><b>Khoản tạm ứng:</b> -${row.tam_ung.toLocaleString()} VND<br><hr style="border:none; border-top:1px dashed #cbd5e1; margin:6px 0;"><span style="color:var(--blue);font-weight:bold;font-size:13px;">THỰC LĨNH NET: ${thuclinh.toLocaleString()} VND</span>`; }
         function closePayslipModal() { document.getElementById('payslipModal').style.display = "none"; }
         function switchMainTab(name) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active')); document.getElementById('tab-' + name).classList.add('active'); document.querySelector(`.nav-tabs .nav-tab[data-tab="${name}"]`).classList.add('active'); }
 
@@ -710,43 +700,30 @@
             document.getElementById('live-sync-lbl').style.color = "var(--orange)";
             
             let selectedMonth = document.getElementById('filter-month').value; 
-            
             const formData = new FormData(); 
             formData.append("data", JSON.stringify({ 
                 salaryData: salaryDataByMonth[selectedMonth], 
-                paymentRecords, 
-                telecomRecords, 
-                itAssetsRecords, 
-                month_key: selectedMonth,
-                month_config: salaryConfigsByMonth[selectedMonth]
+                paymentRecords, telecomRecords, itAssetsRecords, 
+                month_key: selectedMonth, month_config: salaryConfigsByMonth[selectedMonth]
             })); 
-            
             try { 
                 await fetch(CLOUD_API_ENDPOINT, { method: 'POST', mode: 'no-cors', body: formData }); 
                 document.getElementById('live-sync-lbl').innerText = "ĐỒNG BỘ THÀNH CÔNG";
                 document.getElementById('live-sync-lbl').style.color = "var(--green)";
-                if (showAlert) {
-                    alert("🎉 Đã khóa và đồng bộ dữ liệu + ngày công biệt lập kì tháng " + selectedMonth + " lên Cloud Server thành công!");
-                }
+                if (showAlert) alert("🎉 Đã khóa và đồng bộ dữ liệu + ngày công biệt lập kì tháng " + selectedMonth + " thành công!");
             } catch(e){
                 document.getElementById('live-sync-lbl').innerText = "LỖI KẾT NỐI API";
                 document.getElementById('live-sync-lbl').style.color = "var(--red)";
-                if (showAlert) alert("❌ Lỗi: Không thể kết nối với Cloud Server.");
-            } finally { 
-                document.getElementById('cloud-status-dot').className = "status-dot"; 
-            } 
+            } finally { document.getElementById('cloud-status-dot').className = "status-dot"; } 
         }
         
         async function fetchDataFromCloudServer() { 
             let selectedMonth = document.getElementById('filter-month').value;
             
+            // Khởi tạo mảng sâu độc lập, không dùng chung bộ nhớ đệm
             if (!salaryDataByMonth[selectedMonth]) {
-                salaryDataByMonth[selectedMonth] = default16Staffs.map(staff => ({
-                    ...staff,
-                    NT: 22,       
-                    P: 0,
-                    le_vr: 0,
-                    tam_ung: 0
+                salaryDataByMonth[selectedMonth] = JSON.parse(JSON.stringify(default16Staffs)).map(staff => ({
+                    ...staff, NT: 22, P: 0, le_vr: 0, tam_ung: 0
                 }));
             }
             
@@ -760,44 +737,30 @@
                     document.getElementById('config-base-pay').value = d.month_config.base;
                     document.getElementById('config-lcv-pay').value = d.month_config.lcv;
                 }
-                
                 if(d && d.salaryData && d.salaryData.length > 0) { 
-                    let cleanMonthData = default16Staffs.map(st => ({...st, NT:0, P:0, le_vr:0, tam_ung:0}));
+                    let cleanMonthData = JSON.parse(JSON.stringify(default16Staffs)).map(st => ({...st, NT:0, P:0, le_vr:0, tam_ung:0}));
                     d.salaryData.forEach(cloudRow => {
                         let row = cleanMonthData.find(l => l.stt === cloudRow.stt);
                         if(row) { Object.assign(row, cloudRow); }
                     });
                     salaryDataByMonth[selectedMonth] = cleanMonthData;
                 }
-                
                 if(d) { itAssetsRecords = d.itAssetsRecords||[]; paymentRecords = d.paymentRecords||[]; telecomRecords = d.telecomRecords||[]; }
-            } catch(e) {
-                console.log("Thao tác ngoại tuyến hoặc kì tháng chưa khởi tạo dữ liệu mây.");
-            } 
+            } catch(e) {} 
             
             if(itAssetsRecords.length === 0) { 
                 itAssetsRecords = [{ 
-                    user: "Trần Bình Dương", 
-                    dept: "Trung Tâm Công Nghệ", 
-                    serialId: "LAP-2026-001", 
-                    name: "Dell Latitude 5430", 
-                    config: "Core i5/16GB/512GB SSD", 
-                    os: "Windows 11 Pro 64-bit", 
-                    osLicense: "⚠️ Chưa có bản quyền (Bản dùng thử / Crack)", 
-                    office: "Microsoft Office 2024 Professional Plus LTSC", 
-                    officeLicense: "⚠️ Chưa có bản quyền (Bản dùng thử / Crack)", 
-                    software: "Phần mềm thiết kế Autodesk AutoCAD 2024", 
-                    softwareLicense: "⚠️ Chưa có bản quyền (Bản dùng thử / Crack)", 
-                    qty: 1 
+                    user: "Trần Bình Dương", dept: "Trung Tâm Công Nghệ", serialId: "LAP-2026-001", name: "Dell Latitude 5430", config: "Core i5/16GB/512GB SSD", 
+                    os: "Windows 11 Pro 64-bit", osLicense: "⚠️ Chưa có bản quyền (Bản dùng thử / Crack)", 
+                    office: "Microsoft Office 2024 Professional Plus LTSC", officeLicense: "⚠️ Chưa có bản quyền (Bản dùng thử / Crack)", 
+                    software: "Phần mềm thiết kế Autodesk AutoCAD 2024", softwareLicense: "⚠️ Chưa có bản quyền (Bản dùng thử / Crack)", qty: 1 
                 }]; 
             } 
-            
             renderSalaryTable(); renderITTable(); renderPaymentTable(); renderTelecomTable(); 
         }
 
         document.addEventListener('DOMContentLoaded', () => { 
-            fetchDataFromCloudServer(); 
-            autoGenerateAssetID(); buildWidgetCalendar(); calculateFlexibleTax(); triggerRealtimeFormQR(); 
+            fetchDataFromCloudServer(); autoGenerateAssetID(); buildWidgetCalendar(); calculateFlexibleTax(); triggerRealtimeFormQR(); 
             setInterval(() => { document.getElementById('live-system-clock').innerText = new Date().toLocaleString('vi-VN'); }, 1000); 
         });
     </script>
