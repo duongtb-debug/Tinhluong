@@ -69,8 +69,8 @@
         .progress-bar-fill { background: var(--blue); height: 100%; width: 0%; transition: width 0.4s; }
 
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; flex-wrap: wrap; }
-        .nav-tab { padding: 10px 15px; border: none; background: none; font-weight: bold; color: #64748b; cursor: pointer; transition: 0.3s; font-size: 13px; outline: none; font-family: 'Times New Roman'; }
-        .nav-tab.active { color: var(--blue); border-bottom: 3px solid var(--blue); }
+        .nav-tabs .nav-tab { padding: 10px 15px; border: none; background: none; font-weight: bold; color: #64748b; cursor: pointer; transition: 0.3s; font-size: 13px; outline: none; font-family: 'Times New Roman'; }
+        .nav-tabs .nav-tab.active { color: var(--blue); border-bottom: 3px solid var(--blue); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
@@ -120,6 +120,7 @@
         .btn-action-edit { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
         .btn-action-delete { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
         .btn-action-view { background: #e0fdf4; color: #047857; border: 1px solid #a7f3d0; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-action-qr { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; display: inline-flex; align-items: center; gap: 4px; }
 
         .table-responsive { overflow-x: auto; margin-top: 15px; }
         .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
@@ -139,7 +140,7 @@
         .badge-pending { background-color: #fee2e2; color: #dc2626; border-color: #fecaca; }
         .badge-approved { background-color: #d1fae5; color: #065f46; border-color: #a7f3d0; }
 
-        /* CSS PHÂN HỆ LỊCH VẠN NIÊN PHÍA PHẢI */
+        /* LỊCH VẠN NIÊN PHÍA PHẢI */
         .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid var(--border-color); padding: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); align-self: start; }
         .calendar-widget-title { font-size: 14px; font-weight: bold; text-align: center; color: white; background: var(--primary); padding: 8px; border-radius: 6px; margin-bottom: 12px; }
         .calendar-month-selector { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; }
@@ -160,11 +161,16 @@
         .vannien-row span:last-child { color: var(--primary); font-weight: bold; text-align: right; }
         .hd-hours-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; font-size: 11px; margin-top: 5px; background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #e2e8f0; }
 
+        /* LIGHTBOX & MODAL EFFECT */
         .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 950px; height: 85vh; position: relative; display: flex; flex-direction: column; }
         .close-modal { position: absolute; right: 15px; top: 15px; font-size: 24px; cursor: pointer; color: #64748b; }
         .preview-viewport-box { width: 100%; flex-grow: 1; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: #1e293b; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 10px; }
         .preview-file-render { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 4px 12px rgba(0,0,0,0.5); border-radius: 4px; background-color: white; }
+        
+        /* QR VIEW ZONE IN MODAL */
+        .qr-modal-body { display: flex; flex-direction: column; align-items: center; justify-content: center; background: white !important; gap: 15px; }
+        .qr-box-render { padding: 15px; background: white; border: 2px dashed var(--purple); border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -261,7 +267,7 @@
                         </div>
                     </div>
 
-                    <div class="card-title">BẢNG TỔNG HỢP CHI TRẢ LƯƠNG CỦA 16 NHÂN VIÊN (TIMES NEW ROMAN)</div>
+                    <div class="card-title">BẢNG TỔNG HỢP CHI TRẢ LƯƠNG CỦA 16 NHÂN VIÊN</div>
                     <div class="table-responsive">
                         <table class="main-table" id="main-salary-table" style="font-size: 11px;">
                             <thead>
@@ -383,7 +389,7 @@
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</div>
+                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀNET INTERNET</div>
                     <div class="table-responsive">
                         <table class="main-table">
                             <thead>
@@ -404,74 +410,152 @@
                 </div>
             </div>
 
-            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT -->
+            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT & TỰ ĐỘNG TẠO MÃ QR (ĐẦY ĐỦ PHIÊN BẢN HỆ ĐIỀU HÀNH & OFFICE) -->
             <div id="tab-it-assets" class="tab-content">
                 <div class="main-card">
-                    <div class="card-title" id="it-form-title">Cập nhật danh mục hồ sơ quản lý Trang thiết bị CNTT</div>
+                    <div class="card-title" id="it-form-title">Cập nhật danh mục hồ sơ quản lý Trang thiết bị CNTT & Mã Định Danh QR Asset</div>
                     <form id="it-main-form" onsubmit="saveITRecord(event)">
                         <input type="hidden" id="it-edit-index" value="-1">
                         <div class="grid-form">
                             <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required></div>
                             <div class="form-group"><label>Bộ phận sử dụng</label><input type="text" id="it-dept" required></div>
+                            <div class="form-group"><label>Mã tài sản định danh / Số Serial (S/N)</label><input type="text" id="it-serial-id" placeholder="VD: PC-2026-001 hoặc Serial máy" required></div>
                             <div class="form-group"><label>Tên thiết bị tài sản</label><input type="text" id="it-name" required></div>
-                            <div class="form-group"><label>Số lượng</label><input type="number" id="it-qty" value="1" min="1" required></div>
                         </div>
                         <div class="grid-form">
-                            <div class="form-group"><label>Thông số cấu hình</label><input type="text" id="it-config" required></div>
+                            <div class="form-group"><label>Thông số cấu hình phần cứng</label><input type="text" id="it-config" required></div>
+                            <div class="form-group"><label>Số lượng</label><input type="number" id="it-qty" value="1" min="1" required></div>
+                            
+                            <!-- BỔ SUNG ĐẦY ĐỦ TẤT CẢ CÁC PHIÊN BẢN HỆ ĐIỀU HÀNH TỪ TRƯỚC ĐẾN NAY -->
                             <div class="form-group">
                                 <label>Hệ điều hành (HĐH) Toàn tập</label>
                                 <select id="it-os">
                                     <optgroup label="Windows Hiện Đại">
                                         <option value="Windows 11 Pro 64-bit" selected>Windows 11 Pro 64-bit</option>
                                         <option value="Windows 11 Home">Windows 11 Home</option>
+                                        <option value="Windows 11 Enterprise">Windows 11 Enterprise</option>
                                         <option value="Windows 10 Pro 64-bit">Windows 10 Pro 64-bit</option>
+                                        <option value="Windows 10 Home 64-bit">Windows 10 Home 64-bit</option>
+                                        <option value="Windows 10 Enterprise">Windows 10 Enterprise</option>
                                     </optgroup>
-                                    <optgroup label="Windows Cổ Điển / Lịch Sử">
+                                    <optgroup label="Windows Lịch Sử / Cũ">
+                                        <option value="Windows 8.1 Pro">Windows 8.1 Pro</option>
+                                        <option value="Windows 8 Professional">Windows 8 Professional</option>
+                                        <option value="Windows 7 Professional">Windows 7 Professional</option>
                                         <option value="Windows 7 Ultimate">Windows 7 Ultimate</option>
-                                        <option value="Windows XP Pro">Windows XP Professional</option>
+                                        <option value="Windows Vista">Windows Vista</option>
+                                        <option value="Windows XP Professional SP3">Windows XP Professional SP3</option>
+                                        <option value="Windows 2000 Professional">Windows 2000 Professional</option>
+                                        <option value="Windows ME">Windows ME</option>
+                                        <option value="Windows 98 SE">Windows 98 SE</option>
+                                        <option value="Windows 95">Windows 95</option>
                                     </optgroup>
-                                    <optgroup label="Apple macOS">
+                                    <optgroup label="Windows Server (Cho Máy Chủ)">
+                                        <option value="Windows Server 2025 Datacenter">Windows Server 2025 Datacenter</option>
+                                        <option value="Windows Server 2022 Standard">Windows Server 2022 Standard</option>
+                                        <option value="Windows Server 2019 Standard">Windows Server 2019 Standard</option>
+                                        <option value="Windows Server 2016">Windows Server 2016</option>
+                                        <option value="Windows Server 2012 R2">Windows Server 2012 R2</option>
+                                        <option value="Windows Server 2008 R2">Windows Server 2008 R2</option>
+                                        <option value="Windows Server 2003">Windows Server 2003</option>
+                                    </optgroup>
+                                    <optgroup label="Apple macOS / OS X">
                                         <option value="macOS Sequoia (v15.x)">macOS Sequoia (v15.x)</option>
                                         <option value="macOS Sonoma (v14.x)">macOS Sonoma (v14.x)</option>
+                                        <option value="macOS Ventura (v13.x)">macOS Ventura (v13.x)</option>
+                                        <option value="macOS Monterey (v12.x)">macOS Monterey (v12.x)</option>
+                                        <option value="macOS Big Sur (v11.x)">macOS Big Sur (v11.x)</option>
+                                        <option value="macOS Catalina (v10.15)">macOS Catalina (v10.15)</option>
+                                        <option value="macOS Mojave (v10.14)">macOS Mojave (v10.14)</option>
+                                        <option value="macOS High Sierra (v10.13)">macOS High Sierra (v10.13)</option>
+                                        <option value="OS X El Capitan (v10.11)">OS X El Capitan (v10.11)</option>
+                                        <option value="OS X Yosemite (v10.10)">OS X Yosemite (v10.10)</option>
+                                        <option value="Mac OS X Mavericks (v10.9)">Mac OS X Mavericks (v10.9)</option>
+                                        <option value="Mac OS X Lion (v10.7)">Mac OS X Lion (v10.7)</option>
+                                        <option value="Mac OS X Snow Leopard (v10.6)">Mac OS X Snow Leopard (v10.6)</option>
+                                        <option value="Mac OS X Tiger (v10.4)">Mac OS X Tiger (v10.4)</option>
+                                    </optgroup>
+                                    <optgroup label="Hệ Điều Hành Linux & Khác">
+                                        <option value="Ubuntu Desktop / Server LTS">Ubuntu Desktop / Server LTS</option>
+                                        <option value="CentOS Linux Stream">CentOS Linux Stream</option>
+                                        <option value="Red Hat Enterprise Linux (RHEL)">Red Hat Enterprise Linux (RHEL)</option>
+                                        <option value="Debian GNU/Linux">Debian GNU/Linux</option>
+                                        <option value="Fedora Workstation">Fedora Workstation</option>
+                                        <option value="Linux Mint">Linux Mint</option>
+                                        <option value="Kali Linux">Kali Linux</option>
+                                        <option value="FreeBSD / Unix System">FreeBSD / Unix System</option>
                                     </optgroup>
                                 </select>
                             </div>
+                            
                             <div class="form-group">
                                 <label>Bản quyền HĐH</label>
                                 <select id="it-os-license">
                                     <option value="Chưa có bản quyền">Chưa có bản quyền</option>
                                     <option value="Đã kích hoạt bản quyền OEM" selected>Đã kích hoạt bản quyền OEM</option>
                                     <option value="Bản quyền Enterprise Volume">Bản quyền Enterprise Volume</option>
+                                    <option value="Bản quyền Retail (Kỹ thuật số Digital)">Bản quyền Retail (Kỹ thuật số Digital)</option>
+                                    <option value="Môi trường Mã nguồn mở (Open-Source Free)">Môi trường Mã nguồn mở (Open-Source Free)</option>
                                 </select>
                             </div>
                         </div>
+                        
                         <div class="grid-form">
+                            <!-- BỔ SUNG ĐẦY ĐỦ TẤT CẢ CÁC PHIÊN BẢN MICROSOFT OFFICE TỪ TRƯỚC ĐẾN NAY -->
                             <div class="form-group">
                                 <label>Bộ ứng dụng Microsoft Office</label>
                                 <select id="it-office">
-                                    <option value="Office 2021 LTSC Enterprise" selected>Office 2021 LTSC Enterprise</option>
-                                    <option value="Microsoft 365 Business">Microsoft 365 Business</option>
-                                    <option value="Office 2019 Professional Plus">Office 2019 Professional Plus</option>
+                                    <optgroup label="Office Hiện Đại / Đám Mây">
+                                        <option value="Office 2021 LTSC Enterprise" selected>Office 2021 LTSC Enterprise</option>
+                                        <option value="Microsoft 365 Business / Enterprise">Microsoft 365 Business / Enterprise</option>
+                                        <option value="Microsoft 365 Personal / Family">Microsoft 365 Personal / Family</option>
+                                        <option value="Office 2019 Professional Plus">Office 2019 Professional Plus</option>
+                                        <option value="Office 2019 Home & Business">Office 2019 Home & Business</option>
+                                        <option value="Office 2016 Professional Plus">Office 2016 Professional Plus</option>
+                                    </optgroup>
+                                    <optgroup label="Office Lịch Sử / Cũ">
+                                        <option value="Office 2013 Professional Plus">Office 2013 Professional Plus</option>
+                                        <option value="Office 2010 Professional">Office 2010 Professional</option>
+                                        <option value="Office 2007 Standard / Ultimate">Office 2007 Standard / Ultimate</option>
+                                        <option value="Office 2003 Professional SP3">Office 2003 Professional SP3</option>
+                                        <option value="Office XP (2002)">Office XP (2002)</option>
+                                        <option value="Office 2000 Professional">Office 2000 Professional</option>
+                                        <option value="Office 97">Office 97</option>
+                                        <option value="Office 95">Office 95</option>
+                                    </optgroup>
+                                    <optgroup label="Bộ Ứng Dụng Văn Phòng Khác">
+                                        <option value="WPS Office Enterprise">WPS Office Enterprise</option>
+                                        <option value="LibreOffice (Mã nguồn mở)">LibreOffice (Mã nguồn mở)</option>
+                                        <option value="Google Workspace (Docs/Sheets Cloud)">Google Workspace (Docs/Sheets Cloud)</option>
+                                        <option value="Không cài đặt ứng dụng văn phòng">Không cài đặt ứng dụng văn phòng</option>
+                                    </optgroup>
                                 </select>
                             </div>
+                            
                             <div class="form-group">
                                 <label>Bản quyền Office</label>
                                 <select id="it-office-license">
                                     <option value="Chưa có bản quyền">Chưa có bản quyền</option>
                                     <option value="Bản quyền gắn liền tài khoản Cloud" selected>Bản quyền Tài khoản Cloud</option>
+                                    <option value="Kích hoạt qua khóa sản phẩm (KMS Volume)">Kích hoạt qua khóa sản phẩm (KMS Volume)</option>
+                                    <option value="Bản quyền vĩnh viễn khóa Retail Key">Bản quyền vĩnh viễn khóa Retail Key</option>
                                 </select>
                             </div>
+                            
                             <div class="form-group">
                                 <label>Phần mềm nghiệp vụ</label>
                                 <select id="it-software-select">
                                     <option value="Chưa cấu hình nghiệp vụ" selected>❌ Không sử dụng</option>
                                     <option value="MISA SME 2023 Enterprise">MISA SME 2023 Enterprise</option>
                                     <option value="Asia ERP Enterprise System">Asia ERP Enterprise System</option>
+                                    <option value="Fast Accounting / Fast ERP">Fast Accounting / Fast ERP</option>
+                                    <option value="AutoCAD LT / SolidWorks">AutoCAD LT / SolidWorks</option>
+                                    <option value="Adobe Creative Cloud (Photoshop/Premiere)">Adobe Creative Cloud (Photoshop/Premiere)</option>
                                 </select>
                             </div>
                         </div>
                         <div style="display: flex; gap: 10px;">
-                            <button type="submit" class="btn btn-primary">💾 Lưu Thiết Bị</button>
+                            <button type="submit" class="btn btn-purple">💾 Lưu Thiết Bị & Đồng bộ QR</button>
                             <button type="button" class="btn btn-danger" onclick="resetITForm()">Hủy</button>
                         </div>
                     </form>
@@ -486,12 +570,14 @@
                                     <th class="text-center">STT</th>
                                     <th>Người sử dụng</th>
                                     <th>Bộ phận sử dụng</th>
+                                    <th>Mã định danh định vị (QR)</th>
                                     <th>Tên thiết bị</th>
                                     <th>Cấu hình phần cứng</th>
                                     <th>Hệ Điều Hành & Bản Quyền</th>
                                     <th>Phần mềm Office & Bản Quyền</th>
                                     <th>Phần mềm nghiệp vụ</th>
                                     <th>Số lượng</th>
+                                    <th class="text-center">Mã QR Code</th>
                                     <th class="text-center">Hành động</th>
                                 </tr>
                             </thead>
@@ -518,13 +604,13 @@
         </div>
     </div>
 
-    <!-- MODAL LIGHTBOX -->
+    <!-- MODAL LIGHTBOX XEM TÀI LIỆU & QUÉT MÃ QR CỦA THIẾT BỊ IT -->
     <div class="modal" id="document-preview-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0;">
-                <h3 id="modal-preview-title" style="font-size: 14px; font-weight: bold; color: var(--blue);">Xem tài liệu đính kèm đầy đủ</h3>
-                <button type="button" class="btn btn-primary" style="padding: 4px 10px; font-size:11px;" onclick="window.print()"><i class="fa-solid fa-print"></i> In chứng từ</button>
+                <h3 id="modal-preview-title" style="font-size: 14px; font-weight: bold; color: var(--blue);">Xem chi tiết hệ thống</h3>
+                <button type="button" class="btn btn-primary" style="padding: 4px 10px; font-size:11px;" onclick="window.print()"><i class="fa-solid fa-print"></i> In dữ liệu</button>
             </div>
             <div class="preview-viewport-box" id="modal-preview-body"></div>
         </div>
@@ -610,7 +696,11 @@
 
         // ================= BIẾN QUẢN LÝ DỮ LIỆU CƠ SỞ =================
         let currentPaymentFiles = []; let currentTelecomFiles = [];
-        let salaryData = []; let paymentRecords = []; let telecomRecords = []; let itAssetsRecords = [];
+        let salaryData = []; let paymentRecords = []; let telecomRecords = []; 
+        let itAssetsRecords = [
+            {user: "Nguyễn Minh Ngọc", dept: "Hành chính", serialId: "LAP-2026-N01", name: "Laptop Dell Vostro 5410", config: "Core i5, 16GB RAM, 512GB SSD", os: "Windows 11 Pro 64-bit", osLicense: "Đã kích hoạt bản quyền OEM", office: "Office 2021 LTSC Enterprise", officeLicense: "Bản quyền Tài khoản Cloud", software: "Chưa cấu hình nghiệp vụ", qty: 1},
+            {user: "Phạm Huy Chiến", dept: "IT Kỹ thuật", serialId: "SRV-ENTER-99", name: "Máy chủ Dell PowerEdge R750", config: "Xeon Silver, 64GB RAM, 2TB HDD", os: "Windows 11 Pro 64-bit", osLicense: "Bản quyền Enterprise Volume", office: "Office 2021 LTSC Enterprise", officeLicense: "Chưa có bản quyền", software: "Asia ERP Enterprise System", qty: 1}
+        ];
 
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
@@ -633,19 +723,16 @@
 
         function switchMainTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
+            event.target.classList.add('active');
         }
 
         // ================= ENGINE TÍNH TOÁN PHÂN HỆ LƯƠNG =================
         function handleMinRegionPayChange() { reCalculateContractSalaries(); }
         function reCalculateContractSalaries() {
             const TOI_THIEU_VUNG = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
-            salaryData.forEach(row => {
-                if (!row.is_edited_manually) {
-                    row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG);
-                }
-            });
+            salaryData.forEach(row => { if (!row.is_edited_manually) { row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG); } });
             renderSalaryTable();
         }
 
@@ -657,9 +744,7 @@
             const LUONG_CONG_VIEC_PRICE = parseFloat(document.getElementById('config-lcv-pay').value) || 2087970;
 
             salaryData.forEach((row, index) => {
-                if (row.lcb_goc === undefined || row.lcb_goc === null || row.lcb_goc === 0) {
-                    row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG);
-                }
+                if (row.lcb_goc === undefined || row.lcb_goc === null || row.lcb_goc === 0) { row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG); }
                 const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * LUONG_CO_BAN_PRICE);
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
                 row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
@@ -702,7 +787,7 @@
         function deleteSalary(i) { salaryData.splice(i,1); renderSalaryTable(); }
         function loadSalaryFromCloud() { salaryData = JSON.parse(JSON.stringify(default16Staffs)); reCalculateContractSalaries(); }
 
-        // ================= ENGINE ĐÍNH KÈM MULTI-FILE CHỨNG TỪ =================
+        // ================= ENGINE ĐÍNH KÈM CHỨNG TỪ =================
         function processAttachedFilesMulti(inputEl, moduleType) {
             const files = inputEl.files; if (files.length === 0) return;
             let targetArray = moduleType === 'payment' ? currentPaymentFiles : currentTelecomFiles;
@@ -747,17 +832,107 @@
         function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; currentTelecomFiles = []; renderThumbnails('telecom'); }
 
-        // ================= PHÂN HỆ KIỂM KÊ THIẾT BỊ CNTT =================
-        function saveITRecord(e) { e.preventDefault(); let idx = parseInt(document.getElementById('it-edit-index').value); let dataObj = { user: document.getElementById('it-user').value, dept: document.getElementById('it-dept').value, name: document.getElementById('it-name').value, config: document.getElementById('it-config').value, os: document.getElementById('it-os').value, osLicense: document.getElementById('it-os-license').value, office: document.getElementById('it-office').value, officeLicense: document.getElementById('it-office-license').value, software: document.getElementById('it-software-select').value, qty: parseInt(document.getElementById('it-qty').value) || 1 }; if(idx === -1) itAssetsRecords.push(dataObj); else itAssetsRecords[idx] = dataObj; resetITForm(); renderITTable(); }
-        function renderITTable() { const tbody = document.getElementById('tbody-it-assets'); tbody.innerHTML = ""; itAssetsRecords.forEach((rec, i) => { tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${rec.user}</td><td>${rec.dept}</td><td><b>${rec.name}</b></td><td>${rec.config}</td><td>${rec.os} <br><span class="badge-status badge-approved">${rec.osLicense}</span></td><td>${rec.office} <br><span class="badge-status badge-approved">${rec.officeLicense}</span></td><td><span class="badge-status ${rec.software.includes('Không')?'badge-pending':'badge-approved'}">${rec.software}</span></td><td class="text-center font-bold">${rec.qty}</td><td class="text-center"><button type="button" class="btn-action-edit" onclick="editITAsset(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="deleteITAsset(${i})">Xóa</button></td></tr>`; }); document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị"; document.getElementById('dash-it-count').innerText = itAssetsRecords.length + " người khai báo"; }
-        function editITAsset(i) { let rec = itAssetsRecords[i]; document.getElementById('it-edit-index').value = i; document.getElementById('it-user').value = rec.user; document.getElementById('it-dept').value = rec.dept; document.getElementById('it-name').value = rec.name; document.getElementById('it-config').value = rec.config; document.getElementById('it-os').value = rec.os; document.getElementById('it-os-license').value = rec.osLicense; document.getElementById('it-office').value = rec.office; document.getElementById('it-office-license').value = rec.officeLicense; document.getElementById('it-software-select').value = rec.software; document.getElementById('it-qty').value = rec.qty; }
+        // ================= PHÂN HỆ KIỂM KÊ THIẾT BỊ CNTT & ENGINE QR CODE AUTOMATION =================
+        function saveITRecord(e) { 
+            e.preventDefault(); 
+            let idx = parseInt(document.getElementById('it-edit-index').value); 
+            let dataObj = { 
+                user: document.getElementById('it-user').value, 
+                dept: document.getElementById('it-dept').value, 
+                serialId: document.getElementById('it-serial-id').value,
+                name: document.getElementById('it-name').value, 
+                config: document.getElementById('it-config').value, 
+                os: document.getElementById('it-os').value, 
+                osLicense: document.getElementById('it-os-license').value, 
+                office: document.getElementById('it-office').value, 
+                officeLicense: document.getElementById('it-office-license').value, 
+                software: document.getElementById('it-software-select').value, 
+                qty: parseInt(document.getElementById('it-qty').value) || 1 
+            }; 
+            if(idx === -1) itAssetsRecords.push(dataObj); else itAssetsRecords[idx] = dataObj; 
+            resetITForm(); 
+            renderITTable(); 
+        }
+
+        function renderITTable() { 
+            const tbody = document.getElementById('tbody-it-assets'); tbody.innerHTML = ""; 
+            itAssetsRecords.forEach((rec, i) => { 
+                tbody.innerHTML += `<tr>
+                    <td class="text-center">${i+1}</td>
+                    <td class="font-bold">${rec.user}</td>
+                    <td>${rec.dept}</td>
+                    <td style="color:var(--purple); font-weight:bold;">${rec.serialId}</td>
+                    <td><b>${rec.name}</b></td>
+                    <td>${rec.config}</td>
+                    <td>${rec.os} <br><span class="badge-status badge-approved">${rec.osLicense}</span></td>
+                    <td>${rec.office} <br><span class="badge-status badge-approved">${rec.officeLicense}</span></td>
+                    <td><span class="badge-status ${rec.software.includes('Không')?'badge-pending':'badge-approved'}">${rec.software}</span></td>
+                    <td class="text-center font-bold">${rec.qty}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn-action-qr" onclick="popupDeviceQRCode(${i})"><i class="fa-solid fa-qrcode"></i> Quét QR</button>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn-action-edit" onclick="editITAsset(${i})">Sửa</button> 
+                        <button type="button" class="btn-action-delete" onclick="deleteITAsset(${i})">Xóa</button>
+                    </td>
+                </tr>`; 
+            }); 
+            document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị"; 
+            document.getElementById('dash-it-count').innerText = itAssetsRecords.length + " người khai báo"; 
+        }
+
+        function popupDeviceQRCode(index) {
+            let rec = itAssetsRecords[index];
+            const modal = document.getElementById('document-preview-modal');
+            const viewBody = document.getElementById('modal-preview-body');
+            
+            let rawQRText = `MÃ TÀI SẢN: ${rec.serialId}\nTHIẾT BỊ: ${rec.name}\nCẤU HÌNH: ${rec.config}\nHĐH: ${rec.os}\nOFFICE: ${rec.office}\nNGƯỜI DÙNG: ${rec.user} (${rec.dept})`;
+            
+            viewBody.innerHTML = `
+                <div class="qr-modal-body" style="background:white; width:100%; padding:20px; border-radius:6px; text-align:center;">
+                    <h3 style="font-size:15px; color:var(--primary); font-family:'Times New Roman';">MÃ QR ĐỊNH DANH KIỂM KÊ TÀI SẢN DOANH NGHIỆP</h3>
+                    <p style="color:#64748b; font-size:12px;">Dán nhãn tem này trực tiếp lên vỏ thiết bị phần cứng để quét quản trị nhanh</p>
+                    <div class="qr-box-render" id="modal-qrcode-target"></div>
+                    <div style="background:#f1f5f9; padding:10px; border-radius:4px; font-size:11px; text-align:left; max-width:400px; width:100%; font-family:monospace; white-space:pre-line; color:#334155; border:1px solid #cbd5e1;">
+                        <strong>Dữ liệu mã hóa thô trong QR:</strong>\n${rawQRText}
+                    </div>
+                </div>
+            `;
+            
+            new QRCode(document.getElementById("modal-qrcode-target"), {
+                text: rawQRText,
+                width: 160,
+                height: 160,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        function editITAsset(i) { 
+            let rec = itAssetsRecords[i]; 
+            document.getElementById('it-edit-index').value = i; 
+            document.getElementById('it-user').value = rec.user; 
+            document.getElementById('it-dept').value = rec.dept; 
+            document.getElementById('it-serial-id').value = rec.serialId;
+            document.getElementById('it-name').value = rec.name; 
+            document.getElementById('it-config').value = rec.config; 
+            document.getElementById('it-os').value = rec.os; 
+            document.getElementById('it-os-license').value = rec.osLicense; 
+            document.getElementById('it-office').value = rec.office; 
+            document.getElementById('it-office-license').value = rec.officeLicense; 
+            document.getElementById('it-software-select').value = rec.software; 
+            document.getElementById('it-qty').value = rec.qty; 
+        }
         function deleteITAsset(i) { itAssetsRecords.splice(i,1); renderITTable(); }
         function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; }
 
-        async function saveSalaryToCloudGlobal() { alert("Đã phát lệnh đồng bộ!"); }
+        async function saveSalaryToCloudGlobal() { alert("Đã phát lệnh đồng bộ lên Live Cloud!"); }
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadSalaryFromCloud(); toggleTaxFields(); resetITForm(); buildWidgetCalendar(currentMonth, currentYear);
+            loadSalaryFromCloud(); toggleTaxFields(); resetITForm(); renderITTable(); buildWidgetCalendar(currentMonth, currentYear);
             setInterval(() => { document.getElementById('live-system-clock').innerText = new Date().toLocaleString('vi-VN'); }, 1000);
         });
     </script>
