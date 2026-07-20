@@ -94,7 +94,6 @@
         }
         .compact-uploader-box input[type="file"] { background: #ffffff; }
 
-        /* KHU VỰC THUMBNAILS FILE ĐÃ TẢI LÊN */
         .preview-thumbnails-container {
             display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;
             padding: 10px; background: #f1f5f9; border-radius: 6px; border: 1px solid var(--border-color);
@@ -123,7 +122,6 @@
         .btn-action-edit { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
         .btn-action-delete { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
         .btn-action-view { background: #e0fdf4; color: #047857; border: 1px solid #a7f3d0; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; display: inline-flex; align-items: center; gap: 4px; }
-        .btn-action-qr { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
 
         .table-responsive { overflow-x: auto; margin-top: 15px; }
         .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
@@ -210,7 +208,6 @@
                 </div>
             </div>
 
-            <!-- THANH ĐIỀU HƯỚNG TAB ĐẦY ĐỦ 4 PHÂN HỆ -->
             <div class="nav-tabs">
                 <button type="button" class="nav-tab active" onclick="switchMainTab('salary')">💵 Tính Lương 16 Nhân Viên</button>
                 <button type="button" class="nav-tab" onclick="switchMainTab('payment')">🧾 Hồ Sơ Thanh Toán Văn Phòng</button>
@@ -407,7 +404,7 @@
                 </div>
             </div>
 
-            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT (ĐÃ KHÔI PHỤC ĐẦY ĐỦ) -->
+            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT (ĐẦY ĐỦ TẤT CẢ PHIÊN BẢN HĐH & OFFICE) -->
             <div id="tab-it-assets" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" id="it-form-title">Cập nhật danh mục hồ sơ quản lý Trang thiết bị CNTT</div>
@@ -422,46 +419,98 @@
                         <div class="grid-form">
                             <div class="form-group"><label>Thông số cấu hình</label><input type="text" id="it-config" required></div>
                             <div class="form-group">
-                                <label>Hệ điều hành (HĐH)</label>
+                                <label>Hệ điều hành (HĐH) Toàn tập</label>
                                 <select id="it-os">
-                                    <option value="Windows 11 Pro 64-bit" selected>Windows 11 Pro 64-bit</option>
-                                    <option value="Windows 10 Pro 64-bit">Windows 10 Pro 64-bit</option>
-                                    <option value="macOS Sequoia (v15.x)">macOS Sequoia (v15.x)</option>
-                                    <option value="Linux / Ubuntu Desktop">Linux / Ubuntu Desktop</option>
+                                    <optgroup label="Windows Hiện Đại">
+                                        <option value="Windows 11 Pro 64-bit" selected>Windows 11 Pro 64-bit</option>
+                                        <option value="Windows 11 Home">Windows 11 Home</option>
+                                        <option value="Windows 10 Pro 64-bit">Windows 10 Pro 64-bit</option>
+                                        <option value="Windows 10 Home">Windows 10 Home</option>
+                                    </optgroup>
+                                    <optgroup label="Windows Cổ Điển / Lịch Sử">
+                                        <option value="Windows 8.1 Pro">Windows 8.1 Pro</option>
+                                        <option value="Windows 7 Ultimate">Windows 7 Ultimate</option>
+                                        <option value="Windows 7 Professional">Windows 7 Professional</option>
+                                        <option value="Windows XP Professional">Windows XP Professional</option>
+                                    </optgroup>
+                                    <optgroup label="Apple macOS">
+                                        <option value="macOS Sequoia (v15.x)">macOS Sequoia (v15.x)</option>
+                                        <option value="macOS Sonoma (v14.x)">macOS Sonoma (v14.x)</option>
+                                        <option value="macOS Ventura (v13.x)">macOS Ventura (v13.x)</option>
+                                        <option value="macOS Monterey (v12.x)">macOS Monterey (v12.x)</option>
+                                        <option value="macOS Phiên bản cũ hơn">macOS Phiên bản cũ hơn</option>
+                                    </optgroup>
+                                    <optgroup label="Môi trường Khác">
+                                        <option value="Linux / Ubuntu Desktop">Linux / Ubuntu Desktop</option>
+                                        <option value="Linux Centos / RedHat">Linux Centos / RedHat</option>
+                                        <option value="Không chạy HĐH">Không chạy HĐH / Máy trạm Dumb</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Bản quyền HĐH</label>
                                 <select id="it-os-license">
                                     <option value="Chưa có bản quyền">Chưa có bản quyền</option>
-                                    <option value="Đã kích hoạt bản quyền OEM" selected>Đã kích hoạt bản quyền OEM</option>
+                                    <option value="Đã kích hoạt bản quyền OEM" selected>Đã kích hoạt bản quyền OEM (Theo máy)</option>
                                     <option value="Đã kích hoạt bản quyền Digital">Đã kích hoạt bản quyền Kỹ thuật số</option>
+                                    <option value="Bản quyền Enterprise Volume">Bản quyền Doanh nghiệp Volume</option>
                                 </select>
                             </div>
                         </div>
                         <div class="grid-form">
                             <div class="form-group">
-                                <label>Microsoft Office</label>
+                                <label>Bộ ứng dụng Văn phòng Microsoft Office</label>
                                 <select id="it-office">
-                                    <option value="Office 2021 LTSC Enterprise" selected>Office 2021 LTSC Enterprise</option>
-                                    <option value="Microsoft 365 Business">Microsoft 365 Business</option>
-                                    <option value="Không cài đặt Office">Không cài đặt Office</option>
+                                    <optgroup label="Đám mây / Hiện đại">
+                                        <option value="Microsoft 365 Enterprise">Microsoft 365 Enterprise</option>
+                                        <option value="Microsoft 365 Business">Microsoft 365 Business</option>
+                                        <option value="Office 2024 Professional Plus">Office 2024 Professional Plus</option>
+                                        <option value="Office 2021 LTSC Enterprise" selected>Office 2021 LTSC Enterprise</option>
+                                        <option value="Office 2019 Professional Plus">Office 2019 Professional Plus</option>
+                                    </optgroup>
+                                    <optgroup label="Phiên bản Lịch sử">
+                                        <option value="Office 2016 Professional">Office 2016 Professional</option>
+                                        <option value="Office 2013 Pro">Office 2013 Pro</option>
+                                        <option value="Office 2010 Pro">Office 2010 Pro</option>
+                                        <option value="Office 2007/2003 Legacy">Office 2007/2003 Cổ xưa</option>
+                                    </optgroup>
+                                    <optgroup label="Mã nguồn mở miễn phí">
+                                        <option value="WPS Office Suite">WPS Office Suite</option>
+                                        <option value="LibreOffice / OpenOffice">LibreOffice / OpenOffice</option>
+                                        <option value="Không cài đặt Office">Không cài đặt Office</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Bản quyền Office</label>
+                                <label>Bản quyền Microsoft Office</label>
                                 <select id="it-office-license">
                                     <option value="Chưa có bản quyền">Chưa có bản quyền</option>
                                     <option value="Bản quyền gắn liền tài khoản Cloud" selected>Bản quyền Tài khoản Cloud (M365)</option>
+                                    <option value="Kích hoạt bằng khóa Key cứng">Kích hoạt bằng Key bản quyền độc lập</option>
+                                    <option value="Kích hoạt qua máy chủ KMS nội bộ">Kích hoạt qua KMS nội bộ</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Phần mềm nghiệp vụ</label>
+                                <label>Phần mềm nghiệp vụ kế toán / Quản trị</label>
                                 <select id="it-software-select">
-                                    <option value="Chưa cấu hình nghiệp vụ" selected>❌ Không sử dụng</option>
-                                    <option value="MISA SME 2023 Enterprise">MISA SME 2023 Enterprise</option>
-                                    <option value="Asia ERP Enterprise System">Asia ERP Enterprise System</option>
-                                    <option value="Quasoft ERP Toàn diện">Quasoft ERP Toàn diện</option>
+                                    <option value="Chưa cấu hình nghiệp vụ" selected>❌ Không dùng phần mềm nghiệp vụ</option>
+                                    <optgroup label="Hệ sinh thái Kế toán MISA">
+                                        <option value="MISA SME 2023 Enterprise">MISA SME 2023 Enterprise</option>
+                                        <option value="MISA SME 2022">MISA SME 2022</option>
+                                        <option value="MISA SME 2021/2020">MISA SME 2021/2020</option>
+                                        <option value="MISA Mimosa (HCSN)">MISA Mimosa (Hành chính sự nghiệp)</option>
+                                        <option value="MISA AMIS Cloud Kế toán">MISA AMIS Cloud Kế toán</option>
+                                    </optgroup>
+                                    <optgroup label="Giải pháp Phần mềm ASIA">
+                                        <option value="Asia ERP Enterprise System">Asia ERP Enterprise System</option>
+                                        <option value="Asia Accounting v11 Pro">Asia Accounting v11 Professional</option>
+                                        <option value="Asia Accounting v9 / v7 Legacy">Asia Accounting v9 / v7 Legacy</option>
+                                    </optgroup>
+                                    <optgroup label="Giải pháp Phần mềm Quasoft">
+                                        <option value="Quasoft ERP Toàn diện">Quasoft ERP Toàn diện</option>
+                                        <option value="Quasoft Accounting Professional">Quasoft Accounting Professional</option>
+                                        <option value="Quasoft CM / HRM Modules">Quasoft CM / HRM Modules</option>
+                                    </optgroup>
                                 </select>
                             </div>
                         </div>
@@ -560,7 +609,7 @@
             if(event && event.currentTarget) event.currentTarget.classList.add('active');
         }
 
-        // ================= ENGINE TÍNH TOÁN BẢNG LƯƠNG NHÂN VIÊN =================
+        // ================= ENGINE BẢNG LƯƠNG NHÂN VIÊN =================
         function handleMinRegionPayChange() { reCalculateContractSalaries(); }
 
         function reCalculateContractSalaries() {
@@ -777,10 +826,10 @@
             const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = "";
             let totalChi = 0;
             paymentRecords.forEach((r, i) => {
-                let tax = document.getElementById('pay-tax-toggle').checked ? Math.round(r.pretax * 0.08) : 0;
-                let sum = r.pretax + tax; totalChi += sum;
+                let tax = document.getElementById('pay-tax-toggle').checked ? Math.round(r.pretax * r.qty * 0.08) : 0;
+                let sum = (r.pretax * r.qty) + tax; totalChi += sum;
                 let btnFile = r.files && r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="openMultiFileView('payment', ${i})"><i class="fa-solid fa-images"></i> Xem (${r.files.length})</button>` : `<span style="color:#94a3b8">Không</span>`;
-                tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.content}</td><td>${r.beneficiary}</td><td>${r.account} (${r.bank})</td><td class="text-center">${r.qty}</td><td class="text-right">${r.pretax.toLocaleString()}</td><td class="text-right">${tax.toLocaleString()}</td><td class="text-right font-bold">${sum.toLocaleString()}</td><td class="text-center">${btnFile}</td><td class="text-center"><span class="badge-status ${r.status==='Đã duyệt chi'?'badge-approved':'badge-pending'}">${r.status}</span></td><td class="text-center"><button class="btn-action-view" style="background:#fef3c7; color:#d97706; border-color:#fde68a;" onclick="editPayment(${i})">Sửa</button> <button class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button></td></tr>`;
+                tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.content}</td><td>${r.beneficiary}</td><td>${r.account} (${r.bank})</td><td class="text-center">${r.qty}</td><td class="text-right">${r.pretax.toLocaleString()}</td><td class="text-right">${tax.toLocaleString()}</td><td class="text-right font-bold">${sum.toLocaleString()}</td><td class="text-center">${btnFile}</td><td class="text-center"><span class="badge-status ${r.status==='Đã duyệt chi'?'badge-approved':'badge-pending'}">${r.status}</span></td><td class="text-center"><button class="btn-action-edit" onclick="editPayment(${i})">Sửa</button> <button class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button></td></tr>`;
             });
             document.getElementById('dash-paid-pay').innerText = totalChi.toLocaleString() + " VND";
         }
@@ -810,7 +859,7 @@
             telecomRecords.forEach((r, i) => {
                 totalCuoc += r.cost;
                 let btnFile = r.files && r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="openMultiFileView('telecom', ${i})"><i class="fa-solid fa-images"></i> Xem (${r.files.length})</button>` : `<span style="color:#94a3b8">Không</span>`;
-                tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.id}</td><td>${r.provider}</td><td class="text-center">${r.period}</td><td class="text-right font-bold">${r.cost.toLocaleString()} VND</td><td class="text-center">${btnFile}</td><td class="text-center"><span class="badge-status ${r.status==='Đã thanh toán'?'badge-approved':'badge-pending'}">${r.status}</span></td><td class="text-center"><button class="btn-action-view" style="background:#fef3c7; color:#d97706; border-color:#fde68a;" onclick="editTelecom(${i})">Sửa</button> <button class="btn-action-delete" onclick="deleteTelecom(${i})">Xóa</button></td></tr>`;
+                tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.id}</td><td>${r.provider}</td><td class="text-center">${r.period}</td><td class="text-right font-bold">${r.cost.toLocaleString()} VND</td><td class="text-center">${btnFile}</td><td class="text-center"><span class="badge-status ${r.status==='Đã thanh toán'?'badge-approved':'badge-pending'}">${r.status}</span></td><td class="text-center"><button class="btn-action-edit" onclick="editTelecom(${i})">Sửa</button> <button class="btn-action-delete" onclick="deleteTelecom(${i})">Xóa</button></td></tr>`;
             });
             document.getElementById('dash-pending-pay').innerText = totalCuoc.toLocaleString() + " VND";
         }
@@ -824,7 +873,7 @@
         function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; currentTelecomFiles = []; renderThumbnails('telecom'); }
 
-        // ================= PHÂN HỆ KIỂM KÊ THIẾT BỊ CNTT (ĐÃ PHỤC HỒI) =================
+        // ================= PHÂN HỆ KIỂM KÊ THIẾT BỊ CNTT =================
         function saveITRecord(e) {
             e.preventDefault(); 
             let idx = parseInt(document.getElementById('it-edit-index').value);
@@ -849,7 +898,7 @@
                     <td><span class="badge-status ${rec.software.includes('Không')?'badge-pending':'badge-approved'}">${rec.software}</span></td>
                     <td class="text-center font-bold">${rec.qty}</td>
                     <td class="text-center">
-                        <button type="button" class="btn-action-view" style="background:#fef3c7; color:#d97706; border-color:#fde68a;" onclick="editITAsset(${i})">Sửa</button> 
+                        <button type="button" class="btn-action-edit" onclick="editITAsset(${i})">Sửa</button> 
                         <button type="button" class="btn-action-delete" onclick="deleteITAsset(${i})">Xóa</button>
                     </td>
                 </tr>`; 
@@ -869,9 +918,6 @@
         function deleteITAsset(i) { itAssetsRecords.splice(i,1); renderITTable(); }
         function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; }
 
-        function setStatus(type, msg) {
-            document.getElementById('cloud-status-text').innerText = msg;
-        }
         async function saveSalaryToCloudGlobal() { alert("Đã đồng bộ lên hệ thống!"); }
 
         // Khởi tạo nền tảng ứng dụng ban đầu
@@ -879,7 +925,6 @@
             loadSalaryFromCloud(); toggleTaxFields(); resetITForm();
             setInterval(() => { document.getElementById('live-system-clock').innerText = new Date().toLocaleString('vi-VN'); }, 1000);
             
-            // Thiết lập Widget lịch vạn niên
             let calBody = document.getElementById('calendar-body-days');
             for(let i=1; i<=31; i++) { calBody.innerHTML += `<div class="calendar-day-cell ${i===20?'active-today':''}">${i}<span style="font-size:9px; color:#cbd5e1;">${i}</span></div>`; }
             document.getElementById('van-nien-live-data').innerHTML = `<div class="vannien-title">Lịch ngày hôm nay</div><div class="vannien-row"><span>Tiết khí:</span><span>Đại Thử</span></div><div class="vannien-row"><span>Trực ngày:</span><span>Thanh Long Hoàng Đạo</span></div>`;
