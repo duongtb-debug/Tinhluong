@@ -117,7 +117,7 @@
 
         .realtime-qr-wrapper { display: flex; gap: 20px; background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 15px; align-items: center; margin-top: 15px; }
         .realtime-qr-box { width: 110px; height: 110px; background: white; border: 1px solid var(--border-color); border-radius: 6px; padding: 5px; display: flex; align-items: center; justify-content: center; }
-        .realtime-qr-box canvas, .realtime-qr-box img { width: 100% !important; height: 100% !important; }
+        .realtime-qr-box canvas, .realtime-qr-box img { width: 100% !important; height: 100% !important; display: block; }
         .realtime-qr-desc { font-size: 12px; line-height: 1.5; color: #5b21b6; }
 
         /* LỊCH VẠN NIÊN PHÍA PHẢI */
@@ -408,7 +408,7 @@
         </div>
     </div>
 
-    <!-- KHUNG XEM CHI TIẾT FILE KHÔNG LỖI Ô TRẮNG (BLOB URL ENGINE) -->
+    <!-- KHUNG XEM CHI TIẾT FILE KHÔNG LỖI Ô TRẮNG -->
     <div id="filePreviewModal" class="modal" onclick="closeFilePreviewModal()">
         <div class="modal-content" style="max-width: 800px; width:95%;" onclick="event.stopPropagation()">
             <div class="card-title" id="preview-file-title">XEM CHI TIẾT TỆP ĐÍNH KÈM CHỨNG TỪ TRỰC TIẾP</div>
@@ -433,7 +433,7 @@
         let realtimeQrEngine = null;
         let activeBlobUrl = null;
 
-        // DANH SÁCH 16 NHÂN SỰ CHUẨN HOÁ: TOÀN BỘ SỐ TIỀN TẠM ỨNG ĐÃ ĐƯỢC CHUYỂN SANG HÀNG TRIỆU
+        // DANH SÁCH 16 NHÂN SỰ CHUẨN HOÁ
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "105004242307"},
@@ -472,292 +472,114 @@
                 if (row.tam_ung === undefined || row.tam_ung === null || isNaN(row.tam_ung)) { row.tam_ung = 0; }
                 
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung); sum_thuc_linh += o_thuc_linh;
-                tbody.innerHTML += `<tr><td class="text-center">${index + 1}</td><td class="font-bold"><a href="#" onclick="openIndividualPayslipModal(${index}); return false;"><i class="fa-solid fa-qrcode"></i> ${row.name}</a></td><td>${row.account}</td><td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td><td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap || 0}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td><td><input type="number" class="input-contract" value="${row.lcb_goc}" onchange="updateContractSalaryCell(${index}, this.value)"></td><td class="text-right">${luong_cb_he_thong.toLocaleString()}</td><td><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td><td><input type="number" class="input-salary-day" value="${row.P || 0}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td><td><input type="number" class="input-salary-day" value="${row.le_vr || 0}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td><td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold">${l_tong_cb.toLocaleString()}</td><td><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td><td><input type="number" step="0.01" class="input-edit" value="${row.phu_cap_lcv || 0}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td><td class="text-right">${row.lcv_goc.toLocaleString()}</td><td class="text-right" style="color:var(--purple); font-weight:bold;">${row.lcv_thucte.toLocaleString()}</td><td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right text-danger">${row.bao_hiem.toLocaleString()}</td><td class="text-center"><input type="text" class="input-advance-money" value="${Math.round(row.tam_ung).toLocaleString()}" oninput="handleAdvanceLiveMoneyInput(this, ${index})"></td><td class="text-right font-bold" style="background:#fef08a;">${o_thuc_linh.toLocaleString()}</td><td class="text-center"><button type="button" class="btn-action-delete" onclick="salaryData.splice(${index},1); renderSalaryTable();">Xóa</button></td></tr>`;
+                tbody.innerHTML += `<tr><td class="text-center">${index + 1}</td><td class="font-bold"><a href="#" onclick="openIndividualPayslipModal(${index}); return false;"><i class="fa-solid fa-qrcode"></i> ${row.name}</a></td><td>${row.account}</td><td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td><td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap || 0}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
+                
+                <!-- BỔ SUNG HIỂN THỊ PHÂN TÁCH ĐỊNH DẠNG TIỀN TỆ TRỰC QUAN CHO LƯƠNG KÝ HĐLĐ -->
+                <td class="text-right font-bold" style="color:#065f46; background:#ecfdf5; padding: 4px 8px; border: 1px dashed #10b981; border-radius:4px;">${Math.round(row.lcb_goc).toLocaleString()}</td>
+                
+                <td class="text-right">${luong_cb_he_thong.toLocaleString()}</td><td><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td><td><input type="number" class="input-salary-day" value="${row.P || 0}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td><td><input type="number" class="input-salary-day" value="${row.le_vr || 0}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td><td class="text-right">${row.l_thoigian.toLocaleString()}</td><td class="text-right">${row.le_phep_tt.toLocaleString()}</td><td class="text-right font-bold">${l_tong_cb.toLocaleString()}</td><td><input type="number" step="0.01" class="input-edit" value="${row.he_so_lcv}" onchange="updateSalaryCell(${index}, 'he_so_lcv', this.value)"></td><td><input type="number" step="0.01" class="input-edit" value="${row.phu_cap_lcv || 0}" onchange="updateSalaryCell(${index}, 'phu_cap_lcv', this.value)"></td><td class="text-right">${row.lcv_goc.toLocaleString()}</td><td class="text-right" style="color:var(--purple); font-weight:bold;">${row.lcv_thucte.toLocaleString()}</td><td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right text-danger">${row.bao_hiem.toLocaleString()}</td><td class="text-center"><input type="text" class="input-advance-money" value="${Math.round(row.tam_ung).toLocaleString()}" oninput="handleAdvanceLiveMoneyInput(this, ${index})"></td><td class="text-right font-bold" style="background:#fef08a;">${o_thuc_linh.toLocaleString()}</td><td class="text-center"><button type="button" class="btn-action-delete" onclick="salaryData.splice(${index},1); renderSalaryTable();">Xóa</button></td></tr>`;
             });
             document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString() + " VND"; document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND"; document.getElementById('v-total-lcv-text').innerText = sum_lcv_thucte.toLocaleString() + " VND"; document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
         }
 
         async function executeSendAllEmailsToStaffs() { let selectedMonth = document.getElementById('filter-month').value; let splitMonth = selectedMonth.split("-"); let monthLabel = splitMonth[1] + "/" + splitMonth[0]; if(!confirm(`Xác nhận gửi thư điện tử bảng lương tự động kì này?`)) return; document.getElementById('cloud-status-dot').className = "status-dot syncing"; const formData = new FormData(); formData.append("action", "send_emails"); formData.append("payload", JSON.stringify({ salaryData, month: monthLabel })); try { let res = await fetch(CLOUD_API_ENDPOINT, { method: 'POST', body: formData }); let txt = await res.text(); alert(txt); } catch(e){} finally { document.getElementById('cloud-status-dot').className = "status-dot"; } }
 
-        // LOGIC CHỨNG TỪ - THANH TOÁN VÀ VIỄN THÔNG
+        // LOGIC CHỨNG TỪ - THANH TOÁN VĂN PHÒNG VÀ VIỄN THÔNG
         function calculateFlexibleTax() { let qty = parseInt(document.getElementById('pay-qty').value) || 1; let pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0; let rate = parseFloat(document.getElementById('pay-tax-rate').value) || 0; let tax = Math.round((pretax * qty) * (rate / 100)); let total = Math.round((pretax * qty) + tax); document.getElementById('pay-tax-amount').value = tax.toLocaleString() + " VND"; document.getElementById('pay-total').value = total.toLocaleString() + " VND"; }
-        
-        function processAttachedFilesMulti(el, type) { 
-            let arr = type === 'payment' ? currentPaymentFiles : currentTelecomFiles; 
-            Array.from(el.files).forEach(f => { 
-                const r = new FileReader(); 
-                r.onload = function(e) { 
-                    arr.push({ name: f.name, base64: e.target.result, isImage: f.type.startsWith('image/'), type: f.type }); 
-                    renderThumbnailsZone(type); 
-                }; 
-                r.readAsDataURL(f); 
-            }); 
-            el.value = "";
-        }
-        
-        function removeAttachedFileItem(index, type) {
-            let arr = type === 'payment' ? currentPaymentFiles : currentTelecomFiles;
-            arr.splice(index, 1);
-            renderThumbnailsZone(type);
-        }
+        function processAttachedFilesMulti(el, type) { let arr = type === 'payment' ? currentPaymentFiles : currentTelecomFiles; Array.from(el.files).forEach(f => { const r = new FileReader(); r.onload = function(e) { arr.push({ name: f.name, base64: e.target.result, isImage: f.type.startsWith('image/'), type: f.type }); renderThumbnailsZone(type); }; r.readAsDataURL(f); }); el.value = ""; }
+        function removeAttachedFileItem(index, type) { let arr = type === 'payment' ? currentPaymentFiles : currentTelecomFiles; arr.splice(index, 1); renderThumbnailsZone(type); }
 
         function renderThumbnailsZone(type) { 
-            const z = document.getElementById(type === 'payment' ? 'payment-thumbnails-zone' : 'telecom-thumbnails-zone'); 
-            let arr = type === 'payment' ? currentPaymentFiles : currentTelecomFiles; 
-            if (arr.length === 0) { z.style.display = 'none'; return; } 
-            z.style.display = 'flex'; z.innerHTML = ""; 
+            const z = document.getElementById(type === 'payment' ? 'payment-thumbnails-zone' : 'telecom-thumbnails-zone'); let arr = type === 'payment' ? currentPaymentFiles : currentTelecomFiles; if (arr.length === 0) { z.style.display = 'none'; return; } z.style.display = 'flex'; z.innerHTML = ""; 
             arr.forEach((f, i) => { 
                 let contentHTML = f.isImage ? `<img src="${f.base64}" />` : `<div class="file-icon-box"><i class="fa-solid fa-file-pdf" style="color:var(--red);"></i></div>`;
-                z.innerHTML += `<div class="thumb-wrapper" onclick="openFileZoomDirectPreview(${i}, '${type}')">
-                    <button type="button" class="btn-delete-thumb" onclick="event.stopPropagation(); removeAttachedFileItem(${i}, '${type}')">×</button>
-                    ${contentHTML}
-                    <div class="file-title" title="${f.name}">${f.name}</div>
-                </div>`; 
+                z.innerHTML += `<div class="thumb-wrapper" onclick="openFileZoomDirectPreview(${i}, '${type}')"><button type="button" class="btn-delete-thumb" onclick="event.stopPropagation(); removeAttachedFileItem(${i}, '${type}')">×</button>${contentHTML}<div class="file-title" title="${f.name}">${f.name}</div></div>`; 
             }); 
         }
 
-        function base64ToBlobUrl(base64Data) {
-            try {
-                const parts = base64Data.split(';base64,');
-                const contentType = parts[0].split(':')[1];
-                const raw = window.atob(parts[1]);
-                const rawLength = raw.length;
-                const uInt8Array = new Uint8Array(rawLength);
-                for (let i = 0; i < rawLength; ++i) {
-                    uInt8Array[i] = raw.charCodeAt(i);
-                }
-                const blob = new Blob([uInt8Array], { type: contentType });
-                return URL.createObjectURL(blob);
-            } catch (e) {
-                return base64Data;
-            }
-        }
-
-        function openFileZoomDirectPreview(fileIndex, arrayType) {
-            let targetArray = arrayType === 'payment' ? currentPaymentFiles : currentTelecomFiles;
-            let fileObj = targetArray[fileIndex];
-            if (!fileObj) return;
-
-            if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); }
-
-            document.getElementById('filePreviewModal').style.display = "flex";
-            document.getElementById('preview-file-title').innerText = "TRÌNH XEM TRỰC TIẾP: " + fileObj.name;
-            
-            activeBlobUrl = base64ToBlobUrl(fileObj.base64);
-
-            let dlBtn = document.getElementById('btn-download-raw-file');
-            dlBtn.href = activeBlobUrl;
-            dlBtn.download = fileObj.name;
-
-            const targetBox = document.getElementById('preview-file-body-content');
-            
-            if (fileObj.isImage) {
-                targetBox.innerHTML = `<img src="${activeBlobUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" />`;
-            } else {
-                targetBox.innerHTML = `<iframe src="${activeBlobUrl}" width="100%" height="100%" style="border:none;"></iframe>`;
-            }
-        }
-
-        function closeFilePreviewModal() { 
-            document.getElementById('filePreviewModal').style.display = "none"; 
-            if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); activeBlobUrl = null; }
-        }
-        
-        function triggerViewTableFile(recordIndex, fileIndex, type) {
-            let rec = type === 'payment' ? paymentRecords[recordIndex] : telecomRecords[recordIndex];
-            if(!rec || !rec.files || !rec.files[fileIndex]) return;
-            
-            if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); }
-
-            document.getElementById('filePreviewModal').style.display = "flex";
-            let fileObj = rec.files[fileIndex];
-            document.getElementById('preview-file-title').innerText = "XEM CHỨNG TỪ: " + fileObj.name;
-            
-            activeBlobUrl = base64ToBlobUrl(fileObj.base64);
-
-            let dlBtn = document.getElementById('btn-download-raw-file');
-            dlBtn.href = activeBlobUrl; dlBtn.download = fileObj.name;
-
-            const targetBox = document.getElementById('preview-file-body-content');
-            if (fileObj.isImage) {
-                targetBox.innerHTML = `<img src="${activeBlobUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" />`;
-            } else {
-                targetBox.innerHTML = `<iframe src="${activeBlobUrl}" width="100%" height="100%" style="border:none;"></iframe>`;
-            }
-        }
+        function base64ToBlobUrl(base64Data) { try { const parts = base64Data.split(';base64,'); const contentType = parts[0].split(':')[1]; const raw = window.atob(parts[1]); const rawLength = raw.length; const uInt8Array = new Uint8Array(rawLength); for (let i = 0; i < rawLength; ++i) { uInt8Array[i] = raw.charCodeAt(i); } return URL.createObjectURL(new Blob([uInt8Array], { type: contentType })); } catch (e) { return base64Data; } }
+        function openFileZoomDirectPreview(fileIndex, arrayType) { let targetArray = arrayType === 'payment' ? currentPaymentFiles : currentTelecomFiles; let fileObj = targetArray[fileIndex]; if (!fileObj) return; if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); } document.getElementById('filePreviewModal').style.display = "flex"; document.getElementById('preview-file-title').innerText = "TRÌNH XEM TRỰC TIẾP: " + fileObj.name; activeBlobUrl = base64ToBlobUrl(fileObj.base64); let dlBtn = document.getElementById('btn-download-raw-file'); dlBtn.href = activeBlobUrl; dlBtn.download = fileObj.name; const targetBox = document.getElementById('preview-file-body-content'); if (fileObj.isImage) { targetBox.innerHTML = `<img src="${activeBlobUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" />`; } else { targetBox.innerHTML = `<iframe src="${activeBlobUrl}" width="100%" height="100%" style="border:none;"></iframe>`; } }
+        function closeFilePreviewModal() { document.getElementById('filePreviewModal').style.display = "none"; if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); activeBlobUrl = null; } }
+        function triggerViewTableFile(recordIndex, fileIndex, type) { let rec = type === 'payment' ? paymentRecords[recordIndex] : telecomRecords[recordIndex]; if(!rec || !rec.files || !rec.files[fileIndex]) return; if (activeBlobUrl) { URL.revokeObjectURL(activeBlobUrl); } document.getElementById('filePreviewModal').style.display = "flex"; let fileObj = rec.files[fileIndex]; document.getElementById('preview-file-title').innerText = "XEM CHỨNG TỪ: " + fileObj.name; activeBlobUrl = base64ToBlobUrl(fileObj.base64); let dlBtn = document.getElementById('btn-download-raw-file'); dlBtn.href = activeBlobUrl; dlBtn.download = fileObj.name; const targetBox = document.getElementById('preview-file-body-content'); if (fileObj.isImage) { targetBox.innerHTML = `<img src="${activeBlobUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" />`; } else { targetBox.innerHTML = `<iframe src="${activeBlobUrl}" width="100%" height="100%" style="border:none;"></iframe>`; } }
 
         function savePaymentRecord(e) { e.preventDefault(); paymentRecords.push({ content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value, account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value, qty: parseInt(document.getElementById('pay-qty').value) || 1, pretax: parseFloat(document.getElementById('pay-pretax-input').value) || 0, taxRate: document.getElementById('pay-tax-rate').value, status: document.getElementById('pay-status').value, files: [...currentPaymentFiles] }); document.getElementById('payment-main-form').reset(); currentPaymentFiles = []; renderPaymentTable(); syncDataToCloudServer(false); }
-        
         function renderPaymentTable() { 
             const tbody = document.getElementById('tbody-payment'); if(!tbody) return; tbody.innerHTML = ""; let total = 0; 
             paymentRecords.forEach((r, i) => { 
-                let sum = r.pretax * r.qty; total += sum; let filesLabel = "";
-                if(r.files && r.files.length > 0) {
-                    r.files.forEach((f, fi) => {
-                        filesLabel += `<a href="#" style="margin-right:5px; text-decoration:none;" onclick="triggerViewTableFile(${i}, ${fi}, 'payment'); return false;"><i class="fa-solid fa-file-eye"></i> Tệp ${fi+1}</a>`;
-                    });
-                } else { filesLabel = `<span style="color:#94a3b8;">Không có</span>`; }
+                let sum = r.pretax * r.qty; total += sum; let filesLabel = ""; if(r.files && r.files.length > 0) { r.files.forEach((f, fi) => { filesLabel += `<a href="#" style="margin-right:5px; text-decoration:none;" onclick="triggerViewTableFile(${i}, ${fi}, 'payment'); return false;"><i class="fa-solid fa-file-eye"></i> Tệp ${fi+1}</a>`; }); } else { filesLabel = `<span style="color:#94a3b8;">Không có</span>`; }
                 tbody.innerHTML += `<tr><td>${i+1}</td><td class="font-bold">${r.content}</td><td>${r.beneficiary}</td><td>${r.account}</td><td class="text-center">${r.qty}</td><td class="text-right">${r.pretax.toLocaleString()}</td><td class="text-right">${r.taxRate}%</td><td class="text-right font-bold">${sum.toLocaleString()}</td><td>${filesLabel}</td><td><span style="font-weight:bold;color:${r.status==='Đã duyệt chi'?'var(--green)':'var(--orange)'}">${r.status}</span></td><td><button class="btn-action-delete" onclick="paymentRecords.splice(${i},1); renderPaymentTable(); syncDataToCloudServer(false);">Xóa</button></td></tr>`; 
             }); 
             document.getElementById('dash-paid-pay').innerText = total.toLocaleString() + " VND"; renderThumbnailsZone('payment');
         }
         
         function saveTelecomRecord(e) { e.preventDefault(); telecomRecords.push({ id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value) || 0, status: document.getElementById('tel-status').value, files: [...currentTelecomFiles] }); document.getElementById('telecom-main-form').reset(); currentTelecomFiles = []; renderTelecomTable(); syncDataToCloudServer(false); }
-        
         function renderTelecomTable() { 
             const tbody = document.getElementById('tbody-telecom'); if(!tbody) return; tbody.innerHTML = ""; let total = 0; 
             telecomRecords.forEach((r, i) => { 
-                total += r.cost; let filesLabel = "";
-                if(r.files && r.files.length > 0) {
-                    r.files.forEach((f, fi) => {
-                        filesLabel += `<a href="#" style="margin-right:5px; text-decoration:none; color:var(--orange);" onclick="triggerViewTableFile(${i}, ${fi}, 'telecom'); return false;"><i class="fa-solid fa-file-invoice-dollar"></i> HĐ ${fi+1}</a>`;
-                    });
-                } else { filesLabel = `<span style="color:#94a3b8;">Không có</span>`; }
+                total += r.cost; let filesLabel = ""; if(r.files && r.files.length > 0) { r.files.forEach((f, fi) => { filesLabel += `<a href="#" style="margin-right:5px; text-decoration:none; color:var(--orange);" onclick="triggerViewTableFile(${i}, ${fi}, 'telecom'); return false;"><i class="fa-solid fa-file-invoice-dollar"></i> HĐ ${fi+1}</a>`; }); } else { filesLabel = `<span style="color:#94a3b8;">Không có</span>`; }
                 tbody.innerHTML += `<tr><td>${i+1}</td><td class="font-bold">${r.id}</td><td>${r.provider}</td><td class="text-center">${r.period}</td><td class="text-right">${r.cost.toLocaleString()}</td><td>${filesLabel}</td><td><span style="font-weight:bold;color:${r.status==='Đã thanh toán'?'var(--green)':'var(--orange)'}">${r.status}</span></td><td><button class="btn-action-delete" onclick="telecomRecords.splice(${i},1); renderTelecomTable(); syncDataToCloudServer(false);">Xóa</button></td></tr>`; 
             }); 
             document.getElementById('dash-pending-pay').innerText = total.toLocaleString() + " VND"; renderThumbnailsZone('telecom');
         }
 
-        // PHÂN HỆ CNTT - MÃ QR SỬA REALTIME ĐỒNG THỜI
-        function autoGenerateAssetID() { 
-            let p = document.getElementById('it-device-type').value; let max = 0; 
-            itAssetsRecords.forEach(r => { if (r.serialId && r.serialId.startsWith(p)) { let n = parseInt(r.serialId.split("-")[2]); if (n > max) max = n; } }); 
-            document.getElementById('it-serial-id').value = `${p}-2026-${String(max + 1).padStart(3, '0')}`; 
-        }
-        
-        function triggerRealtimeFormQR() {
-            let u = document.getElementById('it-user').value.trim() || "(Chưa nhập)";
-            let d = document.getElementById('it-dept').value.trim() || "(Chưa nhập)";
-            let s = document.getElementById('it-serial-id').value;
-            let n = document.getElementById('it-name').value.trim() || "(Chưa nhập model)";
-            let c = document.getElementById('it-config').value.trim() || "(Chưa nhập cấu hình)";
-            let os = document.getElementById('it-os').value;
-            let off = document.getElementById('it-office').value;
-            let sw = document.getElementById('it-software-select').value;
-            
-            let payloadText = `Mã TS: ${s}\nSử dụng: ${u}\nBộ phận: ${d}\nThiết bị: ${n}\nCấu hình: ${c}\nHĐH: ${os}\nOffice: ${off}\nPhần mềm: ${sw}`;
-            
-            document.getElementById('form-realtime-qr-zone').innerHTML = "";
-            realtimeQrEngine = new QRCode(document.getElementById('form-realtime-qr-zone'), {
-                text: payloadText, width: 100, height: 100, colorDark: "#4c1d95", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
-            });
-            document.getElementById('form-realtime-text-preview').innerHTML = `Mã: <strong>${s}</strong> - Nhân sự: <b>${u}</b><br>Phòng: ${d}<br>Model: ${n}`;
-        }
-
+        // PHÂN HỆ CNTT - MÃ QR
+        function autoGenerateAssetID() { let p = document.getElementById('it-device-type').value; let max = 0; itAssetsRecords.forEach(r => { if (r.serialId && r.serialId.startsWith(p)) { let n = parseInt(r.serialId.split("-")[2]); if (n > max) max = n; } }); document.getElementById('it-serial-id').value = `${p}-2026-${String(max + 1).padStart(3, '0')}`; }
+        function triggerRealtimeFormQR() { let u = document.getElementById('it-user').value.trim() || "(Chưa nhập)"; let d = document.getElementById('it-dept').value.trim() || "(Chưa nhập)"; let s = document.getElementById('it-serial-id').value; let n = document.getElementById('it-name').value.trim() || "(Chưa nhập model)"; let c = document.getElementById('it-config').value.trim() || "(Chưa nhập cấu hình)"; let os = document.getElementById('it-os').value; let off = document.getElementById('it-office').value; let sw = document.getElementById('it-software-select').value; let payloadText = `Mã TS: ${s}\nSử dụng: ${u}\nBộ phận: ${d}\nThiết bị: ${n}\nCấu hình: ${c}\nHĐH: ${os}\nOffice: ${off}\nPhần mềm: ${sw}`; document.getElementById('form-realtime-qr-zone').innerHTML = ""; realtimeQrEngine = new QRCode(document.getElementById('form-realtime-qr-zone'), { text: payloadText, width: 100, height: 100, colorDark: "#4c1d95", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); document.getElementById('form-realtime-text-preview').innerHTML = `Mã: <strong>${s}</strong> - Nhân sự: <b>${u}</b><br>Phòng: ${d}<br>Model: ${n}`; }
         function exportITSummaryReportGoogleSheet() { if(itAssetsRecords.length === 0) return alert("Không có dữ liệu thiết bị!"); syncDataToCloudServer(false); window.open(CLOUD_API_ENDPOINT + "?action=export_it_report", '_blank'); }
-
-        function saveITRecord(e) { 
-            e.preventDefault();
-            let obj = { user: document.getElementById('it-user').value, dept: document.getElementById('it-dept').value, serialId: document.getElementById('it-serial-id').value, name: document.getElementById('it-name').value, config: document.getElementById('it-config').value, os: document.getElementById('it-os').value, osLicense: document.getElementById('it-os-license').value, office: document.getElementById('it-office').value, officeLicense: document.getElementById('it-office-license').value, software: document.getElementById('it-software-select').value, qty: parseInt(document.getElementById('it-qty').value) || 1 }; 
-            itAssetsRecords.push(obj); document.getElementById('it-main-form').reset(); autoGenerateAssetID(); renderITTable(); triggerRealtimeFormQR(); syncDataToCloudServer(false); 
-        }
+        function saveITRecord(e) { e.preventDefault(); let obj = { user: document.getElementById('it-user').value, dept: document.getElementById('it-dept').value, serialId: document.getElementById('it-serial-id').value, name: document.getElementById('it-name').value, config: document.getElementById('it-config').value, os: document.getElementById('it-os').value, osLicense: document.getElementById('it-os-license').value, office: document.getElementById('it-office').value, officeLicense: document.getElementById('it-office-license').value, software: document.getElementById('it-software-select').value, qty: parseInt(document.getElementById('it-qty').value) || 1 }; itAssetsRecords.push(obj); document.getElementById('it-main-form').reset(); autoGenerateAssetID(); renderITTable(); triggerRealtimeFormQR(); syncDataToCloudServer(false); }
 
         function renderITTable() { 
-            const tbody = document.getElementById('tbody-it-assets'); if(!tbody) return; tbody.innerHTML = ""; 
-            let depts = {}, osMap = {}, officeMap = {}, licenseMap = { "HĐH 1 Năm (1YR)": 0, "Office 1 Năm (1YR)": 0 }; 
-            
+            const tbody = document.getElementById('tbody-it-assets'); if(!tbody) return; tbody.innerHTML = ""; let depts = {}, osMap = {}, officeMap = {}, licenseMap = { "HĐH 1 Năm (1YR)": 0, "Office 1 Năm (1YR)": 0 }; 
             itAssetsRecords.forEach((rec, i) => { 
-                depts[rec.dept] = (depts[rec.dept] || 0) + rec.qty; osMap[rec.os] = (osMap[rec.os] || 0) + rec.qty; officeMap[rec.office] = (officeMap[rec.office] || 0) + rec.qty; 
-                if(rec.osLicense.includes("1 năm") || rec.osLicense.includes("1YR")) licenseMap["HĐH 1 Năm (1YR)"] += rec.qty; 
-                if(rec.officeLicense.includes("1 năm") || rec.officeLicense.includes("1YR")) licenseMap["Office 1 Năm (1YR)"] += rec.qty; 
-                
+                depts[rec.dept] = (depts[rec.dept] || 0) + rec.qty; osMap[rec.os] = (osMap[rec.os] || 0) + rec.qty; officeMap[rec.office] = (officeMap[rec.office] || 0) + rec.qty; if(rec.osLicense.includes("1 năm") || rec.osLicense.includes("1YR")) licenseMap["HĐH 1 Năm (1YR)"] += rec.qty; if(rec.officeLicense.includes("1 năm") || rec.officeLicense.includes("1YR")) licenseMap["Office 1 Năm (1YR)"] += rec.qty; 
                 tbody.innerHTML += `<tr><td>${i+1}</td><td class="font-bold">${rec.user}</td><td>${rec.dept}</td><td class="font-bold">${rec.serialId}</td><td><b>${rec.name}</b></td><td>${rec.config}</td><td>${rec.os}<br><small style="color:#64748b">${rec.osLicense}</small></td><td>${rec.office}<br><small style="color:#64748b">${rec.officeLicense}</small></td><td style="color:var(--purple);font-weight:bold;">${rec.software}</td><td class="text-center font-bold">${rec.qty}</td><td class="text-center"><div class="table-qr-holder" id="table-qr-zone-${i}"></div><br><a href="#" style="font-size:10px;font-weight:bold;color:var(--blue);text-decoration:none;" onclick="triggerPrintSingleQR('${rec.serialId}', '${rec.user}', '${rec.name}'); return false;">[In Tem Đắp]</a></td><td><button class="btn-action-delete" type="button" onclick="itAssetsRecords.splice(${i},1); renderITTable(); syncDataToCloudServer(false);">Xóa</button></td></tr>`; 
             }); 
-
-            itAssetsRecords.forEach((rec, i) => {
-                new QRCode(document.getElementById(`table-qr-zone-${i}`), {
-                    text: `Mã TS: ${rec.serialId}\nSử dụng: ${rec.user}\nBộ phận: ${rec.dept}\nThiết bị: ${rec.name}\nCấu hình: ${rec.config}\nHĐH: ${rec.os}\nOffice: ${rec.office}`,
-                    width: 45, height: 45, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
-                });
-            });
-
+            itAssetsRecords.forEach((rec, i) => { new QRCode(document.getElementById(`table-qr-zone-${i}`), { text: `Mã TS: ${rec.serialId}\nSử dụng: ${rec.user}\nBộ phận: ${rec.dept}\nThiết bị: ${rec.name}\nCấu hình: ${rec.config}\nHĐH: ${rec.os}\nOffice: ${rec.office}`, width: 45, height: 45, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); });
             document.getElementById('sum-it-dept').innerHTML = Object.keys(depts).map(k => `<li><span>${k}:</span> <b>${depts[k]} máy</b></li>`).join(''); document.getElementById('sum-it-os').innerHTML = Object.keys(osMap).map(k => `<li><span>${k}:</span> <b>${osMap[k]} máy</b></li>`).join(''); document.getElementById('sum-it-office').innerHTML = Object.keys(officeMap).map(k => `<li><span>${k}:</span> <b>${officeMap[k]} bản</b></li>`).join(''); document.getElementById('sum-it-license').innerHTML = Object.keys(licenseMap).map(k => `<li><span>${k}:</span> <b style="color:var(--orange);">${licenseMap[k]} gói</b></li>`).join(''); document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.reduce((acc, r) => acc + r.qty, 0) + " Thiết bị"; 
         }
 
-        function triggerPrintSingleQR(serialId, user, name) {
-            let printWindow = window.open('', '_blank', 'width=350,height=350');
-            printWindow.document.write(`<html><head><title>In Mã Tem Tài Sản</title><style>body{font-family:Arial;text-align:center;padding:15px;}</style></head><body><h5 style="margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.5px;">TÀI SẢN CNTT DOANH NGHIỆP</h5><div id="print-qr" style="display:inline-block;margin-bottom:5px;"></div><div style="font-size:12px;font-weight:bold;color:#1e293b;">MÃ ID: ${serialId}</div><div style="font-size:11px;color:#475569;margin-top:2px;">Sử dụng: ${user} - ${name}</div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script><script>setTimeout(function(){ new QRCode(document.getElementById('print-qr'), { text: 'Mã TS: ${serialId}', width: 130, height: 130 }); setTimeout(function(){ window.print(); window.close(); }, 350); }, 200);<\/script></body></html>`);
-            printWindow.document.close();
-        }
-
+        function triggerPrintSingleQR(serialId, user, name) { let printWindow = window.open('', '_blank', 'width=350,height=350'); printWindow.document.write(`<html><head><title>In Mã Tem Tài Sản</title><style>body{font-family:Arial;text-align:center;padding:15px;}</style></head><body><h5 style="margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.5px;">TÀI SẢN CNTT DOANH NGHIỆP</h5><div id="print-qr" style="display:inline-block;margin-bottom:5px;"></div><div style="font-size:12px;font-weight:bold;color:#1e293b;">MÃ ID: ${serialId}</div><div style="font-size:11px;color:#475569;margin-top:2px;">Sử dụng: ${user} - ${name}</div><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script><script>setTimeout(function(){ new QRCode(document.getElementById('print-qr'), { text: 'Mã TS: ${serialId}', width: 130, height: 130 }); setTimeout(function(){ window.print(); window.close(); }, 350); }, 200);<\/script></body></html>`); printWindow.document.close(); }
         function openIndividualPayslipModal(index) { let row = salaryData[index]; if(!row) return; document.getElementById('payslipModal').style.display = "flex"; document.getElementById('qrcode-canvas-zone').innerHTML = ""; let thuclinh = Math.round(row.l_thoigian + row.le_phep_tt + row.lcv_thucte - row.bao_hiem - row.tam_ung); document.getElementById('modal-qr-title').innerText = "PHIẾU LƯƠNG: " + row.name.toUpperCase(); new QRCode(document.getElementById('qrcode-canvas-zone'), { text: `NHÂN VIÊN: ${row.name}\nSỐ TÀI KHOẢN: ${row.account}\nNGÀY CÔNG NT: ${row.NT}\nTHỰC LĨNH NET: ${thuclinh.toLocaleString()} VND`, width: 135, height: 135 }); document.getElementById('payslip-text-details').innerHTML = `<b>Họ và tên:</b> ${row.name}<br><b>Tài khoản ngân hàng:</b> ${row.account}<br><b>Số ngày công thực tế (NT):</b> ${row.NT} ngày<br><b>Lương thời gian:</b> ${row.l_thoigian.toLocaleString()} VND<br><b>Lương lễ phép:</b> ${row.le_phep_tt.toLocaleString()} VND<br><b>Lương công việc thực nhận:</b> ${row.lcv_thucte.toLocaleString()} VND<br><b>Trích trừ BHXH (10.5%):</b> -${row.bao_hiem.toLocaleString()} VND<br><b>Khoản tạm ứng:</b> -${row.tam_ung.toLocaleString()} VND<br><hr style="border:none; border-top:1px dashed #cbd5e1; margin:6px 0;"><span style="color:var(--blue);font-weight:bold;font-size:13px;">THỰC LĨNH NET: ${thuclinh.toLocaleString()} VND</span>`; }
         function closePayslipModal() { document.getElementById('payslipModal').style.display = "none"; }
         function switchMainTab(name) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active')); document.getElementById('tab-' + name).classList.add('active'); document.querySelector(`.nav-tabs .nav-tab[data-tab="${name}"]`).classList.add('active'); }
 
         // LỊCH VẠN NIÊN THÔNG MINH
-        function getComprehensiveLunarDetails(d, m, y) { 
-            let offset = (new Date(y, m - 1, d) - new Date(2026, 0, 1)) / (1000 * 60 * 60 * 24); 
-            let dAm = d - 14; let mAm = m - 1; if(dAm <= 0) { dAm += 30; mAm -= 1; } if(mAm <= 0) mAm = 12; 
-            const CAN_NGAY = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"]; 
-            const CHI_NGAY = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"]; 
-            const HOANG_DAO = ["Thanh Long", "Minh Đường", "Kim Đường", "Ngọc Đường", "Tư Mệnh", "Doanh Thiên"];
-            const TRUC_NGAY = ["Trực Kiến", "Trực Trừ", "Trực Mãn", "Trực Bình", "Trực Định", "Trực Chấp", "Trực Phá", "Trực Nguy", "Trực Thành", "Trực Thu", "Trực Khai", "Trực Bế"];
-            const TIET_KHI = ["Đông Chí", "Tiểu Hàn", "Đại Hàn", "Lập Xuân", "Vũ Thủy", "Kinh Trập", "Xuân Phân", "Thanh Minh", "Cốc Vũ", "Lập Hạ", "Tiểu Mãn", "Mang Chủng", "Hạ Chí", "Tiểu Thử", "Đại Thử", "Lập Thu", "Xử Thử", "Bạch Lộ", "Thu Phân", "Hàn Lộ", "Sương Giáng", "Lập Đông", "Tiểu Tuyết", "Đại Tuyết"];
-            let canChiDayStr = CAN_NGAY[Math.abs(Math.floor(offset + 2)) % 10] + " " + CHI_NGAY[Math.abs(Math.floor(offset + 4)) % 12];
-            let trucKhaiIndex = Math.abs(Math.floor(offset + 5)) % 12;
-            let tietKhiStr = TIET_KHI[Math.floor((m * 2 + (d > 15 ? 1 : 0)) % 24)];
-            let hoangDaoStr = HOANG_DAO[Math.abs(Math.floor(offset)) % HOANG_DAO.length];
-            return { lunarDay: dAm, lunarMonth: mAm, lunarYear: "Bính Ngọ", canChi: canChiDayStr, truc: TRUC_NGAY[trucKhaiIndex], tietKhi: tietKhiStr, hoangDao: hoangDaoStr }; 
-        }
-
-        function buildWidgetCalendar() { 
-            const container = document.getElementById('calendar-body-days'); if(!container) return; container.innerHTML = ""; 
-            let firstDayIndex = new Date(currentYear, currentMonth, 1).getDay(); let blanks = firstDayIndex === 0 ? 6 : firstDayIndex - 1; 
-            for (let b = 0; b < blanks; b++) { container.innerHTML += `<div class="calendar-day-cell blank-cell"></div>`; } 
-            let totalDays = new Date(currentYear, currentMonth + 1, 0).getDate(); let today = new Date(); 
-            for (let day = 1; day <= totalDays; day++) { 
-                let info = getComprehensiveLunarDetails(day, currentMonth + 1, currentYear); 
-                let isToday = (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()); 
-                container.innerHTML += `<div class="calendar-day-cell ${isToday ? 'active-today' : ''}" onclick="showDayVanNienInfo(${day})"><div>${day}</div><div class="lunar-num">${info.lunarDay}</div></div>`; 
-            } 
-            showDayVanNienInfo(today.getDate()); 
-        }
+        function getComprehensiveLunarDetails(d, m, y) { let offset = (new Date(y, m - 1, d) - new Date(2026, 0, 1)) / (1000 * 60 * 60 * 24); let dAm = d - 14; let mAm = m - 1; if(dAm <= 0) { dAm += 30; mAm -= 1; } if(mAm <= 0) mAm = 12; const CAN_NGAY = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"]; const CHI_NGAY = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"]; const HOANG_DAO = ["Thanh Long", "Minh Đường", "Kim Đường", "Ngọc Đường", "Tư Mệnh", "Doanh Thiên"]; const TRUC_NGAY = ["Trực Kiến", "Trực Trừ", "Trực Mãn", "Trực Bình", "Trực Định", "Trực Chấp", "Trực Phá", "Trực Nguy", "Trực Thành", "Trực Thu", "Trực Khai", "Trực Bế"]; const TIET_KHI = ["Đông Chí", "Tiểu Hàn", "Đại Hàn", "Lập Xuân", "Vũ Thủy", "Kinh Trập", "Xuân Phân", "Thanh Minh", "Cốc Vũ", "Lập Hạ", "Tiểu Mãn", "Mang Chủng", "Hạ Chí", "Tiểu Thử", "Đại Thử", "Lập Thu", "Xử Thử", "Bạch Lộ", "Thu Phân", "Hàn Lộ", "Sương Giáng", "Lập Đông", "Tiểu Tuyết", "Đại Tuyết"]; let canChiDayStr = CAN_NGAY[Math.abs(Math.floor(offset + 2)) % 10] + " " + CHI_NGAY[Math.abs(Math.floor(offset + 4)) % 12]; let trucKhaiIndex = Math.abs(Math.floor(offset + 5)) % 12; let tietKhiStr = TIET_KHI[Math.floor((m * 2 + (d > 15 ? 1 : 0)) % 24)]; let hoangDaoStr = HOANG_DAO[Math.abs(Math.floor(offset)) % HOANG_DAO.length]; return { lunarDay: dAm, lunarMonth: mAm, lunarYear: "Bính Ngọ", canChi: canChiDayStr, truc: TRUC_NGAY[trucKhaiIndex], tietKhi: tietKhiStr, hoangDao: hoangDaoStr }; }
+        function buildWidgetCalendar() { const container = document.getElementById('calendar-body-days'); if(!container) return; container.innerHTML = ""; let firstDayIndex = new Date(currentYear, currentMonth, 1).getDay(); let blanks = firstDayIndex === 0 ? 6 : firstDayIndex - 1; for (let b = 0; b < blanks; b++) { container.innerHTML += `<div class="calendar-day-cell blank-cell"></div>`; } let totalDays = new Date(currentYear, currentMonth + 1, 0).getDate(); let today = new Date(); for (let day = 1; day <= totalDays; day++) { let info = getComprehensiveLunarDetails(day, currentMonth + 1, currentYear); let isToday = (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()); container.innerHTML += `<div class="calendar-day-cell ${isToday ? 'active-today' : ''}" onclick="showDayVanNienInfo(${day})"><div>${day}</div><div class="lunar-num">${info.lunarDay}</div></div>`; } showDayVanNienInfo(today.getDate()); }
         function navigateWidgetMonth(dir) { currentMonth += dir; if(currentMonth > 11) { currentMonth = 0; currentYear++; } else if(currentMonth < 0) { currentMonth = 11; currentYear--; } buildWidgetCalendar(); }
-        
-        function showDayVanNienInfo(d) { 
-            let info = getComprehensiveLunarDetails(d, currentMonth + 1, currentYear); 
-            document.getElementById('van-nien-live-data').innerHTML = `
-                <div class="vannien-title">Thông Tin Ngày Hệ Thống</div>
-                <div class="vannien-row"><span>Dương lịch:</span><span>Ngày ${d} tháng ${currentMonth+1} năm ${currentYear}</span></div>
-                <div class="vannien-row"><span>Âm lịch:</span><span style="color:var(--orange)">Ngày ${info.lunarDay} tháng ${info.lunarMonth} năm Bính Ngọ</span></div>
-                <div class="vannien-row"><span>Can Chi Ngày:</span><span>Ngày ${info.canChi}</span></div>
-                <div class="vannien-row"><span>Tiết khí:</span><span style="color:var(--green)">${info.tietKhi}</span></div>
-                <div class="vannien-row"><span>Giờ Hoàng Đạo:</span><span>Thần Không - ${info.hoangDao} Cát</span></div>
-                <div class="vannien-row"><span>Khuyên trực:</span><span>${info.truc}</span></div>
-            `; 
-        }
+        function showDayVanNienInfo(d) { let info = getComprehensiveLunarDetails(d, currentMonth + 1, currentYear); document.getElementById('van-nien-live-data').innerHTML = `<div class="vannien-title">Thông Tin Ngày Hệ Thống</div><div class="vannien-row"><span>Dương lịch:</span><span>Ngày ${d} tháng ${currentMonth+1} năm ${currentYear}</span></div><div class="vannien-row"><span>Âm lịch:</span><span style="color:var(--orange)">Ngày ${info.lunarDay} tháng ${info.lunarMonth} năm Bính Ngọ</span></div><div class="vannien-row"><span>Can Chi Ngày:</span><span>Ngày ${info.canChi}</span></div><div class="vannien-row"><span>Tiết khí:</span><span style="color:var(--green)">${info.tietKhi}</span></div><div class="vannien-row"><span>Giờ Hoàng Đạo:</span><span>Thần Không - ${info.hoangDao} Cát</span></div><div class="vannien-row"><span>Khuyên trực:</span><span>${info.truc}</span></div>`; }
 
-        // ĐỒNG BỘ DỮ LIỆU CLOUD SERVER - ĐÃ THÊM HÀM ALERT BÁO CÁO TRẠNG THÁI TRỰC QUAN
+        // ĐỒNG BỘ CLOUD VÀ GỬI EMAIL - TÁCH BIỆT THEO TỪNG THÁNG
         async function syncDataToCloudServer(showAlert = false) { 
             document.getElementById('cloud-status-dot').className = "status-dot syncing"; 
             document.getElementById('live-sync-lbl').innerText = "ĐANG ĐỒNG BỘ...";
             document.getElementById('live-sync-lbl').style.color = "var(--orange)";
             
+            let selectedMonth = document.getElementById('filter-month').value; // Nhận diện biến tháng (Ví dụ: 2026-06)
+            
             const formData = new FormData(); 
-            formData.append("data", JSON.stringify({ salaryData, paymentRecords, telecomRecords, itAssetsRecords })); 
+            formData.append("data", JSON.stringify({ salaryData, paymentRecords, telecomRecords, itAssetsRecords, month_key: selectedMonth })); 
             
             try { 
                 await fetch(CLOUD_API_ENDPOINT, { method: 'POST', mode: 'no-cors', body: formData }); 
                 document.getElementById('live-sync-lbl').innerText = "ĐỒNG BỘ THÀNH CÔNG";
                 document.getElementById('live-sync-lbl').style.color = "var(--green)";
                 if (showAlert) {
-                    alert("🎉 Hệ thống báo cáo: Đã đồng bộ toàn bộ dữ liệu bảng lương và phân hệ quản trị lên Google Cloud Server thành công!");
+                    alert("🎉 Hệ thống báo cáo: Đã đồng bộ dữ liệu bảng lương tách biệt theo kì tháng " + selectedMonth + " lên Google Cloud Server thành công!");
                 }
             } catch(e){
                 document.getElementById('live-sync-lbl').innerText = "LỖI KẾT NỐI API";
                 document.getElementById('live-sync-lbl').style.color = "var(--red)";
-                if (showAlert) {
-                    alert("❌ Lỗi: Không thể kết nối với Cloud Server. Vui lòng kiểm tra lại mã API Endpoint đường truyền.");
-                }
+                if (showAlert) alert("❌ Lỗi: Không thể kết nối với Cloud Server.");
             } finally { 
                 document.getElementById('cloud-status-dot').className = "status-dot"; 
             } 
         }
         
-        // CƠ CHẾ ĐỐI CHIẾU THÔNG MINH
         async function fetchDataFromCloudServer() { 
             try { 
-                const res = await fetch(CLOUD_API_ENDPOINT + "?action=read"); const d = await res.json(); 
+                let selectedMonth = document.getElementById('filter-month').value;
+                const res = await fetch(CLOUD_API_ENDPOINT + "?action=read&month=" + selectedMonth); const d = await res.json(); 
                 salaryData = JSON.parse(JSON.stringify(default16Staffs));
                 
                 if(d && d.salaryData && d.salaryData.length > 0) { 
