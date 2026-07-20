@@ -367,7 +367,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG VÀ INTERNET -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG VÀ INTERNET (ĐÃ CHUẨN HÓA ĐỊNH DẠNG KỲ CƯỚC VIỆT NAM) -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" id="telecom-form-title">Cập nhật cước dịch vụ Internet & Đường truyền số liệu</div>
@@ -748,29 +748,22 @@
         // ================= ENGINE PHÂN TÁCH CẤU HÌNH BIỆT LẬP THEO THÁNG =================
         function handleMonthChangeSelect() {
             let selectedMonth = document.getElementById('filter-month').value;
-            
-            // Định dạng text trực quan trên Dashboard cơ cấu chi trả
             let splitMonth = selectedMonth.split("-");
             document.getElementById('visual-current-month-lbl').innerText = splitMonth[1] + "/" + splitMonth[0];
 
-            // Nếu tháng này chưa từng có cấu hình lịch sử, kế thừa từ cấu hình mặc định cơ sở
             if (!salaryConfigsByMonth[selectedMonth]) {
                 salaryConfigsByMonth[selectedMonth] = { vung: 4140000, base: 2530000, lcv: 2087970 };
             }
 
-            // Đẩy giá trị lịch sử của tháng lên form input hiển thị bên trên
             document.getElementById('config-vung-pay').value = salaryConfigsByMonth[selectedMonth].vung;
             document.getElementById('config-base-pay').value = salaryConfigsByMonth[selectedMonth].base;
             document.getElementById('config-lcv-pay').value = salaryConfigsByMonth[selectedMonth].lcv;
 
-            // Chạy lại bảng lương tĩnh theo các thông số cấu hình riêng biệt của tháng đó
             reCalculateContractSalaries();
         }
 
         function handleConfigChangeLive() {
             let selectedMonth = document.getElementById('filter-month').value;
-            
-            // Cập nhật giá trị vào đúng ô nhớ lưu trữ của tháng đang được chọn
             salaryConfigsByMonth[selectedMonth].vung = parseFloat(document.getElementById('config-vung-pay').value) || 0;
             salaryConfigsByMonth[selectedMonth].base = parseFloat(document.getElementById('config-base-pay').value) || 0;
             salaryConfigsByMonth[selectedMonth].lcv = parseFloat(document.getElementById('config-lcv-pay').value) || 0;
@@ -793,10 +786,8 @@
         function renderSalaryTable() {
             let selectedMonth = document.getElementById('filter-month').value;
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
-            
             let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0;
             
-            // Lấy bộ ba chỉ số độc lập từ tháng hiện hành
             const CURRENT_VUNG_PRICE = salaryConfigsByMonth[selectedMonth].vung;
             const CURRENT_BASE_PRICE = salaryConfigsByMonth[selectedMonth].base;
             const CURRENT_LCV_PRICE  = salaryConfigsByMonth[selectedMonth].lcv;
@@ -885,9 +876,40 @@
         function deletePayment(i) { paymentRecords.splice(i,1); renderPaymentTable(); }
         function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; currentPaymentFiles = []; renderThumbnails('payment'); calculateFlexibleTax(); }
 
-        // ================= PHÂN HỆ CƯỚC VIỄN THÔNG =================
+        // ================= PHÂN HỆ CƯỚC VIỄN THÔNG (ĐỊNH DẠNG VIỆT NAM) =================
+        // Hàm chuyển đổi định dạng từ YYYY-MM sang "Tháng MM / YYYY" chuẩn Việt Nam
+        function formatVietnamesePeriod(periodStr) {
+            if (!periodStr || !periodStr.includes("-")) return periodStr;
+            let parts = periodStr.split("-");
+            return `Tháng ${parts[1]} / ${parts[0]}`;
+        }
+
         function saveTelecomRecord(e) { e.preventDefault(); const editIdx = parseInt(document.getElementById('telecom-edit-index').value); const record = { id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value) || 0, status: document.getElementById('tel-status').value, files: [...currentTelecomFiles] }; if(editIdx === -1) telecomRecords.push(record); else telecomRecords[editIdx] = record; resetTelecomForm(); renderTelecomTable(); }
-        function renderTelecomTable() { const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = ""; let totalCuoc = 0; telecomRecords.forEach((r, i) => { totalCuoc += r.cost; let btnFile = r.files && r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="openMultiFileView('telecom', ${i})"><i class="fa-solid fa-images"></i> Xem (${r.files.length})</button>` : `<span style="color:#94a3b8">Không</span>`; tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.id}</td><td>${r.provider}</td><td class="text-center">${r.period}</td><td class="text-right font-bold">${r.cost.toLocaleString()} VND</td><td class="text-center">${btnFile}</td><td class="text-center"><span class="badge-status ${r.status==='Đã thanh toán'?'badge-approved':'badge-pending'}">${r.status}</span></td><td class="text-center"><button class="btn-action-edit" onclick="editTelecom(${i})">Sửa</button> <button class="btn-action-delete" onclick="deleteTelecom(${i})">Xóa</button></td></tr>`; }); document.getElementById('dash-pending-pay').innerText = totalCuoc.toLocaleString() + " VND"; }
+        
+        function renderTelecomTable() { 
+            const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = ""; 
+            let totalCuoc = 0; 
+            telecomRecords.forEach((r, i) => { 
+                totalCuoc += r.cost; 
+                let btnFile = r.files && r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="openMultiFileView('telecom', ${i})"><i class="fa-solid fa-images"></i> Xem (${r.files.length})</button>` : `<span style="color:#94a3b8">Không</span>`; 
+                
+                // Định dạng hiển thị chuỗi kỳ cước tiếng Việt trực quan
+                let vnPeriod = formatVietnamesePeriod(r.period);
+
+                tbody.innerHTML += `<tr>
+                    <td class="text-center">${i+1}</td>
+                    <td class="font-bold">${r.id}</td>
+                    <td>${r.provider}</td>
+                    <td class="text-center font-bold" style="color:var(--blue);">${vnPeriod}</td>
+                    <td class="text-right font-bold">${r.cost.toLocaleString()} VND</td>
+                    <td class="text-center">${btnFile}</td>
+                    <td class="text-center"><span class="badge-status ${r.status==='Đã thanh toán'?'badge-approved':'badge-pending'}">${r.status}</span></td>
+                    <td class="text-center"><button class="btn-action-edit" onclick="editTelecom(${i})">Sửa</button> <button class="btn-action-delete" onclick="deleteTelecom(${i})">Xóa</button></td>
+                </tr>`; 
+            }); 
+            document.getElementById('dash-pending-pay').innerText = totalCuoc.toLocaleString() + " VND"; 
+        }
+        
         function editTelecom(i) { const r = telecomRecords[i]; document.getElementById('telecom-edit-index').value = i; document.getElementById('tel-id').value = r.id; document.getElementById('tel-provider').value = r.provider; document.getElementById('tel-period').value = r.period; document.getElementById('tel-cost').value = r.cost; document.getElementById('tel-status').value = r.status; currentTelecomFiles = [...(r.files || [])]; renderThumbnails('telecom'); }
         function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; currentTelecomFiles = []; renderThumbnails('telecom'); }
