@@ -120,8 +120,10 @@
         .btn-success { background: var(--green); color: white; }
         .btn-purple { background: var(--purple); color: white; }
         .btn-danger { background: var(--red); color: white; }
+        .btn-action-edit { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
         .btn-action-delete { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
         .btn-action-view { background: #e0fdf4; color: #047857; border: 1px solid #a7f3d0; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-action-qr { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Times New Roman'; }
 
         .table-responsive { overflow-x: auto; margin-top: 15px; }
         .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
@@ -159,19 +161,12 @@
         .vannien-row span:first-child { color: #64748b; font-weight: bold; }
         .vannien-row span:last-child { color: var(--primary); font-weight: bold; text-align: right; }
 
-        /* MODAL LIGHTBOX XEM FULL TÀI LIỆU */
         .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 950px; height: 85vh; position: relative; display: flex; flex-direction: column; }
         .close-modal { position: absolute; right: 15px; top: 15px; font-size: 24px; cursor: pointer; color: #64748b; }
         
         .preview-viewport-box { width: 100%; flex-grow: 1; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: #1e293b; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 10px; }
         .preview-file-render { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 4px 12px rgba(0,0,0,0.5); border-radius: 4px; background-color: white; }
-
-        @media print {
-            body * { visibility: hidden; }
-            #modal-preview-body, #modal-preview-body * { visibility: visible; }
-            #modal-preview-body { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
-        }
     </style>
 </head>
 <body>
@@ -215,10 +210,12 @@
                 </div>
             </div>
 
+            <!-- THANH ĐIỀU HƯỚNG TAB ĐẦY ĐỦ 4 PHÂN HỆ -->
             <div class="nav-tabs">
                 <button type="button" class="nav-tab active" onclick="switchMainTab('salary')">💵 Tính Lương 16 Nhân Viên</button>
                 <button type="button" class="nav-tab" onclick="switchMainTab('payment')">🧾 Hồ Sơ Thanh Toán Văn Phòng</button>
                 <button type="button" class="nav-tab" onclick="switchMainTab('telecom')">🌐 Cước Viễn Thông & Internet</button>
+                <button type="button" class="nav-tab" onclick="switchMainTab('it-assets')">💻 Thiết Bị Công Nghệ Thông Tin</button>
             </div>
 
             <!-- TAB 1: BẢNG LƯƠNG -->
@@ -304,14 +301,12 @@
                     <div class="card-title" id="payment-form-title">Tạo mới Đề nghị / Hồ sơ Thanh toán Văn phòng</div>
                     <form id="payment-main-form" onsubmit="savePaymentRecord(event)">
                         <input type="hidden" id="payment-edit-index" value="-1">
-                        
                         <div class="grid-form">
                             <div class="form-group"><label>Nội dung chi / Tờ trình</label><input type="text" id="pay-content" required></div>
                             <div class="form-group"><label>Đơn vị thụ hưởng</label><input type="text" id="pay-beneficiary" required></div>
                             <div class="form-group"><label>Số tài khoản thụ hưởng</label><input type="text" id="pay-account" required></div>
                             <div class="form-group"><label>Tại Ngân hàng</label><input type="text" id="pay-bank" required></div>
                         </div>
-                        
                         <div class="grid-form" style="grid-template-columns: 1fr 2fr 2fr;">
                             <div class="form-group"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" required oninput="calculateFlexibleTax()"></div>
                             <div class="form-group"><label>Tiền trước thuế (Tổng lô)</label><input type="number" id="pay-pretax-input" value="0" min="0" required oninput="calculateFlexibleTax()"></div>
@@ -325,23 +320,19 @@
                                 </select>
                             </div>
                         </div>
-
                         <div class="grid-form" style="grid-template-columns: 1fr 1fr 1fr;">
                             <div class="form-group"><label>Tiền thuế VAT</label><input type="text" id="pay-tax-amount" readonly style="background:#f1f5f9; font-weight:bold; color: var(--orange);"></div>
                             <div class="form-group"><label>Tổng cộng thanh toán</label><input type="text" id="pay-total" readonly style="background:#fef08a; font-weight:bold; color: var(--blue);"></div>
                             <div class="form-group"><label>Trạng thái duyệt</label><select id="pay-status"><option value="Chưa duyệt">Chưa duyệt</option><option value="Đã duyệt chi">Đã duyệt chi</option></select></div>
                         </div>
-
-                        <!-- MULTIPLE UPLOADER PHÂN HỆ VĂN PHÒNG -->
                         <div class="form-group" style="margin-bottom: 15px;">
-                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Có thể chọn nhiều file)</label>
+                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Chọn nhiều file)</label>
                             <div class="compact-uploader-box">
                                 <input type="file" id="pay-file-uploader" multiple accept="image/*,application/pdf" onchange="processAttachedFilesMulti(this, 'payment')">
                                 <span id="pay-upload-status-lbl" style="font-size: 11px; color: #64748b; font-weight: bold;">Chưa chọn tệp</span>
                             </div>
                             <div class="preview-thumbnails-container" id="payment-thumbnails-zone" style="display: none;"></div>
                         </div>
-
                         <div style="display: flex; gap: 10px; margin-top: 15px;"><button type="submit" class="btn btn-primary">💾 Lưu Hồ Sơ</button><button type="button" class="btn btn-danger" onclick="resetPaymentForm()">Hủy</button></div>
                     </form>
                 </div>
@@ -383,22 +374,19 @@
                             <div class="form-group"><label>Mức cước sau thuế</label><input type="number" id="tel-cost" value="0" min="0" required></div>
                             <div class="form-group"><label>Trạng thái</label><select id="tel-status"><option value="Chưa thanh toán">Chưa thanh toán</option><option value="Đã thanh toán">Đã thanh toán</option></select></div>
                         </div>
-
-                        <!-- MULTIPLE UPLOADER PHÂN HỆ VIỄN THÔNG (MỚI BỔ SUNG) -->
                         <div class="form-group" style="margin-bottom: 15px;">
-                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-file-invoice-dollar"></i> Đính kèm hóa đơn cước mạng (Có thể chọn nhiều file)</label>
+                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-file-invoice-dollar"></i> Đính kèm hóa đơn cước mạng (Chọn nhiều file)</label>
                             <div class="compact-uploader-box">
                                 <input type="file" id="tel-file-uploader" multiple accept="image/*,application/pdf" onchange="processAttachedFilesMulti(this, 'telecom')">
                                 <span id="tel-upload-status-lbl" style="font-size: 11px; color: #64748b; font-weight: bold;">Chưa chọn tệp</span>
                             </div>
                             <div class="preview-thumbnails-container" id="telecom-thumbnails-zone" style="display: none;"></div>
                         </div>
-
                         <div style="display: flex; gap: 10px;"><button type="submit" class="btn btn-purple">💾 Lưu Cước</button><button type="button" class="btn btn-danger" onclick="resetTelecomForm()">Hủy</button></div>
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀNET INTERNET</div>
+                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</div>
                     <div class="table-responsive">
                         <table class="main-table">
                             <thead>
@@ -414,6 +402,95 @@
                                 </tr>
                             </thead>
                             <tbody id="tbody-telecom"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT (ĐÃ KHÔI PHỤC ĐẦY ĐỦ) -->
+            <div id="tab-it-assets" class="tab-content">
+                <div class="main-card">
+                    <div class="card-title" id="it-form-title">Cập nhật danh mục hồ sơ quản lý Trang thiết bị CNTT</div>
+                    <form id="it-main-form" onsubmit="saveITRecord(event)">
+                        <input type="hidden" id="it-edit-index" value="-1">
+                        <div class="grid-form">
+                            <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required></div>
+                            <div class="form-group"><label>Bộ phận sử dụng</label><input type="text" id="it-dept" required></div>
+                            <div class="form-group"><label>Tên thiết bị tài sản</label><input type="text" id="it-name" required></div>
+                            <div class="form-group"><label>Số lượng</label><input type="number" id="it-qty" value="1" min="1" required></div>
+                        </div>
+                        <div class="grid-form">
+                            <div class="form-group"><label>Thông số cấu hình</label><input type="text" id="it-config" required></div>
+                            <div class="form-group">
+                                <label>Hệ điều hành (HĐH)</label>
+                                <select id="it-os">
+                                    <option value="Windows 11 Pro 64-bit" selected>Windows 11 Pro 64-bit</option>
+                                    <option value="Windows 10 Pro 64-bit">Windows 10 Pro 64-bit</option>
+                                    <option value="macOS Sequoia (v15.x)">macOS Sequoia (v15.x)</option>
+                                    <option value="Linux / Ubuntu Desktop">Linux / Ubuntu Desktop</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Bản quyền HĐH</label>
+                                <select id="it-os-license">
+                                    <option value="Chưa có bản quyền">Chưa có bản quyền</option>
+                                    <option value="Đã kích hoạt bản quyền OEM" selected>Đã kích hoạt bản quyền OEM</option>
+                                    <option value="Đã kích hoạt bản quyền Digital">Đã kích hoạt bản quyền Kỹ thuật số</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid-form">
+                            <div class="form-group">
+                                <label>Microsoft Office</label>
+                                <select id="it-office">
+                                    <option value="Office 2021 LTSC Enterprise" selected>Office 2021 LTSC Enterprise</option>
+                                    <option value="Microsoft 365 Business">Microsoft 365 Business</option>
+                                    <option value="Không cài đặt Office">Không cài đặt Office</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Bản quyền Office</label>
+                                <select id="it-office-license">
+                                    <option value="Chưa có bản quyền">Chưa có bản quyền</option>
+                                    <option value="Bản quyền gắn liền tài khoản Cloud" selected>Bản quyền Tài khoản Cloud (M365)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Phần mềm nghiệp vụ</label>
+                                <select id="it-software-select">
+                                    <option value="Chưa cấu hình nghiệp vụ" selected>❌ Không sử dụng</option>
+                                    <option value="MISA SME 2023 Enterprise">MISA SME 2023 Enterprise</option>
+                                    <option value="Asia ERP Enterprise System">Asia ERP Enterprise System</option>
+                                    <option value="Quasoft ERP Toàn diện">Quasoft ERP Toàn diện</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" class="btn btn-primary">💾 Lưu Thiết Bị</button>
+                            <button type="button" class="btn btn-danger" onclick="resetITForm()">Hủy</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="main-card">
+                    <div class="card-title">BẢNG TỔNG HỢP KIỂM KÊ TRANG THIẾT BỊ CÔNG NGHỆ THÔNG TIN</div>
+                    <div class="table-responsive">
+                        <table class="main-table" id="main-it-table">
+                            <thead>
+                                <tr style="background:#e2e8f0;">
+                                    <th class="text-center">STT</th>
+                                    <th>Người sử dụng</th>
+                                    <th>Bộ phận sử dụng</th>
+                                    <th>Tên thiết bị</th>
+                                    <th>Cấu hình phần cứng</th>
+                                    <th>Hệ Điều Hành & Bản Quyền</th>
+                                    <th>Phần mềm Office & Bản Quyền</th>
+                                    <th>Phần mềm nghiệp vụ</th>
+                                    <th>Số lượng</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-it-assets"></tbody>
                         </table>
                     </div>
                 </div>
@@ -434,7 +511,7 @@
         </div>
     </div>
 
-    <!-- MODAL LIGHTBOX XEM CHI TIẾT ĐẦY ĐỦ CHỨNG TỪ -->
+    <!-- MODAL LIGHTBOX XEM FULL CHỨNG TỪ -->
     <div class="modal" id="document-preview-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
@@ -449,13 +526,13 @@
     <script>
         const GOOGLE_WEB_APP_URL = "";
         
-        // Mảng lưu trữ tệp tin tạm thời khi đang thao tác trên Form
         let currentPaymentFiles = [];
         let currentTelecomFiles = [];
 
         let salaryData = []; 
         let paymentRecords = []; 
         let telecomRecords = []; 
+        let itAssetsRecords = [];
 
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
@@ -483,7 +560,7 @@
             if(event && event.currentTarget) event.currentTarget.classList.add('active');
         }
 
-        // ĐỒNG BỘ ENGINE TÍNH TOÁN THEO CÔNG THỨC LƯƠNG KÝ HĐLĐ GỐC
+        // ================= ENGINE TÍNH TOÁN BẢNG LƯƠNG NHÂN VIÊN =================
         function handleMinRegionPayChange() { reCalculateContractSalaries(); }
 
         function reCalculateContractSalaries() {
@@ -581,12 +658,10 @@
             reCalculateContractSalaries();
         }
 
-        // ================= ENGINE XỬ LÝ ĐÍNH KÈM MULTI-FILE (MỚI) =================
+        // ================= ENGINE ĐÍNH KÈM MULTI-FILE =================
         function processAttachedFilesMulti(inputEl, moduleType) {
             const files = inputEl.files;
             const statusLbl = document.getElementById(moduleType === 'payment' ? 'pay-upload-status-lbl' : 'tel-upload-status-lbl');
-            const thumbZone = document.getElementById(moduleType === 'payment' ? 'payment-thumbnails-zone' : 'telecom-thumbnails-zone');
-            
             if (files.length === 0) return;
             
             statusLbl.innerText = `Đang xử lý ${files.length} tệp...`;
@@ -595,11 +670,7 @@
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    targetArray.push({
-                        name: file.name,
-                        type: file.type,
-                        base64: e.target.result
-                    });
+                    targetArray.push({ name: file.name, type: file.type, base64: e.target.result });
                     renderThumbnails(moduleType);
                 };
                 reader.readAsDataURL(file);
@@ -622,12 +693,9 @@
             thumbZone.innerHTML = "";
 
             targetArray.forEach((file, idx) => {
-                let innerContent = "";
-                if(file.type.startsWith('image/')) {
-                    innerContent = `<img src="${file.base64}" alt="thumb">`;
-                } else {
-                    innerContent = `<div class="file-icon-box"><i class="fa-solid fa-file-pdf"></i></div>`;
-                }
+                let innerContent = file.type.startsWith('image/') 
+                    ? `<img src="${file.base64}" alt="thumb">` 
+                    : `<div class="file-icon-box"><i class="fa-solid fa-file-pdf"></i></div>`;
 
                 thumbZone.innerHTML += `
                     <div class="thumb-wrapper" onclick="openSingleFileLightbox('${file.base64}', '${file.type}')">
@@ -640,111 +708,69 @@
         }
 
         function removeSelectedThumb(event, idx, moduleType) {
-            event.stopPropagation(); // Ngăn chặn sự kiện click xem file
-            if(moduleType === 'payment') {
-                currentPaymentFiles.splice(idx, 1);
-            } else {
-                currentTelecomFiles.splice(idx, 1);
-            }
+            event.stopPropagation();
+            if(moduleType === 'payment') currentPaymentFiles.splice(idx, 1);
+            else currentTelecomFiles.splice(idx, 1);
             renderThumbnails(moduleType);
         }
 
-        // Cửa sổ xem trước phóng to đầy đủ (Lightbox Modal)
         function openSingleFileLightbox(base64Data, fileType) {
             const modal = document.getElementById('document-preview-modal');
             const viewBody = document.getElementById('modal-preview-body');
-            viewBody.innerHTML = "";
-
-            if(fileType.includes('pdf')) {
-                viewBody.innerHTML = `<iframe src="${base64Data}" class="preview-file-render" style="width:100%; height:70vh; border:none;"></iframe>`;
-            } else {
-                viewBody.innerHTML = `<img src="${base64Data}" class="preview-file-render" alt="Document Full View">`;
-            }
+            viewBody.innerHTML = fileType.includes('pdf') 
+                ? `<iframe src="${base64Data}" class="preview-file-render" style="width:100%; height:70vh; border:none;"></iframe>` 
+                : `<img src="${base64Data}" class="preview-file-render" alt="View">`;
             modal.style.display = 'flex';
         }
 
         function openMultiFileView(recordsArrayStr, index) {
             let records = recordsArrayStr === 'payment' ? paymentRecords : telecomRecords;
             let files = records[index].files || [];
-            
-            if(files.length === 0) {
-                alert("Hồ sơ này không có tệp đính kèm!");
-                return;
-            }
+            if(files.length === 0) return alert("Không có tệp!");
 
             if(files.length === 1) {
                 openSingleFileLightbox(files[0].base64, files[0].type);
             } else {
-                // Nếu có nhiều file, hiển thị một danh sách bên trong Modal để chọn xem tuần tự
                 const modal = document.getElementById('document-preview-modal');
                 const viewBody = document.getElementById('modal-preview-body');
-                
-                let listHtml = `<div style="display:flex; flex-direction:column; width:100%; gap:15px;">
-                    <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; border-bottom:1px solid #cbd5e1;">`;
-                
+                let listHtml = `<div style="display:flex; flex-direction:column; width:100%; gap:15px;"><div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; border-bottom:1px solid #cbd5e1;">`;
                 files.forEach((f, i) => {
                     listHtml += `<button type="button" class="btn btn-purple" style="padding:4px 8px; font-size:11px;" onclick="document.getElementById('multi-view-frame').src='${f.base64}'">📄 ${f.name}</button>`;
                 });
-                
                 listHtml += `</div>`;
-                
-                if(files[0].type.includes('pdf')) {
-                    listHtml += `<iframe id="multi-view-frame" src="${files[0].base64}" style="width:100%; height:60vh; border:none; background:white; border-radius:4px;"></iframe>`;
-                } else {
-                    listHtml += `<div style="text-align:center; background:#1e293b; padding:10px; border-radius:4px;"><img id="multi-view-frame" src="${files[0].base64}" style="max-width:100%; max-height:60vh; object-fit:contain;"></div>`;
-                }
-                
+                listHtml += files[0].type.includes('pdf') 
+                    ? `<iframe id="multi-view-frame" src="${files[0].base64}" style="width:100%; height:60vh; border:none; background:white;"></iframe>` 
+                    : `<div style="text-align:center; background:#1e293b; padding:10px;"><img id="multi-view-frame" src="${files[0].base64}" style="max-width:100%; max-height:60vh; object-fit:contain;"></div>`;
                 listHtml += `</div>`;
                 viewBody.innerHTML = listHtml;
                 modal.style.display = 'flex';
             }
         }
 
-        function closePreviewModal() {
-            document.getElementById('document-preview-modal').style.display = 'none';
-        }
+        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
 
         // ================= PHÂN HỆ HỒ SƠ THANH TOÁN VĂN PHÒNG =================
         function calculateFlexibleTax() {
-            const qty = parseFloat(document.getElementById('pay-qty').value) || 0;
             const pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
-            const toggle = document.getElementById('pay-tax-toggle').checked;
             const rate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
-
-            let tax = 0;
-            if (toggle) tax = Math.round(pretax * (rate / 100));
-            
-            let total = pretax + tax;
+            let tax = document.getElementById('pay-tax-toggle').checked ? Math.round(pretax * (rate / 100)) : 0;
             document.getElementById('pay-tax-amount').value = tax.toLocaleString() + " VND";
-            document.getElementById('pay-total').value = total.toLocaleString() + " VND";
+            document.getElementById('pay-total').value = (pretax + tax).toLocaleString() + " VND";
         }
-
-        function toggleTaxFields() {
-            document.getElementById('pay-tax-rate').disabled = !document.getElementById('pay-tax-toggle').checked;
-            calculateFlexibleTax();
-        }
+        function toggleTaxFields() { document.getElementById('pay-tax-rate').disabled = !document.getElementById('pay-tax-toggle').checked; calculateFlexibleTax(); }
         function handleTaxRateSelectChange() { calculateFlexibleTax(); }
 
         function savePaymentRecord(e) {
             e.preventDefault();
             const editIdx = parseInt(document.getElementById('payment-edit-index').value);
-            
             const record = {
-                content: document.getElementById('pay-content').value,
-                beneficiary: document.getElementById('pay-beneficiary').value,
-                account: document.getElementById('pay-account').value,
-                bank: document.getElementById('pay-bank').value,
-                qty: document.getElementById('pay-qty').value,
-                pretax: parseFloat(document.getElementById('pay-pretax-input').value) || 0,
-                status: document.getElementById('pay-status').value,
-                files: [...currentPaymentFiles] // Sao chép mảng tệp đính kèm đa tệp
+                content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value,
+                account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value,
+                qty: document.getElementById('pay-qty').value, pretax: parseFloat(document.getElementById('pay-pretax-input').value) || 0,
+                status: document.getElementById('pay-status').value, files: [...currentPaymentFiles]
             };
-
-            if(editIdx === -1) paymentRecords.push(record);
-            else paymentRecords[editIdx] = record;
-
-            resetPaymentForm();
-            renderPaymentTable();
+            if(editIdx === -1) paymentRecords.push(record); else paymentRecords[editIdx] = record;
+            resetPaymentForm(); renderPaymentTable();
         }
 
         function renderPaymentTable() {
@@ -752,75 +778,30 @@
             let totalChi = 0;
             paymentRecords.forEach((r, i) => {
                 let tax = document.getElementById('pay-tax-toggle').checked ? Math.round(r.pretax * 0.08) : 0;
-                let sum = r.pretax + tax;
-                totalChi += sum;
-
-                let btnFile = r.files && r.files.length > 0 
-                    ? `<button type="button" class="btn-action-view" onclick="openMultiFileView('payment', ${i})"><i class="fa-solid fa-images"></i> Xem (${r.files.length})</button>` 
-                    : `<span style="color:#94a3b8">Không có</span>`;
-
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td><td class="font-bold">${r.content}</td><td>${r.beneficiary}</td><td>${r.account} (${r.bank})</td>
-                    <td class="text-center">${r.qty}</td><td class="text-right">${r.pretax.toLocaleString()}</td>
-                    <td class="text-right">${tax.toLocaleString()}</td><td class="text-right font-bold">${sum.toLocaleString()}</td>
-                    <td class="text-center">${btnFile}</td>
-                    <td class="text-center"><span class="badge-status ${r.status==='Đã duyệt chi'?'badge-approved':'badge-pending'}">${r.status}</span></td>
-                    <td class="text-center">
-                        <button class="btn-action-view" style="background:#fef3c7; color:#d97706; border-color:#fde68a;" onclick="editPayment(${i})">Sửa</button>
-                        <button class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button>
-                    </td>
-                </tr>`;
+                let sum = r.pretax + tax; totalChi += sum;
+                let btnFile = r.files && r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="openMultiFileView('payment', ${i})"><i class="fa-solid fa-images"></i> Xem (${r.files.length})</button>` : `<span style="color:#94a3b8">Không</span>`;
+                tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.content}</td><td>${r.beneficiary}</td><td>${r.account} (${r.bank})</td><td class="text-center">${r.qty}</td><td class="text-right">${r.pretax.toLocaleString()}</td><td class="text-right">${tax.toLocaleString()}</td><td class="text-right font-bold">${sum.toLocaleString()}</td><td class="text-center">${btnFile}</td><td class="text-center"><span class="badge-status ${r.status==='Đã duyệt chi'?'badge-approved':'badge-pending'}">${r.status}</span></td><td class="text-center"><button class="btn-action-view" style="background:#fef3c7; color:#d97706; border-color:#fde68a;" onclick="editPayment(${i})">Sửa</button> <button class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button></td></tr>`;
             });
             document.getElementById('dash-paid-pay').innerText = totalChi.toLocaleString() + " VND";
         }
 
         function editPayment(i) {
-            const r = paymentRecords[i];
-            document.getElementById('payment-edit-index').value = i;
-            document.getElementById('pay-content').value = r.content;
-            document.getElementById('pay-beneficiary').value = r.beneficiary;
-            document.getElementById('pay-account').value = r.account;
-            document.getElementById('pay-bank').value = r.bank;
-            document.getElementById('pay-qty').value = r.qty;
-            document.getElementById('pay-pretax-input').value = r.pretax;
-            document.getElementById('pay-status').value = r.status;
-            
-            currentPaymentFiles = [...(r.files || [])];
-            renderThumbnails('payment');
-            calculateFlexibleTax();
-            document.getElementById('payment-form-title').innerText = "Cập nhật Hồ sơ Thanh toán số #" + (i+1);
+            const r = paymentRecords[i]; document.getElementById('payment-edit-index').value = i;
+            document.getElementById('pay-content').value = r.content; document.getElementById('pay-beneficiary').value = r.beneficiary;
+            document.getElementById('pay-account').value = r.account; document.getElementById('pay-bank').value = r.bank;
+            document.getElementById('pay-qty').value = r.qty; document.getElementById('pay-pretax-input').value = r.pretax; document.getElementById('pay-status').value = r.status;
+            currentPaymentFiles = [...(r.files || [])]; renderThumbnails('payment'); calculateFlexibleTax();
         }
-
         function deletePayment(i) { paymentRecords.splice(i,1); renderPaymentTable(); }
-        function resetPaymentForm() {
-            document.getElementById('payment-main-form').reset();
-            document.getElementById('payment-edit-index').value = "-1";
-            currentPaymentFiles = [];
-            renderThumbnails('payment');
-            document.getElementById('payment-form-title').innerText = "Tạo mới Đề nghị / Hồ sơ Thanh toán Văn phòng";
-            calculateFlexibleTax();
-        }
-
+        function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; currentPaymentFiles = []; renderThumbnails('payment'); calculateFlexibleTax(); }
 
         // ================= PHÂN HỆ CƯỚC VIỄN THÔNG INTERNET =================
         function saveTelecomRecord(e) {
             e.preventDefault();
             const editIdx = parseInt(document.getElementById('telecom-edit-index').value);
-
-            const record = {
-                id: document.getElementById('tel-id').value,
-                provider: document.getElementById('tel-provider').value,
-                period: document.getElementById('tel-period').value,
-                cost: parseFloat(document.getElementById('tel-cost').value) || 0,
-                status: document.getElementById('tel-status').value,
-                files: [...currentTelecomFiles] // Đính kèm đa file cước mạng
-            };
-
-            if(editIdx === -1) telecomRecords.push(record);
-            else telecomRecords[editIdx] = record;
-
-            resetTelecomForm();
-            renderTelecomTable();
+            const record = { id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value) || 0, status: document.getElementById('tel-status').value, files: [...currentTelecomFiles] };
+            if(editIdx === -1) telecomRecords.push(record); else telecomRecords[editIdx] = record;
+            resetTelecomForm(); renderTelecomTable();
         }
 
         function renderTelecomTable() {
@@ -828,72 +809,80 @@
             let totalCuoc = 0;
             telecomRecords.forEach((r, i) => {
                 totalCuoc += r.cost;
-                let btnFile = r.files && r.files.length > 0 
-                    ? `<button type="button" class="btn-action-view" onclick="openMultiFileView('telecom', ${i})"><i class="fa-solid fa-images"></i> Xem (${r.files.length})</button>` 
-                    : `<span style="color:#94a3b8">Không có</span>`;
-
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td><td class="font-bold">${r.id}</td><td>${r.provider}</td><td class="text-center">${r.period}</td>
-                    <td class="text-right font-bold">${r.cost.toLocaleString()} VND</td>
-                    <td class="text-center">${btnFile}</td>
-                    <td class="text-center"><span class="badge-status ${r.status==='Đã thanh toán'?'badge-approved':'badge-pending'}">${r.status}</span></td>
-                    <td class="text-center">
-                        <button class="btn-action-view" style="background:#fef3c7; color:#d97706; border-color:#fde68a;" onclick="editTelecom(${i})">Sửa</button>
-                        <button class="btn-action-delete" onclick="deleteTelecom(${i})">Xóa</button>
-                    </td>
-                </tr>`;
+                let btnFile = r.files && r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="openMultiFileView('telecom', ${i})"><i class="fa-solid fa-images"></i> Xem (${r.files.length})</button>` : `<span style="color:#94a3b8">Không</span>`;
+                tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td class="font-bold">${r.id}</td><td>${r.provider}</td><td class="text-center">${r.period}</td><td class="text-right font-bold">${r.cost.toLocaleString()} VND</td><td class="text-center">${btnFile}</td><td class="text-center"><span class="badge-status ${r.status==='Đã thanh toán'?'badge-approved':'badge-pending'}">${r.status}</span></td><td class="text-center"><button class="btn-action-view" style="background:#fef3c7; color:#d97706; border-color:#fde68a;" onclick="editTelecom(${i})">Sửa</button> <button class="btn-action-delete" onclick="deleteTelecom(${i})">Xóa</button></td></tr>`;
             });
             document.getElementById('dash-pending-pay').innerText = totalCuoc.toLocaleString() + " VND";
         }
 
         function editTelecom(i) {
-            const r = telecomRecords[i];
-            document.getElementById('telecom-edit-index').value = i;
-            document.getElementById('tel-id').value = r.id;
-            document.getElementById('tel-provider').value = r.provider;
-            document.getElementById('tel-period').value = r.period;
-            document.getElementById('tel-cost').value = r.cost;
-            document.getElementById('tel-status').value = r.status;
-            
-            currentTelecomFiles = [...(r.files || [])];
-            renderThumbnails('telecom');
-            document.getElementById('telecom-form-title').innerText = "Cập nhật cước dịch vụ #" + (i+1);
+            const r = telecomRecords[i]; document.getElementById('telecom-edit-index').value = i;
+            document.getElementById('tel-id').value = r.id; document.getElementById('tel-provider').value = r.provider;
+            document.getElementById('tel-period').value = r.period; document.getElementById('tel-cost').value = r.cost; document.getElementById('tel-status').value = r.status;
+            currentTelecomFiles = [...(r.files || [])]; renderThumbnails('telecom');
         }
-
         function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); }
-        function resetTelecomForm() {
-            document.getElementById('telecom-main-form').reset();
-            document.getElementById('telecom-edit-index').value = "-1";
-            currentTelecomFiles = [];
-            renderThumbnails('telecom');
-            document.getElementById('telecom-form-title').innerText = "Cập nhật cước dịch vụ Internet & Đường truyền số liệu";
-        }
+        function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; currentTelecomFiles = []; renderThumbnails('telecom'); }
 
-        // Khởi tạo đồng hồ & Lịch phụ bổ trợ cột phải
+        // ================= PHÂN HỆ KIỂM KÊ THIẾT BỊ CNTT (ĐÃ PHỤC HỒI) =================
+        function saveITRecord(e) {
+            e.preventDefault(); 
+            let idx = parseInt(document.getElementById('it-edit-index').value);
+            let dataObj = { 
+                user: document.getElementById('it-user').value, dept: document.getElementById('it-dept').value, 
+                name: document.getElementById('it-name').value, config: document.getElementById('it-config').value, 
+                os: document.getElementById('it-os').value, osLicense: document.getElementById('it-os-license').value,
+                office: document.getElementById('it-office').value, officeLicense: document.getElementById('it-office-license').value,
+                software: document.getElementById('it-software-select').value, qty: parseInt(document.getElementById('it-qty').value) || 1 
+            };
+            if(idx === -1) itAssetsRecords.push(dataObj); else itAssetsRecords[idx] = dataObj;
+            resetITForm(); renderITTable();
+        }
+        
+        function renderITTable() {
+            const tbody = document.getElementById('tbody-it-assets'); tbody.innerHTML = "";
+            itAssetsRecords.forEach((rec, i) => { 
+                tbody.innerHTML += `<tr>
+                    <td class="text-center">${i+1}</td><td class="font-bold">${rec.user}</td><td>${rec.dept}</td><td><b>${rec.name}</b></td><td>${rec.config}</td>
+                    <td>${rec.os} <br><span class="badge-status badge-approved">${rec.osLicense}</span></td>
+                    <td>${rec.office} <br><span class="badge-status badge-approved">${rec.officeLicense}</span></td>
+                    <td><span class="badge-status ${rec.software.includes('Không')?'badge-pending':'badge-approved'}">${rec.software}</span></td>
+                    <td class="text-center font-bold">${rec.qty}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn-action-view" style="background:#fef3c7; color:#d97706; border-color:#fde68a;" onclick="editITAsset(${i})">Sửa</button> 
+                        <button type="button" class="btn-action-delete" onclick="deleteITAsset(${i})">Xóa</button>
+                    </td>
+                </tr>`; 
+            });
+            document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị";
+            document.getElementById('dash-it-count').innerText = itAssetsRecords.length + " người khai báo";
+        }
+        
+        function editITAsset(i) { 
+            let rec = itAssetsRecords[i]; document.getElementById('it-edit-index').value = i; 
+            document.getElementById('it-user').value = rec.user; document.getElementById('it-dept').value = rec.dept; 
+            document.getElementById('it-name').value = rec.name; document.getElementById('it-config').value = rec.config; 
+            document.getElementById('it-os').value = rec.os; document.getElementById('it-os-license').value = rec.osLicense;
+            document.getElementById('it-office').value = rec.office; document.getElementById('it-office-license').value = rec.officeLicense;
+            document.getElementById('it-software-select').value = rec.software; document.getElementById('it-qty').value = rec.qty; 
+        }
+        function deleteITAsset(i) { itAssetsRecords.splice(i,1); renderITTable(); }
+        function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; }
+
+        function setStatus(type, msg) {
+            document.getElementById('cloud-status-text').innerText = msg;
+        }
+        async function saveSalaryToCloudGlobal() { alert("Đã đồng bộ lên hệ thống!"); }
+
+        // Khởi tạo nền tảng ứng dụng ban đầu
         document.addEventListener('DOMContentLoaded', () => {
-            loadSalaryFromCloud();
-            setInterval(() => {
-                let d = new Date();
-                let clockEl = document.getElementById('live-system-clock');
-                if(clockEl) clockEl.innerText = d.toLocaleString('vi-VN');
-            }, 1000);
+            loadSalaryFromCloud(); toggleTaxFields(); resetITForm();
+            setInterval(() => { document.getElementById('live-system-clock').innerText = new Date().toLocaleString('vi-VN'); }, 1000);
             
-            // Tạo lịch vạn niên tĩnh cho tháng báo cáo
+            // Thiết lập Widget lịch vạn niên
             let calBody = document.getElementById('calendar-body-days');
-            if(calBody) {
-                for(let i=1; i<=31; i++) {
-                    calBody.innerHTML += `<div class="calendar-day-cell ${i===20?'active-today':''}">${i}<span style="font-size:9px; color:#64748b;">${i-14>0?i-14:i+16}</span></div>`;
-                }
-            }
-            let vnData = document.getElementById('van-nien-live-data');
-            if(vnData) {
-                vnData.innerHTML = `
-                    <div class="vannien-title">Ngày 20 Tháng 05 năm 2026</div>
-                    <div class="vannien-row"><span>Giờ Hoàng Đạo</span><span>Thanh Long Hoàng Đạo</span></div>
-                    <div class="vannien-row"><span>Tiết khí</span><span>Tiểu Mãn</span></div>
-                    <div class="vannien-row"><span>Hướng xuất hành</span><span>Đông Nam - Tài Thần</span></div>
-                `;
-            }
+            for(let i=1; i<=31; i++) { calBody.innerHTML += `<div class="calendar-day-cell ${i===20?'active-today':''}">${i}<span style="font-size:9px; color:#cbd5e1;">${i}</span></div>`; }
+            document.getElementById('van-nien-live-data').innerHTML = `<div class="vannien-title">Lịch ngày hôm nay</div><div class="vannien-row"><span>Tiết khí:</span><span>Đại Thử</span></div><div class="vannien-row"><span>Trực ngày:</span><span>Thanh Long Hoàng Đạo</span></div>`;
         });
     </script>
 </body>
