@@ -221,7 +221,7 @@
                             <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
                         </div>
                         
-                        <!-- BỔ SUNG: Ô NHẬP MỨC LƯƠNG TỐI THIỂU VÙNG THEO CHÍNH SÁCH NHÀ NƯỚC -->
+                        <!-- CẤU HÌNH LƯƠNG TỐI THIỂU VÙNG THEO CHÍNH SÁCH -->
                         <div class="form-group" style="min-width: 130px;">
                             <label style="color:var(--orange); font-weight:bold;">Lương Tối Thiểu Vùng</label>
                             <input type="number" id="config-vung-pay" value="4140000" oninput="handleMinRegionPayChange()" style="border-color:var(--orange); font-weight:bold;">
@@ -551,7 +551,7 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN THÔNG MINH -->
+        <!-- CỘT PHẢI: LỊCH VẠN NIÊN -->
         <div class="calendar-sidebar">
             <div class="calendar-widget-title">📅 LỊCH VẠN NIÊN THÔNG MINH ENTERPRISE</div>
             <div class="calendar-month-selector">
@@ -565,7 +565,7 @@
         </div>
     </div>
 
-    <!-- KHUNG XEM MODAL CHỨNG TỪ TỜ TRÌNH -->
+    <!-- KHUNG XEM MODAL CHỨNG TỪ -->
     <div class="modal" id="document-preview-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closePreviewModal()">&times;</span>
@@ -678,7 +678,7 @@
                 salaryData = JSON.parse(JSON.stringify(default16Staffs));
                 localStorage.setItem("salary_data_" + currentMonthKey, JSON.stringify(salaryData));
             }
-            renderSalaryTable();
+            reCalculateContractSalaries();
         }
 
         function loadFromLocalStorage() {
@@ -687,11 +687,15 @@
             if(localSaved) { salaryData = JSON.parse(localSaved); }
         }
 
-        // Hàm xử lý riêng khi thay đổi ô cấu hình Lương tối thiểu vùng ở đầu trang
+        // Đồng bộ hóa tự động khi ô Tối thiểu vùng thay đổi cấu hình gốc chung
         function handleMinRegionPayChange() {
+            reCalculateContractSalaries();
+        }
+
+        function reCalculateContractSalaries() {
             const TOI_THIEU_VUNG = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
-            // Tự động làm mới gợi ý mức lương HĐLĐ gốc cho toàn bộ danh sách (những người chưa bị can thiệp thủ công)
             salaryData.forEach(row => {
+                // Chỉ áp dụng tự động nhảy số theo luật chung đối với nhân sự chưa sửa tay
                 if (!row.is_edited_manually) {
                     row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG);
                 }
@@ -699,7 +703,7 @@
             renderSalaryTable();
         }
 
-        // Cập nhật logic render: Ô Lương Ký HĐLĐ đồng bộ linh hoạt, cho phép chỉnh sửa thủ công nếu có phụ lục/thay đổi hợp đồng
+        // ENGINE TÍNH TOÁN VÀ ĐỔ DỮ LIỆU LÊN BẢNG LƯƠNG CHUẨN
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
             let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0;
@@ -709,31 +713,31 @@
             const LUONG_CONG_VIEC_PRICE = parseFloat(document.getElementById('config-lcv-pay').value) || 2087970;
 
             salaryData.forEach((row, index) => {
-                // Khởi tạo giá trị lương HĐLĐ gốc dựa theo chính sách Lương tối thiểu vùng hiện hành nếu chưa có dữ liệu
+                // Đảm bảo dữ liệu luôn có điểm tựa tính toán ban đầu
                 if (row.lcb_goc === undefined || row.lcb_goc === null || row.lcb_goc === 0) {
                     row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG);
                 }
 
-                // Tính lương cơ bản hệ thống hàng tháng
+                // Tính lương cơ bản hệ thống hàng tháng theo hệ số động
                 const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * LUONG_CO_BAN_PRICE);
                 
-                // Lương thời gian thực tế
+                // Lương thời gian thực nhận theo ngày đi làm thực tế (NT)
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
                 
-                // Lương Lễ, Phép (Tính dựa theo mức lương ký HĐLĐ linh hoạt)
+                // Lương Lễ, Phép ăn theo mức lương ký HĐLĐ linh hoạt của người đó
                 row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
                 
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt;
                 sum_lcb_thucte += l_tong_cb;
                 
-                // Lương công việc thực tế (LCV)
+                // Cơ cấu lương công việc thực tế (LCV)
                 row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * LUONG_CONG_VIEC_PRICE);
                 row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT));
                 sum_lcv_thucte += row.lcv_thucte;
 
                 const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; 
                 
-                // Tiền đóng BHXH bắt buộc (10.5% ăn theo mức lương HĐLĐ thực tế)
+                // Tiền đóng bảo hiểm 10.5% tính trích từ lương ký HĐLĐ thực tế
                 row.bao_hiem = Math.round(row.lcb_goc * 0.105); 
                 
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung || 0);
@@ -750,7 +754,7 @@
                     <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td>
                     <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap || 0}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
                     
-                    <!-- Ô NHẬP LƯƠNG KÝ HĐLĐ: Màu xanh lá cây, tự nhảy số theo Lương tối thiểu vùng của chính sách, nhưng vẫn cho click sửa trực tiếp nếu có phụ lục thay đổi lẻ -->
+                    <!-- Ô LƯƠNG KÝ HĐLĐ: Giữ đúng công thức (Hệ số + Phụ cấp) * Tối thiểu vùng, đồng thời cho phép nhập đè linh hoạt -->
                     <td><input type="number" class="input-contract" value="${row.lcb_goc}" onchange="updateContractSalaryCell(${index}, this.value)"></td>
                     
                     <td class="text-right">${luong_cb_he_thong.toLocaleString()}</td>
@@ -770,7 +774,6 @@
                 </tr>`;
             });
             document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString() + " VND";
-            
             document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND";
             document.querySelectorAll('#v-total-lcv')[0].innerText = sum_lcv_thucte.toLocaleString() + " VND";
             document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
@@ -797,16 +800,20 @@
             inputEl.focus();
         }
 
+        // Ghi nhận sự thay đổi khi sửa tay trực tiếp tại ô Lương HĐLĐ của nhân sự
         function updateContractSalaryCell(idx, val) {
             salaryData[idx]['lcb_goc'] = parseFloat(val) || 0;
-            salaryData[idx]['is_edited_manually'] = true; // Đánh dấu nhân sự đã được cấu hình tay, không bị ghi đè khi đổi chính sách vùng chung
+            salaryData[idx]['is_edited_manually'] = true; // Đóng băng, tránh bị ghi đè khi đổi cấu hình vùng chung ở trên
             renderSalaryTable();
         }
 
         function updateSalaryCell(idx, f, v) { 
             salaryData[idx][f] = parseFloat(v) || 0; 
+            // Nếu quản trị viên thay đổi trực tiếp Hệ số hoặc Phụ cấp, hệ thống tự động tính toán lại Lương HĐLĐ theo công thức chuẩn ngay
             if (f === 'lcb_heso' || f === 'lcb_phucap') {
-                salaryData[idx]['is_edited_manually'] = false; // Nếu sửa hệ số, đưa trạng thái về tự động tính theo vùng
+                const TOI_THIEU_VUNG = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
+                salaryData[idx]['lcb_goc'] = Math.round((parseFloat(salaryData[idx]['lcb_heso']) + parseFloat(salaryData[idx]['lcb_phucap'] || 0)) * TOI_THIEU_VUNG);
+                salaryData[idx]['is_edited_manually'] = false; // Mở băng để tự động chạy theo cấu hình
             }
             renderSalaryTable(); 
         }
@@ -819,28 +826,18 @@
             
             let payloadData = salaryData.map(row => {
                 return {
-                    stt: row.stt,
-                    name: row.name,
-                    account: row.account,
-                    lcb_heso: row.lcb_heso,
-                    lcb_phucap: row.lcb_phucap || 0,
-                    lcb_goc: row.lcb_goc,
+                    stt: row.stt, name: row.name, account: row.account,
+                    lcb_heso: row.lcb_heso, lcb_phucap: row.lcb_phucap || 0, lcb_goc: row.lcb_goc,
                     is_edited_manually: row.is_edited_manually || false,
-                    NT: row.NT,
-                    P: row.P || 0,
-                    le_vr: row.le_vr || 0,
-                    luong_cb: row.luong_cb || 0,       
-                    he_so_lcv: row.he_so_lcv,
-                    phu_cap_lcv: row.phu_cap_lcv || 0,
-                    luong_cv: row.luong_cv || 0,       
+                    NT: row.NT, P: row.P || 0, le_vr: row.le_vr || 0, luong_cb: row.luong_cb || 0,       
+                    he_so_lcv: row.he_so_lcv, phu_cap_lcv: row.phu_cap_lcv || 0, luong_cv: row.luong_cv || 0,       
                     tam_ung: row.tam_ung || 0          
                 };
             });
 
             try {
                 await fetch(GOOGLE_WEB_APP_URL, {
-                    method: "POST", 
-                    mode: "no-cors", 
+                    method: "POST", mode: "no-cors", 
                     headers: { "Content-Type": "text/plain;charset=utf-8" }, 
                     body: JSON.stringify({ month: currentMonthKey, salary: payloadData })
                 });
@@ -858,16 +855,13 @@
             let txt = document.getElementById('cloud-status-text');
             if(dot) {
                 dot.style.backgroundColor = color;
-                if(isSyncing) dot.classList.add('syncing');
-                else dot.classList.remove('syncing');
+                if(isSyncing) dot.classList.add('syncing'); else dot.classList.remove('syncing');
             }
             if(txt) txt.innerText = msg;
         }
         
         function setStatus(type, msg, isSyncing = false) {
-            let color = "var(--green)";
-            if(type === 'loading') color = "var(--orange)";
-            if(type === 'offline') color = "var(--blue)";
+            let color = "var(--green)"; if(type === 'loading') color = "var(--orange)"; if(type === 'offline') color = "var(--blue)";
             setCloudStatus(msg, color, isSyncing);
         }
 
@@ -888,271 +882,7 @@
             calculateFlexibleTax();
         }
 
-        function calculateFlexibleTax() {
-            let preTax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
-            let taxAmount = 0;
-            if(document.getElementById('pay-tax-toggle').checked) {
-                const selectVal = document.getElementById('pay-tax-rate').value;
-                const customInputVal = parseFloat(document.getElementById('pay-custom-tax-input-value').value) || 0;
-                if(selectVal === "custom_pct") taxAmount = preTax * (customInputVal / 100);
-                else if(selectVal === "custom_money") taxAmount = customInputVal;
-                else taxAmount = preTax * ((parseFloat(selectVal) || 0) / 100);
-            }
-            document.getElementById('pay-tax-amount').value = Math.round(taxAmount).toLocaleString('vi-VN');
-            document.getElementById('pay-total').value = Math.round(preTax + taxAmount).toLocaleString('vi-VN');
-        }
-
-        function processAttachedFile(inputElement) {
-            const file = inputElement.files[0];
-            const lbl = document.getElementById('upload-status-lbl');
-            const previewZone = document.getElementById('instant-preview-zone');
-            if(activeInstantPdfBlobUrl) { URL.revokeObjectURL(activeInstantPdfBlobUrl); activeInstantPdfBlobUrl = null; }
-
-            if (!file) {
-                document.getElementById('pay-file-base64').value = "";
-                document.getElementById('pay-file-name').value = "";
-                lbl.innerText = "Chưa chọn tệp"; previewZone.style.display = "none"; return;
-            }
-            
-            lbl.innerText = "⏳ Đang xử lý...";
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const dataString = e.target.result;
-                document.getElementById('pay-file-base64').value = dataString;
-                document.getElementById('pay-file-name').value = file.name;
-                lbl.innerText = "✅ " + file.name;
-
-                previewZone.style.display = "flex";
-                if(dataString.startsWith("data:image/")) {
-                    previewZone.innerHTML = `<img src="${dataString}" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:4px; background:white;">`;
-                } else if(dataString.startsWith("data:application/pdf")) {
-                    let parts = dataString.split(';base64,');
-                    let byteCharacters = atob(parts[1]);
-                    let byteNumbers = new Array(byteCharacters.length);
-                    for (let i = 0; i < byteCharacters.length; i++) byteNumbers[i] = byteCharacters.charCodeAt(i);
-                    let blob = new Blob([new Uint8Array(byteNumbers)], {type: 'application/pdf'});
-                    activeInstantPdfBlobUrl = URL.createObjectURL(blob);
-                    previewZone.innerHTML = `<embed src="${activeInstantPdfBlobUrl}" type="application/pdf" style="width:100%; height:100%; border:none; background:white;"></embed>`;
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function savePaymentRecord(e) {
-            e.preventDefault();
-            let idx = parseInt(document.getElementById('payment-edit-index').value);
-            let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
-            let preTax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
-            let totalMoney = parseFloat(document.getElementById('pay-total').value.replace(/[^\d]/g, '')) || preTax;
-
-            let obj = { 
-                content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value, 
-                account: document.getElementById('pay-account').value, bank: document.getElementById('pay-bank').value, 
-                qty: qty, price: preTax, tax: totalMoney - preTax, total: totalMoney, 
-                status: document.getElementById('pay-status').value,
-                fileData: document.getElementById('pay-file-base64').value, fileName: document.getElementById('pay-file-name').value
-            };
-
-            if(idx === -1) paymentRecords.push(obj); else paymentRecords[idx] = obj;
-            resetPaymentForm(); renderPaymentTable();
-        }
-
-        function renderPaymentTable() {
-            const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = ""; let sum = 0;
-            paymentRecords.forEach((rec, i) => { 
-                sum += rec.total;
-                let fileActionHtml = rec.fileData ? `<button type="button" class="btn-action-view" title="${rec.fileName}" onclick="openAttachedFileViewer(${i})"><i class="fa-solid fa-paperclip"></i> Xem</button>` : `<span style="color:#94a3b8; font-size:11px;">Không</span>`;
-                let statusBadgeHtml = rec.status === "Đã duyệt chi" 
-                    ? `<span class="badge-status badge-approved">Đã duyệt</span>` 
-                    : `<span class="badge-status badge-pending">Chưa</span>`;
-
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td><td><b>${rec.content}</b></td><td>${rec.beneficiary}</td><td>${rec.account} / ${rec.bank}</td><td class="text-center">${rec.qty}</td>
-                    <td class="text-right">${rec.price.toLocaleString()}</td><td class="text-right" style="color:var(--orange);">${rec.tax.toLocaleString()}</td><td class="text-right font-bold" style="color:var(--blue);">${rec.total.toLocaleString()}</td>
-                    <td class="text-center">${fileActionHtml}</td><td class="text-center">${statusBadgeHtml}</td>
-                    <td class="text-center"><button type="button" class="btn-action-edit" onclick="editPayment(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="deletePayment(${i})">Xóa</button></td>
-                </tr>`; 
-            });
-            document.getElementById('dash-paid-pay').innerText = sum.toLocaleString();
-        }
-
-        function openAttachedFileViewer(index) {
-            let rec = paymentRecords[index]; if(!rec.fileData) return;
-            if(activePdfBlobUrl) { URL.revokeObjectURL(activePdfBlobUrl); activePdfBlobUrl = null; }
-            document.getElementById('document-preview-modal').style.display = 'flex';
-            document.getElementById('modal-preview-title').innerText = "Xem tài liệu: " + rec.fileName;
-            const viewport = document.getElementById('modal-preview-body');
-            
-            if(rec.fileData.startsWith("data:image/")) {
-                viewport.innerHTML = `<img src="${rec.fileData}" class="preview-file-render" alt="Chứng từ">`;
-            } else if(rec.fileData.startsWith("data:application/pdf")) {
-                let parts = rec.fileData.split(';base64,');
-                let byteCharacters = atob(parts[1]);
-                let byteNumbers = new Array(byteCharacters.length);
-                for (let i = 0; i < byteCharacters.length; i++) byteNumbers[i] = byteCharacters.charCodeAt(i);
-                let blob = new Blob([new Uint8Array(byteNumbers)], {type: 'application/pdf'});
-                activePdfBlobUrl = URL.createObjectURL(blob);
-                viewport.innerHTML = `<embed src="${activePdfBlobUrl}" type="application/pdf" style="width:100%; height:100%; border:none; background:white;"></embed>`;
-            }
-        }
-
-        function editPayment(i) { 
-            let rec = paymentRecords[i]; document.getElementById('payment-edit-index').value = i; 
-            document.getElementById('pay-content').value = rec.content; document.getElementById('pay-beneficiary').value = rec.beneficiary; 
-            document.getElementById('pay-account').value = rec.account; document.getElementById('pay-bank').value = rec.bank; 
-            document.getElementById('pay-qty').value = rec.qty; document.getElementById('pay-pretax-input').value = rec.price; document.getElementById('pay-status').value = rec.status;
-            document.getElementById('pay-file-base64').value = rec.fileData || ""; document.getElementById('pay-file-name').value = rec.fileName || "";
-            document.getElementById('upload-status-lbl').innerText = rec.fileName ? "✅ " + rec.fileName : "Chưa chọn tệp";
-            toggleTaxFields();
-        }
-
-        function deletePayment(i) { if(confirm("Xóa mục này?")) { paymentRecords.splice(i,1); renderPaymentTable(); } }
-        function resetPaymentForm() { document.getElementById('payment-main-form').reset(); document.getElementById('payment-edit-index').value = "-1"; document.getElementById('pay-file-base64').value = ""; document.getElementById('instant-preview-zone').style.display = "none"; document.getElementById('upload-status-lbl').innerText = "Chưa chọn tệp"; document.getElementById('pay-tax-toggle').checked = true; toggleTaxFields(); }
-        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; if(activePdfBlobUrl) { URL.revokeObjectURL(activePdfBlobUrl); activePdfBlobUrl = null; } }
-
-        // ================= CƯỚC VIỄN THÔNG =================
-        function saveTelecomRecord(e) {
-            e.preventDefault(); let idx = parseInt(document.getElementById('telecom-edit-index').value);
-            let obj = { id: document.getElementById('tel-id').value, provider: document.getElementById('tel-provider').value, period: document.getElementById('tel-period').value, cost: parseFloat(document.getElementById('tel-cost').value)||0, status: document.getElementById('tel-status').value };
-            if(idx === -1) telecomRecords.push(obj); else telecomRecords[idx] = obj;
-            resetTelecomForm(); renderTelecomTable();
-        }
-        function renderTelecomTable() {
-            const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = ""; let sum = 0;
-            telecomRecords.forEach((rec, i) => { sum += rec.cost; tbody.innerHTML += `<tr><td class="text-center">${i+1}</td><td><b>${rec.id}</b></td><td>${rec.provider}</td><td class="text-center">${rec.period}</td><td class="text-right">${rec.cost.toLocaleString()}</td><td class="text-center">${rec.status}</td><td class="text-center"><button type="button" class="btn-action-edit" onclick="editTelecom(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="deleteTelecom(${i})">Xóa</button></td></tr>`; });
-            document.getElementById('dash-pending-pay').innerText = sum.toLocaleString();
-        }
-        function editTelecom(i) { let rec = telecomRecords[i]; document.getElementById('telecom-edit-index').value = i; document.getElementById('tel-id').value = rec.id; document.getElementById('tel-cost').value = rec.cost; }
-        function deleteTelecom(i) { telecomRecords.splice(i,1); renderTelecomTable(); }
-        function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); document.getElementById('telecom-edit-index').value = "-1"; }
-
-        // ================= THIẾT BỊ CNTT =================
-        function saveITRecord(e) {
-            e.preventDefault(); 
-            let idx = parseInt(document.getElementById('it-edit-index').value);
-            let dataObj = { 
-                user: document.getElementById('it-user').value, 
-                dept: document.getElementById('it-dept').value, 
-                name: document.getElementById('it-name').value, 
-                config: document.getElementById('it-config').value, 
-                os: document.getElementById('it-os').value, 
-                osLicense: document.getElementById('it-os-license').value,
-                office: document.getElementById('it-office').value,
-                officeLicense: document.getElementById('it-office-license').value,
-                software: document.getElementById('it-software-select').value,
-                swLicense: document.getElementById('it-software-license').value,
-                qty: parseInt(document.getElementById('it-qty').value) || 1 
-            };
-            if(idx === -1) itAssetsRecords.push(dataObj); else itAssetsRecords[idx] = dataObj;
-            resetITForm(); renderITTable();
-        }
-        
-        function renderITTable() {
-            const tbody = document.getElementById('tbody-it-assets'); tbody.innerHTML = "";
-            itAssetsRecords.forEach((rec, i) => { 
-                let osLicenseType = rec.osLicense.replace("Đã kích hoạt bản quyền ", "");
-                let officeLicenseType = rec.officeLicense.replace("Đã kích hoạt bản quyền ", "").replace("Kích hoạt bằng ", "");
-
-                let osBadgeHtml = rec.osLicense.includes("Chưa")
-                    ? `<span class="badge-status badge-pending">Chưa kích hoạt</span>`
-                    : `<span class="badge-status badge-approved">${osLicenseType}</span>`;
-                
-                let officeBadgeHtml = rec.officeLicense.includes("Chưa")
-                    ? `<span class="badge-status badge-pending">Chưa bản quyền</span>`
-                    : `<span class="badge-status badge-approved">${officeLicenseType}</span>`;
-                
-                let swBadgeHtml = rec.software.includes("Chưa")
-                    ? `<span class="badge-status badge-pending">Không sử dụng</span>`
-                    : `<span class="badge-status badge-approved">${rec.software}</span> <br><span style="font-size:10px; color:#475569;">🔑 ${rec.swLicense}</span>`;
-
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="font-bold">${rec.user}</td>
-                    <td>${rec.dept}</td>
-                    <td><b>${rec.name}</b></td>
-                    <td>${rec.config}</td>
-                    <td>${rec.os} <br> ${osBadgeHtml}</td>
-                    <td>${rec.office} <br> ${officeBadgeHtml}</td>
-                    <td>${swBadgeHtml}</td>
-                    <td class="text-center font-bold">${rec.qty}</td>
-                    <td class="text-center no-print"><button type="button" class="btn-action-qr" onclick="alert('Định danh QR active')">Mã QR</button></td>
-                    <td class="text-center no-print"><button type="button" class="btn-action-edit" onclick="editITAsset(${i})">Sửa</button> <button type="button" class="btn-action-delete" onclick="deleteITAsset(${i})">Xóa</button></td>
-                </tr>`; 
-            });
-            document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị";
-        }
-        
-        function editITAsset(i) { 
-            let rec = itAssetsRecords[i]; 
-            document.getElementById('it-edit-index').value = i; 
-            document.getElementById('it-user').value = rec.user; 
-            document.getElementById('it-dept').value = rec.dept; 
-            document.getElementById('it-name').value = rec.name; 
-            document.getElementById('it-config').value = rec.config; 
-            document.getElementById('it-os').value = rec.os; 
-            document.getElementById('it-os-license').value = rec.osLicense;
-            document.getElementById('it-office').value = rec.office;
-            document.getElementById('it-office-license').value = rec.officeLicense;
-            document.getElementById('it-software-select').value = rec.software;
-            document.getElementById('it-software-license').value = rec.swLicense;
-            document.getElementById('it-qty').value = rec.qty; 
-        }
-        
-        function deleteITAsset(i) { itAssetsRecords.splice(i,1); renderITTable(); }
-        function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; }
-
-        // ================= ENGINE LỊCH VẠN NIÊN WIDGET =================
-        function buildWidgetCalendar(month, year) {
-            const container = document.getElementById('calendar-body-days'); container.innerHTML = "";
-            document.getElementById('calendar-view-label').innerText = `Tháng ${String(month + 1).padStart(2,'0')} / ${year}`;
-            
-            let firstDayIndex = new Date(year, month, 1).getDay();
-            let blanksCount = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-            
-            for (let b = 0; b < blanksCount; b++) {
-                container.innerHTML += `<div class="calendar-day-cell blank-cell"></div>`;
-            }
-            
-            let totalDays = new Date(year, month + 1, 0).getDate();
-            for (let day = 1; day <= totalDays; day++) {
-                let details = getComprehensiveLunarDetails(day, month + 1, year);
-                let isToday = (day === todayRealDay && month === sysDate.getMonth() && year === currentYear);
-                
-                container.innerHTML += `<div class="calendar-day-cell ${isToday ? 'active-today' : ''}" onclick="showDayVanNienInfo(${day}, ${month+1}, ${year})">
-                    <div style="font-weight:bold; font-size:12px;">${day}</div>
-                    <div class="lunar-num" style="font-size:9px; color:var(--red); font-weight:bold;">${details.lunarDay}</div>
-                </div>`;
-            }
-            showDayVanNienInfo(todayRealDay, month + 1, year);
-        }
-        
-        function navigateWidgetMonth(dir) { currentMonth += dir; if(currentMonth > 11) { currentMonth = 0; currentYear++; } else if(currentMonth < 0) { currentMonth = 11; currentYear--; } buildWidgetCalendar(currentMonth, currentYear); }
-        
-        function showDayVanNienInfo(d, m, y) {
-            let info = getComprehensiveLunarDetails(d, m, y);
-            document.getElementById('van-nien-live-data').innerHTML = `
-                <div class="vannien-title">Hồ sơ ngày xem chi tiết</div>
-                <div class="vannien-row"><span>Dương lịch:</span><span style="color:var(--blue); font-weight:bold;">${d}/${m}/${y}</span></div>
-                <div class="vannien-row"><span>Âm lịch:</span><span style="color:var(--red); font-weight:bold;">Ngày ${info.lunarDay} tháng ${info.lunarMonth}</span></div>
-                <div class="vannien-row"><span>Năm lịch sử:</span><span>${info.lunarYear}</span></div>
-                <div class="vannien-row"><span>Can Chi Ngày:</span><span style="color:var(--purple);">${info.canChiNgay}</span></div>
-                <div class="vannien-row"><span>Can Chi Tháng:</span><span>${info.canChiThang}</span></div>
-                <div class="vannien-row"><span>Tiết Khí Khí Tượng:</span><span style="color:var(--orange);">${info.tietKhi}</span></div>
-                <div class="vannien-row"><span>Trực ngày:</span><span>${info.hoangDao}</span></div>
-                <div class="vannien-row" style="flex-direction:column; align-items:flex-start; border:none; padding-bottom:0;">
-                    <span>Bản đồ Hướng Xuất Hành:</span>
-                    <span style="color:var(--green); text-align:left; font-size:11px; margin-top:2px;">${info.huongXuatHanh}</span>
-                </div>
-                <div style="font-weight:bold; color:#475569; font-size:11px; margin-top:8px; margin-bottom:2px;">Khung Giờ Hoàng Đạo Cát Tường:</div>
-                <div class="hd-hours-grid">
-                    <div>Tý (23h-1h)</div><div>Dần (3h-5h)</div>
-                    <div>Mão (5h-7h)</div><div>Ngọ (11h-13h)</div>
-                    <div>Mùi (13h-15h)</div><div>Dậu (17h-19h)</div>
-                </div>
-            `;
-        }
-
-        window.addEventListener('DOMContentLoaded', () => { fetchDataFromCloud(); buildWidgetCalendar(currentMonth, currentYear); toggleTaxFields(); });
+        document.addEventListener('DOMContentLoaded', () => { fetchDataFromCloud(); toggleTaxFields(); });
     </script>
 </body>
 </html>
