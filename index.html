@@ -111,7 +111,9 @@
         
         .input-salary-day { width: 50px; padding: 4px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; color: var(--blue); background: #f0fdf4; outline: none; }
         .input-edit { width: 60px; padding: 4px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; color: var(--blue); background: #eff6ff; outline: none; }
-        .input-advance-money { width: 95px; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px; text-align: right; font-weight: bold; color: var(--red); background: #fff5f5; outline: none; }
+        
+        /* Dropdown Tạm Ứng Mới */
+        .select-advance-dropdown { width: 110px; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px; font-weight: bold; color: var(--red); background: #fff5f5; outline: none; font-family: 'Times New Roman'; cursor: pointer; }
 
         .realtime-qr-wrapper { display: flex; gap: 20px; background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 15px; align-items: center; margin-top: 15px; }
         .realtime-qr-box { width: 110px; height: 110px; background: white; border: 1px solid var(--border-color); border-radius: 6px; padding: 5px; display: flex; align-items: center; justify-content: center; }
@@ -374,14 +376,13 @@
     <div id="payslipModal" class="modal" onclick="closePayslipModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="card-title" id="modal-qr-title">PHIẾU LƯƠNG</div><div style="display:flex;justify-content:center;margin:10px 0;" id="qrcode-canvas-zone"></div><div class="payslip-details-box" id="payslip-text-details"></div><button type="button" class="btn btn-danger" style="margin-top:15px;" onclick="closePayslipModal()">Đóng cửa sổ</button></div></div>
 
     <script>
-        // ĐIỀN URL API ĐƯỢC CẤP SAU KHI DEPLOY LẠI APPS SCRIPT THEO CỘT VÀO ĐÂY
         const CLOUD_API_ENDPOINT = "https://script.google.com/macros/s/AKfycby-v7F6eASHtW9IHW_m_VcOMwuOJ5Gio1LVxnu3DKMZA9JCOjDha_8BbZV66v9fOo1w/exec";
         
         let salaryConfigsByMonth = {};
         let salaryDataByMonth = {}; 
         let paymentRecords = []; let telecomRecords = []; let itAssetsRecords = [];
         let currentPaymentFiles = []; let currentTelecomFiles = [];
-        let currentYear = 2026; let currentMonth = 4; // Tháng 5 (0-index là 4)
+        let currentYear = 2026; let currentMonth = 4;
         let activeBlobUrl = null;
 
         const default16Staffs = [
@@ -429,10 +430,10 @@
             } 
         }
 
-        function handleAdvanceLiveMoneyInput(inputEl, index) { 
+        // Thay thế hàm nhập tạm ứng cũ bằng hàm nhận giá trị từ Dropdown select mới
+        function handleAdvanceDropdownChange(selectEl, index) { 
             let selectedMonth = document.getElementById('filter-month').value;
-            let cleanVal = inputEl.value.replace(/,/g, ''); 
-            let num = parseFloat(cleanVal) || 0; 
+            let num = parseFloat(selectEl.value) || 0; 
             if(salaryDataByMonth[selectedMonth] && salaryDataByMonth[selectedMonth][index]) { 
                 salaryDataByMonth[selectedMonth][index]['tam_ung'] = num; 
                 renderSalaryTable(); 
@@ -449,6 +450,9 @@
             
             let T_lcb_goc = 0, T_luong_cb_ht = 0, T_l_thoigian = 0, T_le_phep_tt = 0, T_l_tong_cb = 0;
             let T_lcv_goc = 0, T_lcv_thucte = 0, T_o_tong_lcb_lcv = 0, T_bao_hiem = 0, T_tam_ung = 0, T_o_thuc_linh = 0;
+
+            // Mảng cấu hình các hạn mức tạm ứng đổ xuống để chọn
+            const advanceOptions = [0, 500000, 1000000, 1500000, 2000000, 2500000, 3000000, 4000000, 5000000];
 
             currentActiveSalaryData.forEach((row, index) => {
                 let lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * cfg.vung); 
@@ -468,6 +472,19 @@
                 T_le_phep_tt += le_phep_tt; T_l_tong_cb += l_tong_cb; T_lcv_goc += lcv_goc;
                 T_lcv_thucte += lcv_thucte; T_o_tong_lcb_lcv += o_tong_lcb_lcv;
                 T_bao_hiem += bao_hiem; T_tam_ung += tam_ung; T_o_thuc_linh += o_thuc_linh;
+
+                // Xây dựng dropdown select cho cột tạm ứng
+                let dropdownHTML = `<select class="select-advance-dropdown" onchange="handleAdvanceDropdownChange(this, ${index})">`;
+                advanceOptions.forEach(opt => {
+                    let selectedAttr = (opt === tam_ung) ? "selected" : "";
+                    let displayLabel = opt === 0 ? "Không ứng" : opt.toLocaleString();
+                    dropdownHTML += `<option value="${opt}" ${selectedAttr}>${displayLabel}</option>`;
+                });
+                // Nếu số tiền tạm ứng hiện tại nằm ngoài danh sách định sẵn, tự động thêm option tạm thời vào để tránh mất dữ liệu
+                if(!advanceOptions.includes(tam_ung)) {
+                    dropdownHTML += `<option value="${tam_ung}" selected>${tam_ung.toLocaleString()}</option>`;
+                }
+                dropdownHTML += `</select>`;
 
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${index + 1}</td>
@@ -489,7 +506,7 @@
                     <td class="text-right">${lcv_thucte.toLocaleString()}</td>
                     <td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td>
                     <td class="text-right text-danger">${bao_hiem.toLocaleString()}</td>
-                    <td class="text-center"><input type="text" class="input-advance-money" value="${Math.round(tam_ung).toLocaleString()}" oninput="handleAdvanceLiveMoneyInput(this, ${index})"></td>
+                    <td class="text-center">${dropdownHTML}</td>
                     <td class="text-right font-bold" style="background:#fef08a;">${o_thuc_linh.toLocaleString()}</td>
                 </tr>`;
             });
@@ -537,7 +554,6 @@
         function renderITTable() { const tbody = document.getElementById('tbody-it-assets'); if(!tbody) return; tbody.innerHTML = ""; itAssetsRecords.forEach((r, i) => { tbody.innerHTML += `<tr><td>${i+1}</td><td class="font-bold">${r.user}</td><td>${r.dept}</td><td>${r.serialId}</td><td>${r.name}</td><td>${r.config}</td><td>${r.os}</td><td>${r.office}</td><td class="text-center">${r.qty}</td><td class="text-center"><div class="table-qr-holder" id="t-qr-${i}"></div></td><td><button class="btn-action-delete" onclick="itAssetsRecords.splice(${i},1); renderITTable();">Xóa</button></td></tr>`; }); itAssetsRecords.forEach((r, i) => { new QRCode(document.getElementById(`t-qr-${i}`), { text: r.serialId, width: 45, height: 45 }); }); document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị"; }
 
         // LỊCH VẠN NIÊN
-        function getComprehensiveLunarDetails(d, m, y) { return { lunarDay: d, lunarMonth: m }; }
         function buildWidgetCalendar() { const container = document.getElementById('calendar-body-days'); if(!container) return; container.innerHTML = ""; let totalDays = new Date(currentYear, currentMonth + 1, 0).getDate(); for (let day = 1; day <= totalDays; day++) { container.innerHTML += `<div class="calendar-day-cell"><div>${day}</div><div class="lunar-num">${day}</div></div>`; } }
         function navigateWidgetMonth(dir) { currentMonth += dir; buildWidgetCalendar(); }
 
