@@ -117,6 +117,7 @@
         
         .input-salary-day { width: 50px; padding: 4px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; color: var(--blue); background: #f0fdf4; outline: none; font-family: 'Times New Roman'; }
         .input-edit { width: 60px; padding: 4px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; color: var(--blue); background: #eff6ff; outline: none; font-family: 'Times New Roman'; }
+        .input-contract { width: 85px; padding: 4px; border: 1px dashed #10b981; border-radius: 4px; text-align: right; font-weight: bold; color: #065f46; background: #ecfdf5; outline: none; font-family: 'Times New Roman'; }
         .input-advance-money { width: 95px; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px; text-align: right; font-weight: bold; color: var(--red); background: #fff5f5; outline: none; font-family: monospace; }
 
         .badge-status { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; text-align: center; border: 1px solid transparent; }
@@ -213,16 +214,11 @@
             <!-- TAB 1: BẢNG LƯƠNG -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
-                    <div class="card-title">Hành động phân hệ và Cấu hình Quỹ lương lương</div>
+                    <div class="card-title">Hành động phân hệ và Cấu hình Quỹ lương chung</div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
-                        <div class="form-group" style="min-width: 120px;">
+                        <div class="form-group" style="min-width: 110px;">
                             <label>Tháng báo cáo</label>
                             <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
-                        </div>
-                        <!-- BỔ SUNG CẤU HÌNH LƯƠNG ĐIỀU CHỈNH LINH HOẠT -->
-                        <div class="form-group" style="min-width: 130px;">
-                            <label style="color:var(--blue); font-weight:bold;">Lương Tối Thiểu Vùng</label>
-                            <input type="number" id="config-vung-pay" value="4140000" oninput="renderSalaryTable()" style="border-color:var(--blue); font-weight:bold;">
                         </div>
                         <div class="form-group" style="min-width: 130px;">
                             <label style="color:var(--blue); font-weight:bold;">Lương Cơ Sở Hệ Thống</label>
@@ -277,7 +273,7 @@
                                     <th rowspan="2" class="text-center">Hành động</th>
                                 </tr>
                                 <tr style="background-color: #f1f5f9;">
-                                    <th>Hệ số LCB</th><th>Phụ cấp LCB</th><th>Lương Ký HĐLĐ</th><th>Lương cơ bản</th>
+                                    <th>Hệ số LCB</th><th>Phụ cấp LCB</th><th style="color:#047857;">Lương Ký HĐLĐ (Sửa)</th><th>Lương cơ bản</th>
                                     <th style="background-color: #e0f2fe;">Thời gian (NT)</th><th style="background-color: #e0f2fe;">Phép (P)</th><th style="background-color: #e0f2fe;">Lễ, VR</th>
                                     <th>Lương Thời Gian</th><th>Lương Lễ, Phép</th><th>Tổng Lương CB</th>
                                     <th>Hệ số LCV</th><th>Phụ cấp LCV</th><th>Lương CV Gốc</th><th style="background-color: #f3e8ff;">Lương CV Thực Tế</th>
@@ -389,7 +385,7 @@
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀNET INTERNET</div>
+                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</div>
                     <div class="table-responsive"><table class="main-table"><thead><tr style="background:#e2e8f0;"><th class="text-center">STT</th><th>Mã thuê bao</th><th>Nhà mạng</th><th class="text-center">Kỳ cước</th><th class="text-right">Chi phí</th><th class="text-center">Trạng thái</th><th class="text-center">Hành động</th></tr></thead><tbody id="tbody-telecom"></tbody></table></div>
                 </div>
             </div>
@@ -548,7 +544,7 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN THÔNG MINH ĐÃ TÍNH THỨ CHUẨN MỒNG 1 -->
+        <!-- CỘT PHẢI: LỊCH VẠN NIÊN THÔNG MINH -->
         <div class="calendar-sidebar">
             <div class="calendar-widget-title">📅 LỊCH VẠN NIÊN THÔNG MINH ENTERPRISE</div>
             <div class="calendar-month-selector">
@@ -644,9 +640,7 @@
                 loadFallbackDefaultData();
                 return;
             }
-            
             setStatus('loading', 'Đang kết nối Cloud trực tuyến...');
-            
             fetch(GOOGLE_WEB_APP_URL + "?timestamp=" + new Date().getTime(), { 
                 method: "GET",
                 mode: "no-cors", 
@@ -686,30 +680,42 @@
             if(localSaved) { salaryData = JSON.parse(localSaved); }
         }
 
-        // ĐÃ SỬA ĐỔI: Đọc giá trị cấu hình linh hoạt từ các ô input thay vì cố định (hardcode)
+        // ĐÃ NÂNG CẤP TOÀN DIỆN: Độc lập hóa và cho phép chỉnh sửa trực tiếp ô Lương Ký HĐLĐ
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
             let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0;
 
-            // Đọc trực tiếp cấu hình linh hoạt từ giao diện
-            const TOI_THIEU_VUNG = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
             const LUONG_CO_BAN_PRICE = parseFloat(document.getElementById('config-base-pay').value) || 2530000;
             const LUONG_CONG_VIEC_PRICE = parseFloat(document.getElementById('config-lcv-pay').value) || 2087970;
 
             salaryData.forEach((row, index) => {
-                row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG);
+                // Tự động khởi tạo giá trị lương HĐLĐ gốc nếu bộ nhớ đệm hoặc cloud chưa có trường này
+                if (row.lcb_goc === undefined || row.lcb_goc === null || row.lcb_goc === 0) {
+                    row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * 4140000);
+                }
+
+                // Tính lương cơ bản hệ thống theo cấu hình linh hoạt hàng tháng
                 const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * LUONG_CO_BAN_PRICE);
+                
+                // Lương thời gian thực tế dựa trên ngày công (NT)
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
+                
+                // Lương Lễ, Phép (Tính dựa trên mức lương HĐLĐ linh động đã nhập)
                 row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
+                
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt;
                 sum_lcb_thucte += l_tong_cb;
                 
+                // Cơ cấu lương công việc thực tế (LCV)
                 row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * LUONG_CONG_VIEC_PRICE);
                 row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT));
                 sum_lcv_thucte += row.lcv_thucte;
 
                 const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; 
+                
+                // Tiền đóng BH bắt buộc (10.5% tính chuẩn xác dựa trên Lương ký HĐLĐ thực tế của người đó)
                 row.bao_hiem = Math.round(row.lcb_goc * 0.105); 
+                
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung || 0);
                 sum_thuc_linh += o_thuc_linh;
 
@@ -723,7 +729,11 @@
                     <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td>${row.account}</td>
                     <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td>
                     <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap || 0}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
-                    <td class="text-right">${row.lcb_goc.toLocaleString()}</td><td class="text-right">${luong_cb_he_thong.toLocaleString()}</td>
+                    
+                    <!-- Ô NHẬP LƯƠNG KÝ HĐLĐ: Màu xanh lá dịu mát, cho phép sửa đổi số tiền bất cứ lúc nào -->
+                    <td><input type="number" class="input-contract" value="${row.lcb_goc}" onchange="updateSalaryCell(${index}, 'lcb_goc', this.value)"></td>
+                    
+                    <td class="text-right">${luong_cb_he_thong.toLocaleString()}</td>
                     <td><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td>
                     <td><input type="number" class="input-salary-day" value="${row.P || 0}" onchange="updateSalaryCell(${index}, 'P', this.value)"></td>
                     <td><input type="number" class="input-salary-day" value="${row.le_vr || 0}" onchange="updateSalaryCell(${index}, 'le_vr', this.value)"></td>
@@ -741,7 +751,6 @@
             });
             document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString() + " VND";
             
-            // Fix selector trùng lặp id cho visual card
             document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND";
             document.querySelectorAll('#v-total-lcv')[0].innerText = sum_lcv_thucte.toLocaleString() + " VND";
             document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
@@ -782,6 +791,7 @@
                     account: row.account,
                     lcb_heso: row.lcb_heso,
                     lcb_phucap: row.lcb_phucap || 0,
+                    lcb_goc: row.lcb_goc,
                     NT: row.NT,
                     P: row.P || 0,
                     le_vr: row.le_vr || 0,
