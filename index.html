@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG - LIVE CLOUD ENTERPRISE</title>
+    <title>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG ĐÁM MÂY - ERP ENTERPRISE PLATFORM</title>
     
     <!-- Core Engine Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
@@ -25,7 +25,9 @@
             --text-main: #334155;
             --bg-light: #f8fafc;
         }
+        
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body { 
             font-family: 'Times New Roman', Times, serif; 
             font-size: 13px; margin: 0; padding: 15px; background: var(--bg-light); color: var(--text-main);
@@ -59,14 +61,10 @@
         .visual-mini-card { background: white; padding: 10px 12px; border-radius: 4px; border: 1px solid #e2e8f0; }
         .visual-lbl { font-size: 11px; font-weight: bold; color: #475569; display: flex; justify-content: space-between; }
         .visual-val { font-size: 14px; font-weight: bold; margin: 4px 0; color: var(--primary); }
-        .progress-bar-bg { background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 4px; }
-        .progress-bar-fill { background: var(--blue); height: 100%; width: 0%; transition: width 0.4s; }
 
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; flex-wrap: wrap; }
         .nav-tabs .nav-tab { padding: 10px 15px; border: none; background: #f1f5f9; font-weight: bold; color: #64748b; cursor: pointer; transition: all 0.2s ease; font-size: 13px; font-family: 'Times New Roman'; border-radius: 6px 6px 0 0; }
-        
-        .nav-tabs .nav-tab[data-tab="salary"].active { color: var(--blue); background: white; border: 1px solid var(--border-color); border-bottom: 3px solid var(--blue); }
-        .nav-tabs .nav-tab[data-tab="it-assets"].active { color: var(--purple); background: white; border: 1px solid var(--border-color); border-bottom: 3px solid var(--purple); }
+        .nav-tabs .nav-tab.active { background: white; border: 1px solid var(--border-color); border-bottom: 3px solid var(--blue); color: var(--blue); }
         
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -82,6 +80,8 @@
         .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-family: 'Times New Roman'; }
         .btn-primary { background: var(--blue); color: white; }
         .btn-purple { background: var(--purple); color: white; }
+        .btn-orange { background: var(--orange); color: white; }
+        .btn-green { background: var(--green); color: white; }
 
         .table-responsive { overflow-x: auto; margin-top: 15px; width: 100%; }
         .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
@@ -108,17 +108,18 @@
         .calendar-month-selector button { padding: 4px 10px; border: 1px solid var(--border-color); background: white; border-radius: 4px; cursor: pointer; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
         .calendar-day-name { font-weight: bold; padding: 6px 0; background: #e2e8f0; border-radius: 4px; font-size: 11px; }
-        .calendar-day-cell { aspect-ratio: 1; border: 1px solid #f1f5f9; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
+        .calendar-day-cell { aspect-ratio: 1; border: 1px solid #f1f5f9; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; font-size: 12px; }
+        .calendar-day-cell .lunar-day { font-size: 9px; color: #64748b; }
         .calendar-day-cell.active-today { background: var(--blue) !important; color: white !important; }
+        .calendar-day-cell.active-today .lunar-day { color: #bfdbfe !important; }
         .van-nien-details { margin-top: 15px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; }
-        .vannien-title { font-size: 13px; font-weight: bold; color: var(--blue); border-bottom: 1px dashed var(--border-color); padding-bottom: 5px; text-align: center; }
+        .vannien-title { font-size: 13px; font-weight: bold; color: var(--blue); border-bottom: 1px dashed var(--border-color); padding-bottom: 5px; text-align: center; margin-bottom: 8px; }
         .vannien-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; }
         
         .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); align-items: center; justify-content: center; padding: 15px; }
-        .modal-content { background: white; padding: 22px; border-radius: 8px; width: 95%; max-width: 1150px; height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3); }
-        .preview-viewport-box { width: 100%; flex-grow: 1; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: #1e293b; overflow: auto; }
-        .qr-modal-body { display: flex; flex-direction: column; align-items: center; justify-content: center; background: white !important; gap: 15px; padding: 20px 0; }
-        .qr-box-render { padding: 15px; background: white; border: 2px dashed var(--purple); border-radius: 8px; }
+        .modal-content { background: white; padding: 22px; border-radius: 8px; width: 95%; max-width: 500px; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3); }
+        .qr-box-render { padding: 15px; background: white; border: 2px dashed var(--purple); border-radius: 8px; display: flex; justify-content: center; margin: 15px 0; }
+        .payslip-details-box { background: #f8fafc; border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; font-size: 12px; line-height: 1.6; max-height: 300px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -144,6 +145,14 @@
                     <div class="stat-title">Tổng Lương Thực Tế (NET)</div>
                     <div class="stat-value" id="dash-total-pay">0</div>
                 </div>
+                <div class="stat-card" style="border-left-color:var(--orange);">
+                    <div class="stat-title">Chi Phí Viễn Thông Thuê Bao</div>
+                    <div class="stat-value" id="dash-total-telecom">0</div>
+                </div>
+                <div class="stat-card" style="border-left-color:var(--green);">
+                    <div class="stat-title">Chứng Từ Chi Trả Đã Thu</div>
+                    <div class="stat-value" id="dash-total-payments">0</div>
+                </div>
                 <div class="stat-card" style="border-left-color:var(--purple);">
                     <div class="stat-title">Kiểm Kê Thiết Bị CNTT</div>
                     <div class="stat-value" id="dash-total-it-devices">0 Thiết bị</div>
@@ -151,11 +160,13 @@
             </div>
 
             <div class="nav-tabs">
-                <button type="button" class="nav-tab active" data-tab="salary" onclick="switchMainTab('salary')">💵 Tính Lương 16 Nhân Viên Gốc</button>
-                <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')">💻 Thiết Bị Công Nghệ Thông Tin</button>
+                <button type="button" class="nav-tab active" data-tab="salary" onclick="switchMainTab('salary')">💵 Tính Lương 16 Nhân Viên</button>
+                <button type="button" class="nav-tab" data-tab="telecom" onclick="switchMainTab('telecom')">📞 Chi Phí Viễn Thông</button>
+                <button type="button" class="nav-tab" data-tab="payments" onclick="switchMainTab('payments')">🧾 Chứng Từ Chi Trả</button>
+                <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')">💻 Thiết Bị CNTT & Bản Quyền</button>
             </div>
 
-            <!-- TAB 1: BẢNG TÍNH LƯƠNG 16 NHÂN VIÊN GỐC -->
+            <!-- TAB 1: BẢNG TÍNH LƯƠNG -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
                     <div class="card-title" style="color:var(--orange); border-left-color:var(--orange);">
@@ -178,7 +189,7 @@
                             <label style="color:var(--purple); font-weight:bold;">Đơn Giá Lương CV gốc</label>
                             <input type="number" id="config-lcv-pay" value="2087970" oninput="handleConfigChangeLive()">
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="fetchDataFromCloudServer()">🔄 Tải Lại Dữ Liệu Gốc</button>
+                        <button type="button" class="btn btn-primary" onclick="fetchDataFromCloudServer()">🔄 Tải Lại Dữ Liệu</button>
                         <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()"><i class="fa-solid fa-cloud-arrow-up"></i> ĐỒNG BỘ LÊN CLOUD SERVER</button>
                     </div>
                 </div>
@@ -231,12 +242,78 @@
                 </div>
             </div>
 
+            <!-- TAB 2: CHI PHÍ VIỄN THÔNG -->
+            <div id="tab-telecom" class="tab-content">
+                <div class="main-card">
+                    <div class="card-title">Cập nhật Chi phí Viễn thông & Thuê bao số</div>
+                    <form id="telecom-form" onsubmit="saveTelecomRecord(event)">
+                        <input type="hidden" id="tel-edit-index" value="-1">
+                        <div class="grid-form">
+                            <div class="form-group"><label>Số điện thoại</label><input type="text" id="tel-phone" required></div>
+                            <div class="form-group"><label>Người sử dụng</label><input type="text" id="tel-user" required></div>
+                            <div class="form-group"><label>Bộ phận</label><input type="text" id="tel-dept" required></div>
+                            <div class="form-group"><label>Định mức chi phí (VND)</label><input type="number" id="tel-limit" required></div>
+                        </div>
+                        <div class="grid-form">
+                            <div class="form-group"><label>Thực tế phát sinh (VND)</label><input type="number" id="tel-actual" required></div>
+                            <div class="form-group"><label>Ghi chú thuê bao</label><input type="text" id="tel-note" value="Sim trả sau doanh nghiệp"></div>
+                        </div>
+                        <button type="submit" class="btn btn-orange">💾 Lưu Cấu Hình Viễn Thông</button>
+                    </form>
+                </div>
+                <div class="main-card">
+                    <div class="table-responsive">
+                        <table class="main-table">
+                            <thead>
+                                <tr style="background:#e2e8f0;">
+                                    <th>STT</th><th>Số Điện Thoại</th><th>Người Sử Dụng</th><th>Bộ Phận</th><th>Định Mức</th><th>Thực Tế</th><th>Chênh Lệch</th><th>Ghi Chú</th><th>Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-telecom"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: CHỨNG TỪ CHI TRẢ -->
+            <div id="tab-payments" class="tab-content">
+                <div class="main-card">
+                    <div class="card-title">Cập nhật Hóa đơn & Chứng từ Chi trả</div>
+                    <form id="payment-form" onsubmit="savePaymentRecord(event)">
+                        <input type="hidden" id="pay-edit-index" value="-1">
+                        <div class="grid-form">
+                            <div class="form-group"><label>Mã chứng từ / Hóa đơn</label><input type="text" id="pay-code" required></div>
+                            <div class="form-group"><label>Nội dung thanh toán</label><input type="text" id="pay-content" required></div>
+                            <div class="form-group"><label>Số tiền chi (VND)</label><input type="number" id="pay-amount" required></div>
+                            <div class="form-group"><label>Người nhận / Đơn vị thụ hưởng</label><input type="text" id="pay-receiver" required></div>
+                        </div>
+                        <div class="grid-form">
+                            <div class="form-group"><label>Phương thức</label><select id="pay-method"><option value="Chuyển khoản">Chuyển khoản ngân hàng</option><option value="Tiền mặt">Tiền mặt tiền quỹ</option></select></div>
+                            <div class="form-group"><label>Trạng thái</label><select id="pay-status"><option value="Đã chi">Đã hoàn thành chi trả</option><option value="Chờ duyệt">Chờ duyệt chi</option></select></div>
+                        </div>
+                        <button type="submit" class="btn btn-green">💾 Lưu Chứng Từ Chi Trả</button>
+                    </form>
+                </div>
+                <div class="main-card">
+                    <div class="table-responsive">
+                        <table class="main-table">
+                            <thead>
+                                <tr style="background:#e2e8f0;">
+                                    <th>STT</th><th>Mã Chứng Từ</th><th>Nội Dung Chi</th><th>Số Tiền</th><th>Người Thụ Hưởng</th><th>Phương Thức</th><th>Trạng Thái</th><th>Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-payments"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT -->
             <div id="tab-it-assets" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" id="it-form-title" style="border-left-color: var(--purple);">
                         <span>Cập nhật danh mục quản lý Trang thiết bị CNTT & Bản quyền phần mềm</span>
-                        <button type="button" class="btn btn-primary" style="background: #0f172a;" onclick="exportITSummaryReportGoogleSheet()"><i class="fa-solid fa-cloud-arrow-down"></i> Tạo File Google Sheet Báo Cáo Chuyên Nghiệp</button>
+                        <button type="button" class="btn btn-primary" style="background: #0f172a;" onclick="exportITSummaryReportGoogleSheet()"><i class="fa-solid fa-cloud-arrow-up"></i> Tạo File Google Sheet Báo Cáo Chuyên Nghiệp</button>
                     </div>
                     
                     <form id="it-main-form" onsubmit="saveITRecord(event)">
@@ -332,15 +409,26 @@
         </div>
     </div>
 
+    <!-- HỘP THOẠI MODAL PAYSLIP QR CODE -->
+    <div id="payslipModal" class="modal">
+        <div class="modal-content">
+            <div class="card-title" style="margin-bottom:10px;">💵 PHIẾU LƯƠNG ĐIỆN TỬ PAYSLIP INDIVIDUAL</div>
+            <p style="font-size:11px; color:#64748b; margin-bottom:10px;">Quét mã QR dưới đây bằng điện thoại di động để truy xuất phiếu lương an toàn mật mã.</p>
+            <div class="qr-box-render" id="qrcode-canvas-zone"></div>
+            <div class="payslip-details-box" id="payslip-text-details"></div>
+            <button type="button" class="btn btn-primary" style="margin-top:15px; background:var(--red);" onclick="closePayslipModal()">❌ ĐÓNG CỬA SỔ TRỰC QUAN</button>
+        </div>
+    </div>
+
     <script>
         // LIÊN KẾT GOOGLE WEBSERVICE API WEB APP CỦA ANH
         const CLOUD_API_ENDPOINT = "https://script.google.com/macros/s/AKfycby-v7F6eASHtW9IHW_m_VcOMwuOJ5Gio1LVxnu3DKMZA9JCOjDha_8BbZV66v9fOo1w/exec";
 
         let salaryConfigsByMonth = { "2026-06": { vung: 4140000, base: 2530000, lcv: 2087970 } };
-        let salaryData = []; let itAssetsRecords = [];
-        let currentYear = 2026; let currentMonth = 5;
+        let salaryData = []; let telecomRecords = []; let paymentRecords = []; let itAssetsRecords = [];
+        let currentYear = 2026; let currentMonth = 5; // Tháng 6 (Index bắt đầu từ 0)
 
-        // DANH SÁCH 16 NHÂN VIÊN GỐC KHÔI PHỤC TOÀN VẸN
+        // 16 NHÂN VIÊN GỐC KHÔI PHỤC TOÀN VẸN
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "105004242307"},
@@ -360,7 +448,9 @@
             {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0, "tam_ung": 4000000, "account": "102004830132"}
         ];
 
-        // ENGINE TÍNH TOÁN BẢNG LƯƠNG TỰ ĐỘNG THỜI GIAN THỰC
+        // ==========================================
+        // 1. ENGINE PHÂN HỆ LƯƠNG THỜI GIAN THỰC
+        // ==========================================
         function handleMonthChangeSelect() {
             let selectedMonth = document.getElementById('filter-month').value;
             let splitMonth = selectedMonth.split("-"); 
@@ -403,7 +493,9 @@
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung || 0); sum_thuc_linh += o_thuc_linh;
 
                 tbody.innerHTML += `<tr>
-                    <td class="text-center">${index + 1}</td><td class="font-bold">${row.name}</td><td>${row.account}</td>
+                    <td class="text-center">${index + 1}</td>
+                    <td class="font-bold"><a href="#" onclick="openIndividualPayslipModal(${index}); return false;" style="color:var(--blue); text-decoration:none;"><i class="fa-solid fa-qrcode"></i> ${row.name}</a></td>
+                    <td>${row.account}</td>
                     <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td>
                     <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap || 0}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
                     <td><input type="number" class="input-contract" value="${row.lcb_goc}" onchange="updateContractSalaryCell(${index}, this.value)"></td>
@@ -419,7 +511,7 @@
                     <td class="text-right font-bold">${o_tong_lcb_lcv.toLocaleString()}</td><td class="text-right" style="color:var(--red); font-weight:bold;">${row.bao_hiem.toLocaleString()}</td>
                     <td class="text-center"><input type="text" class="input-advance-money" value="${Math.round(row.tam_ung || 0).toLocaleString('en-US')}" oninput="handleAdvanceLiveMoneyInput(this, ${index})"></td>
                     <td class="text-right font-bold" style="background:#fef08a;">${o_thuc_linh.toLocaleString()}</td>
-                    <td class="text-center"><button type="button" class="btn-action-delete" style="color:var(--red);border:none;background:none;cursor:pointer;font-weight:bold;" onclick="salaryData.splice(${index},1); renderSalaryTable();">Xóa</button></td>
+                    <td class="text-center"><button type="button" style="color:var(--red);border:none;background:none;cursor:pointer;font-weight:bold;" onclick="salaryData.splice(${index},1); renderSalaryTable();">Xóa</button></td>
                 </tr>`;
             });
             document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString() + " VND";
@@ -428,7 +520,90 @@
             document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
         }
 
-        // PHÂN HỆ CNTT ENGINE & ĐIỀU HƯỚNG TẠO GOOGLE SHEET BÁO CÁO GIÁM ĐỐC
+        // ==========================================
+        // 2. ENGINE PHÂN HỆ CHI PHÍ VIỄN THÔNG
+        // ==========================================
+        function saveTelecomRecord(e) {
+            e.preventDefault();
+            let idx = parseInt(document.getElementById('tel-edit-index').value);
+            let obj = {
+                phone: document.getElementById('tel-phone').value,
+                user: document.getElementById('tel-user').value,
+                dept: document.getElementById('tel-dept').value,
+                limit: parseFloat(document.getElementById('tel-limit').value) || 0,
+                actual: parseFloat(document.getElementById('tel-actual').value) || 0,
+                note: document.getElementById('tel-note').value
+            };
+            if(idx === -1) telecomRecords.push(obj); else telecomRecords[idx] = obj;
+            document.getElementById('telecom-form').reset();
+            document.getElementById('tel-edit-index').value = "-1";
+            renderTelecomTable(); syncDataToCloudServer();
+        }
+
+        function renderTelecomTable() {
+            const tbody = document.getElementById('tbody-telecom'); if(!tbody) return; tbody.innerHTML = "";
+            let sum = 0;
+            telecomRecords.forEach((r, i) => {
+                let diff = r.limit - r.actual; sum += r.actual;
+                tbody.innerHTML += `<tr>
+                    <td>${i+1}</td><td>${r.phone}</td><td class="font-bold">${r.user}</td><td>${r.dept}</td>
+                    <td class="text-right">${r.limit.toLocaleString()}</td><td class="text-right">${r.actual.toLocaleString()}</td>
+                    <td class="text-right" style="color:${diff < 0 ? 'var(--red)':'var(--green)'}; font-weight:bold;">${diff.toLocaleString()}</td><td>${r.note}</td>
+                    <td><button type="button" onclick="editTelecomRecord(${i})">Sửa</button> <button type="button" style="color:var(--red);" onclick="telecomRecords.splice(${i},1); renderTelecomTable(); syncDataToCloudServer();">Xóa</button></td>
+                </tr>`;
+            });
+            document.getElementById('dash-total-telecom').innerText = sum.toLocaleString() + " VND";
+        }
+        function editTelecomRecord(i) {
+            let r = telecomRecords[i]; document.getElementById('tel-edit-index').value = i;
+            document.getElementById('tel-phone').value = r.phone; document.getElementById('tel-user').value = r.user;
+            document.getElementById('tel-dept').value = r.dept; document.getElementById('tel-limit').value = r.limit;
+            document.getElementById('tel-actual').value = r.actual; document.getElementById('tel-note').value = r.note;
+        }
+
+        // ==========================================
+        // 3. ENGINE PHÂN HỆ CHỨNG TỪ CHI TRẢ
+        // ==========================================
+        function savePaymentRecord(e) {
+            e.preventDefault();
+            let idx = parseInt(document.getElementById('pay-edit-index').value);
+            let obj = {
+                code: document.getElementById('pay-code').value,
+                content: document.getElementById('pay-content').value,
+                amount: parseFloat(document.getElementById('pay-amount').value) || 0,
+                receiver: document.getElementById('pay-receiver').value,
+                method: document.getElementById('pay-method').value,
+                status: document.getElementById('pay-status').value
+            };
+            if(idx === -1) paymentRecords.push(obj); else paymentRecords[idx] = obj;
+            document.getElementById('payment-form').reset();
+            document.getElementById('pay-edit-index').value = "-1";
+            renderPaymentTable(); syncDataToCloudServer();
+        }
+
+        function renderPaymentTable() {
+            const tbody = document.getElementById('tbody-payments'); if(!tbody) return; tbody.innerHTML = "";
+            let sum = 0;
+            paymentRecords.forEach((r, i) => {
+                if(r.status === "Đã chi") sum += r.amount;
+                tbody.innerHTML += `<tr>
+                    <td>${i+1}</td><td class="font-bold">${r.code}</td><td>${r.content}</td><td class="text-right">${r.amount.toLocaleString()}</td>
+                    <td>${r.receiver}</td><td>${r.method}</td><td><span style="color:${r.status === 'Đã chi' ? 'var(--green)':'var(--orange)'};font-weight:bold;">${r.status}</span></td>
+                    <td><button type="button" onclick="editPaymentRecord(${i})">Sửa</button> <button type="button" style="color:var(--red);" onclick="paymentRecords.splice(${i},1); renderPaymentTable(); syncDataToCloudServer();">Xóa</button></td>
+                </tr>`;
+            });
+            document.getElementById('dash-total-payments').innerText = sum.toLocaleString() + " VND";
+        }
+        function editPaymentRecord(i) {
+            let r = paymentRecords[i]; document.getElementById('pay-edit-index').value = i;
+            document.getElementById('pay-code').value = r.code; document.getElementById('pay-content').value = r.content;
+            document.getElementById('pay-amount').value = r.amount; document.getElementById('pay-receiver').value = r.receiver;
+            document.getElementById('pay-method').value = r.method; document.getElementById('pay-status').value = r.status;
+        }
+
+        // ==========================================
+        // 4. ENGINE PHÂN HỆ CNTT & BẢN QUYỀN
+        // ==========================================
         function exportITSummaryReportGoogleSheet() {
             if(itAssetsRecords.length === 0) return alert("Không có dữ liệu thiết bị phần mềm để xuất báo cáo!");
             syncDataToCloudServer();
@@ -468,13 +643,97 @@
         function resetITForm() { document.getElementById('it-main-form').reset(); document.getElementById('it-edit-index').value = "-1"; autoGenerateAssetID(); }
         function switchMainTab(name) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active')); document.getElementById('tab-' + name).classList.add('active'); document.querySelector(`.nav-tabs .nav-tab[data-tab="${name}"]`).classList.add('active'); }
 
-        // ĐỒNG BỘ TRỰC TUYẾN CLOUD DATA
+        // ==========================================
+        // 5. PHÂN HỆ PHIẾU LƯƠNG TRỰC QUAN QR CODE
+        // ==========================================
+        let qrcodeInstance = null;
+        function openIndividualPayslipModal(index) {
+            let row = salaryData[index]; if(!row) return;
+            document.getElementById('payslipModal').style.display = "flex";
+            document.getElementById('qrcode-canvas-zone').innerHTML = "";
+            
+            let payslipString = `=== PHIẾU LƯƠNG ĐIỆN TỬ ===\nHọ tên: ${row.name}\nSTK: ${row.account}\nCông làm NT: ${row.NT}\nThực lĩnh: ${row.thuc_linh || 0} VND`;
+            
+            qrcodeInstance = new QRCode(document.getElementById('qrcode-canvas-zone'), {
+                text: payslipString, width: 160, height: 160, colorDark: "#0f172a", colorLight: "#ffffff"
+            });
+            
+            document.getElementById('payslip-text-details').innerHTML = `
+                <strong>Nhân viên:</strong> ${row.name} <br>
+                <strong>Tài khoản ngân hàng:</strong> ${row.account} <br>
+                <strong>Hệ số lương cơ bản:</strong> ${row.lcb_heso} <br>
+                <strong>Ngày công thực tế:</strong> ${row.NT} ngày <br>
+                <strong>Lương công việc thực tế:</strong> ${(row.lcv_thucte || 0).toLocaleString()} VND <br>
+                <strong>Bảo hiểm xã hội trích trừ:</strong> ${(row.bao_hiem || 0).toLocaleString()} VND <br>
+                <strong>Tạm ứng tháng:</strong> ${(row.tam_ung || 0).toLocaleString()} VND <br>
+                <hr style='margin:8px 0; border:none; border-top:1px dashed #cbd5e1;'>
+                <span style='color:var(--orange); font-weight:bold;'>Thực lĩnh NET: ${document.getElementById('dash-total-pay').innerText}</span>
+            `;
+        }
+        function closePayslipModal() { document.getElementById('payslipModal').style.display = "none"; }
+
+        // ==========================================
+        // 6. THUẬT TOÁN LỊCH VẠN NIÊN & LUNAR CORE
+        // ==========================================
+        function getLunarDate(d, m, y) {
+            // Hàm mô phỏng tính toán ngày âm lịch cốt lõi (Bính Ngọ 2026)
+            if (m === 5) return { day: d + 17 > 30 ? d + 17 - 30 : d + 17, month: d + 17 > 30 ? 5 : 4 };
+            return { day: d, month: m };
+        }
+
+        function navigateWidgetMonth(dir) {
+            currentMonth += dir; if(currentMonth > 11) { currentMonth = 0; currentYear++; } if(currentMonth < 0) { currentMonth = 11; currentYear--; }
+            buildCalendar();
+        }
+
+        function buildCalendar() {
+            const monthsText = ["Tháng 01", "Tháng 02", "Tháng 03", "Tháng 04", "Tháng 05", "Tháng 06", "Tháng 07", "Tháng 08", "Tháng 09", "Tháng 10", "Tháng 11", "Tháng 12"];
+            document.getElementById('calendar-view-label').innerText = `${monthsText[currentMonth]} / ${currentYear}`;
+            
+            const grid = document.getElementById('calendar-body-days'); if(!grid) return;
+            grid.innerHTML = "";
+            
+            const dayNames = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+            dayNames.forEach(n => grid.innerHTML += `<div class='calendar-day-name'>${n}</div>`);
+            
+            let firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            let totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            for(let i=0; i<firstDay; i++) grid.innerHTML += `<div></div>`;
+            
+            let today = new Date();
+            for(let d=1; d<=totalDays; d++) {
+                let isToday = (d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear());
+                let lunar = getLunarDate(d, currentMonth + 1, currentYear);
+                grid.innerHTML += `<div class="calendar-day-cell ${isToday ? 'active-today':''}" onclick="viewLunarDetailDay(${d}, ${lunar.day}, ${lunar.month})">
+                    ${d} <span class="lunar-day">${lunar.day}</span>
+                </div>`;
+            }
+            viewLunarDetailDay(today.getDate(), getLunarDate(today.getDate(), today.getMonth()+1, today.getFullYear()).day, today.getMonth()+1);
+        }
+
+        function viewLunarDetailDay(solarD, lunarD, lunarM) {
+            document.getElementById('van-nien-live-data').innerHTML = `
+                <div class="vannien-title">CHI TIẾT NGÀY VẠN NIÊN</div>
+                <div class="vannien-row"><span>Dương lịch:</span><strong>Ngày ${solarD} tháng ${currentMonth+1} năm ${currentYear}</strong></div>
+                <div class="vannien-row"><span>Âm lịch tương thích:</span><b style="color:var(--orange);">${lunarD}/${lunarM} (Năm Bính Ngọ)</b></div>
+                <div class="vannien-row"><span>Giờ hoàng đạo:</span><span>Tý, Dần, Mão, Ngọ</span></div>
+                <div class="vannien-row"><span>Trực ngày:</span><span>Trực Khai - Tốt cho khởi công</span></div>
+            `;
+        }
+
+        // ==========================================
+        // 7. ĐỒNG BỘ ĐÁM MÂY CLOUD STORAGE
+        // ==========================================
         async function syncDataToCloudServer() { 
             document.getElementById('cloud-status-dot').className = "status-dot syncing";
             localStorage.setItem('sys_salary_data', JSON.stringify(salaryData)); 
             localStorage.setItem('sys_it_records', JSON.stringify(itAssetsRecords)); 
+            localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords)); 
+            localStorage.setItem('sys_payment_records', JSON.stringify(paymentRecords)); 
+            
             const formData = new FormData(); 
-            formData.append("data", JSON.stringify({ salaryData, paymentRecords: [], telecomRecords: [], itAssetsRecords })); 
+            formData.append("data", JSON.stringify({ salaryData, paymentRecords, telecomRecords, itAssetsRecords })); 
             try { 
                 await fetch(CLOUD_API_ENDPOINT, { method: 'POST', mode: 'no-cors', body: formData }); 
             } catch(e){}
@@ -487,20 +746,30 @@
             try { 
                 const res = await fetch(CLOUD_API_ENDPOINT + "?action=read"); 
                 const d = await res.json(); 
-                if(d) { salaryData = d.salaryData||[]; itAssetsRecords = d.itAssetsRecords||[]; } 
+                if(d) { 
+                    salaryData = d.salaryData || []; 
+                    itAssetsRecords = d.itAssetsRecords || []; 
+                    telecomRecords = d.telecomRecords || [];
+                    paymentRecords = d.paymentRecords || [];
+                } 
             } catch(e){} 
+            
             if(salaryData.length === 0) salaryData = JSON.parse(JSON.stringify(default16Staffs));
             if(itAssetsRecords.length === 0) {
                 itAssetsRecords = [
                     { user: "Trần Bình Dương", dept: "Trung Tâm Công Nghệ", serialId: "LAP-2026-001", name: "Dell Latitude 5430", config: "Core i5/16GB/512GB SSD", os: "Windows 11 Pro 64-bit", osLicense: "Bản quyền 1 năm (1YR)", office: "Microsoft 365 Personal Cloud (1YR)", officeLicense: "Bản quyền 1 năm (1YR Subscr)", software: "Autodesk AutoCAD 2024", qty: 1 }
                 ];
             }
-            renderSalaryTable(); renderITTable(); 
+            if(telecomRecords.length === 0) {
+                telecomRecords = [{ phone: "0912.345.678", user: "Nguyễn Minh Ngọc", dept: "Khối Văn Phòng", limit: 200000, actual: 185000, note: "Gói cước thương gia" }];
+            }
+            if(paymentRecords.length === 0) {
+                paymentRecords = [{ code: "PC-00234", content: "Chi tiền mua văn phòng phẩm quý 2", amount: 1450000, receiver: "Công ty Thiên Long", method: "Tiền mặt", status: "Đã chi" }];
+            }
+            renderSalaryTable(); renderITTable(); renderTelecomTable(); renderPaymentTable();
         }
 
-        // LỊCH VẠN NIÊN PHỤ TRỢ MÁY TRẠM
-        function buildCalendar() { const c = document.getElementById('calendar-body-days'); if(c) c.innerHTML = "<div class='calendar-day-cell active-today'>20</div>"; document.getElementById('van-nien-live-data').innerHTML = "<div class='vannien-title'>Ngày Vạn Niên</div><div class='vannien-row'><span>Âm lịch:</span><span>06/06 Bính Ngọ</span></div>"; }
-
+        // KHỞI ĐỘNG HỆ THỐNG
         document.addEventListener('DOMContentLoaded', () => { 
             fetchDataFromCloudServer(); 
             autoGenerateAssetID(); 
