@@ -161,16 +161,18 @@
         .vannien-row span:last-child { color: var(--primary); font-weight: bold; text-align: right; }
         .hd-hours-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; font-size: 11px; margin-top: 5px; background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #e2e8f0; }
 
-        /* LIGHTBOX & MODAL EFFECT - ĐÃ CHỈNH SỬA TOÀN DIỆN ĐỂ HIỂN THỊ RỘNG RÃI */
-        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 10px; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 95%; max-width: 1200px; height: 92vh; position: relative; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .close-modal { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #64748b; font-weight: bold; transition: 0.2s; }
-        .close-modal:hover { color: var(--red); }
-        .preview-viewport-box { width: 100%; flex-grow: 1; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: #334155; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 15px; }
-        .preview-file-render { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: 0 4px 12px rgba(0,0,0,0.5); border-radius: 4px; background-color: white; }
+        /* LIGHTBOX MODAL - FIX CHIỀU RỘNG VÀ CƠ CHẾ ĐÓNG CHUẨN ERP */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); align-items: center; justify-content: center; padding: 15px; }
+        .modal-content { background: white; padding: 22px; border-radius: 8px; width: 95%; max-width: 1150px; height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3); position: relative; }
+        
+        .modal-close-btn-top { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 5px 12px; font-size: 13px; font-weight: bold; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: 'Times New Roman'; }
+        .modal-close-btn-top:hover { background: #fca5a5; }
+
+        .preview-viewport-box { width: 100%; flex-grow: 1; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 6px; background: #1e293b; overflow: auto; padding: 0; display: block; }
+        .preview-file-render-frame { width: 100%; height: 100%; border: none; display: block; background-color: white; }
         
         /* QR VIEW ZONE IN MODAL */
-        .qr-modal-body { display: flex; flex-direction: column; align-items: center; justify-content: center; background: white !important; gap: 15px; }
+        .qr-modal-body { display: flex; flex-direction: column; align-items: center; justify-content: center; background: white !important; gap: 15px; padding: 20px 0; }
         .qr-box-render { padding: 15px; background: white; border: 2px dashed var(--purple); border-radius: 8px; }
     </style>
 </head>
@@ -393,7 +395,7 @@
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</div>
+                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀNET</div>
                     <div class="table-responsive">
                         <table class="main-table">
                             <thead>
@@ -617,13 +619,16 @@
         </div>
     </div>
 
-    <!-- MODAL LIGHTBOX XEM TÀI LIỆU & QUÉT MÃ QR CỦA THIẾT BỊ IT -->
-    <div class="modal" id="document-preview-modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closePreviewModal()">&times;</span>
+    <!-- MODAL LIGHTBOX - CƠ CHẾ CLICK RA NGOÀI ĐỂ ĐÓNG VÀ FIX HIỂN THỊ CHỨNG TỪ CHUẨN 100% -->
+    <div class="modal" id="document-preview-modal" onclick="closePreviewModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0;">
                 <h3 id="modal-preview-title" style="font-size: 14px; font-weight: bold; color: var(--blue);">Xem chi tiết dữ liệu chứng từ đính kèm</h3>
-                <button type="button" class="btn btn-primary" style="padding: 4px 10px; font-size:11px;" onclick="window.print()"><i class="fa-solid fa-print"></i> In dữ liệu</button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button type="button" class="btn btn-primary" style="padding: 5px 12px; font-size:12px;" onclick="window.print()"><i class="fa-solid fa-print"></i> In dữ liệu</button>
+                    <!-- Nút Đóng Rõ Ràng Tránh Bị Đè Lên -->
+                    <button type="button" class="modal-close-btn-top" onclick="closePreviewModal()"><i class="fa-solid fa-circle-xmark"></i> ĐÓNG LẠI</button>
+                </div>
             </div>
             <div class="preview-viewport-box" id="modal-preview-body"></div>
         </div>
@@ -743,7 +748,7 @@
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
-            event.target.classList.add('active');
+            if(event && event.target) event.target.classList.add('active');
         }
 
         // ================= ENGINE PHÂN TÁCH CẤU HÌNH BIỆT LẬP THEO THÁNG =================
@@ -864,21 +869,13 @@
 
         function removeSelectedThumb(event, idx, moduleType) { event.stopPropagation(); if(moduleType === 'payment') currentPaymentFiles.splice(idx, 1); else currentTelecomFiles.splice(idx, 1); renderThumbnails(moduleType); }
         
-        // SỬA ĐỔI LUỒNG XEM TRƯỚC ĐẦY ĐỦ NỘI DUNG CHỨNG TỪ (IMAGE & PDF)
+        // FIX LỖI KHUNG TỐI: CHUẨN HÓA SỬ DỤNG IFRAME CHO CẢ ẢNH VÀ PDF BASE64
         function openSingleFileLightbox(base64Data, fileType) { 
             const modal = document.getElementById('document-preview-modal'); 
             const viewBody = document.getElementById('modal-preview-body'); 
             
-            if (fileType.includes('pdf')) {
-                // Sử dụng cặp thẻ object/embed có chiều rộng và chiều cao bao phủ 100% viewport để xem toàn bộ nội dung PDF
-                viewBody.innerHTML = `<object data="${base64Data}" type="application/pdf" style="width:100%; height:75vh; border-radius:4px;">
-                    <embed src="${base64Data}" type="application/pdf" style="width:100%; height:75vh;" />
-                    <p style="color:white; padding:15px; text-align:center;">Trình duyệt không hỗ trợ xem PDF trực tiếp. <a href="${base64Data}" download="chung-tu.pdf" style="color:var(--blue); font-weight:bold;">Tải xuống tệp tại đây.</a></p>
-                </object>`;
-            } else {
-                // Tối ưu hóa vùng hiển thị ảnh không bị giới hạn nhỏ hẹp
-                viewBody.innerHTML = `<img src="${base64Data}" class="preview-file-render" style="max-width:100%; max-height:75vh; object-fit:contain; display:block;" alt="View Document">`;
-            }
+            // Ép render bằng iframe sạch để trình duyệt tự động giải mã chuỗi Base64 ra toàn màn hình modal
+            viewBody.innerHTML = `<iframe src="${base64Data}" class="preview-file-render-frame"></iframe>`;
             modal.style.display = 'flex'; 
         }
 
@@ -897,26 +894,19 @@
                     <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; border-bottom:1px solid #cbd5e1; flex-shrink:0;">`;
                 
                 files.forEach((f, i) => { 
-                    listHtml += `<button type="button" class="btn btn-purple" style="padding:6px 12px; font-size:12px;" onclick="switchMultiViewContent('${f.base64}', '${f.type}')">📄 Tệp ${i+1}: ${f.name}</button>`; 
+                    listHtml += `<button type="button" class="btn btn-purple" style="padding:6px 12px; font-size:12px;" onclick="switchMultiViewContent('${f.base64}')">📄 Tệp ${i+1}: ${f.name}</button>`; 
                 }); 
-                listHtml += `</div><div id="multi-view-render-zone" style="width:100%; flex-grow:1; display:flex; align-items:center; justify-content:center; background:#1e293b; border-radius:4px;"></div></div>`; 
+                listHtml += `</div><div id="multi-view-render-zone" style="width:100%; flex-grow:1; background:white; border-radius:4px;"></div></div>`; 
                 
                 viewBody.innerHTML = listHtml; 
                 modal.style.display = 'flex'; 
-                // Tự động load file đầu tiên trong danh sách đa tệp
-                switchMultiViewContent(files[0].base64, files[0].type);
+                switchMultiViewContent(files[0].base64);
             } 
         }
 
-        function switchMultiViewContent(base64Data, fileType) {
+        function switchMultiViewContent(base64Data) {
             const zone = document.getElementById('multi-view-render-zone');
-            if (fileType.includes('pdf')) {
-                zone.innerHTML = `<object data="${base64Data}" type="application/pdf" style="width:100%; height:65vh;">
-                    <embed src="${base64Data}" type="application/pdf" style="width:100%; height:65vh;" />
-                </object>`;
-            } else {
-                zone.innerHTML = `<img src="${base64Data}" style="max-width:100%; max-height:65vh; object-fit:contain; display:block;" alt="View Multi Document">`;
-            }
+            zone.innerHTML = `<iframe src="${base64Data}" class="preview-file-render-frame"></iframe>`;
         }
 
         function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
