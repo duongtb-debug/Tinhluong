@@ -213,12 +213,26 @@
             <!-- TAB 1: BẢNG LƯƠNG -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
-                    <div class="card-title">Hành động phân hệ lương</div>
+                    <div class="card-title">Hành động phân hệ và Cấu hình Quỹ lương lương</div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
-                        <div class="form-group" style="min-width: 140px;">
+                        <div class="form-group" style="min-width: 120px;">
                             <label>Tháng báo cáo</label>
                             <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
                         </div>
+                        <!-- BỔ SUNG CẤU HÌNH LƯƠNG ĐIỀU CHỈNH LINH HOẠT -->
+                        <div class="form-group" style="min-width: 130px;">
+                            <label style="color:var(--blue); font-weight:bold;">Lương Tối Thiểu Vùng</label>
+                            <input type="number" id="config-vung-pay" value="4140000" oninput="renderSalaryTable()" style="border-color:var(--blue); font-weight:bold;">
+                        </div>
+                        <div class="form-group" style="min-width: 130px;">
+                            <label style="color:var(--blue); font-weight:bold;">Lương Cơ Sở Hệ Thống</label>
+                            <input type="number" id="config-base-pay" value="2530000" oninput="renderSalaryTable()" style="border-color:var(--blue); font-weight:bold;">
+                        </div>
+                        <div class="form-group" style="min-width: 130px;">
+                            <label style="color:var(--purple); font-weight:bold;">Đơn Giá Lương CV gốc</label>
+                            <input type="number" id="config-lcv-pay" value="2087970" oninput="renderSalaryTable()" style="border-color:var(--purple); font-weight:bold;">
+                        </div>
+                        
                         <button type="button" class="btn btn-primary" onclick="loadSalaryFromCloud()">🔄 Tải Lại Từ Cloud</button>
                         <button type="button" class="btn btn-purple" onclick="saveSalaryToCloudGlobal()">💾 Đẩy Lên Google Cloud</button>
                     </div>
@@ -375,7 +389,7 @@
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</div>
+                    <div class="card-title">CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀNET INTERNET</div>
                     <div class="table-responsive"><table class="main-table"><thead><tr style="background:#e2e8f0;"><th class="text-center">STT</th><th>Mã thuê bao</th><th>Nhà mạng</th><th class="text-center">Kỳ cước</th><th class="text-right">Chi phí</th><th class="text-center">Trạng thái</th><th class="text-center">Hành động</th></tr></thead><tbody id="tbody-telecom"></tbody></table></div>
                 </div>
             </div>
@@ -624,7 +638,6 @@
             if(event && event.currentTarget) event.currentTarget.classList.add('active');
         }
 
-        // ĐÃ NÂNG CẤP: Ép chế độ no-cors và thiết lập trạng thái bypass hoàn hảo
         function fetchDataFromCloud() {
             if(!GOOGLE_WEB_APP_URL || GOOGLE_WEB_APP_URL.includes("DÁN_MÃ_LINK")) {
                 setStatus('offline', 'Chưa cấu hình URL kết nối!');
@@ -673,12 +686,17 @@
             if(localSaved) { salaryData = JSON.parse(localSaved); }
         }
 
+        // ĐÃ SỬA ĐỔI: Đọc giá trị cấu hình linh hoạt từ các ô input thay vì cố định (hardcode)
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
             let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0;
 
+            // Đọc trực tiếp cấu hình linh hoạt từ giao diện
+            const TOI_THIEU_VUNG = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
+            const LUONG_CO_BAN_PRICE = parseFloat(document.getElementById('config-base-pay').value) || 2530000;
+            const LUONG_CONG_VIEC_PRICE = parseFloat(document.getElementById('config-lcv-pay').value) || 2087970;
+
             salaryData.forEach((row, index) => {
-                const TOI_THIEU_VUNG = 4140000; const LUONG_CO_BAN_PRICE = 2530000;
                 row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG);
                 const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * LUONG_CO_BAN_PRICE);
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
@@ -686,7 +704,7 @@
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt;
                 sum_lcb_thucte += l_tong_cb;
                 
-                row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * 2087970);
+                row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * LUONG_CONG_VIEC_PRICE);
                 row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT));
                 sum_lcv_thucte += row.lcv_thucte;
 
@@ -722,8 +740,10 @@
                 </tr>`;
             });
             document.getElementById('dash-total-pay').innerText = sum_thuc_linh.toLocaleString() + " VND";
+            
+            // Fix selector trùng lặp id cho visual card
             document.getElementById('v-total-lcb').innerText = sum_lcb_thucte.toLocaleString() + " VND";
-            document.getElementById('v-total-lcv').innerText = sum_lcv_thucte.toLocaleString() + " VND";
+            document.querySelectorAll('#v-total-lcv')[0].innerText = sum_lcv_thucte.toLocaleString() + " VND";
             document.getElementById('v-total-thuc').innerText = sum_thuc_linh.toLocaleString() + " VND";
             
             let totalFund = sum_lcb_thucte + sum_lcv_thucte || 1;
