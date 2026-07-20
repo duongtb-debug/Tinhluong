@@ -220,6 +220,13 @@
                             <label>Tháng báo cáo</label>
                             <input type="month" id="filter-month" value="2026-05" onchange="loadSalaryFromCloud()">
                         </div>
+                        
+                        <!-- BỔ SUNG: Ô NHẬP MỨC LƯƠNG TỐI THIỂU VÙNG THEO CHÍNH SÁCH NHÀ NƯỚC -->
+                        <div class="form-group" style="min-width: 130px;">
+                            <label style="color:var(--orange); font-weight:bold;">Lương Tối Thiểu Vùng</label>
+                            <input type="number" id="config-vung-pay" value="4140000" oninput="handleMinRegionPayChange()" style="border-color:var(--orange); font-weight:bold;">
+                        </div>
+                        
                         <div class="form-group" style="min-width: 130px;">
                             <label style="color:var(--blue); font-weight:bold;">Lương Cơ Sở Hệ Thống</label>
                             <input type="number" id="config-base-pay" value="2530000" oninput="renderSalaryTable()" style="border-color:var(--blue); font-weight:bold;">
@@ -680,40 +687,53 @@
             if(localSaved) { salaryData = JSON.parse(localSaved); }
         }
 
-        // ĐÃ NÂNG CẤP TOÀN DIỆN: Độc lập hóa và cho phép chỉnh sửa trực tiếp ô Lương Ký HĐLĐ
+        // Hàm xử lý riêng khi thay đổi ô cấu hình Lương tối thiểu vùng ở đầu trang
+        function handleMinRegionPayChange() {
+            const TOI_THIEU_VUNG = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
+            // Tự động làm mới gợi ý mức lương HĐLĐ gốc cho toàn bộ danh sách (những người chưa bị can thiệp thủ công)
+            salaryData.forEach(row => {
+                if (!row.is_edited_manually) {
+                    row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG);
+                }
+            });
+            renderSalaryTable();
+        }
+
+        // Cập nhật logic render: Ô Lương Ký HĐLĐ đồng bộ linh hoạt, cho phép chỉnh sửa thủ công nếu có phụ lục/thay đổi hợp đồng
         function renderSalaryTable() {
             const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
             let sum_thuc_linh = 0; let sum_lcb_thucte = 0; let sum_lcv_thucte = 0;
 
+            const TOI_THIEU_VUNG = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
             const LUONG_CO_BAN_PRICE = parseFloat(document.getElementById('config-base-pay').value) || 2530000;
             const LUONG_CONG_VIEC_PRICE = parseFloat(document.getElementById('config-lcv-pay').value) || 2087970;
 
             salaryData.forEach((row, index) => {
-                // Tự động khởi tạo giá trị lương HĐLĐ gốc nếu bộ nhớ đệm hoặc cloud chưa có trường này
+                // Khởi tạo giá trị lương HĐLĐ gốc dựa theo chính sách Lương tối thiểu vùng hiện hành nếu chưa có dữ liệu
                 if (row.lcb_goc === undefined || row.lcb_goc === null || row.lcb_goc === 0) {
-                    row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * 4140000);
+                    row.lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * TOI_THIEU_VUNG);
                 }
 
-                // Tính lương cơ bản hệ thống theo cấu hình linh hoạt hàng tháng
+                // Tính lương cơ bản hệ thống hàng tháng
                 const luong_cb_he_thong = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * LUONG_CO_BAN_PRICE);
                 
-                // Lương thời gian thực tế dựa trên ngày công (NT)
+                // Lương thời gian thực tế
                 row.l_thoigian = Math.round((luong_cb_he_thong / 22) * parseFloat(row.NT));
                 
-                // Lương Lễ, Phép (Tính dựa trên mức lương HĐLĐ linh động đã nhập)
+                // Lương Lễ, Phép (Tính dựa theo mức lương ký HĐLĐ linh hoạt)
                 row.le_phep_tt = Math.round((row.lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
                 
                 const l_tong_cb = row.l_thoigian + row.le_phep_tt;
                 sum_lcb_thucte += l_tong_cb;
                 
-                // Cơ cấu lương công việc thực tế (LCV)
+                // Lương công việc thực tế (LCV)
                 row.lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * LUONG_CONG_VIEC_PRICE);
                 row.lcv_thucte = Math.round((row.lcv_goc / 22) * parseFloat(row.NT));
                 sum_lcv_thucte += row.lcv_thucte;
 
                 const o_tong_lcb_lcv = l_tong_cb + row.lcv_thucte; 
                 
-                // Tiền đóng BH bắt buộc (10.5% tính chuẩn xác dựa trên Lương ký HĐLĐ thực tế của người đó)
+                // Tiền đóng BHXH bắt buộc (10.5% ăn theo mức lương HĐLĐ thực tế)
                 row.bao_hiem = Math.round(row.lcb_goc * 0.105); 
                 
                 const o_thuc_linh = o_tong_lcb_lcv - parseFloat(row.bao_hiem) - parseFloat(row.tam_ung || 0);
@@ -730,8 +750,8 @@
                     <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_heso}" onchange="updateSalaryCell(${index}, 'lcb_heso', this.value)"></td>
                     <td><input type="number" step="0.01" class="input-edit" value="${row.lcb_phucap || 0}" onchange="updateSalaryCell(${index}, 'lcb_phucap', this.value)"></td>
                     
-                    <!-- Ô NHẬP LƯƠNG KÝ HĐLĐ: Màu xanh lá dịu mát, cho phép sửa đổi số tiền bất cứ lúc nào -->
-                    <td><input type="number" class="input-contract" value="${row.lcb_goc}" onchange="updateSalaryCell(${index}, 'lcb_goc', this.value)"></td>
+                    <!-- Ô NHẬP LƯƠNG KÝ HĐLĐ: Màu xanh lá cây, tự nhảy số theo Lương tối thiểu vùng của chính sách, nhưng vẫn cho click sửa trực tiếp nếu có phụ lục thay đổi lẻ -->
+                    <td><input type="number" class="input-contract" value="${row.lcb_goc}" onchange="updateContractSalaryCell(${index}, this.value)"></td>
                     
                     <td class="text-right">${luong_cb_he_thong.toLocaleString()}</td>
                     <td><input type="number" class="input-salary-day" value="${row.NT}" onchange="updateSalaryCell(${index}, 'NT', this.value)"></td>
@@ -777,7 +797,20 @@
             inputEl.focus();
         }
 
-        function updateSalaryCell(idx, f, v) { salaryData[idx][f] = parseFloat(v) || 0; renderSalaryTable(); }
+        function updateContractSalaryCell(idx, val) {
+            salaryData[idx]['lcb_goc'] = parseFloat(val) || 0;
+            salaryData[idx]['is_edited_manually'] = true; // Đánh dấu nhân sự đã được cấu hình tay, không bị ghi đè khi đổi chính sách vùng chung
+            renderSalaryTable();
+        }
+
+        function updateSalaryCell(idx, f, v) { 
+            salaryData[idx][f] = parseFloat(v) || 0; 
+            if (f === 'lcb_heso' || f === 'lcb_phucap') {
+                salaryData[idx]['is_edited_manually'] = false; // Nếu sửa hệ số, đưa trạng thái về tự động tính theo vùng
+            }
+            renderSalaryTable(); 
+        }
+        
         function deleteSalary(i) { salaryData.splice(i,1); renderSalaryTable(); }
 
         async function saveSalaryToCloudGlobal() {
@@ -792,6 +825,7 @@
                     lcb_heso: row.lcb_heso,
                     lcb_phucap: row.lcb_phucap || 0,
                     lcb_goc: row.lcb_goc,
+                    is_edited_manually: row.is_edited_manually || false,
                     NT: row.NT,
                     P: row.P || 0,
                     le_vr: row.le_vr || 0,
