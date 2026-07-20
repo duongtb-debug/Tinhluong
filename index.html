@@ -714,11 +714,15 @@
         async function fetchDataFromCloudServer() { 
             let selectedMonth = document.getElementById('filter-month').value;
             
-            // ĐIỀU CHỈNH CHÌA KHÓA: Hard-reset dữ liệu tháng được chọn về mặc định gốc (22 công), cắt đứt hoàn toàn vết tích cũ
-            salaryDataByMonth[selectedMonth] = JSON.parse(JSON.stringify(default16Staffs)).map(staff => ({
-                ...staff, NT: 22, P: 0, le_vr: 0, tam_ung: 0
-            }));
+            // THAY ĐỔI LOGIC MẤT CÔNG Ở ĐÂY:
+            // Bước 1: Chỉ khởi tạo bộ nhớ tạm mặc định (22 ngày công) NẾU VÀ CHI NẾU tháng đó chưa từng được tạo/sửa ở local trước đó.
+            if (!salaryDataByMonth[selectedMonth] || salaryDataByMonth[selectedMonth].length === 0) {
+                salaryDataByMonth[selectedMonth] = JSON.parse(JSON.stringify(default16Staffs)).map(staff => ({
+                    ...staff, NT: 22, P: 0, le_vr: 0, tam_ung: 0
+                }));
+            }
             
+            // Bước 2: Gọi lên Cloud Server để tìm bản ghi lưu trữ
             try { 
                 const res = await fetch(CLOUD_API_ENDPOINT + "?action=read&month=" + selectedMonth); 
                 const d = await res.json(); 
@@ -730,7 +734,7 @@
                     document.getElementById('config-lcv-pay').value = d.month_config.lcv;
                 }
                 
-                // Nếu Cloud phản hồi có dữ liệu thực của tháng này, mới thực hiện chèn đè lên
+                // Nếu Cloud phản hồi có dữ liệu thực của tháng này, lấy dữ liệu Cloud đè lên local
                 if(d && d.salaryData && d.salaryData.length > 0) { 
                     let cleanMonthData = JSON.parse(JSON.stringify(default16Staffs)).map(st => ({...st, NT:0, P:0, le_vr:0, tam_ung:0}));
                     d.salaryData.forEach(cloudRow => {
@@ -739,13 +743,14 @@
                     });
                     salaryDataByMonth[selectedMonth] = cleanMonthData;
                 }
+                
                 if(d) { 
                     itAssetsRecords = d.itAssetsRecords||[]; 
                     paymentRecords = d.paymentRecords||[]; 
                     telecomRecords = d.telecomRecords||[]; 
                 }
             } catch(e) {
-                console.log("Thao tác ngoại tuyến hoặc kì tháng chưa tồn tại trên Cloud Server.");
+                console.log("Thao tác ngoại tuyến hoặc kì tháng chưa tồn tại trên Đám Mây. Sử dụng dữ liệu bộ nhớ tạm.");
             } 
             
             if(itAssetsRecords.length === 0) { 
@@ -756,6 +761,8 @@
                     software: "Phần mềm thiết kế Autodesk AutoCAD 2024", softwareLicense: "⚠️ Chưa có bản quyền (Bản dùng thử / Crack)", qty: 1 
                 }]; 
             } 
+            
+            // Bước 3: Render giao diện - Lúc này mảng salaryDataByMonth[selectedMonth] chắc chắn chứa số công đúng của chính nó
             renderSalaryTable(); renderITTable(); renderPaymentTable(); renderTelecomTable(); 
         }
 
