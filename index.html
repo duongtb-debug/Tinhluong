@@ -308,8 +308,7 @@
                         <table class="main-table" id="main-salary-table">
                             <thead>
                                 <tr style="background-color: #e2e8f0;">
-                                    <th rowspan="2">Tháng</th>
-                                    <th rowspan="2">STT</th>
+                                    <th rowspan="2" style="width: 35px;">STT</th>
                                     <th rowspan="2">HỌ VÀ TÊN</th>
                                     <th rowspan="2">Số Tài Khoản</th>
                                     <th colspan="4" class="text-center">Lương Cơ Bản HĐLĐ</th>
@@ -542,7 +541,6 @@
                                             <option value="Windows 11 Pro">Windows 11 Pro</option>
                                             <option value="Windows 10 Pro">Windows 10 Pro</option>
                                             <option value="Windows 8.1 Pro">Windows 8.1 Pro</option>
-                                            <!-- ĐÃ BỔ SUNG CÁC PHIÊN BẢN WINDOWS 7 -->
                                             <option value="Windows 7 Professional" selected>Windows 7 Professional</option>
                                             <option value="Windows 7 Ultimate">Windows 7 Ultimate</option>
                                             <option value="Windows 7 Enterprise">Windows 7 Enterprise</option>
@@ -826,7 +824,6 @@
             { id: "2", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 8402864, period: "2026-06", cert: "Xem (1)", files: [] }
         ];
         
-        // MẶC ĐỊNH MÁY TRONG DANH SÁCH KIỂM KÊ DÙNG WINDOWS 7 PROFESSIONAL
         let itAssetsRecords = JSON.parse(localStorage.getItem('sys_it_records')) || [
             {
                 id: "1", serialId: "IT-LAP-2026-101", user: "Nguyễn Minh Ngọc", dept: "Ban Giám Đốc", type: "Laptop",
@@ -914,9 +911,9 @@
             calculateSalaryLogic();
         }
 
+        // TÍNH LƯƠNG - ĐÃ BỎ CỘT THÁNG ĐỂ BẢNG ĐẸP VÀ CÂN ĐỐI
         function calculateSalaryLogic() {
             let sm = document.getElementById('filter-month').value;
-            let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
             
             if (!salaryDataByMonth[sm] || salaryDataByMonth[sm].length === 0) { 
                 salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs)); 
@@ -946,8 +943,7 @@
                 let formattedTamUng = formatCurrencyVN(tamUngVal);
 
                 tbody.innerHTML += `<tr>
-                    <td class="text-center">${monthLabelVN}</td>
-                    <td class="text-center">${index + 1}</td>
+                    <td class="text-center font-bold">${index + 1}</td>
                     <td class="font-bold"><input class="inp-table" type="text" value="${row.name}" onchange="updateSalaryDataCell(${index}, 'name', this.value)"></td>
                     <td class="text-center"><input class="inp-table center" type="text" value="${row.account}" onchange="updateSalaryDataCell(${index}, 'account', this.value)"></td>
                     
@@ -1064,6 +1060,7 @@
             }
         }
 
+        // XUẤT EXCEL - ĐÃ CẬP NHẬT CẤU TRÚC BỎ CỘT THÁNG
         function exportSalaryToExcelComplete() {
             let sm = document.getElementById('filter-month').value;
             let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
@@ -1074,7 +1071,7 @@
             const ws = wb.addWorksheet('BangLuong');
 
             ws.columns = [
-                { width: 10 }, { width: 6 }, { width: 25 }, { width: 16 }, { width: 10 },
+                { width: 6 }, { width: 25 }, { width: 16 }, { width: 10 },
                 { width: 10 }, { width: 14 }, { width: 14 }, { width: 12 }, { width: 10 },
                 { width: 10 }, { width: 14 }, { width: 14 }, { width: 14 }, { width: 10 },
                 { width: 10 }, { width: 14 }, { width: 14 }, { width: 15 }, { width: 15 },
@@ -1084,37 +1081,36 @@
             ws.getCell('A1').value = "TỔNG CÔNG TY GIẤY VIỆT NAM"; ws.getCell('A1').font = { bold: true, size: 10 };
             ws.getCell('A2').value = "VĂN PHÒNG"; ws.getCell('A2').font = { bold: true, size: 10 };
 
-            ws.getCell('V1').value = "Mức Hệ số LCB:"; ws.getCell('W1').value = cfg.vung; ws.getCell('W1').numFmt = '#,##0';
-            ws.getCell('V2').value = "Mức Phụ cấp LCB:"; ws.getCell('W2').value = cfg.base; ws.getCell('W2').numFmt = '#,##0';
-            ws.getCell('V3').value = "Mức Hệ số LCV:"; ws.getCell('W3').value = cfg.lcv; ws.getCell('W3').numFmt = '#,##0';
+            ws.getCell('U1').value = "Mức Hệ số LCB:"; ws.getCell('V1').value = cfg.vung; ws.getCell('V1').numFmt = '#,##0';
+            ws.getCell('U2').value = "Mức Phụ cấp LCB:"; ws.getCell('V2').value = cfg.base; ws.getCell('V2').numFmt = '#,##0';
+            ws.getCell('U3').value = "Mức Hệ số LCV:"; ws.getCell('V3').value = cfg.lcv; ws.getCell('V3').numFmt = '#,##0';
 
-            ws.mergeCells('A4:W4');
+            ws.mergeCells('A4:V4');
             const titleCell = ws.getCell('A4');
             titleCell.value = `BẢNG LƯƠNG CHI TIẾT NHÂN VIÊN - THÁNG ${monthLabelVN}`;
             titleCell.font = { bold: true, size: 14 }; titleCell.alignment = { horizontal: 'center' };
 
-            ws.mergeCells('A6:A7'); ws.getCell('A6').value = "Tháng";
-            ws.mergeCells('B6:B7'); ws.getCell('B6').value = "STT";
-            ws.mergeCells('C6:C7'); ws.getCell('C6').value = "HỌ VÀ TÊN";
-            ws.mergeCells('D6:D7'); ws.getCell('D6').value = "Số Tài Khoản";
+            ws.mergeCells('A6:A7'); ws.getCell('A6').value = "STT";
+            ws.mergeCells('B6:B7'); ws.getCell('B6').value = "HỌ VÀ TÊN";
+            ws.mergeCells('C6:C7'); ws.getCell('C6').value = "Số Tài Khoản";
 
-            ws.mergeCells('E6:H6'); ws.getCell('E6').value = "Lương Cơ Bản HĐLĐ";
-            ws.getCell('E7').value = "Hệ số LCB"; ws.getCell('F7').value = "Phụ cấp LCB"; ws.getCell('G7').value = "Lương Ký HĐLĐ"; ws.getCell('H7').value = "Lương cơ bản";
+            ws.mergeCells('D6:G6'); ws.getCell('D6').value = "Lương Cơ Bản HĐLĐ";
+            ws.getCell('D7').value = "Hệ số LCB"; ws.getCell('E7').value = "Phụ cấp LCB"; ws.getCell('F7').value = "Lương Ký HĐLĐ"; ws.getCell('G7').value = "Lương cơ bản";
 
-            ws.mergeCells('I6:K6'); ws.getCell('I6').value = "Số Ngày Công Thực Tế";
-            ws.getCell('I7').value = "Thời gian (N)"; ws.getCell('J7').value = "Phép (P)"; ws.getCell('K7').value = "Lễ, VR";
+            ws.mergeCells('H6:J6'); ws.getCell('H6').value = "Số Ngày Công Thực Tế";
+            ws.getCell('H7').value = "Thời gian (N)"; ws.getCell('I7').value = "Phép (P)"; ws.getCell('J7').value = "Lễ, VR";
 
-            ws.mergeCells('L6:N6'); ws.getCell('L6').value = "Chi Tiết Lương Thực Nhận";
-            ws.getCell('L7').value = "Lương Thời Gian"; ws.getCell('M7').value = "Lương Lễ, Phép"; ws.getCell('N7').value = "Tổng Lương CB";
+            ws.mergeCells('K6:M6'); ws.getCell('K6').value = "Chi Tiết Lương Thực Nhận";
+            ws.getCell('K7').value = "Lương Thời Gian"; ws.getCell('L7').value = "Lương Lễ, Phép"; ws.getCell('M7').value = "Tổng Lương CB";
 
-            ws.mergeCells('O6:R6'); ws.getCell('O6').value = "Cơ cấu Lương Công Việc (CV)";
-            ws.getCell('O7').value = "Hệ số LCV"; ws.getCell('P7').value = "Phụ cấp LCV"; ws.getCell('Q7').value = "LCV Gốc"; ws.getCell('R7').value = "Lương CV Thực Tế";
+            ws.mergeCells('N6:Q6'); ws.getCell('N6').value = "Cơ cấu Lương Công Việc (CV)";
+            ws.getCell('N7').value = "Hệ số LCV"; ws.getCell('O7').value = "Phụ cấp LCV"; ws.getCell('P7').value = "LCV Gốc"; ws.getCell('Q7').value = "Lương CV Thực Tế";
 
-            ws.mergeCells('S6:S7'); ws.getCell('S6').value = "Tổng LCB + LCV";
-            ws.mergeCells('T6:T7'); ws.getCell('T6').value = "BH Bắt Buộc (10.5%)";
-            ws.mergeCells('U6:U7'); ws.getCell('U6').value = "Tạm Ứng";
-            ws.mergeCells('V6:V7'); ws.getCell('V6').value = "Thực Lĩnh";
-            ws.mergeCells('W6:W7'); ws.getCell('W6').value = "Ghi Chú";
+            ws.mergeCells('R6:R7'); ws.getCell('R6').value = "Tổng LCB + LCV";
+            ws.mergeCells('S6:S7'); ws.getCell('S6').value = "BH Bắt Buộc (10.5%)";
+            ws.mergeCells('T6:T7'); ws.getCell('T6').value = "Tạm Ứng";
+            ws.mergeCells('U6:U7'); ws.getCell('U6').value = "Thực Lĩnh";
+            ws.mergeCells('V6:V7'); ws.getCell('V6').value = "Ghi Chú";
 
             ['6', '7'].forEach(rIdx => {
                 const row = ws.getRow(rIdx);
@@ -1130,37 +1126,37 @@
                 let curRow = startRow + idx;
                 let row = ws.getRow(curRow);
                 row.values = [
-                    monthLabelVN, idx + 1, r.name, r.account,
+                    idx + 1, r.name, r.account,
                     r.lcb_heso, r.lcb_phucap || 0,
-                    { formula: `(E${curRow}+F${curRow})*$W$1` }, { formula: `(E${curRow}+F${curRow})*$W$2` },
+                    { formula: `(D${curRow}+E${curRow})*$V$1` }, { formula: `(D${curRow}+E${curRow})*$V$2` },
                     r.NT, r.P || 0, r.le_vr || 0,
-                    { formula: `ROUND((H${curRow}/22)*I${curRow},0)` },
-                    { formula: `ROUND((G${curRow}/22)*(J${curRow}+K${curRow}),0)` },
-                    { formula: `L${curRow}+M${curRow}` },
+                    { formula: `ROUND((G${curRow}/22)*H${curRow},0)` },
+                    { formula: `ROUND((F${curRow}/22)*(I${curRow}+J${curRow}),0)` },
+                    { formula: `K${curRow}+L${curRow}` },
                     r.he_so_lcv, r.phu_cap_lcv || 0,
-                    { formula: `ROUND((O${curRow}+P${curRow})*$W$3,0)` },
-                    { formula: `ROUND((Q${curRow}/22)*I${curRow},0)` },
-                    { formula: `N${curRow}+R${curRow}` },
-                    { formula: `ROUND(G${curRow}*0.105,0)` },
+                    { formula: `ROUND((N${curRow}+O${curRow})*$V$3,0)` },
+                    { formula: `ROUND((P${curRow}/22)*H${curRow},0)` },
+                    { formula: `M${curRow}+Q${curRow}` },
+                    { formula: `ROUND(F${curRow}*0.105,0)` },
                     r.tam_ung || 0,
-                    { formula: `S${curRow}-T${curRow}-U${curRow}` },
+                    { formula: `R${curRow}-S${curRow}-T${curRow}` },
                     r.note || ""
                 ];
 
-                ['G', 'H', 'L', 'M', 'N', 'Q', 'R', 'S', 'T', 'U', 'V'].forEach(col => {
+                ['F', 'G', 'K', 'L', 'M', 'P', 'Q', 'R', 'S', 'T', 'U'].forEach(col => {
                     ws.getCell(`${col}${curRow}`).numFmt = '#,##0';
                 });
 
-                ws.getCell(`V${curRow}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2CC' } };
-                ws.getCell(`V${curRow}`).font = { bold: true };
+                ws.getCell(`U${curRow}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF2CC' } };
+                ws.getCell(`U${curRow}`).font = { bold: true };
             });
 
             let lastDataRow = startRow + activeData.length - 1;
             let sumRowIdx = lastDataRow + 1;
             let sumRow = ws.getRow(sumRowIdx);
-            sumRow.getCell(3).value = "Tổng cộng"; sumRow.getCell(3).font = { bold: true };
+            sumRow.getCell(2).value = "Tổng cộng"; sumRow.getCell(2).font = { bold: true };
 
-            ['G', 'H', 'L', 'M', 'N', 'Q', 'R', 'S', 'T', 'U', 'V'].forEach(col => {
+            ['F', 'G', 'K', 'L', 'M', 'P', 'Q', 'R', 'S', 'T', 'U'].forEach(col => {
                 ws.getCell(`${col}${sumRowIdx}`).value = { formula: `SUM(${col}${startRow}:${col}${lastDataRow})` };
                 ws.getCell(`${col}${sumRowIdx}`).numFmt = '#,##0';
                 ws.getCell(`${col}${sumRowIdx}`).font = { bold: true };
@@ -1173,13 +1169,13 @@
             }
 
             let sigRow = sumRowIdx + 3;
-            ws.getCell(`C${sigRow}`).value = "PHÒNG NHÂN SỰ"; ws.getCell(`C${sigRow}`).font = { bold: true }; ws.getCell(`C${sigRow}`).alignment = { horizontal: 'center' };
-            ws.getCell(`M${sigRow}`).value = "THỦ TRƯỜNG ĐƠN VỊ"; ws.getCell(`M${sigRow}`).font = { bold: true }; ws.getCell(`M${sigRow}`).alignment = { horizontal: 'center' };
-            ws.getCell(`U${sigRow}`).value = "NGƯỜI LẬP BIỂU"; ws.getCell(`U${sigRow}`).font = { bold: true }; ws.getCell(`U${sigRow}`).alignment = { horizontal: 'center' };
+            ws.getCell(`B${sigRow}`).value = "PHÒNG NHÂN SỰ"; ws.getCell(`B${sigRow}`).font = { bold: true }; ws.getCell(`B${sigRow}`).alignment = { horizontal: 'center' };
+            ws.getCell(`L${sigRow}`).value = "THỦ TRƯỜNG ĐƠN VỊ"; ws.getCell(`L${sigRow}`).font = { bold: true }; ws.getCell(`L${sigRow}`).alignment = { horizontal: 'center' };
+            ws.getCell(`T${sigRow}`).value = "NGƯỜI LẬP BIỂU"; ws.getCell(`T${sigRow}`).font = { bold: true }; ws.getCell(`T${sigRow}`).alignment = { horizontal: 'center' };
 
             let signer = document.getElementById('config-signer-name').value || "Nguyễn Thị Tuyết Nhung";
             let nameRow = sigRow + 5;
-            ws.getCell(`U${nameRow}`).value = signer; ws.getCell(`U${nameRow}`).font = { bold: true }; ws.getCell(`U${nameRow}`).alignment = { horizontal: 'center' };
+            ws.getCell(`T${nameRow}`).value = signer; ws.getCell(`T${nameRow}`).font = { bold: true }; ws.getCell(`T${nameRow}`).alignment = { horizontal: 'center' };
 
             wb.xlsx.writeBuffer().then(buffer => {
                 saveAs(new Blob([buffer]), `BANG_LUONG_${sm}.xlsx`);
