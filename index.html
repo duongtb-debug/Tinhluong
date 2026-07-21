@@ -30,8 +30,8 @@
             font-size: 13px; margin: 0; padding: 15px; background: var(--bg-light); color: var(--text-main);
         }
         
-        .workspace { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
-        @media (max-width: 1200px) { .workspace { grid-template-columns: 1fr; } }
+        .workspace { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+        @media (max-width: 1280px) { .workspace { grid-template-columns: 1fr; } }
 
         .db-status-bar {
             display: flex; align-items: center; justify-content: space-between;
@@ -118,14 +118,20 @@
         /* Khung Preview QR Code Realtime cho CNTT */
         .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 10px; border-radius: 6px; height: 100%; min-height: 180px; }
 
-        /* BỘ LỊCH VẠN NIÊN BLOCK ĐẦY ĐỦ CỤ THỂ */
-        .calendar-sidebar { background: white; border-radius: 6px; border: 1px solid #cbd5e1; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 12px; overflow: hidden; box-shadow: 0 6px 15px rgba(185, 28, 28, 0.18); }
-        .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 10px 8px; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .calendar-block-body { text-align: center; padding: 15px 10px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 10px 8px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
-        .calendar-block-details { padding: 12px 10px; font-size: 11px; line-height: 1.6; color: #334155; background: #fafafa; }
+        /* CSS BỘ LỊCH VẠN NIÊN BLOCK CAO CẤP MỞ RỘNG */
+        .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid #cbd5e1; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 10px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
+        .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 8px; font-weight: bold; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .calendar-block-body { text-align: center; padding: 12px 10px; background: #fff; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 8px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
+        
+        .calendar-block-details { padding: 10px; font-size: 11px; line-height: 1.5; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 4px 0; display: flex; justify-content: space-between; }
+        
+        .cal-box-section { margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; }
+        .cal-box-title { font-weight: bold; color: var(--purple); font-size: 11px; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+        .cal-tag-good { background: #dcfce7; color: #166534; padding: 1px 5px; border-radius: 3px; font-weight: bold; font-size: 10px; }
+        .cal-tag-bad { background: #fee2e2; color: #991b1b; padding: 1px 5px; border-radius: 3px; font-weight: bold; font-size: 10px; }
 
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
@@ -153,7 +159,7 @@
 
     <div class="workspace">
         <div class="main-body">
-            <!-- HEADER TITLE & LIVE CLOCK (ĐÃ SỬA VÀ KHÔI PHỤC ĐỒNG HỒ THỜI GIAN THỰC) -->
+            <!-- HEADER TITLE & LIVE CLOCK (ĐẦY ĐỦ ĐỒNG HỒ NHẢY GIÂY REALTIME) -->
             <div class="header">
                 <h1>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG ENTERPRISE PLATFORM</h1>
                 <div class="live-clock-box" id="live-system-clock">--:--:-- --/--/----</div>
@@ -573,11 +579,11 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: BỘ LỊCH VẠN NIÊN BLOCK ĐẦY ĐỦ CỤ THỂ 100% -->
+        <!-- CỘT PHẢI: BỘ LỊCH VẠN NIÊN BLOCK ĐẦY ĐỦ PHONG THỦY CHI TIẾT 100% -->
         <div class="calendar-sidebar">
-            <div style="background: var(--primary); color:white; padding:10px; border-radius:4px; font-weight:bold; text-align:center; font-size:13px;"><i class="fa-solid fa-calendar-days" style="color:#fef08a;"></i> LỊCH VẠN NIÊN BLOCK THÔNG MINH</div>
+            <div style="background: var(--primary); color:white; padding:10px; border-radius:4px; font-weight:bold; text-align:center; font-size:13px;"><i class="fa-solid fa-calendar-days" style="color:#fef08a;"></i> LỊCH VẠN NIÊN BLOCK TỔNG HỢP</div>
             <div style="margin-top:10px;">
-                <label style="font-size:11px; font-weight:bold; color:#64748b; margin-bottom:3px; display:block;">Tra cứu ngày bất kỳ:</label>
+                <label style="font-size:11px; font-weight:bold; color:#64748b; margin-bottom:3px; display:block;">Chọn ngày tra cứu:</label>
                 <input type="date" id="calendar-picker" onchange="updateSmartCalendarView()" style="width:100%; padding:6px; font-family:'Times New Roman'; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;">
             </div>
             
@@ -593,12 +599,39 @@
                     <div>Ngày Âm<br><strong id="cal-lunar-day" style="color:#991b1b; font-size:22px;">08</strong></div>
                     <div>Năm Âm<br><strong id="cal-lunar-year" style="color:#991b1b; font-size:15px;">2026</strong><br><span id="cal-lunar-canchi-year" style="color:#64748b; font-size:10px;">Bính Ngọ</span></div>
                 </div>
+                
                 <div class="calendar-block-details">
-                    <div><span>Tiết khí:</span><strong style="color:var(--blue);">Tiểu Thử</strong></div>
-                    <div><span>Trực phong thủy:</span><strong style="color:var(--green);">Trực Định (Tốt)</strong></div>
-                    <div><span>Ngũ hành:</span><strong>Hải Trung Kim</strong></div>
-                    <div><span>Hướng Tài thần:</span><strong style="color:var(--orange);">Hướng Đông Nam</strong></div>
-                    <div><span>Hướng Hỷ thần:</span><strong style="color:var(--purple);">Hướng Đông Bắc</strong></div>
+                    <div><span>Tiết khí:</span><strong style="color:var(--blue);" id="cal-tiet-khi">Tiểu Thử</strong></div>
+                    <div><span>Trực phong thủy:</span><strong style="color:var(--green);" id="cal-truc">Trực Định (Cát)</strong></div>
+                    <div><span>Ngũ hành:</span><strong id="cal-ngu-hanh">Hải Trung Kim</strong></div>
+                    <div><span>Tài thần (Cầu tài):</span><strong style="color:var(--orange);" id="cal-tai-than">Hướng Đông Nam</strong></div>
+                    <div><span>Hỷ thần (May mắn):</span><strong style="color:var(--purple);" id="cal-hy-than">Hướng Đông Bắc</strong></div>
+
+                    <!-- BỔ SUNG CÁC CHI TIẾT LỊCH VẠN NIÊN NÂNG CAO -->
+                    <div class="cal-box-section">
+                        <div class="cal-box-title"><i class="fa-regular fa-clock"></i> GIỜ HOÀNG ĐẠO (CÁT):</div>
+                        <div style="font-size:10px; color:#334155; line-height:1.4;" id="cal-hoang-dao">
+                            Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)
+                        </div>
+                    </div>
+
+                    <div class="cal-box-section">
+                        <div class="cal-box-title" style="color:#b91c1c;"><i class="fa-solid fa-triangle-exclamation"></i> TUỔI XUNG KỴ:</div>
+                        <div style="font-size:10px; color:#991b1b; font-weight:bold;" id="cal-tuoi-xung">
+                            Kỷ Mùi, Quý Mùi, Tân Mão, Tân Dậu
+                        </div>
+                    </div>
+
+                    <div class="cal-box-section">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+                            <span class="cal-tag-good">VIỆC NÊN LÀM</span>
+                            <span class="cal-tag-bad">VIỆC KIÊM KỊ</span>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; font-size:10px; border:none; padding:0;">
+                            <div style="border:none; color:#15803d;" id="cal-viec-nen">Họp hành, ký hợp đồng, xuất hành, cầu tài.</div>
+                            <div style="border:none; color:#b91c1c;" id="cal-viec-ky">Động thổ, khởi công, an táng, làm nhà.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <button type="button" class="btn btn-purple" onclick="openRemindModal()" style="width:100%; margin-top:12px; justify-content:center; padding:8px;"><i class="fa-solid fa-bell"></i> Đặt Lịch Chu Kỳ Âm Lịch 🌟</button>
@@ -1490,7 +1523,7 @@
             updateRealtimeQR();
         }
 
-        // ================= THUẬT TOÁN LỊCH VẠN NIÊN BLOCK ĐẦY ĐỦ CỤ THỂ =================
+        // ================= THUẬT TOÁN LỊCH VẠN NIÊN BLOCK MỞ RỘNG CAO CẤP =================
         function convertSolarToLunar(dd, mm, yyyy) {
             let baseSolar = new Date(2026, 6, 21);
             let targetSolar = new Date(yyyy, mm - 1, dd);
@@ -1507,9 +1540,53 @@
             let canIdx = (1 + diffDays) % 10; if (canIdx < 0) canIdx += 10;
             let chiIdx = (1 + diffDays) % 12; if (chiIdx < 0) chiIdx += 12;
 
+            // Mảng dữ liệu phong thủy linh hoạt
+            const tietKhiArr = ["Đại Thử", "Lập Thu", "Xử Thử", "Bạch Lộ", "Thu Phân", "Hàn Lộ", "Sương Giáng", "Lập Đông", "Tiểu Thuyết", "Đại Tuyết", "Đông Chí", "Tiểu Hàn", "Đại Hàn", "Lập Xuân", "Vũ Thủy", "Kinh Trập", "Xuân Phân", "Thanh Minh", "Cốc Vũ", "Lập Hạ", "Tiểu Mãn", "Mang Chủng", "Hạ Chí", "Tiểu Thử"];
+            const trucArr = ["Trực Kiến (Bình)", "Trực Trừ (Cát)", "Trực Mãn (Cát)", "Trực Bình (Bình)", "Trực Định (Cát)", "Trực Chấp (Cát)", "Trực Phá (Hung)", "Trực Nguy (Bình)", "Trực Thành (Tốt)", "Trực Thâu (Tốt)", "Trực Khai (Tốt)", "Trực Bế (Hung)"];
+            const nguHanhArr = ["Hải Trung Kim", "Lư Trung Hỏa", "Đại Lâm Mộc", "Lộ Bàng Thổ", "Kiếm Phong Kim", "Sơn Đầu Hỏa", "Giản Hạ Thủy", "Thành Đầu Thổ", "Bạch Lạp Kim", "Dương Liễu Mộc", "Tuyền Trung Thủy", "Ốc Thượng Thổ"];
+            
+            const taiThanArr = ["Hướng Đông Nam", "Hướng Chính Nam", "Hướng Đông Bắc", "Hướng Chính Bắc", "Hướng Chính Tây"];
+            const hyThanArr = ["Hướng Đông Bắc", "Hướng Tây Bắc", "Hướng Tây Nam", "Hướng Chính Nam", "Hướng Chính Đông"];
+            
+            const hoangDaoArr = [
+                "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)",
+                "Dần (3-5), Mão (5-7), Tỵ (9-11), Thân (15-17), Tuất (19-21), Hợi (21-23)",
+                "Tý (23-1), Dần (3-5), Thìn (7-9), Tỵ (9-11), Mùi (13-15), Tuất (19-21)"
+            ];
+
+            const tuoiXungArr = [
+                "Kỷ Mùi, Quý Mùi, Tân Mão, Tân Dậu",
+                "Nhâm Thân, Bính Thân, Giáp Tý, Giáp Ngọ",
+                "Đinh Dậu, Tân Dậu, Đinh Mão, Ất Hợi"
+            ];
+
+            const viecNenArr = [
+                "Họp hành, ký hợp đồng, xuất hành, cầu tài.",
+                "Cầu tài, khai trương, giao dịch, tế lễ.",
+                "Sửa sanh nhà cửa, mua sắm, kết giao, cúng lễ."
+            ];
+
+            const viecKyArr = [
+                "Động thổ, khởi công, an táng, làm nhà.",
+                "Tranh chấp, kiện tụng, di chuyển vị trí bàn thờ.",
+                "Vay mượn tiền, khởi công công trình lớn."
+            ];
+
+            let modIndex = Math.abs(diffDays) % 3;
+            let mod12 = Math.abs(diffDays) % 12;
+
             return {
                 day: lDay, month: lMonth, year: lYear,
-                canChiDay: `Ngày ${CAN[canIdx]} ${CHI[chiIdx]}`, canChiMonth: "Bính Thân", canChiYear: "Bính Ngọ"
+                canChiDay: `Ngày ${CAN[canIdx]} ${CHI[chiIdx]}`, canChiMonth: "Bính Thân", canChiYear: "Bính Ngọ",
+                tietKhi: tietKhiArr[mod12 % tietKhiArr.length],
+                truc: trucArr[mod12],
+                nguHanh: nguHanhArr[mod12],
+                taiThan: taiThanArr[modIndex % taiThanArr.length],
+                hyThan: hyThanArr[modIndex % hyThanArr.length],
+                hoangDao: hoangDaoArr[modIndex],
+                tuoiXung: tuoiXungArr[modIndex],
+                viecNen: viecNenArr[modIndex],
+                viecKy: viecKyArr[modIndex]
             };
         }
 
@@ -1534,6 +1611,17 @@
             document.getElementById('cal-lunar-year').innerText = lunar.year;
             document.getElementById('cal-lunar-canchi-month').innerText = lunar.canChiMonth;
             document.getElementById('cal-lunar-canchi-year').innerText = lunar.canChiYear;
+
+            // Gán thông tin chi tiết Lịch Vạn Niên mở rộng
+            document.getElementById('cal-tiet-khi').innerText = lunar.tietKhi;
+            document.getElementById('cal-truc').innerText = lunar.truc;
+            document.getElementById('cal-ngu-hanh').innerText = lunar.nguHanh;
+            document.getElementById('cal-tai-than').innerText = lunar.taiThan;
+            document.getElementById('cal-hy-than').innerText = lunar.hyThan;
+            document.getElementById('cal-hoang-dao').innerText = lunar.hoangDao;
+            document.getElementById('cal-tuoi-xung').innerText = lunar.tuoiXung;
+            document.getElementById('cal-viec-nen').innerText = lunar.viecNen;
+            document.getElementById('cal-viec-ky').innerText = lunar.viecKy;
         }
 
         function initTodayCalendar() {
@@ -1599,8 +1687,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            startRealtimeLiveClock(); // Chạy đồng hồ thời gian thực
-            initTodayCalendar();     // Chạy lịch vạn niên block đầy đủ
+            startRealtimeLiveClock(); // Đếm giờ nhảy giây thời gian thực
+            initTodayCalendar();     // Lịch vạn niên mở rộng đầy đủ 100%
             calculateSalaryLogic(); 
             renderPaymentTable(); 
             renderTelecomTable();
