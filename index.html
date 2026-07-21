@@ -231,7 +231,7 @@
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
         .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
         .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-style: space-around; font-size: 11px; text-align: center; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
         
         .calendar-block-details { padding: 8px; font-size: 11px; line-height: 1.4; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
@@ -494,7 +494,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG (TỰ ĐỘNG ĐẨY FILE LÊN DRIVE CHUẨN JSONP - ĐÃ FIX LỖI INDEXOF) -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG (TỰ ĐỘNG ĐẨY FILE LÊN DRIVE CHUẨN JSONP BASE64) -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
@@ -1327,7 +1327,7 @@
             });
         }
 
-        // --- ĐÃ CHUẨN HÓA XỬ LÝ ĐÍNH KÈM FILE ĐẢM BẢO KHÔNG THIẾU BẢN BASE64 ---
+        // --- XỬ LÝ ĐÍNH KÈM FILE TỰ ĐỘNG BẢO ĐẢM TÁCH SẠCH ĐỌC ĐÚNG BASE64 PDF ---
         function processAttachedFilesMulti(inputEl, type) {
             let files = inputEl.files; 
             if (!files || !files.length) return;
@@ -1339,7 +1339,7 @@
                 reader.onload = function(e) {
                     targetArr.push({ 
                         name: file.name, 
-                        type: file.type || "application/octet-stream", 
+                        type: file.type || "application/pdf", 
                         base64: e.target.result || "" 
                     });
                     renderThumbnails(type);
@@ -1590,7 +1590,7 @@
             });
         }
 
-        // --- ĐÃ FIX LỖI INDEXOF TRIỆT ĐỂ BẰNG NULL-CHECK AN TOÀN 100% ---
+        // --- ĐÃ TỐI ƯU HÀM TẢI FILE DRIVE CHUẨN MÃ HÓA BASE64 KHÔNG BỊ LỖI HỎNG FILE ---
         function uploadSingleFileViaJSONP(folderName, fileObj) {
             return new Promise((resolve) => {
                 const callbackName = 'jsonp_upload_cb_' + Math.round(1000000 * Math.random());
@@ -1603,7 +1603,7 @@
                 const script = document.createElement('script');
                 const apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
                 
-                // Kiểm tra an toàn giá trị base64 chống lỗi "indexOf of undefined"
+                // Tách phần dữ liệu thuần Base64 (Loại bỏ prefix data:application/pdf;base64,)
                 let rawBase64 = (fileObj && fileObj.base64) ? fileObj.base64 : "";
                 let cleanBase64 = "";
                 
@@ -1614,8 +1614,8 @@
                 const params = new URLSearchParams({
                     action: "upload_single_file",
                     folderName: folderName,
-                    fileName: (fileObj && fileObj.name) ? fileObj.name : "File_Attachment",
-                    mimeType: (fileObj && fileObj.type) ? fileObj.type : "image/png",
+                    fileName: (fileObj && fileObj.name) ? fileObj.name : "Document.pdf",
+                    mimeType: (fileObj && fileObj.type) ? fileObj.type : "application/pdf",
                     callback: callbackName
                 });
 
@@ -1629,7 +1629,6 @@
             });
         }
 
-        // HÀM LƯU CƯỚC & TỰ ĐỘNG ĐẨY FILE VÀO DRIVE (CHẠY ỔN ĐỊNH)
         async function saveTelecomRecord(e) {
             e.preventDefault();
             
@@ -1654,7 +1653,7 @@
                     for (let i = 0; i < finalFilesList.length; i++) {
                         btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang đẩy file (${i + 1}/${finalFilesList.length}) lên Drive...`;
                         let res = await uploadSingleFileViaJSONP(autoFolderName, finalFilesList[i]);
-                        if (res && res.folderUrl) {
+                        if (res && res.fileUrl) {
                             uploadedDriveFolderUrl = res.folderUrl;
                             finalFilesList[i].driveUrl = res.fileUrl;
                         }
