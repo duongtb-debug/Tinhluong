@@ -163,7 +163,7 @@
         
         .badge-no-license { background: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #fecaca; }
         .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
-        .badge-cert { background: #dcfce7; color: #15803d; padding: 3px 10px; border-radius: 12px; font-weight: bold; font-size: 11px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 5px; }
+        .badge-cert { background: #dcfce7; color: #15803d; padding: 3px 10px; border-radius: 12px; font-weight: bold; font-size: 11px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
         .badge-cert:hover { background: #bbf7d0; color: #166534; }
     </style>
 </head>
@@ -1250,19 +1250,36 @@
             if(f) openLightboxModal(f.driveUrl || f.base64, f.name);
         }
 
+        // ĐÃ SỬA CHUẨN: HÀM MỞ TỆP HOẶC TỰ ĐỘNG DẪN TRỰC TIẾP TỚI DRIVE
         function previewRecordFile(recordType, recordIdx) {
             let records = (recordType === 'payment') ? paymentRecords : telecomRecords;
             let rec = records[recordIdx];
-            if (rec && rec.files && rec.files.length > 0) {
-                let targetFile = rec.files[0];
-                if (targetFile.driveUrl) {
-                    window.open(targetFile.driveUrl, '_blank');
-                } else if (targetFile.base64) {
-                    openLightboxModal(targetFile.base64, targetFile.name);
+            
+            if (!rec) return;
+
+            // 1. Nếu có tệp chứa Link Drive riêng -> Mở luôn Tab mới
+            if (rec.files && rec.files.length > 0 && rec.files[0].driveUrl) {
+                window.open(rec.files[0].driveUrl, '_blank');
+                return;
+            }
+
+            // 2. Nếu là cước viễn thông -> Mở trực tiếp link Drive tổng / Link Sheet đã cấu hình
+            if (recordType === 'telecom') {
+                if (GOOGLE_SHEET_VIEW_URL && GOOGLE_SHEET_VIEW_URL.startsWith('http')) {
+                    window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
                 } else {
-                    alert("Tệp này đã được lưu an toàn lên Drive!");
+                    alert(`📂 Chứng từ kỳ cước ${formatPeriodVN(rec.period)} đã lưu an toàn trên Drive!\n(Thư mục: HoaDon_CuocMang_${rec.period ? rec.period.replace('-', '_') : ''})\n\n💡 Bạn hãy dán Link Drive vào nút 'Cấu hình API Web App & Link Sheet' để hệ thống mở thẳng tới nhé!`);
                 }
-            } else alert("Không có tệp chứng từ đính kèm!");
+                return;
+            }
+
+            // 3. Nếu có file base64 đính kèm nội bộ -> Mở Lightbox Popup
+            if (rec.files && rec.files.length > 0 && rec.files[0].base64) {
+                openLightboxModal(rec.files[0].base64, rec.files[0].name);
+                return;
+            }
+
+            alert("Không tìm thấy tệp chứng từ đính kèm!");
         }
 
         function openLightboxModal(base64OrUrl, fileName) {
@@ -1526,7 +1543,7 @@
             }
         }
 
-        // HÀM VẼ BẢNG CƯỚC MẠNG - PHÂN ĐỊNH RÕ RÀNG LINK CHỨNG TỪ (KHÔNG MỞ NHẦM BẢNG LƯƠNG)
+        // HÀM VẼ BẢNG CƯỚC MẠNG - ĐÃ SỬA CHUẨN NÚT MỞ DRIVE
         function renderTelecomTable() {
             let viewMode = document.getElementById('telecom-view-mode').value;
             const tbody = document.getElementById('tbody-telecom'); 
@@ -1547,17 +1564,17 @@
                     sum += Number(r.cost);
                     let certDisplay = '<span style="color:#94a3b8;">Không</span>';
                     
-                    // Lấy số lượng file đính kèm
                     let fileCount = (r.files && r.files.length > 0) ? r.files.length : (r.cert && r.cert.includes('(')) ? (r.cert.match(/\d+/) ? r.cert.match(/\d+/)[0] : 0) : 0;
                     
                     if (fileCount > 0) {
-                        // Lấy Link Drive THẬT SỰ của file chứng từ
                         let realDriveUrl = (r.files && r.files[0] && r.files[0].driveUrl) ? r.files[0].driveUrl : null;
 
                         if (realDriveUrl && realDriveUrl.startsWith('http')) {
+                            // Mở trực tiếp file chứng từ trên Google Drive
                             certDisplay = `<a href="${realDriveUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</a>`;
                         } else {
-                            certDisplay = `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})"><i class="fa-solid fa-eye"></i> Xem chứng từ (${fileCount})</button>`;
+                            // Mở link Folder chứng từ / mở tab Drive
+                            certDisplay = `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</button>`;
                         }
                     }
 
