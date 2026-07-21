@@ -770,7 +770,7 @@
     </div>
 
     <script>
-        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
+        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbzQ0GgUAIwTzKu6BOJN5-9laa8opA7aQqbK0PiI9_ADqyAyPj3HkVPA51QoWU03p5K1/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
         let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || DEFAULT_SCRIPT_API; 
@@ -1213,11 +1213,11 @@
             zone.innerHTML = "";
             if (!targetArr || targetArr.length === 0) { 
                 zone.style.display = 'none'; 
-                statusLbl.innerText = "Chưa chọn tệp";
+                if (statusLbl) statusLbl.innerText = "Chưa chọn tệp";
                 return; 
             }
             zone.style.display = 'flex';
-            statusLbl.innerText = `Đã đính kèm (${targetArr.length} tệp)`;
+            if (statusLbl) statusLbl.innerText = `Đã đính kèm (${targetArr.length} tệp)`;
 
             targetArr.forEach((f, idx) => {
                 zone.innerHTML += `<div class="thumb-wrapper" onclick="previewBase64File('${type}', ${idx})">
@@ -1251,7 +1251,8 @@
         function openLightboxModal(base64OrUrl, fileName) {
             const modal = document.getElementById('document-preview-modal');
             const viewBody = document.getElementById('modal-preview-body');
-            document.getElementById('modal-preview-title').innerText = "Trình xem chứng từ: " + fileName;
+            let previewTitle = document.getElementById('modal-preview-title');
+            if (previewTitle) previewTitle.innerText = "Trình xem chứng từ: " + fileName;
 
             if (base64OrUrl.startsWith('http')) {
                 viewBody.innerHTML = `<iframe src="${base64OrUrl}" class="preview-file-render-frame"></iframe>`;
@@ -1353,8 +1354,12 @@
             
             calculateFlexibleTax();
 
-            document.getElementById('form-payment-title').innerText = "Chỉnh Sửa Hồ Sơ Đề Nghị Thanh Toán Văn Phòng";
-            document.getElementById('btn-payment-text').innerText = "Cập Nhật Hồ Sơ";
+            let payTitle = document.getElementById('form-payment-title');
+            if (payTitle) payTitle.innerText = "Chỉnh Sửa Hồ Sơ Đề Nghị Thanh Toán Văn Phòng";
+            
+            let btnText = document.getElementById('btn-payment-text');
+            if (btnText) btnText.innerText = "Cập Nhật Hồ Sơ";
+            
             document.getElementById('btn-payment-submit').className = "btn btn-green";
             window.scrollTo({ top: 120, behavior: 'smooth' });
         }
@@ -1395,8 +1400,12 @@
         function resetPaymentForm() { 
             document.getElementById('payment-edit-id').value = '';
             document.getElementById('payment-main-form').reset(); 
-            document.getElementById('form-payment-title').innerText = "Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng";
-            document.getElementById('btn-payment-text').innerText = "Lưu Hồ Sơ Thanh Toán";
+            let payTitle = document.getElementById('form-payment-title');
+            if (payTitle) payTitle.innerText = "Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng";
+            
+            let btnText = document.getElementById('btn-payment-text');
+            if (btnText) btnText.innerText = "Lưu Hồ Sơ Thanh Toán";
+            
             document.getElementById('btn-payment-submit').className = "btn btn-green";
             currentPaymentFiles = []; 
             document.getElementById('pay-file-uploader').value = '';
@@ -1426,7 +1435,6 @@
             }
         }
 
-        // HÀM LƯU CƯỚC VỚI CƠ CHẾ KHÔNG LƯU BASE64 NẶNG VÀO LOCALSTORAGE (CHỐNG LỖI QUOTA EXCEEDED)
         async function saveTelecomRecord(e) {
             e.preventDefault();
             
@@ -1447,7 +1455,6 @@
                 const driveFolderName = `HoaDon_CuocMang_${period.replace('-', '_')}`;
                 let attachedFilesCopy = currentTelecomFiles ? JSON.parse(JSON.stringify(currentTelecomFiles)) : [];
 
-                // 1. Upload từng tệp đính kèm lên Google Drive
                 for (let i = 0; i < attachedFilesCopy.length; i++) {
                     if (!attachedFilesCopy[i].driveUrl) {
                         let driveUrl = await uploadFileToDriveFolder(attachedFilesCopy[i], driveFolderName);
@@ -1455,7 +1462,6 @@
                     }
                 }
 
-                // 2. TỐI ƯU BỘ NHỚ: Loại bỏ chuỗi Base64 siêu nặng sau khi đã tải lên Drive
                 let lightFilesArray = attachedFilesCopy.map(file => {
                     return {
                         name: file.name,
@@ -1481,7 +1487,6 @@
                     });
                 }
 
-                // 3. Tiến hành lưu bản ghi nhẹ vào LocalStorage
                 try {
                     localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
                 } catch (stErr) {
@@ -1567,8 +1572,12 @@
                 document.getElementById('tel-period').value = "2026-01";
             }
 
-            document.getElementById('form-telecom-title').innerText = "Cập Nhật Chi Phí Mạng (Nhập từ Tháng 1 đến Tháng 7)";
-            document.getElementById('btn-telecom-text').innerText = "Lưu Cước & Tải Lên Drive";
+            let telTitle = document.getElementById('form-telecom-title');
+            if (telTitle) telTitle.innerText = "Cập Nhật Chi Phí Mạng (Nhập từ Tháng 1 đến Tháng 7)";
+            
+            let btnText = document.getElementById('btn-telecom-text');
+            if (btnText) btnText.innerText = "Lưu Cước & Tải Lên Drive";
+            
             document.getElementById('btn-telecom-submit').className = "btn btn-orange";
             currentTelecomFiles = []; 
             document.getElementById('tel-file-uploader').value = '';
@@ -1592,8 +1601,12 @@
                 renderThumbnails('telecom');
             }
 
-            document.getElementById('form-telecom-title').innerText = "Chỉnh Sửa Chi Phí Cước Mạng";
-            document.getElementById('btn-telecom-text').innerText = "Cập Nhật Chi Phí";
+            let telTitle = document.getElementById('form-telecom-title');
+            if (telTitle) telTitle.innerText = "Chỉnh Sửa Chi Phí Cước Mạng";
+            
+            let btnText = document.getElementById('btn-telecom-text');
+            if (btnText) btnText.innerText = "Cập Nhật Chi Phí";
+            
             document.getElementById('btn-telecom-submit').className = "btn btn-green";
             window.scrollTo({ top: 120, behavior: 'smooth' });
         }
@@ -1624,12 +1637,13 @@
             let rawText = `MÃ TÀI SẢN: ${serialId}\nLOẠI: ${type}\nNGƯỜI DÙNG: ${user}\nPHÒNG BAN: ${dept}\nCẤU HÌNH: ${config}\nOS: ${os}\nOFFICE: ${office}`;
 
             const qrTarget = document.getElementById('realtime-qr-target');
-            qrTarget.innerHTML = "";
-
-            realtimeQrInstance = new QRCode(qrTarget, {
-                text: rawText, width: 110, height: 110,
-                colorDark : "#0f172a", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M
-            });
+            if (qrTarget) {
+                qrTarget.innerHTML = "";
+                realtimeQrInstance = new QRCode(qrTarget, {
+                    text: rawText, width: 110, height: 110,
+                    colorDark : "#0f172a", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M
+                });
+            }
         }
 
         function saveITRecord(e) {
@@ -1698,8 +1712,12 @@
             document.getElementById('it-soft-lic').value = item.softLic || "Bản quyền License Key Online / Cloud";
             document.getElementById('it-note').value = item.note || "";
 
-            document.getElementById('form-it-title').innerText = "Chỉnh Sửa Thông Tin Thiết Bị CNTT";
-            document.getElementById('btn-it-text').innerText = "Cập Nhật Thiết Bị";
+            let itTitle = document.getElementById('form-it-title');
+            if (itTitle) itTitle.innerText = "Chỉnh Sửa Thông Tin Thiết Bị CNTT";
+            
+            let btnText = document.getElementById('btn-it-text');
+            if (btnText) btnText.innerText = "Cập Nhật Thiết Bị";
+            
             document.getElementById('btn-it-submit').className = "btn btn-green";
             
             updateRealtimeQR();
@@ -1746,7 +1764,8 @@
             let rec = itAssetsRecords[i];
             const modal = document.getElementById('document-preview-modal');
             const viewBody = document.getElementById('modal-preview-body');
-            document.getElementById('modal-preview-title').innerText = "MÃ QR KIỂM KÊ PHÓNG TO: " + rec.serialId;
+            let previewTitle = document.getElementById('modal-preview-title');
+            if (previewTitle) previewTitle.innerText = "MÃ QR KIỂM KÊ PHÓNG TO: " + rec.serialId;
             let rawText = `MÃ TÀI SẢN: ${rec.serialId}\nCẤU HÌNH: ${rec.config}\nNGƯỜI DÙNG: ${rec.user}\nOS: ${rec.os}\nOFFICE: ${rec.office}`;
             viewBody.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:white;"><div id="qr-target" style="padding:15px; background:white; border:2px dashed var(--purple); border-radius:8px;"></div></div>`;
             new QRCode(document.getElementById("qr-target"), { text: rawText, width: 220, height: 220 });
@@ -1756,8 +1775,12 @@
         function resetITForm() { 
             document.getElementById('it-edit-id').value = '';
             document.getElementById('it-main-form').reset(); 
-            document.getElementById('form-it-title').innerText = "Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin";
-            document.getElementById('btn-it-text').innerText = "Lưu Tài Sản Thiết Bị & Tạo QR";
+            let itTitle = document.getElementById('form-it-title');
+            if (itTitle) itTitle.innerText = "Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin";
+            
+            let btnText = document.getElementById('btn-it-text');
+            if (btnText) btnText.innerText = "Lưu Tài Sản Thiết Bị & Tạo QR";
+            
             document.getElementById('btn-it-submit').className = "btn btn-purple";
             autoGenerateAssetID();
             updateRealtimeQR();
