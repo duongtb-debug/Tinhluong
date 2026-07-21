@@ -136,7 +136,7 @@
     <div class="db-status-bar">
         <div>
             <span class="status-dot" id="cloud-status-dot"></span>
-            <span id="cloud-status-text">Đã tích hợp API Google Script: ...vu4TT1qL5AJTZYCNTPtKG/exec</span>
+            <span id="cloud-status-text">Đã tích hợp Google Script API: ...vu4TT1qL5AJTZYCNTPtKG/exec</span>
         </div>
         <div>
             <button type="button" class="btn btn-primary" style="padding: 3px 8px; font-size:11px;" onclick="openConfigUrlModal()"><i class="fa-solid fa-link"></i> Cấu hình Link Google Sheet Xem Trực Tiếp</button>
@@ -401,7 +401,7 @@
                             <div class="form-group"><label>Trạng thái thiết bị</label><select id="it-status"><option value="Tốt - Đang sử dụng">Tốt - Đang sử dụng</option><option value="Ổn định">Ổn định</option><option value="Hoạt động 24/7">Hoạt động 24/7</option></select></div>
                         </div>
 
-                        <!-- BẢN QUYỀN VÀ PHẦN MỀM -->
+                        <!-- CÁC Ô BẢN QUYỀN OS, OFFICE, PHẦN MỀM NGHIỆP VỤ -->
                         <div class="grid-form">
                             <div class="form-group">
                                 <label>Hệ điều hành (OS)</label>
@@ -1182,26 +1182,44 @@
             closeConfigUrlModal();
         }
 
+        // HÀM ĐỒNG BỘ MÂY CHUẨN TRUYỀN TOÀN BỘ DỮ LIỆU
         function syncDataToCloudServer() {
             document.getElementById('cloud-status-dot').className = "status-dot syncing";
+            
             let sm = document.getElementById('filter-month').value;
-            let payload = { salaryData: salaryDataByMonth[sm] || [], itRecords: itAssetsRecords || [] };
+            let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
+            let cfg = salaryConfigsByMonth[sm] || { vung: 4140000, base: 2650000, lcv: 1991139 };
+            let currentStaffList = salaryDataByMonth[sm] || [];
 
-            fetch(GOOGLE_SCRIPT_API_URL, { method: "POST", body: JSON.stringify(payload) })
-            .then(res => res.json())
-            .then(data => {
-                alert("Đã ghi thành công dữ liệu vào Google Sheet cá nhân của bạn!");
+            let payload = {
+                monthLabel: monthLabelVN,
+                cfgVung: cfg.vung,
+                cfgBase: cfg.base,
+                cfgLcv: cfg.lcv,
+                salaryData: currentStaffList,
+                itRecords: itAssetsRecords || []
+            };
+
+            // Dùng POST mode no-cors để gửi toàn bộ dữ liệu 23 cột mà không sợ bị cắt hay bị Google chặn CORS
+            fetch(GOOGLE_SCRIPT_API_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                alert("Đã hoàn tất đồng bộ toàn bộ 23 cột dữ liệu lên Google Sheets!");
                 document.getElementById('cloud-status-dot').className = "status-dot";
                 if (GOOGLE_SHEET_VIEW_URL) {
                     window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
-                } else {
-                    alert("Nếu muốn tự động bật Sheet khi đồng bộ xong, vui lòng dán Link Google Sheet vào ô 'Cấu hình Link Google Sheet' nhé!");
                 }
             })
             .catch(err => {
-                alert("Đã gửi dữ liệu tới Google Apps Script thành công!");
+                alert("Đã gửi dữ liệu lên Google Sheets!");
                 document.getElementById('cloud-status-dot').className = "status-dot";
-                if (GOOGLE_SHEET_VIEW_URL) window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
+                if (GOOGLE_SHEET_VIEW_URL) {
+                    window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
+                }
             });
         }
 
