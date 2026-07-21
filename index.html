@@ -231,7 +231,7 @@
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
         .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
         .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-style: space-around; font-size: 11px; text-align: center; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
         
         .calendar-block-details { padding: 8px; font-size: 11px; line-height: 1.4; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
@@ -494,7 +494,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG (TỰ ĐỘNG ĐẨY FILE LÊN DRIVE) -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG (TỰ ĐỘNG ĐẨY FILE LÊN DRIVE CHUẨN JSONP) -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
@@ -900,7 +900,7 @@
     </div>
 
     <script>
-        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
+        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbzQ0GgUAIwTzKu6BOJN5-9laa8opA7aQqbK0PiI9_ADqyAyPj3HkVPA51QoWU03p5K1/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
         let GOOGLE_DRIVE_FOLDER_URL = localStorage.getItem('sys_cfg_drive_url') || "";
@@ -1576,14 +1576,46 @@
             });
         }
 
-        // HÀM LƯU BẢNG CƯỚC MẠNG & TỰ ĐỘNG ĐẨY TỆP VÀO DRIVE BẰNG FORM SUBMIT NGẦM (KHÔNG BỊ LỖI CORS)
+        // HÀM UPLOAD TỪNG FILE QUA JSONP (BAO TRÚNG 100% KHÔNG LỖI)
+        function uploadSingleFileViaJSONP(folderName, fileObj) {
+            return new Promise((resolve) => {
+                const callbackName = 'jsonp_upload_cb_' + Math.round(1000000 * Math.random());
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    if (script && script.parentNode) script.parentNode.removeChild(script);
+                    resolve(data);
+                };
+
+                const script = document.createElement('script');
+                const apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
+                
+                let cleanBase64 = fileObj.base64.indexOf(",") > -1 ? fileObj.base64.split(",")[1] : fileObj.base64;
+                
+                const params = new URLSearchParams({
+                    action: "upload_single_file",
+                    folderName: folderName,
+                    fileName: fileObj.name || "File_Attachment",
+                    mimeType: fileObj.type || "image/png",
+                    callback: callbackName
+                });
+
+                script.src = `${apiUrl}?${params.toString()}&base64Data=${encodeURIComponent(cleanBase64)}`;
+                script.onerror = function() {
+                    delete window[callbackName];
+                    if (script && script.parentNode) script.parentNode.removeChild(script);
+                    resolve(null);
+                };
+                document.body.appendChild(script);
+            });
+        }
+
+        // HÀM LƯU CƯỚC & TỰ ĐỘNG ĐẨY FILE VÀO DRIVE
         async function saveTelecomRecord(e) {
             e.preventDefault();
             
             const btnSubmit = document.getElementById('btn-telecom-submit');
             const originalBtnText = btnSubmit.innerHTML;
             btnSubmit.disabled = true;
-            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải file lên Drive...`;
 
             try {
                 const editId = document.getElementById('telecom-edit-id').value;
@@ -1598,45 +1630,22 @@
                 let uploadedDriveFolderUrl = "";
                 let finalFilesList = currentTelecomFiles ? JSON.parse(JSON.stringify(currentTelecomFiles)) : [];
 
-                const apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
-
-                // Nếu chọn file -> Đẩy qua Form ngầm
-                if (finalFilesList.length > 0 && apiUrl) {
-                    let iframe = document.getElementById('hidden_upload_iframe');
-                    if (!iframe) {
-                        iframe = document.createElement('iframe');
-                        iframe.id = 'hidden_upload_iframe';
-                        iframe.name = 'hidden_upload_iframe';
-                        iframe.style.display = 'none';
-                        document.body.appendChild(iframe);
+                if (finalFilesList.length > 0) {
+                    for (let i = 0; i < finalFilesList.length; i++) {
+                        btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang đẩy file (${i + 1}/${finalFilesList.length}) lên Drive...`;
+                        let res = await uploadSingleFileViaJSONP(autoFolderName, finalFilesList[i]);
+                        if (res && res.folderUrl) {
+                            uploadedDriveFolderUrl = res.folderUrl;
+                            finalFilesList[i].driveUrl = res.fileUrl;
+                        }
                     }
-
-                    let uploadForm = document.createElement('form');
-                    uploadForm.action = apiUrl;
-                    uploadForm.method = 'POST';
-                    uploadForm.target = 'hidden_upload_iframe';
-
-                    let inputData = document.createElement('input');
-                    inputData.type = 'hidden';
-                    inputData.name = 'postData';
-                    inputData.value = JSON.stringify({
-                        action: "upload_files",
-                        folderName: autoFolderName,
-                        files: finalFilesList
-                    });
-                    uploadForm.appendChild(inputData);
-
-                    document.body.appendChild(uploadForm);
-                    uploadForm.submit();
-                    document.body.removeChild(uploadForm);
-
-                    // Đợi 2.5s để server ghi nhận và khởi tạo file trên Drive
-                    await new Promise(r => setTimeout(r, 2500));
                 }
 
-                // Gọi JSONP lấy link Folder chính xác trên Drive
-                let driveRes = await createDriveFolderViaJSONP(autoFolderName);
-                uploadedDriveFolderUrl = (driveRes && driveRes.folderUrl) ? driveRes.folderUrl : "";
+                if (!uploadedDriveFolderUrl) {
+                    btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tạo Folder Drive...`;
+                    let driveRes = await createDriveFolderViaJSONP(autoFolderName);
+                    uploadedDriveFolderUrl = (driveRes && driveRes.folderUrl) ? driveRes.folderUrl : "";
+                }
 
                 if (editId) {
                     let item = telecomRecords.find(d => d.id === editId);
@@ -1662,7 +1671,7 @@
                 resetTelecomForm(); 
                 renderTelecomTable();
 
-                alert(`✅ Đã lưu dữ liệu và đẩy tệp đính kèm vào thư mục Google Drive [${autoFolderName}] thành công!`);
+                alert(`✅ Đã tải thành công ${finalFilesList.length} file lên thư mục [${autoFolderName}] trên Google Drive!`);
 
             } catch (error) {
                 alert('⚠️ Có lỗi: ' + error.message);
