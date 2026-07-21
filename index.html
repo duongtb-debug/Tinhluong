@@ -210,7 +210,7 @@
                 </div>
                 <div class="stat-card orange">
                     <div class="stat-title">CƯỚC HẠ TẦNG VIỄN THÔNG</div>
-                    <div class="stat-value" id="dash-pending-pay" style="color:var(--orange);">41.418.435 VND</div>
+                    <div class="stat-value" id="dash-pending-pay" style="color:var(--orange);">0 VND</div>
                 </div>
                 <div class="stat-card purple">
                     <div class="stat-title">KIỂM KÊ THIẾT BỊ CNTT</div>
@@ -431,7 +431,7 @@
                                 <input type="number" id="tel-cost" placeholder="0" required>
                             </div>
                             <div class="form-group">
-                                <label>Kỳ cước</label>
+                                <label>Kỳ cước (Tháng/Năm)</label>
                                 <input type="month" id="tel-period" value="2026-06" required>
                             </div>
                         </div>
@@ -459,7 +459,7 @@
 
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
-                        <span><i class="fa-solid fa-list-ul" style="color: var(--blue);"></i> CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</span>
+                        <span><i class="fa-solid fa-list-ul" style="color: var(--blue);"></i> CHI TIẾT CHI PHÍ ĐƯỜNG TRUYỀN INTERNET (THEO THÁNG BÁO CÁO)</span>
                     </div>
                     <div class="table-responsive">
                         <table class="main-table">
@@ -779,34 +779,33 @@
         let currentActiveBlobUrl = null;
         let realtimeQrInstance = null;
 
-        // BỔ SUNG LƯU CẤU HÌNH THAM SỐ LƯƠNG RIÊNG THEO TỪNG THÁNG
         let salaryConfigsByMonth = JSON.parse(localStorage.getItem('sys_salary_configs_by_month')) || { 
             "2026-06": { vung: 4140000, base: 2650000, lcv: 1991139, signer: "Nguyễn Thị Tuyết Nhung" } 
         };
         let salaryDataByMonth = JSON.parse(localStorage.getItem('sys_salary_by_month')) || {};
 
         const default16Staffs = [
-            {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499", "note": ""},
-            {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 19, "P": 3, "le_vr": 0, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004242307", "note": ""},
-            {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 20, "P": 2, "le_vr": 0, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "102005035542", "note": ""},
-            {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.86, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "106004294441", "note": ""},
-            {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "106004359838", "note": ""},
-            {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "106868653975", "note": ""},
-            {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.48, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004294439", "note": ""},
-            {"stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.66, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "102004797815", "note": ""},
-            {"stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.80, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "104004583045", "note": ""},
-            {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.66, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "100004797831", "note": ""},
-            {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "101004882063", "note": ""},
-            {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "100006186724", "note": ""},
-            {"stt": 13, "name": "Ma Trong Luân", "lcb_heso": 1.35, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.63, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "106869104133", "note": ""},
-            {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 2.40, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "106873586343", "note": ""},
-            {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "107002654931", "note": ""},
-            {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 2.40, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "102004830132", "note": ""}
+            {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 0, "account": "105005712499", "note": ""},
+            {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "105004242307", "note": ""},
+            {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "102005035542", "note": ""},
+            {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.86, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "106004294441", "note": ""},
+            {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "106004359838", "note": ""},
+            {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "106868653975", "note": ""},
+            {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.48, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "105004294439", "note": ""},
+            {"stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.66, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "102004797815", "note": ""},
+            {"stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.80, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "104004583045", "note": ""},
+            {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.66, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "100004797831", "note": ""},
+            {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "101004882063", "note": ""},
+            {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "100006186724", "note": ""},
+            {"stt": 13, "name": "Ma Trong Luân", "lcb_heso": 1.35, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.63, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "106869104133", "note": ""},
+            {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 2.40, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "106873586343", "note": ""},
+            {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "107002654931", "note": ""},
+            {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 2.40, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "102004830132", "note": ""}
         ];
 
         let paymentRecords = JSON.parse(localStorage.getItem('sys_payment_records')) || [];
         let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_records')) || [
-            { id: "1", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33015571, period: "2026-01", cert: "Xem (11)", files: [] },
+            { id: "1", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33015571, period: "2026-03", cert: "Xem (11)", files: [] },
             { id: "2", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 8402864, period: "2026-06", cert: "Xem (1)", files: [] }
         ];
         
@@ -878,27 +877,46 @@
             document.querySelector(`.nav-tabs .nav-tab[data-tab="${name}"]`).classList.add('active'); 
         }
 
-        // HÀM XỬ LÝ KHI CHUYỂN THÁNG: TỰ ĐỘNG KHÔI PHỤC THAM SỐ LƯƠNG RIÊNG CỦA THÁNG ĐÓ
         function handleMonthChangeSelect() {
             let sm = document.getElementById('filter-month').value;
             
-            // Nếu tháng này chưa có cấu hình riêng, kế thừa từ cấu hình tháng cũ gần nhất hoặc mặc định
+            // 1. Phôi phục Cấu hình Tham số (Mức LCB, LCV, Vùng) riêng biệt
             if (!salaryConfigsByMonth[sm]) {
                 let existingMonths = Object.keys(salaryConfigsByMonth);
                 let lastCfg = existingMonths.length > 0 ? salaryConfigsByMonth[existingMonths[existingMonths.length - 1]] : { vung: 4140000, base: 2650000, lcv: 1991139, signer: "Nguyễn Thị Tuyết Nhung" };
                 salaryConfigsByMonth[sm] = { ...lastCfg };
             }
             
-            // Hiển thị tham số riêng của tháng vừa chọn lên giao diện
             document.getElementById('config-vung-pay').value = salaryConfigsByMonth[sm].vung;
             document.getElementById('config-base-pay').value = salaryConfigsByMonth[sm].base;
             document.getElementById('config-lcv-pay').value = salaryConfigsByMonth[sm].lcv;
             document.getElementById('config-signer-name').value = salaryConfigsByMonth[sm].signer || "Nguyễn Thị Tuyết Nhung";
             
+            // Tự động gán tháng được chọn vào ô nhập kỳ cước viễn thông
+            document.getElementById('tel-period').value = sm;
+
+            // 2. Tạo Bảng Công độc lập cho tháng mới nếu chưa có dữ liệu
+            if (!salaryDataByMonth[sm]) {
+                let existingMonths = Object.keys(salaryDataByMonth);
+                if (existingMonths.length > 0) {
+                    let prevMonthData = salaryDataByMonth[existingMonths[existingMonths.length - 1]];
+                    salaryDataByMonth[sm] = prevMonthData.map(emp => ({
+                        ...emp,
+                        NT: 22,
+                        P: 0,
+                        le_vr: 0,
+                        tam_ung: 0,
+                        note: ""
+                    }));
+                } else {
+                    salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs));
+                }
+            }
+            
             calculateSalaryLogic();
+            renderTelecomTable(); // Tự động load cước theo đúng tháng báo cáo vừa chọn
         }
 
-        // HÀM XỬ LÝ KHI THAY ĐỔI CẤU HÌNH THAM SỐ: LƯU RIÊNG VÀO THÁNG HIỆN TẠI
         function handleConfigChangeLive() {
             let sm = document.getElementById('filter-month').value;
             salaryConfigsByMonth[sm] = {
@@ -908,7 +926,6 @@
                 signer: document.getElementById('config-signer-name').value || "Nguyễn Thị Tuyết Nhung"
             };
             
-            // Lưu vào bộ nhớ trình duyệt
             localStorage.setItem('sys_salary_configs_by_month', JSON.stringify(salaryConfigsByMonth));
             calculateSalaryLogic();
         }
@@ -1223,7 +1240,8 @@
         }
 
         function previewRecordFile(recordType, recordIdx) {
-            let records = (recordType === 'payment') ? paymentRecords : telecomRecords;
+            let sm = document.getElementById('filter-month').value;
+            let records = (recordType === 'payment') ? paymentRecords : telecomRecords.filter(r => r.period === sm);
             let rec = records[recordIdx];
             if (rec && rec.files && rec.files.length > 0) openLightboxModal(rec.files[0].base64, rec.files[0].name);
             else alert("Không có tệp chứng từ đính kèm!");
@@ -1383,6 +1401,8 @@
             const cid = document.getElementById('tel-cid').value;
             const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
             const period = document.getElementById('tel-period').value;
+            
+            let sm = document.getElementById('filter-month').value;
 
             if (editId) {
                 let item = telecomRecords.find(d => d.id === editId);
@@ -1391,14 +1411,19 @@
                     item.cid = cid; item.cost = cost; item.period = period;
                     if (currentTelecomFiles.length > 0) item.files = [...currentTelecomFiles];
                 }
-                alert('✅ Đã cập nhật thành công chi phí!');
+                alert('✅ Đã cập nhật thành công chi phí cước!');
             } else {
                 telecomRecords.push({
                     id: Date.now().toString(), location: location, provider: provider,
                     package: pkg, cid: cid, cost: cost, period: period,
                     cert: "Xem (1)", files: [...currentTelecomFiles]
                 });
-                alert('✅ Đã lưu thành công chi phí mới!');
+                
+                if (period !== sm) {
+                    alert(`✅ Đã lưu thành công chi phí cước cho Kỳ: ${formatPeriodVN(period)}!\n\n💡 Lưu ý: Hệ thống đang lọc xem Tháng báo cáo ${formatPeriodVN(sm)}. Để thấy dòng vừa nhập, bạn hãy đổi "Tháng báo cáo" ở Tab Lương thành ${formatPeriodVN(period)}.`);
+                } else {
+                    alert('✅ Đã lưu thành công chi phí cước!');
+                }
             }
             localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
             resetTelecomForm(); 
@@ -1431,33 +1456,44 @@
             }
         }
 
+        // HÀM HIỂN THỊ CƯỚC LỌC THEO THÁNG ĐANG CHỌN
         function renderTelecomTable() {
+            let sm = document.getElementById('filter-month').value;
             const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = "";
             let sum = 0;
-            telecomRecords.forEach((r, i) => {
-                sum += Number(r.cost);
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="font-bold">${r.location || 'Tổng công ty Giấy Việt Nam'}</td>
-                    <td class="text-center">${r.provider}</td>
-                    <td>${r.package}</td>
-                    <td class="text-center font-bold" style="letter-spacing:0.3px;">${r.cid}</td>
-                    <td class="text-right font-bold">${Number(r.cost).toLocaleString('vi-VN')}</td>
-                    <td class="text-center font-bold" style="color:var(--orange);">${formatPeriodVN(r.period)}</td>
-                    <td class="text-center">${(r.files && r.files.length > 0) ? `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})">Xem (${r.files.length})</button>` : `<a href="#" class="badge-cert">${r.cert || 'Xem (1)'}</a>`}</td>
-                    <td class="text-center">
-                        <button type="button" class="btn-edit" onclick="editTelecomRecord('${r.id}')"><i class="fa-solid fa-pen"></i> Sửa</button>
-                        <button type="button" class="btn-delete" onclick="deleteTelecomRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button>
-                    </td>
-                </tr>`;
-            });
+            
+            // Lọc dữ liệu cước của đúng tháng đang xem
+            let activeTelecoms = telecomRecords.filter(r => r.period === sm);
+
+            if (activeTelecoms.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center" style="padding:15px; color:#64748b; font-style:italic;">Chưa có dữ liệu cước viễn thông cho kỳ báo cáo ${formatPeriodVN(sm)}</td></tr>`;
+            } else {
+                activeTelecoms.forEach((r, i) => {
+                    sum += Number(r.cost);
+                    tbody.innerHTML += `<tr>
+                        <td class="text-center">${i+1}</td>
+                        <td class="font-bold">${r.location || 'Tổng công ty Giấy Việt Nam'}</td>
+                        <td class="text-center">${r.provider}</td>
+                        <td>${r.package}</td>
+                        <td class="text-center font-bold" style="letter-spacing:0.3px;">${r.cid}</td>
+                        <td class="text-right font-bold">${Number(r.cost).toLocaleString('vi-VN')}</td>
+                        <td class="text-center font-bold" style="color:var(--orange);">${formatPeriodVN(r.period)}</td>
+                        <td class="text-center">${(r.files && r.files.length > 0) ? `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})">Xem (${r.files.length})</button>` : `<a href="#" class="badge-cert">${r.cert || 'Xem (1)'}</a>`}</td>
+                        <td class="text-center">
+                            <button type="button" class="btn-edit" onclick="editTelecomRecord('${r.id}')"><i class="fa-solid fa-pen"></i> Sửa</button>
+                            <button type="button" class="btn-delete" onclick="deleteTelecomRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button>
+                        </td>
+                    </tr>`;
+                });
+            }
             document.getElementById('dash-pending-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
         }
 
         function resetTelecomForm() { 
+            let sm = document.getElementById('filter-month').value;
             document.getElementById('telecom-edit-id').value = '';
             document.getElementById('telecom-main-form').reset(); 
-            document.getElementById('tel-period').value = '2026-06';
+            document.getElementById('tel-period').value = sm; // Giữ nguyên kỳ cước đang chọn
             document.getElementById('form-telecom-title').innerText = "Cập Nhật Chi Phí Hạ Tầng Mạng & Hóa Đơn Internet";
             document.getElementById('btn-telecom-text').innerText = "Lưu Cước Viễn Thông";
             document.getElementById('btn-telecom-submit').className = "btn btn-orange";
@@ -1787,9 +1823,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             startRealtimeLiveClock();
             initTodayCalendar();
-            handleMonthChangeSelect(); // Khởi tạo và nạp cấu hình đúng theo tháng đang chọn
+            handleMonthChangeSelect(); 
             renderPaymentTable(); 
-            renderTelecomTable();
             autoGenerateAssetID(); 
             renderITTable();
             updateRealtimeQR();
