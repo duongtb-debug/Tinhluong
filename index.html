@@ -45,28 +45,51 @@
         .status-dot.syncing { background-color: var(--orange); animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.4; } }
         
-        .header { display: flex; justify-content: space-between; align-items: center; background: #0b132b; color: white; padding: 10px 20px; border-radius: 4px; margin-bottom: 15px; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: #0b132b; color: white; padding: 10px 20px; border-radius: 4px; margin-bottom: 12px; }
         .header h1 { font-size: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
         .live-clock-box { background: rgba(255,255,255,0.12); padding: 6px 14px; border-radius: 4px; font-family: monospace !important; font-size: 13px; text-align: right; border: 1px solid rgba(255,255,255,0.2); font-weight: bold; color: #fef08a; }
 
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px; }
-        .stat-card { background: white; padding: 12px 15px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); border: 1px solid var(--border-color); border-left: 4px solid var(--blue); }
+        /* TỐI ƯU CÁC THANH THỐNG KÊ RÕ RÀNG GỌN GÀNG */
+        .stat-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 10px; 
+            margin-bottom: 12px; 
+        }
+        @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .stat-card { 
+            background: white; 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+            border: 1px solid var(--border-color); 
+            border-left: 4px solid var(--blue);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
         .stat-card.orange { border-left-color: var(--orange); }
         .stat-card.green { border-left-color: var(--green); }
         .stat-card.purple { border-left-color: var(--purple); }
-        .stat-title { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; margin-bottom: 4px; }
-        .stat-value { font-size: 16px; font-weight: bold; color: var(--primary); }
-        
+        .stat-info { display: flex; flex-direction: column; }
+        .stat-title { font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: bold; letter-spacing: 0.3px; }
+        .stat-value { font-size: 14px; font-weight: bold; color: var(--primary); margin-top: 2px; }
+        .stat-icon { font-size: 18px; opacity: 0.25; }
+
         .salary-visual-summary {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 15px; background: #f1f5f9; padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);
         }
         @media (max-width: 768px) { .salary-visual-summary { grid-template-columns: 1fr; } }
-        .visual-mini-card { background: white; padding: 8px 10px; border-radius: 4px; border: 1px solid #e2e8f0; }
-        .visual-lbl { font-size: 11px; font-weight: bold; color: #475569; display: flex; justify-content: space-between; }
-        .visual-val { font-size: 14px; font-weight: bold; margin-top: 2px; color: var(--primary); }
+        .visual-mini-card { 
+            background: white; padding: 6px 12px; border-radius: 4px; border: 1px solid #e2e8f0; 
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .visual-lbl { font-size: 11px; font-weight: bold; color: #475569; }
+        .visual-val { font-size: 13px; font-weight: bold; color: var(--primary); }
 
-        .nav-tabs { display: flex; gap: 6px; margin-bottom: 15px; border-bottom: 2px solid #cbd5e1; overflow-x: auto; }
-        .nav-tabs .nav-tab { padding: 8px 15px; border: none; background: #e2e8f0; font-weight: bold; color: #475569; cursor: pointer; font-size: 12px; border-radius: 4px 4px 0 0; white-space: nowrap; }
+        .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 2px solid #cbd5e1; overflow-x: auto; }
+        .nav-tabs .nav-tab { padding: 7px 14px; border: none; background: #e2e8f0; font-weight: bold; color: #475569; cursor: pointer; font-size: 12px; border-radius: 4px 4px 0 0; white-space: nowrap; }
         .nav-tabs .nav-tab[data-tab="salary"].active { color: var(--blue) !important; background: white !important; border: 1px solid #cbd5e1 !important; border-bottom: 3px solid var(--blue) !important; }
         .nav-tabs .nav-tab[data-tab="payment"].active { color: var(--green) !important; background: white !important; border: 1px solid #cbd5e1 !important; border-bottom: 3px solid var(--green) !important; }
         .nav-tabs .nav-tab[data-tab="telecom"].active { color: var(--orange) !important; background: white !important; border: 1px solid #cbd5e1 !important; border-bottom: 3px solid var(--orange) !important; }
@@ -75,31 +98,31 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        .main-card { background: white; border-radius: 4px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #cbd5e1; }
-        .card-title { font-size: 13px; font-weight: bold; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--blue); padding-left: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .main-card { background: white; border-radius: 4px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 12px; border: 1px solid #cbd5e1; }
+        .card-title { font-size: 13px; font-weight: bold; color: var(--primary); margin-bottom: 12px; border-left: 4px solid var(--blue); padding-left: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         
-        .grid-form-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 12px; }
-        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 12px; }
+        .grid-form-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 10px; }
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 10px; }
         
-        .form-group { display: flex; flex-direction: column; gap: 4px; }
-        .form-group label { font-weight: bold; color: #334155; font-size: 12px; }
-        .form-group input, .form-group select, .form-group textarea { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; outline: none; background: #fff; }
+        .form-group { display: flex; flex-direction: column; gap: 3px; }
+        .form-group label { font-weight: bold; color: #334155; font-size: 11px; }
+        .form-group input, .form-group select, .form-group textarea { padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; outline: none; background: #fff; }
         .form-group input:focus, .form-group select:focus { border-color: var(--blue); }
 
         .attach-box-redesign {
-            display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 6px 12px; border-radius: 4px; width: fit-content;
+            display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 5px 10px; border-radius: 4px; width: fit-content;
         }
         .attach-btn-trigger {
-            display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #334155; cursor: pointer; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #334155; cursor: pointer; transition: all 0.2s;
         }
         .attach-btn-trigger:hover { border-color: var(--blue); color: var(--blue); background: #f0f9ff; }
 
         .preview-thumbnails-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; padding: 6px; background: #f1f5f9; border-radius: 4px; border: 1px solid var(--border-color); }
-        .thumb-wrapper { position: relative; width: 60px; height: 60px; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: white; cursor: pointer; }
+        .thumb-wrapper { position: relative; width: 55px; height: 55px; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: white; cursor: pointer; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        .thumb-wrapper .btn-delete-thumb { position: absolute; top: 2px; right: 2px; background: var(--red); color: white; border: none; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; cursor: pointer; font-weight: bold; }
+        .thumb-wrapper .btn-delete-thumb { position: absolute; top: 2px; right: 2px; background: var(--red); color: white; border: none; border-radius: 50%; width: 15px; height: 15px; font-size: 8px; cursor: pointer; font-weight: bold; }
 
-        .btn { padding: 6px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
+        .btn { padding: 5px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
         .btn-primary { background: var(--blue); color: white; }
         .btn-purple { background: var(--purple); color: white; }
         .btn-green { background: var(--green); color: white; }
@@ -111,9 +134,9 @@
         .btn-action-view { background: #e0fdf4; color: #047857; border: 1px solid #a7f3d0; padding: 2px 6px; font-size: 11px; border-radius: 3px; cursor: pointer; font-weight: bold; }
         .btn-action-qr { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; padding: 2px 6px; font-size: 11px; border-radius: 3px; cursor: pointer; font-weight: bold; }
 
-        .table-responsive { overflow-x: auto; margin-top: 10px; width: 100%; }
+        .table-responsive { overflow-x: auto; margin-top: 8px; width: 100%; }
         .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; font-size: 12px; table-layout: auto; }
-        .main-table th { background: #f1f5f9; color: #0f172a; padding: 7px 6px; border: 1px solid #cbd5e1; font-weight: bold; text-align: center; }
+        .main-table th { background: #f1f5f9; color: #0f172a; padding: 6px 5px; border: 1px solid #cbd5e1; font-weight: bold; text-align: center; }
         .main-table td { padding: 4px 5px; border: 1px solid #cbd5e1; vertical-align: middle; }
         .main-table tbody tr:hover { background-color: #f8fafc; }
         
@@ -122,7 +145,7 @@
         .font-bold { font-weight: bold; }
         
         .inp-table { 
-            width: 100%; padding: 3px 5px; border: 1px solid #94a3b8; border-radius: 3px; 
+            width: 100%; padding: 2px 4px; border: 1px solid #94a3b8; border-radius: 3px; 
             font-size: 12px; font-weight: bold; outline: none; background: #ffffff; color: #0f172a;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
         }
@@ -131,39 +154,39 @@
         .inp-table.center { text-align: center; }
         .inp-name { min-width: 175px; text-align: left; }
         .inp-account { min-width: 120px; text-align: center; font-family: monospace; }
-        .inp-num-sm { min-width: 50px; width: 55px; text-align: center; }
+        .inp-num-sm { min-width: 45px; width: 50px; text-align: center; }
         .inp-note { min-width: 100px; }
 
         .inp-table.inp-tam-ung {
             background-color: #fff7ed !important; border: 1.5px solid #f97316 !important;
-            color: #c2410c !important; font-weight: bold !important; min-width: 90px; text-align: right;
+            color: #c2410c !important; font-weight: bold !important; min-width: 85px; text-align: right;
         }
 
-        .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 10px; border-radius: 6px; height: 100%; min-height: 180px; }
+        .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 170px; }
 
-        .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid #cbd5e1; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 10px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
-        .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 8px; font-weight: bold; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .calendar-block-body { text-align: center; padding: 12px 10px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 8px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
+        .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid #cbd5e1; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
+        .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
         
-        .calendar-block-details { padding: 10px; font-size: 11px; line-height: 1.5; color: #334155; background: #fafafa; }
-        .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 4px 0; display: flex; justify-content: space-between; }
+        .calendar-block-details { padding: 8px; font-size: 11px; line-height: 1.4; color: #334155; background: #fafafa; }
+        .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
         
-        .cal-box-section { margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1; }
-        .cal-box-title { font-weight: bold; color: var(--purple); font-size: 11px; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
-        .cal-tag-good { background: #dcfce7; color: #166534; padding: 1px 5px; border-radius: 3px; font-weight: bold; font-size: 10px; }
-        .cal-tag-bad { background: #fee2e2; color: #991b1b; padding: 1px 5px; border-radius: 3px; font-weight: bold; font-size: 10px; }
+        .cal-box-section { margin-top: 6px; padding-top: 5px; border-top: 1px dashed #cbd5e1; }
+        .cal-box-title { font-weight: bold; color: var(--purple); font-size: 11px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
+        .cal-tag-good { background: #dcfce7; color: #166534; padding: 1px 4px; border-radius: 3px; font-weight: bold; font-size: 10px; }
+        .cal-tag-bad { background: #fee2e2; color: #991b1b; padding: 1px 4px; border-radius: 3px; font-weight: bold; font-size: 10px; }
 
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
-        .preview-viewport-box { width: 100%; height: 480px; margin-top: 10px; border: 1px solid #cbd5e1; border-radius: 4px; background: #0f172a; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 18px; border-radius: 8px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
+        .preview-viewport-box { width: 100%; height: 450px; margin-top: 8px; border: 1px solid #cbd5e1; border-radius: 4px; background: #0f172a; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .preview-file-render-frame { width: 100%; height: 100%; border: none; background: white; }
         .preview-img-render { max-width: 100%; max-height: 100%; object-fit: contain; }
         
-        .badge-no-license { background: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #fecaca; }
-        .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
-        .badge-cert { background: #dcfce7; color: #15803d; padding: 3px 10px; border-radius: 12px; font-weight: bold; font-size: 11px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+        .badge-no-license { background: #fee2e2; color: #dc2626; padding: 2px 5px; border-radius: 3px; font-weight: bold; border: 1px solid #fecaca; }
+        .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 5px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
+        .badge-cert { background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 10px; font-weight: bold; font-size: 11px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
         .badge-cert:hover { background: #bbf7d0; color: #166534; }
     </style>
 </head>
@@ -175,7 +198,7 @@
             <span id="cloud-status-text">Kết nối Google Script API thành công</span>
         </div>
         <div>
-            <button type="button" class="btn btn-purple" style="padding: 3px 8px; font-size:11px;" onclick="openConfigUrlModal()"><i class="fa-solid fa-link"></i> Cấu hình API Web App & Link Sheet</button>
+            <button type="button" class="btn btn-purple" style="padding: 2px 8px; font-size:11px;" onclick="openConfigUrlModal()"><i class="fa-solid fa-link"></i> Cấu hình API Web App & Link Sheet</button>
         </div>
     </div>
 
@@ -186,22 +209,35 @@
                 <div class="live-clock-box" id="live-system-clock">--:--:-- --/--/----</div>
             </div>
 
+            <!-- THANH THỐNG KÊ TỔNG QUAN TOP (ĐÃ ĐƯỢC TỐI ƯU CỰC CÌ GỌN GÀNG VÀ SANG TRỌNG) -->
             <div class="stat-grid">
                 <div class="stat-card">
-                    <div class="stat-title">TỔNG LƯƠNG THỰC TẾ (NET)</div>
-                    <div class="stat-value" id="dash-total-pay" style="color:var(--blue);">0 VND</div>
+                    <div class="stat-info">
+                        <span class="stat-title">LƯƠNG THỰC TẾ (NET)</span>
+                        <span class="stat-value" id="dash-total-pay" style="color:var(--blue);">0 VND</span>
+                    </div>
+                    <i class="fa-solid fa-money-check-dollar stat-icon" style="color:var(--blue);"></i>
                 </div>
                 <div class="stat-card green">
-                    <div class="stat-title">HỒ SƠ THANH TOÁN VĂN PHÒNG</div>
-                    <div class="stat-value" id="dash-paid-pay" style="color:var(--green);">0 VND</div>
+                    <div class="stat-info">
+                        <span class="stat-title">THANH TOÁN VP</span>
+                        <span class="stat-value" id="dash-paid-pay" style="color:var(--green);">0 VND</span>
+                    </div>
+                    <i class="fa-solid fa-file-invoice-dollar stat-icon" style="color:var(--green);"></i>
                 </div>
                 <div class="stat-card orange">
-                    <div class="stat-title">TỔNG CƯỚC MẠNG TOÀN BỘ CÁC THÁNG (2026)</div>
-                    <div class="stat-value" id="dash-pending-pay" style="color:var(--orange);">0 VND</div>
+                    <div class="stat-info">
+                        <span class="stat-title">CƯỚC MẠNG (2026)</span>
+                        <span class="stat-value" id="dash-pending-pay" style="color:var(--orange);">0 VND</span>
+                    </div>
+                    <i class="fa-solid fa-wifi stat-icon" style="color:var(--orange);"></i>
                 </div>
                 <div class="stat-card purple">
-                    <div class="stat-title">KIỂM KÊ THIẾT BỊ CNTT</div>
-                    <div class="stat-value" id="dash-total-it-devices" style="color:var(--purple);">1 Thiết bị</div>
+                    <div class="stat-info">
+                        <span class="stat-title">MÁY CNTT KIỂM KÊ</span>
+                        <span class="stat-value" id="dash-total-it-devices" style="color:var(--purple);">1 Thiết bị</span>
+                    </div>
+                    <i class="fa-solid fa-laptop-code stat-icon" style="color:var(--purple);"></i>
                 </div>
             </div>
 
@@ -218,54 +254,53 @@
                     <div class="card-title" style="border-left-color: var(--blue);">
                         <span><i class="fa-solid fa-sliders" style="color:var(--blue);"></i> CẤU HÌNH THAM SỐ VÀ NGƯỜI TRÌNH KÝ</span>
                     </div>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
-                        <div class="form-group" style="min-width: 130px;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+                        <div class="form-group" style="min-width: 120px;">
                             <label>Tháng báo cáo</label>
                             <input type="month" id="filter-month" value="2026-06" onchange="handleMonthChangeSelect()">
                         </div>
-                        <div class="form-group" style="min-width: 130px;">
+                        <div class="form-group" style="min-width: 120px;">
                             <label style="color:var(--orange);">Tối thiểu vùng</label>
                             <input type="number" id="config-vung-pay" value="4140000" oninput="handleConfigChangeLive()">
                         </div>
-                        <div class="form-group" style="min-width: 130px;">
+                        <div class="form-group" style="min-width: 120px;">
                             <label style="color:var(--blue);">Cơ bản</label>
                             <input type="number" id="config-base-pay" value="2650000" oninput="handleConfigChangeLive()">
                         </div>
-                        <div class="form-group" style="min-width: 130px;">
+                        <div class="form-group" style="min-width: 120px;">
                             <label style="color:var(--purple);">Công việc</label>
                             <input type="number" id="config-lcv-pay" value="1991139" oninput="handleConfigChangeLive()">
                         </div>
-                        <div class="form-group" style="min-width: 180px;">
+                        <div class="form-group" style="min-width: 170px;">
                             <label style="color:var(--primary);">Người Lập Biểu</label>
                             <input type="text" id="config-signer-name" value="Nguyễn Thị Tuyết Nhung" oninput="handleConfigChangeLive()">
                         </div>
                         <button type="button" class="btn btn-green" onclick="exportSalaryToExcelComplete()"><i class="fa-solid fa-file-excel"></i> XUẤT EXCEL CHUYÊN NGHIỆP CÓ CHỮ KÝ</button>
-                        <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()"><i class="fa-solid fa-cloud-arrow-up"></i> ĐỒNG BỘ MÂY TỰ ĐỘNG SỬA Sheet</button>
-                        
-                        <!-- NÚT MỞ BẢNG LƯƠNG TRÊN GOOGLE DRIVE (SHEET) -->
+                        <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()"><i class="fa-solid fa-cloud-arrow-up"></i> ĐỒNG BỘ MÂY TỰ ĐỒNG SỬA Sheet</button>
                         <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()"><i class="fa-brands fa-google-drive"></i> MỞ BẢNG LƯƠNG GOOGLE SHEETS</button>
                     </div>
                 </div>
 
                 <div class="main-card">
+                    <!-- THANH TÓM TẮT LƯƠNG CƠ CẤU GỌN GÀNG -->
                     <div class="salary-visual-summary">
                         <div class="visual-mini-card">
-                            <div class="visual-lbl"><span>TỔNG LƯƠNG CƠ BẢN THỰC TẾ</span></div>
-                            <div class="visual-val" id="v-total-lcb">0 VND</div>
+                            <span class="visual-lbl"><i class="fa-solid fa-wallet" style="color:var(--blue); margin-right:4px;"></i> TỔNG LƯƠNG CB:</span>
+                            <span class="visual-val" id="v-total-lcb">0 VND</span>
                         </div>
                         <div class="visual-mini-card">
-                            <div class="visual-lbl"><span>TỔNG LƯƠNG CÔNG VIỆC THỰC TẾ</span></div>
-                            <div class="visual-val" id="v-total-lcv-text" style="color:var(--purple);">0 VND</div>
+                            <span class="visual-lbl"><i class="fa-solid fa-briefcase" style="color:var(--purple); margin-right:4px;"></i> TỔNG LƯƠNG CV:</span>
+                            <span class="visual-val" id="v-total-lcv-text" style="color:var(--purple);">0 VND</span>
                         </div>
                         <div class="visual-mini-card">
-                            <div class="visual-lbl"><span>TỔNG THỰC LĨNH NET</span></div>
-                            <div class="visual-val" id="v-total-thuc" style="color:var(--green);">0 VND</div>
+                            <span class="visual-lbl"><i class="fa-solid fa-circle-dollar-to-slot" style="color:var(--green); margin-right:4px;"></i> THỰC LĨNH NET:</span>
+                            <span class="visual-val" id="v-total-thuc" style="color:var(--green);">0 VND</span>
                         </div>
                     </div>
 
                     <div class="card-title">
                         <span>DANH SÁCH BẢNG LƯƠNG CHI TIẾT NHÂN VIÊN (NHẬP LIỆU TỰ DO)</span>
-                        <button type="button" class="btn btn-primary" style="padding:3px 8px; font-size:11px;" onclick="openAddStaffModal()"><i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên Mới</button>
+                        <button type="button" class="btn btn-primary" style="padding:2px 7px; font-size:11px;" onclick="openAddStaffModal()"><i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên Mới</button>
                     </div>
                     <div class="table-responsive">
                         <table class="main-table" id="main-salary-table">
@@ -340,7 +375,7 @@
                             <div class="form-group"><label>Trạng thái duyệt</label><select id="pay-status"><option value="Chưa duyệt">Chưa duyệt</option><option value="Đã duyệt chi">Đã duyệt chi</option></select></div>
                         </div>
                         
-                        <div class="form-group" style="margin-bottom: 12px;">
+                        <div class="form-group" style="margin-bottom: 10px;">
                             <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ</label>
                             <div class="attach-box-redesign">
                                 <label class="attach-btn-trigger">
@@ -422,12 +457,11 @@
                             </div>
                             <div class="form-group">
                                 <label style="color:var(--orange); font-weight:bold;">Kỳ cước nhập (Tháng/Năm)</label>
-                                <!-- SỬA CHUẨN Ô NHẬP NĂM 2026 -->
                                 <input type="month" id="tel-period" value="2026-01" required>
                             </div>
                         </div>
 
-                        <div class="form-group" style="margin-bottom: 12px;">
+                        <div class="form-group" style="margin-bottom: 10px;">
                             <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Tải lên Thư mục Google Drive)</label>
                             <div class="attach-box-redesign">
                                 <label class="attach-btn-trigger">
@@ -454,7 +488,7 @@
                         
                         <div style="display:flex; align-items:center; gap:8px;">
                             <label style="font-size:12px; font-weight:bold; color:var(--primary);">Chế độ xem:</label>
-                            <select id="telecom-view-mode" onchange="renderTelecomTable()" style="padding:4px 8px; border-radius:4px; border:1px solid var(--blue); font-weight:bold; color:var(--blue);">
+                            <select id="telecom-view-mode" onchange="renderTelecomTable()" style="padding:3px 6px; border-radius:4px; border:1px solid var(--blue); font-weight:bold; color:var(--blue);">
                                 <option value="ALL_2026" selected>🌟 Tất cả từ Tháng 1 đến Tháng 12 (2026)</option>
                                 <option value="2026-01">Tháng 01/2026</option>
                                 <option value="2026-02">Tháng 02/2026</option>
@@ -559,7 +593,8 @@
                                             <option value="Microsoft Office 2021 LTSC">Microsoft Office 2021 LTSC</option>
                                             <option value="Microsoft Office 2019 Pro">Microsoft Office 2019 Pro</option>
                                             <option value="Microsoft Office 2016 Pro">Microsoft Office 2016 Pro</option>
-                                            <option value="Microsoft Office 2013 Pro" selected>Microsoft Office 2013 Pro</option>
+                                            <option value="Microsoft Office 2013 Pro">Microsoft Office 2013 Pro</option>
+                                            <option value="Microsoft Office 2010 Pro" selected>Microsoft Office 2010 Pro</option>
                                             <option value="Microsoft 365 Enterprise">Microsoft 365 Enterprise</option>
                                             <option value="WPS Office Free / Premium">WPS Office Free / Premium</option>
                                         </select>
@@ -646,20 +681,20 @@
             <div style="background: var(--primary); color:white; padding:10px; border-radius:4px; font-weight:bold; text-align:center; font-size:13px;"><i class="fa-solid fa-calendar-days" style="color:#fef08a;"></i> LỊCH VẠN NIÊN BLOCK TỔNG HỢP</div>
             <div style="margin-top:10px;">
                 <label style="font-size:11px; font-weight:bold; color:#64748b; margin-bottom:3px; display:block;">Chọn ngày tra cứu:</label>
-                <input type="date" id="calendar-picker" onchange="updateSmartCalendarView()" style="width:100%; padding:6px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;">
+                <input type="date" id="calendar-picker" onchange="updateSmartCalendarView()" style="width:100%; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;">
             </div>
             
             <div class="calendar-block-view">
                 <div class="calendar-block-head" id="cal-solar-month-year">THÁNG 07 / 2026</div>
                 <div class="calendar-block-body">
-                    <div style="font-size:14px; color:#475569; font-weight:bold; text-transform:uppercase;" id="cal-solar-week">Thứ Ba</div>
-                    <div style="font-size:82px; font-weight:900; color:#dc2626; line-height:1; margin:8px 0;" id="cal-solar-day">21</div>
-                    <div style="font-size:13px; font-weight:bold; color:#1e293b;" id="cal-solar-canchi-day">Ngày Ất Sửu</div>
+                    <div style="font-size:13px; color:#475569; font-weight:bold; text-transform:uppercase;" id="cal-solar-week">Thứ Ba</div>
+                    <div style="font-size:75px; font-weight:900; color:#dc2626; line-height:1; margin:6px 0;" id="cal-solar-day">21</div>
+                    <div style="font-size:12px; font-weight:bold; color:#1e293b;" id="cal-solar-canchi-day">Ngày Ất Sửu</div>
                 </div>
                 <div class="calendar-block-lunar">
-                    <div>Tháng Âm<br><strong id="cal-lunar-month" style="color:#991b1b; font-size:15px;">06</strong><br><span id="cal-lunar-canchi-month" style="color:#64748b; font-size:10px;">Bính Thân</span></div>
-                    <div>Ngày Âm<br><strong id="cal-lunar-day" style="color:#991b1b; font-size:22px;">08</strong></div>
-                    <div>Năm Âm<br><strong id="cal-lunar-year" style="color:#991b1b; font-size:15px;">2026</strong><br><span id="cal-lunar-canchi-year" style="color:#64748b; font-size:10px;">Bính Ngọ</span></div>
+                    <div>Tháng Âm<br><strong id="cal-lunar-month" style="color:#991b1b; font-size:14px;">06</strong><br><span id="cal-lunar-canchi-month" style="color:#64748b; font-size:10px;">Bính Thân</span></div>
+                    <div>Ngày Âm<br><strong id="cal-lunar-day" style="color:#991b1b; font-size:20px;">08</strong></div>
+                    <div>Năm Âm<br><strong id="cal-lunar-year" style="color:#991b1b; font-size:14px;">2026</strong><br><span id="cal-lunar-canchi-year" style="color:#64748b; font-size:10px;">Bính Ngọ</span></div>
                 </div>
                 
                 <div class="calendar-block-details">
@@ -671,7 +706,7 @@
 
                     <div class="cal-box-section">
                         <div class="cal-box-title"><i class="fa-regular fa-clock"></i> GIỜ HOÀNG ĐẠO (CÁT):</div>
-                        <div style="font-size:10px; color:#334155; line-height:1.4;" id="cal-hoang-dao">
+                        <div style="font-size:10px; color:#334155; line-height:1.3;" id="cal-hoang-dao">
                             Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)
                         </div>
                     </div>
@@ -695,7 +730,7 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-purple" onclick="openRemindModal()" style="width:100%; margin-top:12px; justify-content:center; padding:8px;"><i class="fa-solid fa-bell"></i> Đặt Lịch Chu Kỳ Âm Lịch 🌟</button>
+            <button type="button" class="btn btn-purple" onclick="openRemindModal()" style="width:100%; margin-top:10px; justify-content:center; padding:7px;"><i class="fa-solid fa-bell"></i> Đặt Lịch Chu Kỳ Âm Lịch 🌟</button>
         </div>
     </div>
 
@@ -816,7 +851,6 @@
 
         let paymentRecords = JSON.parse(localStorage.getItem('sys_payment_records')) || [];
         
-        // CẤP NHẬT DỮ LIỆU CƯỚC MẠNG SẴN CÓ VỚI CẤU TRÚC KỲ CƯỚC 2026 CHUẨN
         let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_records')) || [
             { id: "1", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33015571, period: "2026-03", cert: "Xem (1)", files: [{ name: "HoaDon_Thang3.pdf", type: "application/pdf", driveUrl: GOOGLE_SHEET_VIEW_URL }] },
             { id: "2", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 8402864, period: "2026-06", cert: "Xem (1)", files: [{ name: "HoaDon_Thang6.pdf", type: "application/pdf", driveUrl: GOOGLE_SHEET_VIEW_URL }] }
@@ -827,12 +861,11 @@
                 id: "1", serialId: "IT-LAP-2026-101", user: "Nguyễn Minh Ngọc", dept: "Ban Giám Đốc", type: "Laptop",
                 config: "Dell Latitude 5420, Core i5, 16GB RAM, 512GB SSD", date: "2026-01-15", status: "Tốt - Đang sử dụng",
                 os: "Windows 7 Professional", osLic: "Bản quyền OEM (Theo máy)",
-                office: "Microsoft Office 2013 Pro", officeLic: "Bản quyền Key Vĩnh Viễn",
+                office: "Microsoft Office 2010 Pro", officeLic: "Bản quyền Key Vĩnh Viễn",
                 soft: "MISA SME.NET 2023", softLic: "Bản quyền License Key Online / Cloud", note: "Máy sếp"
             }
         ];
 
-        // HÀM MỞ FILE BẢNG LƯƠNG TRÊN GOOGLE SHEETS
         function openMainSalaryGoogleSheet() {
             if (GOOGLE_SHEET_VIEW_URL && GOOGLE_SHEET_VIEW_URL.startsWith('http')) {
                 window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
@@ -1253,20 +1286,17 @@
             if(f) openLightboxModal(f.driveUrl || f.base64, f.name);
         }
 
-        // HÀM MỞ TỆP / MỞ DRIVE CHUẨN XÁC KHÔNG BỊ KẸT
         function previewRecordFile(recordType, recordIdx) {
             let records = (recordType === 'payment') ? paymentRecords : telecomRecords;
             let rec = records[recordIdx];
             
             if (!rec) return;
 
-            // 1. Nếu có tệp chứa Link Drive riêng -> Mở luôn Tab mới
             if (rec.files && rec.files.length > 0 && rec.files[0].driveUrl) {
                 window.open(rec.files[0].driveUrl, '_blank');
                 return;
             }
 
-            // 2. Nếu là cước viễn thông -> Mở trực tiếp link Google Drive/Sheet đã cấu hình
             if (recordType === 'telecom') {
                 if (GOOGLE_SHEET_VIEW_URL && GOOGLE_SHEET_VIEW_URL.startsWith('http')) {
                     window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
@@ -1276,7 +1306,6 @@
                 return;
             }
 
-            // 3. Nếu có file base64 đính kèm nội bộ -> Mở Lightbox Popup xem ảnh/pdf
             if (rec.files && rec.files.length > 0 && rec.files[0].base64) {
                 openLightboxModal(rec.files[0].base64, rec.files[0].name);
                 return;
@@ -1489,7 +1518,6 @@
                 const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
                 let period = document.getElementById('tel-period').value;
                 
-                // Đảm bảo định dạng YYYY-MM
                 if (!period || !period.includes("-")) {
                     period = "2026-01";
                 }
@@ -1545,7 +1573,6 @@
             }
         }
 
-        // HÀM VẼ BẢNG CƯỚC MẠNG - KHẮC PHỤC HOÀN TOÀN LỖI HIỂN THỊ
         function renderTelecomTable() {
             let viewMode = document.getElementById('telecom-view-mode').value;
             const tbody = document.getElementById('tbody-telecom'); 
@@ -1572,10 +1599,8 @@
                         let realDriveUrl = (r.files && r.files[0] && r.files[0].driveUrl) ? r.files[0].driveUrl : null;
 
                         if (realDriveUrl && realDriveUrl.startsWith('http')) {
-                            // Mở trực tiếp file chứng từ trên Google Drive
                             certDisplay = `<a href="${realDriveUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</a>`;
                         } else {
-                            // Mở Link Drive / Sheet cấu hình
                             certDisplay = `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</button>`;
                         }
                     }
@@ -1749,7 +1774,7 @@
             document.getElementById('it-status').value = item.status || "Tốt - Đang sử dụng";
             document.getElementById('it-os').value = item.os || "Windows 7 Professional";
             document.getElementById('it-os-lic').value = item.osLic || "Bản quyền OEM (Theo máy)";
-            document.getElementById('it-office').value = item.office || "Microsoft Office 2013 Pro";
+            document.getElementById('it-office').value = item.office || "Microsoft Office 2010 Pro";
             document.getElementById('it-office-lic').value = item.officeLic || "Bản quyền Key Vĩnh Viễn";
             document.getElementById('it-soft').value = item.soft || "MISA SME.NET 2023";
             document.getElementById('it-soft-lic').value = item.softLic || "Bản quyền License Key Online / Cloud";
