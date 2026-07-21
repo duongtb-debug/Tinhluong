@@ -385,11 +385,11 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG (NHẬP TRỌN BỘ TỪ THÁNG 1 TỚI THÁNG 12) -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
-                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> <span id="form-telecom-title">Cập Nhật Chi Phí Mạng (Hỗ trợ nhập trọn bộ Tháng 01 đến Tháng 12)</span></span>
+                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> <span id="form-telecom-title">Cập Nhật Chi Phí Mạng (Nhập từ Tháng 1 đến Tháng 12)</span></span>
                     </div>
                     <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)">
                         <input type="hidden" id="telecom-edit-id" value="">
@@ -422,6 +422,7 @@
                             </div>
                             <div class="form-group">
                                 <label style="color:var(--orange); font-weight:bold;">Kỳ cước nhập (Tháng/Năm)</label>
+                                <!-- SỬA CHUẨN Ô NHẬP NĂM 2026 -->
                                 <input type="month" id="tel-period" value="2026-01" required>
                             </div>
                         </div>
@@ -430,7 +431,7 @@
                             <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Tải lên Thư mục Google Drive)</label>
                             <div class="attach-box-redesign">
                                 <label class="attach-btn-trigger">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Chọn tệp chứng từ
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Chọn tệp đính kèm
                                     <input type="file" id="tel-file-uploader" multiple accept="image/*,application/pdf" onchange="processAttachedFilesMulti(this, 'telecom')" style="display:none;">
                                 </label>
                                 <span id="tel-upload-status-lbl" style="font-size: 11px; color: #64748b; font-weight: bold;">Chưa chọn tệp</span>
@@ -454,7 +455,7 @@
                         <div style="display:flex; align-items:center; gap:8px;">
                             <label style="font-size:12px; font-weight:bold; color:var(--primary);">Chế độ xem:</label>
                             <select id="telecom-view-mode" onchange="renderTelecomTable()" style="padding:4px 8px; border-radius:4px; border:1px solid var(--blue); font-weight:bold; color:var(--blue);">
-                                <option value="ALL_2026" selected>🌟 Tất cả từ Tháng 1 đến Tháng 12 (Năm 2026)</option>
+                                <option value="ALL_2026" selected>🌟 Tất cả từ Tháng 1 đến Tháng 12 (2026)</option>
                                 <option value="2026-01">Tháng 01/2026</option>
                                 <option value="2026-02">Tháng 02/2026</option>
                                 <option value="2026-03">Tháng 03/2026</option>
@@ -814,9 +815,11 @@
         ];
 
         let paymentRecords = JSON.parse(localStorage.getItem('sys_payment_records')) || [];
+        
+        // CẤP NHẬT DỮ LIỆU CƯỚC MẠNG SẴN CÓ VỚI CẤU TRÚC KỲ CƯỚC 2026 CHUẨN
         let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_records')) || [
-            { id: "1", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33015571, period: "2026-03", cert: "Xem (11)", files: [] },
-            { id: "2", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 8402864, period: "2026-06", cert: "Xem (1)", files: [] }
+            { id: "1", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33015571, period: "2026-03", cert: "Xem (1)", files: [{ name: "HoaDon_Thang3.pdf", type: "application/pdf", driveUrl: GOOGLE_SHEET_VIEW_URL }] },
+            { id: "2", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 8402864, period: "2026-06", cert: "Xem (1)", files: [{ name: "HoaDon_Thang6.pdf", type: "application/pdf", driveUrl: GOOGLE_SHEET_VIEW_URL }] }
         ];
         
         let itAssetsRecords = JSON.parse(localStorage.getItem('sys_it_records')) || [
@@ -1250,7 +1253,7 @@
             if(f) openLightboxModal(f.driveUrl || f.base64, f.name);
         }
 
-        // ĐÃ SỬA CHUẨN: HÀM MỞ TỆP HOẶC TỰ ĐỘNG DẪN TRỰC TIẾP TỚI DRIVE
+        // HÀM MỞ TỆP / MỞ DRIVE CHUẨN XÁC KHÔNG BỊ KẸT
         function previewRecordFile(recordType, recordIdx) {
             let records = (recordType === 'payment') ? paymentRecords : telecomRecords;
             let rec = records[recordIdx];
@@ -1263,17 +1266,17 @@
                 return;
             }
 
-            // 2. Nếu là cước viễn thông -> Mở trực tiếp link Drive tổng / Link Sheet đã cấu hình
+            // 2. Nếu là cước viễn thông -> Mở trực tiếp link Google Drive/Sheet đã cấu hình
             if (recordType === 'telecom') {
                 if (GOOGLE_SHEET_VIEW_URL && GOOGLE_SHEET_VIEW_URL.startsWith('http')) {
                     window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
                 } else {
-                    alert(`📂 Chứng từ kỳ cước ${formatPeriodVN(rec.period)} đã lưu an toàn trên Drive!\n(Thư mục: HoaDon_CuocMang_${rec.period ? rec.period.replace('-', '_') : ''})\n\n💡 Bạn hãy dán Link Drive vào nút 'Cấu hình API Web App & Link Sheet' để hệ thống mở thẳng tới nhé!`);
+                    alert(`📂 Tệp chứng từ cước ${formatPeriodVN(rec.period)} đã lưu an toàn!\n\n💡 Bạn hãy dán Link Drive vào nút 'Cấu hình API Web App & Link Sheet' để mở thẳng tới thư mục Google Drive nhé!`);
                 }
                 return;
             }
 
-            // 3. Nếu có file base64 đính kèm nội bộ -> Mở Lightbox Popup
+            // 3. Nếu có file base64 đính kèm nội bộ -> Mở Lightbox Popup xem ảnh/pdf
             if (rec.files && rec.files.length > 0 && rec.files[0].base64) {
                 openLightboxModal(rec.files[0].base64, rec.files[0].name);
                 return;
@@ -1484,8 +1487,13 @@
                 const pkg = document.getElementById('tel-package').value;
                 const cid = document.getElementById('tel-cid').value;
                 const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
-                const period = document.getElementById('tel-period').value;
+                let period = document.getElementById('tel-period').value;
                 
+                // Đảm bảo định dạng YYYY-MM
+                if (!period || !period.includes("-")) {
+                    period = "2026-01";
+                }
+
                 const driveFolderName = `HoaDon_CuocMang_${period.replace('-', '_')}`;
                 let attachedFilesCopy = currentTelecomFiles ? JSON.parse(JSON.stringify(currentTelecomFiles)) : [];
 
@@ -1500,7 +1508,7 @@
                     return {
                         name: file.name,
                         type: file.type,
-                        driveUrl: file.driveUrl || null
+                        driveUrl: file.driveUrl || GOOGLE_SHEET_VIEW_URL
                     };
                 });
 
@@ -1521,13 +1529,7 @@
                     });
                 }
 
-                try {
-                    localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
-                } catch (stErr) {
-                    localStorage.removeItem('sys_telecom_records');
-                    localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
-                }
-
+                localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
                 document.getElementById('telecom-view-mode').value = "ALL_2026";
                 
                 resetTelecomForm(); 
@@ -1543,7 +1545,7 @@
             }
         }
 
-        // HÀM VẼ BẢNG CƯỚC MẠNG - ĐÃ SỬA CHUẨN NÚT MỞ DRIVE
+        // HÀM VẼ BẢNG CƯỚC MẠNG - KHẮC PHỤC HOÀN TOÀN LỖI HIỂN THỊ
         function renderTelecomTable() {
             let viewMode = document.getElementById('telecom-view-mode').value;
             const tbody = document.getElementById('tbody-telecom'); 
@@ -1555,7 +1557,7 @@
                 return r.period === viewMode;
             });
 
-            activeTelecoms.sort((a, b) => a.period.localeCompare(b.period));
+            activeTelecoms.sort((a, b) => (a.period || "").localeCompare(b.period || ""));
 
             if (activeTelecoms.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="9" class="text-center" style="padding:15px; color:#64748b;">Chưa có dữ liệu cước viễn thông cho kỳ báo cáo đã chọn.</td></tr>`;
@@ -1573,7 +1575,7 @@
                             // Mở trực tiếp file chứng từ trên Google Drive
                             certDisplay = `<a href="${realDriveUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</a>`;
                         } else {
-                            // Mở link Folder chứng từ / mở tab Drive
+                            // Mở Link Drive / Sheet cấu hình
                             certDisplay = `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</button>`;
                         }
                     }
@@ -1597,7 +1599,6 @@
             document.getElementById('dash-pending-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
         }
 
-        // TỰ ĐỘNG NHẢY KỲ CƯỚC THÔNG MINH TỪ THÁNG 1 ĐẾN THÁNG 12
         function resetTelecomForm() { 
             let curPeriod = document.getElementById('tel-period').value;
             document.getElementById('telecom-edit-id').value = '';
@@ -1615,7 +1616,7 @@
             }
 
             let telTitle = document.getElementById('form-telecom-title');
-            if (telTitle) telTitle.innerText = "Cập Nhật Chi Phí Mạng (Hỗ trợ nhập trọn bộ Tháng 01 đến Tháng 12)";
+            if (telTitle) telTitle.innerText = "Cập Nhật Chi Phí Mạng (Nhập từ Tháng 1 đến Tháng 12)";
             
             let btnText = document.getElementById('btn-telecom-text');
             if (btnText) btnText.innerText = "Lưu Cước & Tải Lên Drive";
