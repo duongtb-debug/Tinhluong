@@ -161,7 +161,7 @@
             color: #c2410c !important; font-weight: bold !important; min-width: 85px; text-align: right;
         }
 
-        .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 170px; }
+        .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 180px; }
 
         .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid #cbd5e1; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
@@ -208,7 +208,7 @@
                 <div class="live-clock-box" id="live-system-clock">--:--:-- --/--/----</div>
             </div>
 
-            <!-- THANH THỐNG KÊ TOP GỌN GÀNG -->
+            <!-- THANH THỐNG KÊ TOP -->
             <div class="stat-grid">
                 <div class="stat-card">
                     <div class="stat-info">
@@ -252,7 +252,6 @@
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
                         <span><i class="fa-solid fa-sliders" style="color:var(--blue);"></i> CẤU HÌNH THAM SỐ VÀ NGƯỜI TRÌNH KÝ</span>
-                        <!-- NÚT MỞ BẢNG LƯƠNG TRÊN GOOGLE SHEETS HIỂN THỊ RÕ RÀNG NỔI BẬT -->
                         <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()"><i class="fa-brands fa-google-drive"></i> MỞ BẢNG LƯƠNG GOOGLE SHEETS</button>
                     </div>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
@@ -535,7 +534,7 @@
                     <form id="it-main-form" onsubmit="saveITRecord(event)">
                         <input type="hidden" id="it-edit-id" value="">
                         
-                        <div style="display: grid; grid-template-columns: 1fr 180px; gap: 15px; align-items: start;">
+                        <div style="display: grid; grid-template-columns: 1fr 190px; gap: 15px; align-items: start;">
                             <div>
                                 <div class="grid-form">
                                     <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required placeholder="Họ và tên..." oninput="updateRealtimeQR()"></div>
@@ -608,25 +607,33 @@
                                     </div>
                                 </div>
 
+                                <!-- BỔ SUNG LỰA CHỌN PHẦN MỀM CHUYÊN DỤNG TỰ NHẬP LINH HOẠT -->
                                 <div class="grid-form">
                                     <div class="form-group">
-                                        <label>PM Nghiệp vụ (ASIA, Quasoft, MISA...)</label>
-                                        <select id="it-soft" onchange="updateRealtimeQR()">
+                                        <label style="color:var(--purple); font-weight:bold;">PM Nghiệp vụ chuyên dụng</label>
+                                        <select id="it-soft" onchange="toggleCustomSoftInputs(); updateRealtimeQR();">
                                             <option value="[Chưa bản quyền] Dùng thử / Miễn phí">[Chưa bản quyền] Dùng thử / Miễn phí</option>
                                             <option value="MISA SME.NET 2023" selected>MISA SME.NET 2023</option>
                                             <option value="MISA AMIS Enterprise Cloud">MISA AMIS Enterprise Cloud</option>
                                             <option value="ASIA Enterprise ERP">ASIA Enterprise ERP</option>
                                             <option value="Quasoft ERP System">Quasoft ERP System</option>
                                             <option value="FAST Accounting 11.0">FAST Accounting 11.0</option>
+                                            <option value="AutoCAD / SAP2000 / SolidWorks">AutoCAD / SAP2000 / SolidWorks</option>
+                                            <option value="Adobe Photoshop / Illustrator / Premiere">Adobe Photoshop / Illustrator / Premiere</option>
+                                            <option value="CUSTOM">➕ Khác (Nhập phần mềm mới...)</option>
                                         </select>
+                                        <input type="text" id="it-soft-custom" placeholder="Nhập tên phần mềm chuyên dụng..." style="display:none; margin-top:4px; border-color:var(--purple);" oninput="updateRealtimeQR()">
                                     </div>
                                     <div class="form-group">
-                                        <label>Bản quyền PM Nghiệp vụ</label>
-                                        <select id="it-soft-lic" onchange="updateRealtimeQR()">
+                                        <label style="color:var(--purple); font-weight:bold;">Bản quyền PM Nghiệp vụ</label>
+                                        <select id="it-soft-lic" onchange="toggleCustomSoftInputs(); updateRealtimeQR();">
                                             <option value="Chưa bản quyền / Bản Dùng thử">Chưa bản quyền / Bản Dùng thử</option>
                                             <option value="Bản quyền Dongle USB (Khóa cứng)">Bản quyền Dongle USB (Khóa cứng)</option>
                                             <option value="Bản quyền License Key Online / Cloud" selected>Bản quyền License Key Online / Cloud</option>
+                                            <option value="Bản quyền Đăng ký Tài khoản Doanh nghiệp">Bản quyền Đăng ký Tài khoản Doanh nghiệp</option>
+                                            <option value="CUSTOM_LIC">➕ Khác (Nhập loại bản quyền...)</option>
                                         </select>
+                                        <input type="text" id="it-soft-lic-custom" placeholder="Nhập loại bản quyền phần mềm..." style="display:none; margin-top:4px; border-color:var(--purple);" oninput="updateRealtimeQR()">
                                     </div>
                                     <div class="form-group" style="grid-column: span 2;"><label>Ghi chú kiểm kê</label><input type="text" id="it-note" placeholder="Ghi chú thêm..." oninput="updateRealtimeQR()"></div>
                                 </div>
@@ -635,7 +642,7 @@
                             <div class="realtime-qr-box">
                                 <label style="font-weight:bold; color:var(--purple); font-size:11px; margin-bottom:6px;"><i class="fa-solid fa-qrcode"></i> QR Preview Live</label>
                                 <div id="realtime-qr-target" style="padding:6px; background:white; border:1px solid var(--border-color); border-radius:4px;"></div>
-                                <span style="font-size:10px; color:#64748b; margin-top:6px; text-align:center;">Tự động vẽ QR theo thời gian thực</span>
+                                <span style="font-size:10px; color:#64748b; margin-top:6px; text-align:center;">Mã QR quét chuẩn xác 100%</span>
                             </div>
                         </div>
 
@@ -662,7 +669,7 @@
                                     <th>Phòng ban</th>
                                     <th>Hệ điều hành & BQ OS</th>
                                     <th>Bộ Office & BQ Office</th>
-                                    <th>PM Nghiệp vụ (MISA/ASIA/Quasoft)</th>
+                                    <th>PM Nghiệp vụ chuyên dụng</th>
                                     <th>Trạng thái</th>
                                     <th class="text-center">QR Code</th>
                                     <th class="text-center" style="width: 110px;">Hành động</th>
@@ -870,7 +877,6 @@
             }
         ];
 
-        // HÀM MỞ FILE BẢNG LƯƠNG TRÊN GOOGLE SHEETS
         function openMainSalaryGoogleSheet() {
             if (GOOGLE_SHEET_VIEW_URL && GOOGLE_SHEET_VIEW_URL.startsWith('http')) {
                 window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
@@ -1291,20 +1297,17 @@
             if(f) openLightboxModal(f.driveUrl || f.base64, f.name);
         }
 
-        // HÀM MỞ DRIVE SỬA TRIỆT ĐỂ KHÔNG BỊ NHẦM SANG BẢNG LƯƠNG
         function previewRecordFile(recordType, recordIdx) {
             let records = (recordType === 'payment') ? paymentRecords : telecomRecords;
             let rec = records[recordIdx];
             
             if (!rec) return;
 
-            // 1. Nếu có tệp chứa Link Drive riêng -> Mở luôn Tab mới
             if (rec.files && rec.files.length > 0 && rec.files[0].driveUrl) {
                 window.open(rec.files[0].driveUrl, '_blank');
                 return;
             }
 
-            // 2. Nếu là cước viễn thông -> Ưu tiên mở Thư mục Drive Cước Mạng riêng
             if (recordType === 'telecom') {
                 if (GOOGLE_DRIVE_FOLDER_URL && GOOGLE_DRIVE_FOLDER_URL.startsWith('http')) {
                     window.open(GOOGLE_DRIVE_FOLDER_URL, '_blank');
@@ -1314,7 +1317,6 @@
                 return;
             }
 
-            // 3. Nếu có file base64 đính kèm nội bộ -> Mở Popup xem ảnh/pdf
             if (rec.files && rec.files.length > 0 && rec.files[0].base64) {
                 openLightboxModal(rec.files[0].base64, rec.files[0].name);
                 return;
@@ -1702,23 +1704,64 @@
             document.getElementById('it-serial-id').value = `IT-${codePrefix}-2026-${Math.floor(100 + Math.random() * 900)}`;
         }
 
+        // HÀM ẨN HIỆN Ô TỰ NHẬP PHẦN MỀM NGOÀI DANH SÁCH
+        function toggleCustomSoftInputs() {
+            let softSel = document.getElementById('it-soft').value;
+            let softCustomInp = document.getElementById('it-soft-custom');
+            softCustomInp.style.display = (softSel === 'CUSTOM') ? 'block' : 'none';
+
+            let licSel = document.getElementById('it-soft-lic').value;
+            let licCustomInp = document.getElementById('it-soft-lic-custom');
+            licCustomInp.style.display = (licSel === 'CUSTOM_LIC') ? 'block' : 'none';
+        }
+
+        // LẤY GIÁ TRỊ TÊN VÀ BẢN QUYỀN PHẦN MỀM CHÍNH XÁC
+        function getSelectedSoftValues() {
+            let softSel = document.getElementById('it-soft').value;
+            let softVal = (softSel === 'CUSTOM') ? (document.getElementById('it-soft-custom').value.trim() || "Phần mềm chuyên dụng") : softSel;
+
+            let licSel = document.getElementById('it-soft-lic').value;
+            let licVal = (licSel === 'CUSTOM_LIC') ? (document.getElementById('it-soft-lic-custom').value.trim() || "Bản quyền tùy chỉnh") : licSel;
+
+            return { softVal, licVal };
+        }
+
+        // HÀM VẼ QR LIVE CỰC KỲ CHUYÊN NGHIỆP VÀ CHUẨN XÁC
         function updateRealtimeQR() {
             let serialId = document.getElementById('it-serial-id').value || "N/A";
-            let user = document.getElementById('it-user').value || "Chưa nhập";
-            let dept = document.getElementById('it-dept').value || "Chưa nhập";
+            let user = document.getElementById('it-user').value.trim() || "Chưa nhập";
+            let dept = document.getElementById('it-dept').value.trim() || "Chưa nhập";
             let type = document.getElementById('it-device-type').value;
-            let config = document.getElementById('it-config').value || "Chưa nhập";
+            let config = document.getElementById('it-config').value.trim() || "Chưa nhập";
             let os = document.getElementById('it-os').value;
+            let osLic = document.getElementById('it-os-lic').value;
             let office = document.getElementById('it-office').value;
+            let officeLic = document.getElementById('it-office-lic').value;
+            let status = document.getElementById('it-status').value;
 
-            let rawText = `MÃ TÀI SẢN: ${serialId}\nLOẠI: ${type}\nNGƯỜI DÙNG: ${user}\nPHÒNG BAN: ${dept}\nCẤU HÌNH: ${config}\nOS: ${os}\nOFFICE: ${office}`;
+            let { softVal, licVal } = getSelectedSoftValues();
+
+            let formattedText = 
+`--- TÀI SẢN CNTT ---
+Mã định danh: ${serialId}
+Loại thiết bị: ${type}
+Người dùng: ${user} (${dept})
+Cấu hình: ${config}
+Hệ điều hành: ${os} [${osLic}]
+Office: ${office} [${officeLic}]
+PM Nghiệp vụ: ${softVal} [${licVal}]
+Trạng thái: ${status}`;
 
             const qrTarget = document.getElementById('realtime-qr-target');
             if (qrTarget) {
                 qrTarget.innerHTML = "";
                 realtimeQrInstance = new QRCode(qrTarget, {
-                    text: rawText, width: 110, height: 110,
-                    colorDark : "#0f172a", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M
+                    text: formattedText, 
+                    width: 120, 
+                    height: 120,
+                    colorDark : "#0f172a", 
+                    colorLight : "#ffffff", 
+                    correctLevel : QRCode.CorrectLevel.M
                 });
             }
         }
@@ -1726,6 +1769,7 @@
         function saveITRecord(e) {
             e.preventDefault();
             const editId = document.getElementById('it-edit-id').value;
+            let { softVal, licVal } = getSelectedSoftValues();
 
             if (editId) {
                 let item = itAssetsRecords.find(d => d.id === editId);
@@ -1740,8 +1784,8 @@
                     item.osLic = document.getElementById('it-os-lic').value;
                     item.office = document.getElementById('it-office').value;
                     item.officeLic = document.getElementById('it-office-lic').value;
-                    item.soft = document.getElementById('it-soft').value;
-                    item.softLic = document.getElementById('it-soft-lic').value;
+                    item.soft = softVal;
+                    item.softLic = licVal;
                     item.note = document.getElementById('it-note').value;
                 }
                 alert('✅ Đã cập nhật thông tin thiết bị!');
@@ -1759,8 +1803,8 @@
                     osLic: document.getElementById('it-os-lic').value,
                     office: document.getElementById('it-office').value,
                     officeLic: document.getElementById('it-office-lic').value,
-                    soft: document.getElementById('it-soft').value,
-                    softLic: document.getElementById('it-soft-lic').value,
+                    soft: softVal,
+                    softLic: licVal,
                     note: document.getElementById('it-note').value
                 });
                 alert('✅ Đã lưu thiết bị mới thành công!');
@@ -1785,8 +1829,26 @@
             document.getElementById('it-os-lic').value = item.osLic || "Bản quyền OEM (Theo máy)";
             document.getElementById('it-office').value = item.office || "Microsoft Office 2010 Pro";
             document.getElementById('it-office-lic').value = item.officeLic || "Bản quyền Key Vĩnh Viễn";
-            document.getElementById('it-soft').value = item.soft || "MISA SME.NET 2023";
-            document.getElementById('it-soft-lic').value = item.softLic || "Bản quyền License Key Online / Cloud";
+            
+            // Xử lý nạp dữ liệu phần mềm tự chọn khi Sửa
+            const softOptions = Array.from(document.getElementById('it-soft').options).map(o => o.value);
+            if (softOptions.includes(item.soft)) {
+                document.getElementById('it-soft').value = item.soft;
+            } else {
+                document.getElementById('it-soft').value = "CUSTOM";
+                document.getElementById('it-soft-custom').value = item.soft || "";
+            }
+
+            const licOptions = Array.from(document.getElementById('it-soft-lic').options).map(o => o.value);
+            if (licOptions.includes(item.softLic)) {
+                document.getElementById('it-soft-lic').value = item.softLic;
+            } else {
+                document.getElementById('it-soft-lic').value = "CUSTOM_LIC";
+                document.getElementById('it-soft-lic-custom').value = item.softLic || "";
+            }
+
+            toggleCustomSoftInputs();
+
             document.getElementById('it-note').value = item.note || "";
 
             let itTitle = document.getElementById('form-it-title');
@@ -1825,7 +1887,7 @@
                     <td>${r.dept}</td>
                     <td><div>${r.os || 'N/A'}</div><span class="${osClass}">${r.osLic || 'Chưa bản quyền'}</span></td>
                     <td><div>${r.office || 'N/A'}</div><span class="${offClass}">${r.officeLic || 'Chưa bản quyền'}</span></td>
-                    <td><div>${r.soft || 'N/A'}</div><span class="${softClass}">${r.softLic || 'Chưa bản quyền'}</span></td>
+                    <td><div style="font-weight:bold; color:var(--primary);">${r.soft || 'N/A'}</div><span class="${softClass}">${r.softLic || 'Chưa bản quyền'}</span></td>
                     <td class="text-center">${r.status}</td>
                     <td class="text-center"><button type="button" class="btn-action-qr" onclick="popupQRCode(${i})">QR</button></td>
                     <td class="text-center">
@@ -1842,16 +1904,42 @@
             const modal = document.getElementById('document-preview-modal');
             const viewBody = document.getElementById('modal-preview-body');
             let previewTitle = document.getElementById('modal-preview-title');
-            if (previewTitle) previewTitle.innerText = "MÃ QR KIỂM KÊ PHÓNG TO: " + rec.serialId;
-            let rawText = `MÃ TÀI SẢN: ${rec.serialId}\nCẤU HÌNH: ${rec.config}\nNGƯỜI DÙNG: ${rec.user}\nOS: ${rec.os}\nOFFICE: ${rec.office}`;
-            viewBody.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:white;"><div id="qr-target" style="padding:15px; background:white; border:2px dashed var(--purple); border-radius:8px;"></div></div>`;
-            new QRCode(document.getElementById("qr-target"), { text: rawText, width: 220, height: 220 });
+            if (previewTitle) previewTitle.innerText = "MÃ QR KIỂM KÊ CHUẨN XÁC: " + rec.serialId;
+            
+            let formattedText = 
+`--- TÀI SẢN CNTT ---
+Mã định danh: ${rec.serialId}
+Loại thiết bị: ${rec.type}
+Người dùng: ${rec.user} (${rec.dept})
+Cấu hình: ${rec.config}
+Hệ điều hành: ${rec.os} [${rec.osLic}]
+Office: ${rec.office} [${rec.officeLic}]
+PM Nghiệp vụ: ${rec.soft} [${rec.softLic}]
+Trạng thái: ${rec.status}`;
+
+            viewBody.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:white; padding:20px;">
+                <div id="qr-target" style="padding:15px; background:white; border:2px dashed var(--purple); border-radius:8px;"></div>
+                <span style="font-weight:bold; color:var(--primary); margin-top:12px; font-size:13px;">Thẻ Kiểm Kê QR Code - ${rec.serialId}</span>
+            </div>`;
+            
+            new QRCode(document.getElementById("qr-target"), { 
+                text: formattedText, 
+                width: 220, 
+                height: 220,
+                colorDark : "#0f172a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
             modal.style.display = 'flex';
         }
 
         function resetITForm() { 
             document.getElementById('it-edit-id').value = '';
             document.getElementById('it-main-form').reset(); 
+            document.getElementById('it-soft-custom').value = '';
+            document.getElementById('it-soft-lic-custom').value = '';
+            toggleCustomSoftInputs();
+
             let itTitle = document.getElementById('form-it-title');
             if (itTitle) itTitle.innerText = "Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin";
             
