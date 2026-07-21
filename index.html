@@ -437,7 +437,7 @@
                         </div>
 
                         <div class="form-group" style="margin-bottom: 12px;">
-                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn mạng</label>
+                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn mạng (Tự động tải lên Drive)</label>
                             <div class="attach-box-redesign">
                                 <label class="attach-btn-trigger">
                                     <i class="fa-solid fa-cloud-arrow-up"></i> Tải lên hóa đơn
@@ -450,7 +450,7 @@
 
                         <div class="btn-group">
                             <button type="submit" id="btn-telecom-submit" class="btn btn-orange">
-                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-telecom-text">Lưu Cước Viễn Thông</span>
+                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-telecom-text">Lưu Cước Viễn Thông & Tải Lên Drive</span>
                             </button>
                             <button type="button" class="btn btn-gray" onclick="resetTelecomForm()"><i class="fa-solid fa-xmark"></i> Hủy</button>
                         </div>
@@ -472,7 +472,7 @@
                                     <th class="text-center">Mã thuê bao / Đường truyền</th>
                                     <th class="text-right">Chi phí (VND)</th>
                                     <th class="text-center">Kỳ cước</th>
-                                    <th class="text-center">Chứng từ</th>
+                                    <th class="text-center">Chứng từ Drive</th>
                                     <th class="text-center" style="width: 110px;">Hành động</th>
                                 </tr>
                             </thead>
@@ -769,7 +769,7 @@
     </div>
 
     <script>
-        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbzQ0GgUAIwTzKu6BOJN5-9laa8opA7aQqbK0PiI9_ADqyAyPj3HkVPA51QoWU03p5K1/exec";
+        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
         let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || DEFAULT_SCRIPT_API; 
@@ -880,7 +880,6 @@
         function handleMonthChangeSelect() {
             let sm = document.getElementById('filter-month').value;
             
-            // 1. Phôi phục Cấu hình Tham số (Mức LCB, LCV, Vùng) riêng biệt
             if (!salaryConfigsByMonth[sm]) {
                 let existingMonths = Object.keys(salaryConfigsByMonth);
                 let lastCfg = existingMonths.length > 0 ? salaryConfigsByMonth[existingMonths[existingMonths.length - 1]] : { vung: 4140000, base: 2650000, lcv: 1991139, signer: "Nguyễn Thị Tuyết Nhung" };
@@ -892,10 +891,8 @@
             document.getElementById('config-lcv-pay').value = salaryConfigsByMonth[sm].lcv;
             document.getElementById('config-signer-name').value = salaryConfigsByMonth[sm].signer || "Nguyễn Thị Tuyết Nhung";
             
-            // Tự động gán tháng được chọn vào ô nhập kỳ cước viễn thông
             document.getElementById('tel-period').value = sm;
 
-            // 2. Tạo Bảng Công độc lập cho tháng mới nếu chưa có dữ liệu
             if (!salaryDataByMonth[sm]) {
                 let existingMonths = Object.keys(salaryDataByMonth);
                 if (existingMonths.length > 0) {
@@ -914,7 +911,7 @@
             }
             
             calculateSalaryLogic();
-            renderTelecomTable(); // Tự động load cước theo đúng tháng báo cáo vừa chọn
+            renderTelecomTable();
         }
 
         function handleConfigChangeLive() {
@@ -1218,7 +1215,7 @@
             let statusLbl = document.getElementById((type === 'payment') ? 'pay-upload-status-lbl' : 'tel-upload-status-lbl');
             
             zone.innerHTML = "";
-            if (targetArr.length === 0) { 
+            if (!targetArr || targetArr.length === 0) { 
                 zone.style.display = 'none'; 
                 statusLbl.innerText = "Chưa chọn tệp";
                 return; 
@@ -1228,34 +1225,46 @@
 
             targetArr.forEach((f, idx) => {
                 zone.innerHTML += `<div class="thumb-wrapper" onclick="previewBase64File('${type}', ${idx})">
-                    <img src="${f.type.startsWith('image/') ? f.base64 : 'https://cdn-icons-png.flaticon.com/512/337/337946.png'}">
-                    <button type="button" class="btn-delete-thumb" onclick="event.stopPropagation(); currentPaymentFiles.splice(${idx},1); renderThumbnails('${type}');">X</button>
+                    <img src="${f.type && f.type.startsWith('image/') ? f.base64 : 'https://cdn-icons-png.flaticon.com/512/337/337946.png'}">
+                    <button type="button" class="btn-delete-thumb" onclick="event.stopPropagation(); ${(type==='payment')?'currentPaymentFiles':'currentTelecomFiles'}.splice(${idx},1); renderThumbnails('${type}');">X</button>
                 </div>`;
             });
         }
 
         function previewBase64File(type, idx) {
             let f = (type === 'payment') ? currentPaymentFiles[idx] : currentTelecomFiles[idx];
-            if(f) openLightboxModal(f.base64, f.name);
+            if(f) openLightboxModal(f.driveUrl || f.base64, f.name);
         }
 
         function previewRecordFile(recordType, recordIdx) {
             let sm = document.getElementById('filter-month').value;
             let records = (recordType === 'payment') ? paymentRecords : telecomRecords.filter(r => r.period === sm);
             let rec = records[recordIdx];
-            if (rec && rec.files && rec.files.length > 0) openLightboxModal(rec.files[0].base64, rec.files[0].name);
-            else alert("Không có tệp chứng từ đính kèm!");
+            if (rec && rec.files && rec.files.length > 0) {
+                let targetFile = rec.files[0];
+                if (targetFile.driveUrl) {
+                    window.open(targetFile.driveUrl, '_blank');
+                } else {
+                    openLightboxModal(targetFile.base64, targetFile.name);
+                }
+            } else alert("Không có tệp chứng từ đính kèm!");
         }
 
-        function openLightboxModal(base64Data, fileName) {
+        function openLightboxModal(base64OrUrl, fileName) {
             const modal = document.getElementById('document-preview-modal');
             const viewBody = document.getElementById('modal-preview-body');
             document.getElementById('modal-preview-title').innerText = "Trình xem chứng từ: " + fileName;
 
+            if (base64OrUrl.startsWith('http')) {
+                viewBody.innerHTML = `<iframe src="${base64OrUrl}" class="preview-file-render-frame"></iframe>`;
+                modal.style.display = 'flex';
+                return;
+            }
+
             if (currentActiveBlobUrl) { URL.revokeObjectURL(currentActiveBlobUrl); currentActiveBlobUrl = null; }
 
             try {
-                const parts = base64Data.split(';base64,');
+                const parts = base64OrUrl.split(';base64,');
                 const contentType = parts[0].split(':')[1];
                 const raw = window.atob(parts[1]);
                 const uInt8Array = new Uint8Array(raw.length);
@@ -1302,6 +1311,7 @@
             let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
             let rate = document.getElementById('pay-tax-toggle').checked ? (parseFloat(document.getElementById('pay-tax-rate').value) || 0) : 0;
             let taxVal = Math.round((pretax * qty) * (rate / 100));
+            let attachedFilesCopy = currentPaymentFiles ? JSON.parse(JSON.stringify(currentPaymentFiles)) : [];
 
             if (editId) {
                 let item = paymentRecords.find(d => d.id === editId);
@@ -1312,7 +1322,7 @@
                     item.qty = qty; item.pretax = pretax; item.tax = taxVal;
                     item.total = (pretax * qty) + taxVal;
                     item.status = document.getElementById('pay-status').value;
-                    if (currentPaymentFiles.length > 0) item.files = [...currentPaymentFiles];
+                    item.files = attachedFilesCopy;
                 }
                 alert('✅ Đã cập nhật thành công hồ sơ thanh toán!');
             } else {
@@ -1322,7 +1332,8 @@
                     beneficiary: document.getElementById('pay-beneficiary').value,
                     account: document.getElementById('pay-account').value,
                     qty: qty, pretax: pretax, tax: taxVal, total: (pretax * qty) + taxVal,
-                    status: document.getElementById('pay-status').value, files: [...currentPaymentFiles]
+                    status: document.getElementById('pay-status').value, 
+                    files: attachedFilesCopy
                 });
                 alert('✅ Đã lưu hồ sơ thanh toán mới thành công!');
             }
@@ -1372,7 +1383,7 @@
                     <td class="text-right">${r.pretax.toLocaleString('vi-VN')}</td>
                     <td class="text-right">${r.tax.toLocaleString('vi-VN')}</td>
                     <td class="text-right font-bold">${r.total.toLocaleString('vi-VN')}</td>
-                    <td class="text-center">${r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="previewRecordFile('payment', ${i})">Xem (${r.files.length})</button>` : 'Không'}</td>
+                    <td class="text-center">${r.files && r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="previewRecordFile('payment', ${i})">Xem (${r.files.length})</button>` : 'Không'}</td>
                     <td class="text-center">${r.status}</td>
                     <td class="text-center">
                         <button type="button" class="btn-edit" onclick="editPaymentRecord('${r.id}')"><i class="fa-solid fa-pen"></i> Sửa</button>
@@ -1389,11 +1400,44 @@
             document.getElementById('form-payment-title').innerText = "Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng";
             document.getElementById('btn-payment-text').innerText = "Lưu Hồ Sơ Thanh Toán";
             document.getElementById('btn-payment-submit').className = "btn btn-green";
-            currentPaymentFiles = []; renderThumbnails('payment'); 
+            currentPaymentFiles = []; 
+            document.getElementById('pay-file-uploader').value = '';
+            renderThumbnails('payment'); 
         }
 
-        function saveTelecomRecord(e) {
+        // HÀM UPLOAD FILE ĐỘC LẬP LÊN DRIVE
+        async function uploadFileToDriveFolder(fileObj, folderName) {
+            const payload = {
+                action: "upload_file",
+                fileName: fileObj.name,
+                fileType: fileObj.type,
+                base64Data: fileObj.base64,
+                folderName: folderName
+            };
+
+            try {
+                let response = await fetch(GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify(payload)
+                });
+                let result = await response.json();
+                return result.fileUrl;
+            } catch (err) {
+                console.error("Lỗi upload file lên Drive:", err);
+                return null;
+            }
+        }
+
+        // HÀM LƯU CƯỚC VIỄN THÔNG CÓ ĐẨY FILE LÊN DRIVE THEO FOLDER THÁNG
+        async function saveTelecomRecord(e) {
             e.preventDefault();
+            
+            const btnSubmit = document.getElementById('btn-telecom-submit');
+            const originalBtnText = btnSubmit.innerHTML;
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải file lên Drive...`;
+
             const editId = document.getElementById('telecom-edit-id').value;
             const location = document.getElementById('tel-location').value;
             const provider = document.getElementById('tel-provider').value;
@@ -1403,28 +1447,54 @@
             const period = document.getElementById('tel-period').value;
             
             let sm = document.getElementById('filter-month').value;
+            const driveFolderName = `HoaDon_CuocMang_${period.replace('-', '_')}`;
+
+            let attachedFilesCopy = currentTelecomFiles ? JSON.parse(JSON.stringify(currentTelecomFiles)) : [];
+
+            for (let i = 0; i < attachedFilesCopy.length; i++) {
+                if (!attachedFilesCopy[i].driveUrl) {
+                    let driveUrl = await uploadFileToDriveFolder(attachedFilesCopy[i], driveFolderName);
+                    if (driveUrl) {
+                        attachedFilesCopy[i].driveUrl = driveUrl;
+                    }
+                }
+            }
 
             if (editId) {
                 let item = telecomRecords.find(d => d.id === editId);
                 if (item) {
-                    item.location = location; item.provider = provider; item.package = pkg;
-                    item.cid = cid; item.cost = cost; item.period = period;
-                    if (currentTelecomFiles.length > 0) item.files = [...currentTelecomFiles];
+                    item.location = location; 
+                    item.provider = provider; 
+                    item.package = pkg;
+                    item.cid = cid; 
+                    item.cost = cost; 
+                    item.period = period;
+                    item.files = attachedFilesCopy;
                 }
                 alert('✅ Đã cập nhật thành công chi phí cước!');
             } else {
                 telecomRecords.push({
-                    id: Date.now().toString(), location: location, provider: provider,
-                    package: pkg, cid: cid, cost: cost, period: period,
-                    cert: "Xem (1)", files: [...currentTelecomFiles]
+                    id: Date.now().toString(), 
+                    location: location, 
+                    provider: provider,
+                    package: pkg, 
+                    cid: cid, 
+                    cost: cost, 
+                    period: period,
+                    cert: attachedFilesCopy.length > 0 ? `Xem (${attachedFilesCopy.length})` : "Xem (0)", 
+                    files: attachedFilesCopy
                 });
                 
                 if (period !== sm) {
-                    alert(`✅ Đã lưu thành công chi phí cước cho Kỳ: ${formatPeriodVN(period)}!\n\n💡 Lưu ý: Hệ thống đang lọc xem Tháng báo cáo ${formatPeriodVN(sm)}. Để thấy dòng vừa nhập, bạn hãy đổi "Tháng báo cáo" ở Tab Lương thành ${formatPeriodVN(period)}.`);
+                    alert(`✅ Đã lưu cước cho Kỳ ${formatPeriodVN(period)} và tạo Folder Drive riêng!\n\n💡 Bảng đang xem ${formatPeriodVN(sm)}. Hãy đổi sang ${formatPeriodVN(period)} để xem danh sách.`);
                 } else {
-                    alert('✅ Đã lưu thành công chi phí cước!');
+                    alert('✅ Đã lưu cước và phân loại lưu file lên Google Drive thành công!');
                 }
             }
+            
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = originalBtnText;
+
             localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
             resetTelecomForm(); 
             renderTelecomTable();
@@ -1442,6 +1512,11 @@
             document.getElementById('tel-cost').value = item.cost || 0;
             document.getElementById('tel-period').value = item.period || "2026-06";
 
+            if (item.files && item.files.length > 0) {
+                currentTelecomFiles = JSON.parse(JSON.stringify(item.files));
+                renderThumbnails('telecom');
+            }
+
             document.getElementById('form-telecom-title').innerText = "Chỉnh Sửa Chi Phí Hạ Tầng Mạng";
             document.getElementById('btn-telecom-text').innerText = "Cập Nhật Chi Phí";
             document.getElementById('btn-telecom-submit').className = "btn btn-green";
@@ -1456,13 +1531,11 @@
             }
         }
 
-        // HÀM HIỂN THỊ CƯỚC LỌC THEO THÁNG ĐANG CHỌN
         function renderTelecomTable() {
             let sm = document.getElementById('filter-month').value;
             const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = "";
             let sum = 0;
             
-            // Lọc dữ liệu cước của đúng tháng đang xem
             let activeTelecoms = telecomRecords.filter(r => r.period === sm);
 
             if (activeTelecoms.length === 0) {
@@ -1470,6 +1543,16 @@
             } else {
                 activeTelecoms.forEach((r, i) => {
                     sum += Number(r.cost);
+                    let certDisplay = "Không";
+                    if (r.files && r.files.length > 0) {
+                        let fileUrl = r.files[0].driveUrl;
+                        if (fileUrl) {
+                            certDisplay = `<a href="${fileUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Drive (${r.files.length})</a>`;
+                        } else {
+                            certDisplay = `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})">Xem (${r.files.length})</button>`;
+                        }
+                    }
+
                     tbody.innerHTML += `<tr>
                         <td class="text-center">${i+1}</td>
                         <td class="font-bold">${r.location || 'Tổng công ty Giấy Việt Nam'}</td>
@@ -1478,7 +1561,7 @@
                         <td class="text-center font-bold" style="letter-spacing:0.3px;">${r.cid}</td>
                         <td class="text-right font-bold">${Number(r.cost).toLocaleString('vi-VN')}</td>
                         <td class="text-center font-bold" style="color:var(--orange);">${formatPeriodVN(r.period)}</td>
-                        <td class="text-center">${(r.files && r.files.length > 0) ? `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})">Xem (${r.files.length})</button>` : `<a href="#" class="badge-cert">${r.cert || 'Xem (1)'}</a>`}</td>
+                        <td class="text-center">${certDisplay}</td>
                         <td class="text-center">
                             <button type="button" class="btn-edit" onclick="editTelecomRecord('${r.id}')"><i class="fa-solid fa-pen"></i> Sửa</button>
                             <button type="button" class="btn-delete" onclick="deleteTelecomRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button>
@@ -1493,11 +1576,13 @@
             let sm = document.getElementById('filter-month').value;
             document.getElementById('telecom-edit-id').value = '';
             document.getElementById('telecom-main-form').reset(); 
-            document.getElementById('tel-period').value = sm; // Giữ nguyên kỳ cước đang chọn
+            document.getElementById('tel-period').value = sm; 
             document.getElementById('form-telecom-title').innerText = "Cập Nhật Chi Phí Hạ Tầng Mạng & Hóa Đơn Internet";
-            document.getElementById('btn-telecom-text').innerText = "Lưu Cước Viễn Thông";
+            document.getElementById('btn-telecom-text').innerText = "Lưu Cước Viễn Thông & Tải Lên Drive";
             document.getElementById('btn-telecom-submit').className = "btn btn-orange";
-            currentTelecomFiles = []; renderThumbnails('telecom'); 
+            currentTelecomFiles = []; 
+            document.getElementById('tel-file-uploader').value = '';
+            renderThumbnails('telecom'); 
         }
 
         function autoGenerateAssetID() {
