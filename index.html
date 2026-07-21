@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG - ENTERPRISE PLATFORM</title>
     
-    <!-- Thư viện lõi Engine -->
+    <!-- Thư viện Engine -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -231,7 +231,7 @@
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
         .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
         .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-style: space-around; font-size: 11px; text-align: center; }
         
         .calendar-block-details { padding: 8px; font-size: 11px; line-height: 1.4; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
@@ -319,7 +319,6 @@
                     </div>
                     
                     <div class="config-toolbar-container">
-                        <!-- Khối nhập tham số chính -->
                         <div class="config-inputs-group">
                             <div class="form-group">
                                 <label><i class="fa-regular fa-calendar-days"></i> Tháng báo cáo</label>
@@ -343,7 +342,6 @@
                             </div>
                         </div>
 
-                        <!-- Khối nút bấm thao tác gom chung bên phải -->
                         <div class="config-actions-group">
                             <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()">
                                 <i class="fa-brands fa-google-drive"></i> Mở Sheet
@@ -359,7 +357,6 @@
                 </div>
 
                 <div class="main-card">
-                    <!-- KHUNG THỐNG KÊ LƯƠNG THU GỌN GÀNG TỐI ƯU -->
                     <div class="salary-visual-summary">
                         <div class="visual-mini-card">
                             <span class="visual-lbl"><i class="fa-solid fa-wallet" style="color:var(--blue); margin-right:6px;"></i> TỔNG LƯƠNG CB:</span>
@@ -903,7 +900,7 @@
     </div>
 
     <script>
-        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbzQ0GgUAIwTzKu6BOJN5-9laa8opA7aQqbK0PiI9_ADqyAyPj3HkVPA51QoWU03p5K1/exec";
+        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
         let GOOGLE_DRIVE_FOLDER_URL = localStorage.getItem('sys_cfg_drive_url') || "";
@@ -1280,7 +1277,7 @@
                     r.NT, r.P || 0, r.le_vr || 0,
                     { formula: `ROUND((G${curRow}/22)*H${curRow},0)` },
                     { formula: `ROUND((F${curRow}/22)*(I${curRow}+J${curRow}),0)` },
-                    { formula: `K${curRow}+L${curRow}` },
+                    { formula: `M${curRow}=K${curRow}+L${curRow}` },
                     r.he_so_lcv, r.phu_cap_lcv || 0,
                     { formula: `ROUND((N${curRow}+O${curRow})*$V$3,0)` },
                     { formula: `ROUND((P${curRow}/22)*H${curRow},0)` },
@@ -1579,14 +1576,14 @@
             });
         }
 
-        // CẢI TIẾN: LƯU BẢN GHI CƯỚC MẠNG & TẢI FILE THỰC TẾ LÊN GOOGLE DRIVE
+        // HÀM LƯU BẢNG CƯỚC MẠNG & TỰ ĐỘNG ĐẨY TỆP VÀO DRIVE BẰNG FORM SUBMIT NGẦM (KHÔNG BỊ LỖI CORS)
         async function saveTelecomRecord(e) {
             e.preventDefault();
             
             const btnSubmit = document.getElementById('btn-telecom-submit');
             const originalBtnText = btnSubmit.innerHTML;
             btnSubmit.disabled = true;
-            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải tệp lên Google Drive...`;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải file lên Drive...`;
 
             try {
                 const editId = document.getElementById('telecom-edit-id').value;
@@ -1603,35 +1600,43 @@
 
                 const apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
 
-                // Nếu người dùng chọn file -> Đẩy trực tiếp file lên Google Drive qua POST
+                // Nếu chọn file -> Đẩy qua Form ngầm
                 if (finalFilesList.length > 0 && apiUrl) {
-                    const payload = {
+                    let iframe = document.getElementById('hidden_upload_iframe');
+                    if (!iframe) {
+                        iframe = document.createElement('iframe');
+                        iframe.id = 'hidden_upload_iframe';
+                        iframe.name = 'hidden_upload_iframe';
+                        iframe.style.display = 'none';
+                        document.body.appendChild(iframe);
+                    }
+
+                    let uploadForm = document.createElement('form');
+                    uploadForm.action = apiUrl;
+                    uploadForm.method = 'POST';
+                    uploadForm.target = 'hidden_upload_iframe';
+
+                    let inputData = document.createElement('input');
+                    inputData.type = 'hidden';
+                    inputData.name = 'postData';
+                    inputData.value = JSON.stringify({
                         action: "upload_files",
                         folderName: autoFolderName,
                         files: finalFilesList
-                    };
-
-                    const response = await fetch(apiUrl, {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain" },
-                        body: JSON.stringify(payload)
                     });
+                    uploadForm.appendChild(inputData);
 
-                    const resData = await response.json();
-                    if (resData.status === "success") {
-                        uploadedDriveFolderUrl = resData.folderUrl;
-                        if (resData.files && resData.files.length > 0) {
-                            finalFilesList = finalFilesList.map((f, idx) => ({
-                                ...f,
-                                driveUrl: resData.files[idx] ? resData.files[idx].url : ""
-                            }));
-                        }
-                    }
-                } else if (apiUrl) {
-                    // Nếu không có file -> Tạo/Lấy link thư mục Drive qua JSONP
-                    let driveRes = await createDriveFolderViaJSONP(autoFolderName);
-                    uploadedDriveFolderUrl = (driveRes && driveRes.folderUrl) ? driveRes.folderUrl : "";
+                    document.body.appendChild(uploadForm);
+                    uploadForm.submit();
+                    document.body.removeChild(uploadForm);
+
+                    // Đợi 2.5s để server ghi nhận và khởi tạo file trên Drive
+                    await new Promise(r => setTimeout(r, 2500));
                 }
+
+                // Gọi JSONP lấy link Folder chính xác trên Drive
+                let driveRes = await createDriveFolderViaJSONP(autoFolderName);
+                uploadedDriveFolderUrl = (driveRes && driveRes.folderUrl) ? driveRes.folderUrl : "";
 
                 if (editId) {
                     let item = telecomRecords.find(d => d.id === editId);
@@ -1657,11 +1662,7 @@
                 resetTelecomForm(); 
                 renderTelecomTable();
 
-                if (uploadedDriveFolderUrl) {
-                    alert(`✅ Đã đẩy ${finalFilesList.length} tệp lên Thư mục Google Drive [${autoFolderName}] thành công!`);
-                } else {
-                    alert('✅ Đã lưu dữ liệu cước thành công!');
-                }
+                alert(`✅ Đã lưu dữ liệu và đẩy tệp đính kèm vào thư mục Google Drive [${autoFolderName}] thành công!`);
 
             } catch (error) {
                 alert('⚠️ Có lỗi: ' + error.message);
