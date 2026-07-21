@@ -241,6 +241,9 @@
                         </div>
                         <button type="button" class="btn btn-green" onclick="exportSalaryToExcelComplete()"><i class="fa-solid fa-file-excel"></i> XUẤT EXCEL CHUYÊN NGHIỆP CÓ CHỮ KÝ</button>
                         <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()"><i class="fa-solid fa-cloud-arrow-up"></i> ĐỒNG BỘ MÂY TỰ ĐỘNG SỬA Sheet</button>
+                        
+                        <!-- NÚT MỞ BẢNG LƯƠNG TRÊN GOOGLE DRIVE (SHEET) -->
+                        <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()"><i class="fa-brands fa-google-drive"></i> MỞ BẢNG LƯƠNG GOOGLE SHEETS</button>
                     </div>
                 </div>
 
@@ -735,7 +738,7 @@
                 <input type="text" id="cfg-script-url">
             </div>
             <div class="form-group" style="margin-bottom:15px;">
-                <label>2. Link Google Sheets Xem Trực Tiếp (Tùy chọn):</label>
+                <label>2. Link Google Sheets Xem Bảng Lương Trực Tiếp:</label>
                 <input type="text" id="cfg-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit">
             </div>
             <div style="text-align:right;">
@@ -825,6 +828,15 @@
                 soft: "MISA SME.NET 2023", softLic: "Bản quyền License Key Online / Cloud", note: "Máy sếp"
             }
         ];
+
+        // HÀM MỞ FILE BẢNG LƯƠNG TRÊN GOOGLE SHEETS
+        function openMainSalaryGoogleSheet() {
+            if (GOOGLE_SHEET_VIEW_URL && GOOGLE_SHEET_VIEW_URL.startsWith('http')) {
+                window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
+            } else {
+                alert("⚠️ Bạn chưa cấu hình Link Google Sheet Bảng lương!\n\nHãy bấm nút 'Cấu hình API Web App & Link Sheet' (màu tím góc trên) và dán link Google Sheet Bảng lương vào mục số 2.");
+            }
+        }
 
         function formatCurrencyVN(num) {
             if (num === "" || num === null || undefined === num) return "0";
@@ -1248,7 +1260,7 @@
                 } else if (targetFile.base64) {
                     openLightboxModal(targetFile.base64, targetFile.name);
                 } else {
-                    alert("Tệp này đã được lưu an toàn lên Drive, hãy bấm nút 'Mở Drive'!");
+                    alert("Tệp này đã được lưu an toàn lên Drive!");
                 }
             } else alert("Không có tệp chứng từ đính kèm!");
         }
@@ -1514,7 +1526,7 @@
             }
         }
 
-        // HÀM VẼ BẢNG CƯỚC MẠNG ĐÃ ĐƯỢC ÉP CHUYỂN TẤT CẢ THÀNH NÚT LINK DRIVE SẮC NÉT
+        // HÀM VẼ BẢNG CƯỚC MẠNG - PHÂN ĐỊNH RÕ RÀNG LINK CHỨNG TỪ (KHÔNG MỞ NHẦM BẢNG LƯƠNG)
         function renderTelecomTable() {
             let viewMode = document.getElementById('telecom-view-mode').value;
             const tbody = document.getElementById('tbody-telecom'); 
@@ -1533,17 +1545,19 @@
             } else {
                 activeTelecoms.forEach((r, i) => {
                     sum += Number(r.cost);
-                    let certDisplay = "Không";
+                    let certDisplay = '<span style="color:#94a3b8;">Không</span>';
                     
-                    // TỰ ĐỘNG TẠO LINK DRIVE SẮC NÉT CHO CẢ BẢN GHI CŨ VÀ MỚI
-                    let fileCount = (r.files && r.files.length > 0) ? r.files.length : (r.cert && r.cert.includes('(')) ? r.cert.match(/\d+/)[0] : 0;
+                    // Lấy số lượng file đính kèm
+                    let fileCount = (r.files && r.files.length > 0) ? r.files.length : (r.cert && r.cert.includes('(')) ? (r.cert.match(/\d+/) ? r.cert.match(/\d+/)[0] : 0) : 0;
                     
                     if (fileCount > 0) {
-                        let driveLink = (r.files && r.files[0] && r.files[0].driveUrl) ? r.files[0].driveUrl : GOOGLE_SHEET_VIEW_URL;
-                        if (driveLink && driveLink.startsWith('http')) {
-                            certDisplay = `<a href="${driveLink}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</a>`;
+                        // Lấy Link Drive THẬT SỰ của file chứng từ
+                        let realDriveUrl = (r.files && r.files[0] && r.files[0].driveUrl) ? r.files[0].driveUrl : null;
+
+                        if (realDriveUrl && realDriveUrl.startsWith('http')) {
+                            certDisplay = `<a href="${realDriveUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</a>`;
                         } else {
-                            certDisplay = `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})"><i class="fa-solid fa-eye"></i> Xem (${fileCount})</button>`;
+                            certDisplay = `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})"><i class="fa-solid fa-eye"></i> Xem chứng từ (${fileCount})</button>`;
                         }
                     }
 
@@ -1566,7 +1580,7 @@
             document.getElementById('dash-pending-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
         }
 
-        // TỰ ĐỘNG NHẢY SANG THÁNG TIẾP THEO (TỪ 1 ĐẾN 12)
+        // TỰ ĐỘNG NHẢY KỲ CƯỚC THÔNG MINH TỪ THÁNG 1 ĐẾN THÁNG 12
         function resetTelecomForm() { 
             let curPeriod = document.getElementById('tel-period').value;
             document.getElementById('telecom-edit-id').value = '';
