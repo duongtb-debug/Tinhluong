@@ -422,7 +422,7 @@
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
-                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> <span id="form-telecom-title">Cập Nhật Chi Phí Mạng (Nhập từ Tháng 1 đến Tháng 12)</span></span>
+                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> <span id="form-telecom-title">Cập Nhật Chi Phí Mạng (Tự Động Tạo Folder Drive Theo Tháng)</span></span>
                     </div>
                     <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)">
                         <input type="hidden" id="telecom-edit-id" value="">
@@ -473,7 +473,7 @@
 
                         <div class="btn-group">
                             <button type="submit" id="btn-telecom-submit" class="btn btn-orange">
-                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-telecom-text">Lưu Cước & Tải Lên Drive</span>
+                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-telecom-text">Lưu Cước & Tạo Folder Drive</span>
                             </button>
                             <button type="button" class="btn btn-gray" onclick="resetTelecomForm()"><i class="fa-solid fa-xmark"></i> Hủy</button>
                         </div>
@@ -607,7 +607,6 @@
                                     </div>
                                 </div>
 
-                                <!-- BỔ SUNG LỰA CHỌN PHẦN MỀM CHUYÊN DỤNG TỰ NHẬP LINH HOẠT -->
                                 <div class="grid-form">
                                     <div class="form-group">
                                         <label style="color:var(--purple); font-weight:bold;">PM Nghiệp vụ chuyên dụng</label>
@@ -780,11 +779,11 @@
                 <input type="text" id="cfg-script-url">
             </div>
             <div class="form-group" style="margin-bottom:15px;">
-                <label>2. Link Google Sheets Xem Bảng Lương Trực Tiếp:</label>
+                <label>2. Link Google Sheets Xem BẢNG LƯƠNG Trực Tiếp:</label>
                 <input type="text" id="cfg-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit">
             </div>
             <div class="form-group" style="margin-bottom:15px;">
-                <label>3. Link Thư Mục Google Drive Lưu Chứng Từ Cước Mạng:</label>
+                <label>3. Link Thư Mục Google Drive Lưu Chứng Từ Cước Mạng Mặc Định:</label>
                 <input type="text" id="cfg-drive-url" placeholder="https://drive.google.com/drive/folders/YOUR_FOLDER_ID">
             </div>
             <div style="text-align:right;">
@@ -862,10 +861,7 @@
 
         let paymentRecords = JSON.parse(localStorage.getItem('sys_payment_records')) || [];
         
-        let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_records')) || [
-            { id: "1", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33015571, period: "2026-03", cert: "Xem (1)", files: [{ name: "HoaDon_Thang3.pdf", type: "application/pdf" }] },
-            { id: "2", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 8402864, period: "2026-06", cert: "Xem (1)", files: [{ name: "HoaDon_Thang6.pdf", type: "application/pdf" }] }
-        ];
+        let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_records')) || [];
         
         let itAssetsRecords = JSON.parse(localStorage.getItem('sys_it_records')) || [
             {
@@ -1300,20 +1296,15 @@
         function previewRecordFile(recordType, recordIdx) {
             let records = (recordType === 'payment') ? paymentRecords : telecomRecords;
             let rec = records[recordIdx];
-            
             if (!rec) return;
 
-            if (rec.files && rec.files.length > 0 && rec.files[0].driveUrl) {
-                window.open(rec.files[0].driveUrl, '_blank');
+            if (rec.folderDriveUrl && rec.folderDriveUrl.startsWith('http')) {
+                window.open(rec.folderDriveUrl, '_blank');
                 return;
             }
 
-            if (recordType === 'telecom') {
-                if (GOOGLE_DRIVE_FOLDER_URL && GOOGLE_DRIVE_FOLDER_URL.startsWith('http')) {
-                    window.open(GOOGLE_DRIVE_FOLDER_URL, '_blank');
-                } else {
-                    alert(`📂 Chứng từ cước ${formatPeriodVN(rec.period)} đã lưu an toàn!\n\n💡 Bạn hãy bấm nút 'Cấu hình API Web App & Link Sheet' (góc trên) và dán Link Thư mục Google Drive vào Mục số 3 nhé!`);
-                }
+            if (rec.files && rec.files.length > 0 && rec.files[0].driveUrl) {
+                window.open(rec.files[0].driveUrl, '_blank');
                 return;
             }
 
@@ -1322,7 +1313,7 @@
                 return;
             }
 
-            alert("Không tìm thấy tệp chứng từ đính kèm!");
+            alert("Chưa có link Thư mục Google Drive!");
         }
 
         function openLightboxModal(base64OrUrl, fileName) {
@@ -1489,25 +1480,25 @@
             renderThumbnails('payment'); 
         }
 
-        async function uploadFileToDriveFolder(fileObj, folderName) {
+        // HÀM UPLOAD TỆP TỰ ĐỘNG TẠO FOLDER GOOGLE DRIVE
+        async function uploadFileAndCreateDriveFolder(fileObj, folderName) {
             const payload = {
                 action: "upload_file",
-                fileName: fileObj.name,
-                fileType: fileObj.type,
-                base64Data: fileObj.base64,
+                fileName: fileObj ? fileObj.name : "",
+                fileType: fileObj ? fileObj.type : "",
+                base64Data: fileObj ? fileObj.base64 : "",
                 folderName: folderName
             };
 
             try {
                 let response = await fetch(GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API, {
                     method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify(payload)
                 });
-                let textData = await response.text();
-                let result = JSON.parse(textData);
-                return result.fileUrl || null;
+                let result = await response.json();
+                return result;
             } catch (err) {
+                console.error("Lỗi khi kết nối Google Script API:", err);
                 return null;
             }
         }
@@ -1518,7 +1509,7 @@
             const btnSubmit = document.getElementById('btn-telecom-submit');
             const originalBtnText = btnSubmit.innerHTML;
             btnSubmit.disabled = true;
-            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải lên Drive...`;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang khởi tạo Folder Drive...`;
 
             try {
                 const editId = document.getElementById('telecom-edit-id').value;
@@ -1527,44 +1518,42 @@
                 const pkg = document.getElementById('tel-package').value;
                 const cid = document.getElementById('tel-cid').value;
                 const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
-                let period = document.getElementById('tel-period').value;
-                
-                if (!period || !period.includes("-")) {
-                    period = "2026-01";
-                }
+                let period = document.getElementById('tel-period').value || "2026-01";
 
-                const driveFolderName = `HoaDon_CuocMang_${period.replace('-', '_')}`;
-                let attachedFilesCopy = currentTelecomFiles ? JSON.parse(JSON.stringify(currentTelecomFiles)) : [];
+                const autoFolderName = `CuocMang_Thang_${period.replace('-', '_')}`;
+                let uploadedDriveFolderUrl = "";
+                let uploadedFiles = [];
 
-                for (let i = 0; i < attachedFilesCopy.length; i++) {
-                    if (!attachedFilesCopy[i].driveUrl) {
-                        let driveUrl = await uploadFileToDriveFolder(attachedFilesCopy[i], driveFolderName);
-                        if (driveUrl) attachedFilesCopy[i].driveUrl = driveUrl;
+                if (currentTelecomFiles && currentTelecomFiles.length > 0) {
+                    for (let i = 0; i < currentTelecomFiles.length; i++) {
+                        let res = await uploadFileAndCreateDriveFolder(currentTelecomFiles[i], autoFolderName);
+                        if (res && res.status === "success") {
+                            if (res.fileUrl) uploadedFiles.push({ name: currentTelecomFiles[i].name, driveUrl: res.fileUrl });
+                            if (res.folderUrl) uploadedDriveFolderUrl = res.folderUrl;
+                        }
+                    }
+                } else {
+                    let dummyRes = await uploadFileAndCreateDriveFolder(null, autoFolderName);
+                    if (dummyRes && dummyRes.folderUrl) {
+                        uploadedDriveFolderUrl = dummyRes.folderUrl;
                     }
                 }
-
-                let lightFilesArray = attachedFilesCopy.map(file => {
-                    return {
-                        name: file.name,
-                        type: file.type,
-                        driveUrl: file.driveUrl || GOOGLE_DRIVE_FOLDER_URL
-                    };
-                });
 
                 if (editId) {
                     let item = telecomRecords.find(d => d.id === editId);
                     if (item) {
                         item.location = location; item.provider = provider; item.package = pkg;
                         item.cid = cid; item.cost = cost; item.period = period;
-                        item.files = lightFilesArray;
+                        if (uploadedDriveFolderUrl) item.folderDriveUrl = uploadedDriveFolderUrl;
+                        if (uploadedFiles.length > 0) item.files = uploadedFiles;
                     }
                 } else {
                     telecomRecords.push({
                         id: Date.now().toString(),
                         location: location, provider: provider, package: pkg,
                         cid: cid, cost: cost, period: period,
-                        cert: lightFilesArray.length > 0 ? `Xem (${lightFilesArray.length})` : "Xem (0)",
-                        files: lightFilesArray
+                        folderDriveUrl: uploadedDriveFolderUrl,
+                        files: uploadedFiles
                     });
                 }
 
@@ -1574,7 +1563,7 @@
                 resetTelecomForm(); 
                 renderTelecomTable();
 
-                alert(`✅ Đã tải tệp lên Drive và lưu cước ${formatPeriodVN(period)} thành công!`);
+                alert(`✅ Đã tạo/kiểm tra Thư mục Google Drive [${autoFolderName}] và lưu dữ liệu thành công!`);
 
             } catch (error) {
                 alert('⚠️ Có lỗi: ' + error.message);
@@ -1602,18 +1591,13 @@
             } else {
                 activeTelecoms.forEach((r, i) => {
                     sum += Number(r.cost);
-                    let certDisplay = '<span style="color:#94a3b8;">Không</span>';
+                    let certDisplay = '<span style="color:#94a3b8;">Chưa tạo Link</span>';
                     
-                    let fileCount = (r.files && r.files.length > 0) ? r.files.length : (r.cert && r.cert.includes('(')) ? (r.cert.match(/\d+/) ? r.cert.match(/\d+/)[0] : 0) : 0;
-                    
-                    if (fileCount > 0) {
-                        let realDriveUrl = (r.files && r.files[0] && r.files[0].driveUrl) ? r.files[0].driveUrl : null;
-
-                        if (realDriveUrl && realDriveUrl.startsWith('http')) {
-                            certDisplay = `<a href="${realDriveUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</a>`;
-                        } else {
-                            certDisplay = `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</button>`;
-                        }
+                    if (r.folderDriveUrl && r.folderDriveUrl.startsWith('http')) {
+                        let fileCount = r.files ? r.files.length : 0;
+                        certDisplay = `<a href="${r.folderDriveUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder Drive (${fileCount})</a>`;
+                    } else if (r.files && r.files.length > 0 && r.files[0].driveUrl) {
+                        certDisplay = `<a href="${r.files[0].driveUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Xem File Drive</a>`;
                     }
 
                     tbody.innerHTML += `<tr>
@@ -1652,10 +1636,10 @@
             }
 
             let telTitle = document.getElementById('form-telecom-title');
-            if (telTitle) telTitle.innerText = "Cập Nhật Chi Phí Mạng (Nhập từ Tháng 1 đến Tháng 12)";
+            if (telTitle) telTitle.innerText = "Cập Nhật Chi Phí Mạng (Tự Động Tạo Folder Drive Theo Tháng)";
             
             let btnText = document.getElementById('btn-telecom-text');
-            if (btnText) btnText.innerText = "Lưu Cước & Tải Lên Drive";
+            if (btnText) btnText.innerText = "Lưu Cước & Tạo Folder Drive";
             
             document.getElementById('btn-telecom-submit').className = "btn btn-orange";
             currentTelecomFiles = []; 
@@ -1704,7 +1688,6 @@
             document.getElementById('it-serial-id').value = `IT-${codePrefix}-2026-${Math.floor(100 + Math.random() * 900)}`;
         }
 
-        // HÀM ẨN HIỆN Ô TỰ NHẬP PHẦN MỀM NGOÀI DANH SÁCH
         function toggleCustomSoftInputs() {
             let softSel = document.getElementById('it-soft').value;
             let softCustomInp = document.getElementById('it-soft-custom');
@@ -1715,7 +1698,6 @@
             licCustomInp.style.display = (licSel === 'CUSTOM_LIC') ? 'block' : 'none';
         }
 
-        // LẤY GIÁ TRỊ TÊN VÀ BẢN QUYỀN PHẦN MỀM CHÍNH XÁC
         function getSelectedSoftValues() {
             let softSel = document.getElementById('it-soft').value;
             let softVal = (softSel === 'CUSTOM') ? (document.getElementById('it-soft-custom').value.trim() || "Phần mềm chuyên dụng") : softSel;
@@ -1726,7 +1708,6 @@
             return { softVal, licVal };
         }
 
-        // HÀM VẼ QR LIVE CỰC KỲ CHUYÊN NGHIỆP VÀ CHUẨN XÁC
         function updateRealtimeQR() {
             let serialId = document.getElementById('it-serial-id').value || "N/A";
             let user = document.getElementById('it-user').value.trim() || "Chưa nhập";
@@ -1830,7 +1811,6 @@ Trạng thái: ${status}`;
             document.getElementById('it-office').value = item.office || "Microsoft Office 2010 Pro";
             document.getElementById('it-office-lic').value = item.officeLic || "Bản quyền Key Vĩnh Viễn";
             
-            // Xử lý nạp dữ liệu phần mềm tự chọn khi Sửa
             const softOptions = Array.from(document.getElementById('it-soft').options).map(o => o.value);
             if (softOptions.includes(item.soft)) {
                 document.getElementById('it-soft').value = item.soft;
