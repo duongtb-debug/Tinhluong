@@ -75,7 +75,6 @@
         .main-card { background: white; border-radius: 4px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #cbd5e1; }
         .card-title { font-size: 13px; font-weight: bold; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--blue); padding-left: 8px; display: flex; justify-content: space-between; align-items: center; }
         
-        /* Form 6 ô nằm ngang tự co giãn chuẩn như hình */
         .grid-form-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 12px; }
         .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
         
@@ -111,11 +110,13 @@
         .text-center { text-align: center; }
         .font-bold { font-weight: bold; }
         
-        /* Input trực tiếp trên Bảng Lương (Cho phép nhập liệu tự do) */
         .inp-table { width: 100%; min-width: 45px; padding: 3px 4px; border: 1px solid #cbd5e1; border-radius: 3px; font-family: 'Times New Roman'; font-size: 11px; outline: none; background: #fffde7; }
         .inp-table:focus { border-color: var(--blue); background: #ffffff; box-shadow: 0 0 2px rgba(37,99,235,0.4); }
         .inp-table.num { text-align: right; }
         .inp-table.center { text-align: center; }
+
+        /* Khung Preview QR Code Realtime cho CNTT */
+        .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 10px; border-radius: 6px; height: 100%; min-height: 180px; }
 
         /* LỊCH BLOCK VẠN NIÊN */
         .calendar-sidebar { background: white; border-radius: 4px; border: 1px solid #cbd5e1; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
@@ -126,7 +127,6 @@
         .calendar-block-details { padding: 10px; font-size: 11px; line-height: 1.5; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
 
-        /* MODAL PREVIEW FILE */
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
         .preview-viewport-box { width: 100%; height: 480px; margin-top: 10px; border: 1px solid #cbd5e1; border-radius: 4px; background: #0f172a; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -187,7 +187,7 @@
                 <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')"><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</button>
             </div>
 
-            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ (NHẬP LIỆU TỰ DO) -->
+            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
@@ -274,9 +274,11 @@
             <!-- TAB 2: HỒ SƠ THANH TOÁN VĂN PHÒNG -->
             <div id="tab-payment" class="tab-content">
                 <div class="main-card" style="border-left: 4px solid var(--green);">
-                    <div class="card-title" style="color:var(--green);"><span><i class="fa-solid fa-file-invoice-dollar"></i> Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng</span></div>
+                    <div class="card-title" style="color:var(--green);">
+                        <span><i class="fa-solid fa-file-invoice-dollar"></i> <span id="form-payment-title">Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng</span></span>
+                    </div>
                     <form id="payment-main-form" onsubmit="savePaymentRecord(event)">
-                        <input type="hidden" id="payment-edit-index" value="-1">
+                        <input type="hidden" id="payment-edit-id" value="">
                         <div class="grid-form">
                             <div class="form-group"><label>Nội dung thanh toán</label><input type="text" id="pay-content" required placeholder="Mua văn phòng phẩm, sửa điều hòa..."></div>
                             <div class="form-group"><label>Đơn vị thụ hưởng</label><input type="text" id="pay-beneficiary" required placeholder="Tên nhà cung cấp..."></div>
@@ -300,7 +302,7 @@
                             <div class="form-group"><label>Tổng cộng thanh toán</label><input type="text" id="pay-total" readonly style="background:#fef08a; font-weight:bold; color: var(--blue);"></div>
                             <div class="form-group"><label>Trạng thái duyệt</label><select id="pay-status"><option value="Chưa duyệt">Chưa duyệt</option><option value="Đã duyệt chi">Đã duyệt chi</option></select></div>
                         </div>
-                        <div class="form-group" style="margin-bottom: 15px;">
+                        <div class="form-group" style="margin-bottom: 12px;">
                             <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ</label>
                             <div class="compact-uploader-box">
                                 <input type="file" id="pay-file-uploader" multiple accept="image/*,application/pdf" onchange="processAttachedFilesMulti(this, 'payment')">
@@ -308,7 +310,12 @@
                             </div>
                             <div class="preview-thumbnails-container" id="payment-thumbnails-zone" style="display: none;"></div>
                         </div>
-                        <div style="display: flex; gap: 8px;"><button type="submit" class="btn btn-green">💾 Lưu Hồ Sơ Thanh Toán</button><button type="button" class="btn btn-gray" onclick="resetPaymentForm()">Hủy</button></div>
+                        <div class="btn-group">
+                            <button type="submit" id="btn-payment-submit" class="btn btn-green">
+                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-payment-text">Lưu Hồ Sơ Thanh Toán</span>
+                            </button>
+                            <button type="button" class="btn btn-gray" onclick="resetPaymentForm()"><i class="fa-solid fa-xmark"></i> Hủy</button>
+                        </div>
                     </form>
                 </div>
                 <div class="main-card">
@@ -317,7 +324,7 @@
                         <table class="main-table">
                             <thead>
                                 <tr style="background:#e2e8f0;">
-                                    <th class="text-center">STT</th>
+                                    <th class="text-center" style="width: 40px;">STT</th>
                                     <th>Nội dung thanh toán</th>
                                     <th>Đơn vị thụ hưởng</th>
                                     <th>Tài khoản / Ngân hàng</th>
@@ -327,7 +334,7 @@
                                     <th class="text-right">Tổng chi</th>
                                     <th class="text-center">Chứng từ</th>
                                     <th class="text-center">Trạng thái</th>
-                                    <th class="text-center">Hành động</th>
+                                    <th class="text-center" style="width: 110px;">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-payment"></tbody>
@@ -336,7 +343,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG (MẪU CHUẨN XÁC NGUYÊN BẢN VÀ NÚT SỬA THÔNG MINH) -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG (HIỂN THỊ KỲ CƯỚC THÁNG/NĂM CHUẨN VIỆT NAM) -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
@@ -345,7 +352,6 @@
                     <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)">
                         <input type="hidden" id="telecom-edit-id" value="">
                         
-                        <!-- Form 6 ô nằm ngang chuẩn nguyên bản theo hình của bạn -->
                         <div class="grid-form-6">
                             <div class="form-group">
                                 <label>Tên điểm kết nối / Văn phòng</label>
@@ -420,106 +426,122 @@
                 </div>
             </div>
 
-            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT -->
+            <!-- TAB 4: THỐNG KÊ THIẾT BỊ CNTT (MÃ QR TẠO THEO THỜI GIAN THỰC) -->
             <div id="tab-it-assets" class="tab-content">
                 <div class="main-card" style="border-left: 4px solid var(--purple);">
-                    <div class="card-title" style="color:var(--purple);"><span><i class="fa-solid fa-laptop-code"></i> Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin</span></div>
+                    <div class="card-title" style="color:var(--purple);">
+                        <span><i class="fa-solid fa-laptop-code"></i> <span id="form-it-title">Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin</span></span>
+                    </div>
                     <form id="it-main-form" onsubmit="saveITRecord(event)">
-                        <input type="hidden" id="it-edit-index" value="-1">
-                        <div class="grid-form">
-                            <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required placeholder="Họ và tên..."></div>
-                            <div class="form-group"><label>Phòng ban/Bộ phận</label><input type="text" id="it-dept" required placeholder="Phòng ban..."></div>
-                            <div class="form-group">
-                                <label>Loại thiết bị phần cứng</label>
-                                <select id="it-device-type" onchange="autoGenerateAssetID()">
-                                    <option value="Laptop" selected>Laptop Doanh Nghiệp</option>
-                                    <option value="PC">Máy tính bàn Workstation</option>
-                                    <option value="PRN">Máy in văn phòng</option>
-                                    <option value="SRV">Máy chủ trung tâm Server</option>
-                                </select>
+                        <input type="hidden" id="it-edit-id" value="">
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 200px; gap: 15px; align-items: start;">
+                            <div>
+                                <div class="grid-form">
+                                    <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required placeholder="Họ và tên..." oninput="updateRealtimeQR()"></div>
+                                    <div class="form-group"><label>Phòng ban/Bộ phận</label><input type="text" id="it-dept" required placeholder="Phòng ban..." oninput="updateRealtimeQR()"></div>
+                                    <div class="form-group">
+                                        <label>Loại thiết bị phần cứng</label>
+                                        <select id="it-device-type" onchange="autoGenerateAssetID(); updateRealtimeQR();">
+                                            <option value="Laptop" selected>Laptop Doanh Nghiệp</option>
+                                            <option value="PC">Máy tính bàn Workstation</option>
+                                            <option value="PRN">Máy in văn phòng</option>
+                                            <option value="SRV">Máy chủ trung tâm Server</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="color:var(--purple); font-weight:bold;">Mã định danh (Auto)</label>
+                                        <input type="text" id="it-serial-id" readonly style="background:#f1f5f9; font-weight:bold; color:var(--purple);">
+                                    </div>
+                                </div>
+                                <div class="grid-form">
+                                    <div class="form-group" style="grid-column: span 2;"><label>Mô tả thông số cấu hình chi tiết</label><input type="text" id="it-config" required placeholder="Dell Latitude, Core i5, 16GB RAM, 512GB SSD..." oninput="updateRealtimeQR()"></div>
+                                    <div class="form-group"><label>Ngày cấp phát bàn giao</label><input type="date" id="it-date" value="2026-07-21" onchange="updateRealtimeQR()"></div>
+                                    <div class="form-group"><label>Trạng thái thiết bị</label><select id="it-status" onchange="updateRealtimeQR()"><option value="Tốt - Đang sử dụng">Tốt - Đang sử dụng</option><option value="Ổn định">Ổn định</option><option value="Hoạt động 24/7">Hoạt động 24/7</option></select></div>
+                                </div>
+
+                                <div class="grid-form">
+                                    <div class="form-group">
+                                        <label>Hệ điều hành (OS)</label>
+                                        <select id="it-os" onchange="updateRealtimeQR()">
+                                            <option value="[Chưa bản quyền] Dùng thử / Unactivated" selected>[Chưa bản quyền] Dùng thử / Unactivated</option>
+                                            <option value="Windows 11 Pro">Windows 11 Pro</option>
+                                            <option value="Windows 10 Pro">Windows 10 Pro</option>
+                                            <option value="Windows 8.1 Pro">Windows 8.1 Pro</option>
+                                            <option value="Windows 7 Professional">Windows 7 Professional</option>
+                                            <option value="Windows Server 2022 Datacenter">Windows Server 2022 Datacenter</option>
+                                            <option value="Ubuntu Linux / CentOS">Ubuntu Linux / CentOS</option>
+                                            <option value="macOS Sequoia / Sonoma">macOS Sequoia / Sonoma</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Bản quyền OS</label>
+                                        <select id="it-os-lic" onchange="updateRealtimeQR()">
+                                            <option value="Chưa bản quyền / Crack" selected>Chưa bản quyền / Crack</option>
+                                            <option value="Bản quyền OEM (Theo máy)">Bản quyền OEM (Theo máy)</option>
+                                            <option value="Bản quyền Volume Licensing (KMS)">Bản quyền Volume Licensing (KMS)</option>
+                                            <option value="Bản quyền Digital Retail">Bản quyền Digital Retail</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Bộ Office văn phòng</label>
+                                        <select id="it-office" onchange="updateRealtimeQR()">
+                                            <option value="[Chưa bản quyền] Unactivated / Dùng thử" selected>[Chưa bản quyền] Unactivated / Dùng thử</option>
+                                            <option value="Microsoft Office 2021 LTSC">Microsoft Office 2021 LTSC</option>
+                                            <option value="Microsoft Office 2019 Pro">Microsoft Office 2019 Pro</option>
+                                            <option value="Microsoft Office 2016 Pro">Microsoft Office 2016 Pro</option>
+                                            <option value="Microsoft Office 2013 Pro">Microsoft Office 2013 Pro</option>
+                                            <option value="Microsoft 365 Enterprise">Microsoft 365 Enterprise</option>
+                                            <option value="WPS Office Free / Premium">WPS Office Free / Premium</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Bản quyền Office</label>
+                                        <select id="it-office-lic" onchange="updateRealtimeQR()">
+                                            <option value="Chưa bản quyền / Crack" selected>Chưa bản quyền / Crack</option>
+                                            <option value="Bản quyền Microsoft 365 Cloud">Bản quyền Microsoft 365 Cloud</option>
+                                            <option value="Bản quyền Key Vĩnh Viễn">Bản quyền Key Vĩnh Viễn</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid-form">
+                                    <div class="form-group">
+                                        <label>PM Nghiệp vụ (ASIA, Quasoft, MISA...)</label>
+                                        <select id="it-soft" onchange="updateRealtimeQR()">
+                                            <option value="[Chưa bản quyền] Dùng thử / Miễn phí" selected>[Chưa bản quyền] Dùng thử / Miễn phí</option>
+                                            <option value="MISA SME.NET 2023">MISA SME.NET 2023</option>
+                                            <option value="MISA AMIS Enterprise Cloud">MISA AMIS Enterprise Cloud</option>
+                                            <option value="ASIA Enterprise ERP">ASIA Enterprise ERP</option>
+                                            <option value="Quasoft ERP System">Quasoft ERP System</option>
+                                            <option value="FAST Accounting 11.0">FAST Accounting 11.0</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Bản quyền PM Nghiệp vụ</label>
+                                        <select id="it-soft-lic" onchange="updateRealtimeQR()">
+                                            <option value="Chưa bản quyền / Bản Dùng thử" selected>Chưa bản quyền / Bản Dùng thử</option>
+                                            <option value="Bản quyền Dongle USB (Khóa cứng)">Bản quyền Dongle USB (Khóa cứng)</option>
+                                            <option value="Bản quyền License Key Online / Cloud">Bản quyền License Key Online / Cloud</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="grid-column: span 2;"><label>Ghi chú kiểm kê</label><input type="text" id="it-note" placeholder="Ghi chú thêm..." oninput="updateRealtimeQR()"></div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label style="color:var(--purple); font-weight:bold;">Mã định danh (Auto)</label>
-                                <input type="text" id="it-serial-id" readonly style="background:#f1f5f9; font-weight:bold; color:var(--purple);">
+
+                            <!-- KHUNG TẠO MÃ QR THỜI GIAN THỰC -->
+                            <div class="realtime-qr-box">
+                                <label style="font-weight:bold; color:var(--purple); font-size:11px; margin-bottom:6px;"><i class="fa-solid fa-qrcode"></i> QR Preview Live</label>
+                                <div id="realtime-qr-target" style="padding:6px; background:white; border:1px solid var(--border-color); border-radius:4px;"></div>
+                                <span style="font-size:10px; color:#64748b; margin-top:6px; text-align:center;">Tự động vẽ QR theo thời gian thực</span>
                             </div>
-                        </div>
-                        <div class="grid-form">
-                            <div class="form-group" style="grid-column: span 2;"><label>Mô tả thông số cấu hình chi tiết</label><input type="text" id="it-config" required placeholder="Dell Latitude, Core i5, 16GB RAM, 512GB SSD..."></div>
-                            <div class="form-group"><label>Ngày cấp phát bàn giao</label><input type="date" id="it-date" value="2026-07-21"></div>
-                            <div class="form-group"><label>Trạng thái thiết bị</label><select id="it-status"><option value="Tốt - Đang sử dụng">Tốt - Đang sử dụng</option><option value="Ổn định">Ổn định</option><option value="Hoạt động 24/7">Hoạt động 24/7</option></select></div>
                         </div>
 
-                        <div class="grid-form">
-                            <div class="form-group">
-                                <label>Hệ điều hành (OS)</label>
-                                <select id="it-os">
-                                    <option value="[Chưa bản quyền] Dùng thử / Unactivated" selected>[Chưa bản quyền] Dùng thử / Unactivated</option>
-                                    <option value="Windows 11 Pro">Windows 11 Pro</option>
-                                    <option value="Windows 10 Pro">Windows 10 Pro</option>
-                                    <option value="Windows 8.1 Pro">Windows 8.1 Pro</option>
-                                    <option value="Windows 7 Professional">Windows 7 Professional</option>
-                                    <option value="Windows Server 2022 Datacenter">Windows Server 2022 Datacenter</option>
-                                    <option value="Ubuntu Linux / CentOS">Ubuntu Linux / CentOS</option>
-                                    <option value="macOS Sequoia / Sonoma">macOS Sequoia / Sonoma</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Bản quyền OS</label>
-                                <select id="it-os-lic">
-                                    <option value="Chưa bản quyền / Crack" selected>Chưa bản quyền / Crack</option>
-                                    <option value="Bản quyền OEM (Theo máy)">Bản quyền OEM (Theo máy)</option>
-                                    <option value="Bản quyền Volume Licensing (KMS)">Bản quyền Volume Licensing (KMS)</option>
-                                    <option value="Bản quyền Digital Retail">Bản quyền Digital Retail</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Bộ Office văn phòng</label>
-                                <select id="it-office">
-                                    <option value="[Chưa bản quyền] Unactivated / Dùng thử" selected>[Chưa bản quyền] Unactivated / Dùng thử</option>
-                                    <option value="Microsoft Office 2021 LTSC">Microsoft Office 2021 LTSC</option>
-                                    <option value="Microsoft Office 2019 Pro">Microsoft Office 2019 Pro</option>
-                                    <option value="Microsoft Office 2016 Pro">Microsoft Office 2016 Pro</option>
-                                    <option value="Microsoft Office 2013 Pro">Microsoft Office 2013 Pro</option>
-                                    <option value="Microsoft 365 Enterprise">Microsoft 365 Enterprise</option>
-                                    <option value="WPS Office Free / Premium">WPS Office Free / Premium</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Bản quyền Office</label>
-                                <select id="it-office-lic">
-                                    <option value="Chưa bản quyền / Crack" selected>Chưa bản quyền / Crack</option>
-                                    <option value="Bản quyền Microsoft 365 Cloud">Bản quyền Microsoft 365 Cloud</option>
-                                    <option value="Bản quyền Key Vĩnh Viễn">Bản quyền Key Vĩnh Viễn</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid-form">
-                            <div class="form-group">
-                                <label>PM Nghiệp vụ (ASIA, Quasoft, MISA...)</label>
-                                <select id="it-soft">
-                                    <option value="[Chưa bản quyền] Dùng thử / Miễn phí" selected>[Chưa bản quyền] Dùng thử / Miễn phí</option>
-                                    <option value="MISA SME.NET 2023">MISA SME.NET 2023</option>
-                                    <option value="MISA AMIS Enterprise Cloud">MISA AMIS Enterprise Cloud</option>
-                                    <option value="ASIA Enterprise ERP">ASIA Enterprise ERP</option>
-                                    <option value="Quasoft ERP System">Quasoft ERP System</option>
-                                    <option value="FAST Accounting 11.0">FAST Accounting 11.0</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Bản quyền PM Nghiệp vụ</label>
-                                <select id="it-soft-lic">
-                                    <option value="Chưa bản quyền / Bản Dùng thử" selected>Chưa bản quyền / Bản Dùng thử</option>
-                                    <option value="Bản quyền Dongle USB (Khóa cứng)">Bản quyền Dongle USB (Khóa cứng)</option>
-                                    <option value="Bản quyền License Key Online / Cloud">Bản quyền License Key Online / Cloud</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="grid-column: span 2;"><label>Ghi chú kiểm kê</label><input type="text" id="it-note" placeholder="Ghi chú thêm..."></div>
-                        </div>
-
-                        <div style="display: flex; gap: 8px;">
-                            <button type="submit" class="btn btn-purple">💾 Lưu Tài Sản Thiết Bị & Tạo QR</button>
-                            <button type="button" class="btn btn-gray" onclick="resetITForm()">Hủy</button>
+                        <div class="btn-group">
+                            <button type="submit" id="btn-it-submit" class="btn btn-purple">
+                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-it-text">Lưu Tài Sản Thiết Bị & Tạo QR</span>
+                            </button>
+                            <button type="button" class="btn btn-gray" onclick="resetITForm()"><i class="fa-solid fa-xmark"></i> Hủy</button>
                         </div>
                     </form>
                 </div>
@@ -530,7 +552,7 @@
                         <table class="main-table" id="main-it-table">
                             <thead>
                                 <tr style="background:#e2e8f0;">
-                                    <th class="text-center">STT</th>
+                                    <th class="text-center" style="width: 40px;">STT</th>
                                     <th>Mã tài sản</th>
                                     <th>Loại</th>
                                     <th>Cấu hình phần cứng</th>
@@ -541,7 +563,7 @@
                                     <th>PM Nghiệp vụ (MISA/ASIA/Quasoft)</th>
                                     <th>Trạng thái</th>
                                     <th class="text-center">QR Code</th>
-                                    <th class="text-center">Hành động</th>
+                                    <th class="text-center" style="width: 110px;">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-it-assets"></tbody>
@@ -580,7 +602,7 @@
         </div>
     </div>
 
-    <!-- MODAL SỬA NHÂN VIÊN (BẢNG LƯƠNG) -->
+    <!-- MODAL SỬA NHÂN VIÊN BẢNG LƯƠNG -->
     <div id="staffEditModal" class="modal" onclick="closeStaffModal()">
         <div class="modal-content" onclick="event.stopPropagation()" style="max-width:600px;">
             <div class="card-title" style="border-left-color: var(--blue);">CẬP NHẬT THÔNG TIN NHÂN VIÊN BẢNG LƯƠNG</div>
@@ -669,6 +691,7 @@
         let currentPaymentFiles = []; 
         let currentTelecomFiles = []; 
         let currentActiveBlobUrl = null;
+        let realtimeQrInstance = null;
 
         let salaryConfigsByMonth = { "2026-06": { vung: 4140000, base: 2650000, lcv: 1991139 } };
         let salaryDataByMonth = JSON.parse(localStorage.getItem('sys_salary_by_month')) || {};
@@ -698,13 +721,23 @@
         ];
         let itAssetsRecords = JSON.parse(localStorage.getItem('sys_it_records')) || [
             {
-                serialId: "IT-LAP-2026-101", user: "Nguyễn Minh Ngọc", dept: "Ban Giám Đốc", type: "Laptop",
+                id: "1", serialId: "IT-LAP-2026-101", user: "Nguyễn Minh Ngọc", dept: "Ban Giám Đốc", type: "Laptop",
                 config: "Dell Latitude 5420, Core i5, 16GB RAM, 512GB SSD", date: "2026-01-15", status: "Tốt - Đang sử dụng",
                 os: "[Chưa bản quyền] Dùng thử / Unactivated", osLic: "Chưa bản quyền / Crack",
                 office: "Microsoft Office 2021 LTSC", officeLic: "Bản quyền Key Vĩnh Viễn",
                 soft: "MISA SME.NET 2023", softLic: "Bản quyền License Key Online / Cloud", note: "Máy sếp"
             }
         ];
+
+        // HÀM CHUYỂN ĐỔI ĐỊNH DẠNG THÁNG/NĂM CHUẨN VIỆT NAM (2026-06 -> 06/2026)
+        function formatPeriodVN(periodStr) {
+            if (!periodStr) return "N/A";
+            if (periodStr.includes("-")) {
+                let parts = periodStr.split("-");
+                if (parts.length === 2) return `${parts[1]}/${parts[0]}`;
+            }
+            return periodStr;
+        }
 
         function switchMainTab(name) { 
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
@@ -732,7 +765,7 @@
             calculateSalaryLogic();
         }
 
-        // CALCULATE SALARY & RENDER FREE-EDIT INPUTS IN TABLE
+        // BẢNG LƯƠNG NHÂN VIÊN
         function calculateSalaryLogic() {
             let sm = document.getElementById('filter-month').value;
             let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
@@ -794,7 +827,7 @@
                     <td><input class="inp-table" type="text" value="${row.note || ''}" onchange="updateSalaryDataCell(${index}, 'note', this.value)"></td>
                     <td class="text-center">
                         <button type="button" class="btn-edit" onclick="openStaffEditModal(${index})"><i class="fa-solid fa-pen"></i> Sửa</button>
-                        <button type="button" class="btn-delete" onclick="deleteStaffRow(${index})"><i class="fa-solid fa-trash"></i></button>
+                        <button type="button" class="btn-delete" onclick="deleteStaffRow(${index})"><i class="fa-solid fa-trash"></i> Xóa</button>
                     </td>
                 </tr>`;
             });
@@ -868,7 +901,6 @@
             }
         }
 
-        // XUẤT BẢNG LƯƠNG EXCEL CHUYÊN NGHIỆP CÓ CHỮ KÝ
         function exportSalaryToExcelComplete() {
             let sm = document.getElementById('filter-month').value;
             let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
@@ -991,7 +1023,7 @@
             });
         }
 
-        // TẢI FILE CHỨNG TỪ & PREVIEW THUMBNAILS
+        // PREVIEW THUMBNAILS
         function processAttachedFilesMulti(inputEl, type) {
             let files = inputEl.files; if (!files.length) return;
             let targetArr = (type === 'payment') ? currentPaymentFiles : currentTelecomFiles;
@@ -1080,20 +1112,68 @@
             document.getElementById('pay-total').value = (totalPre + taxVal).toLocaleString() + " VND";
         }
 
+        // ================= CHỨC NĂNG BẢNG HỒ SƠ THANH TOÁN =================
         function savePaymentRecord(e) {
             e.preventDefault();
+            const editId = document.getElementById('payment-edit-id').value;
             let pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
             let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
             let rate = document.getElementById('pay-tax-toggle').checked ? (parseFloat(document.getElementById('pay-tax-rate').value) || 0) : 0;
             let taxVal = Math.round((pretax * qty) * (rate / 100));
 
-            paymentRecords.push({
-                content: document.getElementById('pay-content').value, beneficiary: document.getElementById('pay-beneficiary').value,
-                account: document.getElementById('pay-account').value, qty: qty, pretax: pretax, tax: taxVal, total: (pretax * qty) + taxVal,
-                status: document.getElementById('pay-status').value, files: [...currentPaymentFiles]
-            });
+            if (editId) {
+                let item = paymentRecords.find(d => d.id === editId);
+                if (item) {
+                    item.content = document.getElementById('pay-content').value;
+                    item.beneficiary = document.getElementById('pay-beneficiary').value;
+                    item.account = document.getElementById('pay-account').value;
+                    item.qty = qty; item.pretax = pretax; item.tax = taxVal;
+                    item.total = (pretax * qty) + taxVal;
+                    item.status = document.getElementById('pay-status').value;
+                    if (currentPaymentFiles.length > 0) item.files = [...currentPaymentFiles];
+                }
+                alert('✅ Đã cập nhật thành công hồ sơ thanh toán!');
+            } else {
+                paymentRecords.push({
+                    id: Date.now().toString(),
+                    content: document.getElementById('pay-content').value,
+                    beneficiary: document.getElementById('pay-beneficiary').value,
+                    account: document.getElementById('pay-account').value,
+                    qty: qty, pretax: pretax, tax: taxVal, total: (pretax * qty) + taxVal,
+                    status: document.getElementById('pay-status').value, files: [...currentPaymentFiles]
+                });
+                alert('✅ Đã lưu hồ sơ thanh toán mới thành công!');
+            }
             localStorage.setItem('sys_payment_records', JSON.stringify(paymentRecords));
             resetPaymentForm(); renderPaymentTable();
+        }
+
+        function editPaymentRecord(id) {
+            let item = paymentRecords.find(d => d.id === id);
+            if (!item) return;
+
+            document.getElementById('payment-edit-id').value = item.id;
+            document.getElementById('pay-content').value = item.content || "";
+            document.getElementById('pay-beneficiary').value = item.beneficiary || "";
+            document.getElementById('pay-account').value = item.account || "";
+            document.getElementById('pay-qty').value = item.qty || 1;
+            document.getElementById('pay-pretax-input').value = item.pretax || 0;
+            document.getElementById('pay-status').value = item.status || "Chưa duyệt";
+            
+            calculateFlexibleTax();
+
+            document.getElementById('form-payment-title').innerText = "Chỉnh Sửa Hồ Sơ Đề Nghị Thanh Toán Văn Phòng";
+            document.getElementById('btn-payment-text').innerText = "Cập Nhật Hồ Sơ";
+            document.getElementById('btn-payment-submit').className = "btn btn-green";
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        function deletePaymentRecord(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa hồ sơ thanh toán này?')) {
+                paymentRecords = paymentRecords.filter(d => d.id !== id);
+                localStorage.setItem('sys_payment_records', JSON.stringify(paymentRecords));
+                renderPaymentTable();
+            }
         }
 
         function renderPaymentTable() {
@@ -1102,19 +1182,35 @@
             paymentRecords.forEach((r, i) => {
                 sum += r.total;
                 tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td><td class="font-bold">${r.content}</td><td>${r.beneficiary}</td><td>${r.account}</td>
-                    <td class="text-center">${r.qty}</td><td class="text-right">${r.pretax.toLocaleString()}</td><td class="text-right">${r.tax.toLocaleString()}</td>
+                    <td class="text-center">${i+1}</td>
+                    <td class="font-bold">${r.content}</td>
+                    <td>${r.beneficiary}</td>
+                    <td>${r.account}</td>
+                    <td class="text-center">${r.qty}</td>
+                    <td class="text-right">${r.pretax.toLocaleString()}</td>
+                    <td class="text-right">${r.tax.toLocaleString()}</td>
                     <td class="text-right font-bold">${r.total.toLocaleString()}</td>
                     <td class="text-center">${r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="previewRecordFile('payment', ${i})">Xem (${r.files.length})</button>` : 'Không'}</td>
                     <td class="text-center">${r.status}</td>
-                    <td class="text-center"><button type="button" class="btn-delete" onclick="paymentRecords.splice(${i},1); renderPaymentTable();"><i class="fa-solid fa-trash"></i> Xóa</button></td>
+                    <td class="text-center">
+                        <button type="button" class="btn-edit" onclick="editPaymentRecord('${r.id}')"><i class="fa-solid fa-pen"></i> Sửa</button>
+                        <button type="button" class="btn-delete" onclick="deletePaymentRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button>
+                    </td>
                 </tr>`;
             });
             document.getElementById('dash-paid-pay').innerText = sum.toLocaleString() + " VND";
         }
-        function resetPaymentForm() { document.getElementById('payment-main-form').reset(); currentPaymentFiles = []; renderThumbnails('payment'); }
 
-        // ================= XỬ LÝ NÚT SỬA & LƯU CƯỚC VIỄN THÔNG THÔNG MINH =================
+        function resetPaymentForm() { 
+            document.getElementById('payment-edit-id').value = '';
+            document.getElementById('payment-main-form').reset(); 
+            document.getElementById('form-payment-title').innerText = "Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng";
+            document.getElementById('btn-payment-text').innerText = "Lưu Hồ Sơ Thanh Toán";
+            document.getElementById('btn-payment-submit').className = "btn btn-green";
+            currentPaymentFiles = []; renderThumbnails('payment'); 
+        }
+
+        // ================= CHỨC NĂNG CƯỚC VIỄN THÔNG (HIỂN THỊ KỲ CƯỚC THÁNG/NĂM CHUẨN VN) =================
         function saveTelecomRecord(e) {
             e.preventDefault();
             const editId = document.getElementById('telecom-edit-id').value;
@@ -1184,7 +1280,7 @@
                     <td>${r.package}</td>
                     <td class="text-center"><code>${r.cid}</code></td>
                     <td class="text-right font-bold">${Number(r.cost).toLocaleString()}</td>
-                    <td class="text-center">${r.period}</td>
+                    <td class="text-center font-bold" style="color:var(--orange);">${formatPeriodVN(r.period)}</td>
                     <td class="text-center">${(r.files && r.files.length > 0) ? `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})">Xem (${r.files.length})</button>` : `<a href="#" class="badge-cert">${r.cert || 'Xem (1)'}</a>`}</td>
                     <td class="text-center">
                         <button type="button" class="btn-edit" onclick="editTelecomRecord('${r.id}')"><i class="fa-solid fa-pen"></i> Sửa</button>
@@ -1202,30 +1298,120 @@
             document.getElementById('form-telecom-title').innerText = "Cập Nhật Chi Phí Hạ Tầng Mạng & Hóa Đơn Internet";
             document.getElementById('btn-telecom-text').innerText = "Lưu Cước Viễn Thông";
             document.getElementById('btn-telecom-submit').className = "btn btn-orange";
-            currentTelecomFiles = []; 
-            renderThumbnails('telecom'); 
+            currentTelecomFiles = []; renderThumbnails('telecom'); 
         }
 
+        // ================= TẠO MÃ QR THỜI GIAN THỰC CHO THIẾT BỊ CNTT =================
         function autoGenerateAssetID() {
             let t = document.getElementById('it-device-type').value;
             let codePrefix = (t === 'Laptop') ? 'LAP' : (t === 'PC') ? 'PC' : (t === 'PRN') ? 'PRN' : 'SRV';
             document.getElementById('it-serial-id').value = `IT-${codePrefix}-2026-${Math.floor(100 + Math.random() * 900)}`;
         }
 
+        function updateRealtimeQR() {
+            let serialId = document.getElementById('it-serial-id').value || "N/A";
+            let user = document.getElementById('it-user').value || "Chưa nhập";
+            let dept = document.getElementById('it-dept').value || "Chưa nhập";
+            let type = document.getElementById('it-device-type').value;
+            let config = document.getElementById('it-config').value || "Chưa nhập";
+            let os = document.getElementById('it-os').value;
+            let office = document.getElementById('it-office').value;
+
+            let rawText = `MÃ TÀI SẢN: ${serialId}\nLOẠI: ${type}\nNGƯỜI DÙNG: ${user}\nPHÒNG BAN: ${dept}\nCẤU HÌNH: ${config}\nOS: ${os}\nOFFICE: ${office}`;
+
+            const qrTarget = document.getElementById('realtime-qr-target');
+            qrTarget.innerHTML = "";
+
+            realtimeQrInstance = new QRCode(qrTarget, {
+                text: rawText,
+                width: 120,
+                height: 120,
+                colorDark : "#0f172a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+        }
+
         function saveITRecord(e) {
             e.preventDefault();
-            itAssetsRecords.push({
-                serialId: document.getElementById('it-serial-id').value, user: document.getElementById('it-user').value,
-                dept: document.getElementById('it-dept').value, type: document.getElementById('it-device-type').value,
-                config: document.getElementById('it-config').value, date: document.getElementById('it-date').value,
-                status: document.getElementById('it-status').value,
-                os: document.getElementById('it-os').value, osLic: document.getElementById('it-os-lic').value,
-                office: document.getElementById('it-office').value, officeLic: document.getElementById('it-office-lic').value,
-                soft: document.getElementById('it-soft').value, softLic: document.getElementById('it-soft-lic').value,
-                note: document.getElementById('it-note').value
-            });
+            const editId = document.getElementById('it-edit-id').value;
+
+            if (editId) {
+                let item = itAssetsRecords.find(d => d.id === editId);
+                if (item) {
+                    item.user = document.getElementById('it-user').value;
+                    item.dept = document.getElementById('it-dept').value;
+                    item.type = document.getElementById('it-device-type').value;
+                    item.config = document.getElementById('it-config').value;
+                    item.date = document.getElementById('it-date').value;
+                    item.status = document.getElementById('it-status').value;
+                    item.os = document.getElementById('it-os').value;
+                    item.osLic = document.getElementById('it-os-lic').value;
+                    item.office = document.getElementById('it-office').value;
+                    item.officeLic = document.getElementById('it-office-lic').value;
+                    item.soft = document.getElementById('it-soft').value;
+                    item.softLic = document.getElementById('it-soft-lic').value;
+                    item.note = document.getElementById('it-note').value;
+                }
+                alert('✅ Đã cập nhật thông tin thiết bị!');
+            } else {
+                itAssetsRecords.push({
+                    id: Date.now().toString(),
+                    serialId: document.getElementById('it-serial-id').value,
+                    user: document.getElementById('it-user').value,
+                    dept: document.getElementById('it-dept').value,
+                    type: document.getElementById('it-device-type').value,
+                    config: document.getElementById('it-config').value,
+                    date: document.getElementById('it-date').value,
+                    status: document.getElementById('it-status').value,
+                    os: document.getElementById('it-os').value,
+                    osLic: document.getElementById('it-os-lic').value,
+                    office: document.getElementById('it-office').value,
+                    officeLic: document.getElementById('it-office-lic').value,
+                    soft: document.getElementById('it-soft').value,
+                    softLic: document.getElementById('it-soft-lic').value,
+                    note: document.getElementById('it-note').value
+                });
+                alert('✅ Đã lưu thiết bị mới thành công!');
+            }
             localStorage.setItem('sys_it_records', JSON.stringify(itAssetsRecords));
             resetITForm(); renderITTable();
+        }
+
+        function editITRecord(id) {
+            let item = itAssetsRecords.find(d => d.id === id);
+            if (!item) return;
+
+            document.getElementById('it-edit-id').value = item.id;
+            document.getElementById('it-serial-id').value = item.serialId || "";
+            document.getElementById('it-user').value = item.user || "";
+            document.getElementById('it-dept').value = item.dept || "";
+            document.getElementById('it-device-type').value = item.type || "Laptop";
+            document.getElementById('it-config').value = item.config || "";
+            document.getElementById('it-date').value = item.date || "2026-07-21";
+            document.getElementById('it-status').value = item.status || "Tốt - Đang sử dụng";
+            document.getElementById('it-os').value = item.os || "[Chưa bản quyền] Dùng thử / Unactivated";
+            document.getElementById('it-os-lic').value = item.osLic || "Chưa bản quyền / Crack";
+            document.getElementById('it-office').value = item.office || "[Chưa bản quyền] Unactivated / Dùng thử";
+            document.getElementById('it-office-lic').value = item.officeLic || "Chưa bản quyền / Crack";
+            document.getElementById('it-soft').value = item.soft || "[Chưa bản quyền] Dùng thử / Miễn phí";
+            document.getElementById('it-soft-lic').value = item.softLic || "Chưa bản quyền / Bản Dùng thử";
+            document.getElementById('it-note').value = item.note || "";
+
+            document.getElementById('form-it-title').innerText = "Chỉnh Sửa Thông Tin Thiết Bị CNTT";
+            document.getElementById('btn-it-text').innerText = "Cập Nhật Thiết Bị";
+            document.getElementById('btn-it-submit').className = "btn btn-green";
+            
+            updateRealtimeQR();
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        function deleteITRecord(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa thiết bị này?')) {
+                itAssetsRecords = itAssetsRecords.filter(d => d.id !== id);
+                localStorage.setItem('sys_it_records', JSON.stringify(itAssetsRecords));
+                renderITTable();
+            }
         }
 
         function renderITTable() {
@@ -1236,15 +1422,21 @@
                 let softClass = (r.softLic && r.softLic.includes("Chưa")) ? "badge-no-license" : "badge-licensed";
 
                 tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td><td><code>${r.serialId}</code></td><td class="font-bold">${r.type}</td>
-                    <td style="white-space:normal; min-width:160px;">${r.config}</td><td class="font-bold" style="color:var(--purple);">${r.user}</td>
+                    <td class="text-center">${i+1}</td>
+                    <td><code>${r.serialId}</code></td>
+                    <td class="font-bold">${r.type}</td>
+                    <td style="white-space:normal; min-width:160px;">${r.config}</td>
+                    <td class="font-bold" style="color:var(--purple);">${r.user}</td>
                     <td>${r.dept}</td>
                     <td><div>${r.os || 'N/A'}</div><span class="${osClass}">${r.osLic || 'Chưa bản quyền'}</span></td>
                     <td><div>${r.office || 'N/A'}</div><span class="${offClass}">${r.officeLic || 'Chưa bản quyền'}</span></td>
                     <td><div>${r.soft || 'N/A'}</div><span class="${softClass}">${r.softLic || 'Chưa bản quyền'}</span></td>
                     <td>${r.status}</td>
                     <td class="text-center"><button type="button" class="btn-action-qr" onclick="popupQRCode(${i})">QR</button></td>
-                    <td class="text-center"><button type="button" class="btn-delete" onclick="itAssetsRecords.splice(${i},1); renderITTable();"><i class="fa-solid fa-trash"></i> Xóa</button></td>
+                    <td class="text-center">
+                        <button type="button" class="btn-edit" onclick="editITRecord('${r.id}')"><i class="fa-solid fa-pen"></i> Sửa</button>
+                        <button type="button" class="btn-delete" onclick="deleteITRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button>
+                    </td>
                 </tr>`;
             });
             document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị";
@@ -1254,13 +1446,22 @@
             let rec = itAssetsRecords[i];
             const modal = document.getElementById('document-preview-modal');
             const viewBody = document.getElementById('modal-preview-body');
-            document.getElementById('modal-preview-title').innerText = "MÃ QR KIỂM KÊ: " + rec.serialId;
+            document.getElementById('modal-preview-title').innerText = "MÃ QR KIỂM KÊ PHÓNG TO: " + rec.serialId;
             let rawText = `MÃ TÀI SẢN: ${rec.serialId}\nCẤU HÌNH: ${rec.config}\nNGƯỜI DÙNG: ${rec.user}\nOS: ${rec.os}\nOFFICE: ${rec.office}`;
             viewBody.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; background:white;"><div id="qr-target" style="padding:15px; background:white; border:2px dashed var(--purple); border-radius:8px;"></div></div>`;
-            new QRCode(document.getElementById("qr-target"), { text: rawText, width: 180, height: 180 });
+            new QRCode(document.getElementById("qr-target"), { text: rawText, width: 220, height: 220 });
             modal.style.display = 'flex';
         }
-        function resetITForm() { document.getElementById('it-main-form').reset(); autoGenerateAssetID(); }
+
+        function resetITForm() { 
+            document.getElementById('it-edit-id').value = '';
+            document.getElementById('it-main-form').reset(); 
+            document.getElementById('form-it-title').innerText = "Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin";
+            document.getElementById('btn-it-text').innerText = "Lưu Tài Sản Thiết Bị & Tạo QR";
+            document.getElementById('btn-it-submit').className = "btn btn-purple";
+            autoGenerateAssetID();
+            updateRealtimeQR();
+        }
 
         // ================= THUẬT TOÁN LỊCH VẠN NIÊN ÂM DƯƠNG CHUẨN XÁC =================
         function convertSolarToLunar(dd, mm, yyyy) {
@@ -1377,6 +1578,7 @@
             renderTelecomTable();
             autoGenerateAssetID(); 
             renderITTable();
+            updateRealtimeQR();
             setInterval(() => { 
                 document.getElementById('live-system-clock').innerText = new Date().toLocaleString('vi-VN'); 
             }, 1000);
