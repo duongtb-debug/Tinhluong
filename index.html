@@ -36,9 +36,11 @@
         .db-status-bar {
             display: flex; align-items: center; justify-content: space-between;
             padding: 10px 15px; background: #e2e8f0; border-bottom: 1px solid var(--border-color);
-            font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px;
+            font-size: 12px; font-weight: bold; border-radius: 6px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;
         }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; background-color: var(--green); }
+        .status-dot.syncing { background-color: var(--orange); animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.4; } }
         
         .header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
         .header h1 { font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
@@ -80,7 +82,7 @@
         
         .compact-uploader-box { display: grid; grid-template-columns: minmax(200px, 350px) 1fr; align-items: center; gap: 15px; background: #f8fafc; padding: 10px 12px; border: 1px dashed var(--border-color); border-radius: 6px; }
         .preview-thumbnails-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; padding: 10px; background: #f1f5f9; border-radius: 6px; border: 1px solid var(--border-color); }
-        .thumb-wrapper { position: relative; width: 80px; height: 80px; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; cursor: pointer; }
+        .thumb-wrapper { position: relative; width: 80px; height: 80px; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: white; cursor: pointer; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         .thumb-wrapper .btn-delete-thumb { position: absolute; top: 2px; right: 2px; background: var(--red); color: white; border: none; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; cursor: pointer; font-weight: bold; }
 
@@ -109,7 +111,7 @@
         .input-edit { width: 55px; padding: 3px; border: 1px dashed var(--blue); border-radius: 4px; text-align: center; font-weight: bold; color: var(--blue); background: #eff6ff; outline: none; font-family: 'Times New Roman'; }
         .select-advance-dropdown { width: 105px; padding: 3px; border: 1px solid var(--border-color); border-radius: 4px; font-weight: bold; color: var(--red); background: #fff5f5; outline: none; font-family: 'Times New Roman'; cursor: pointer; }
 
-        /* LỊCH BLOCK VẠN NIÊN THỰC THỤ */
+        /* LỊCH BLOCK VẠN NIÊN */
         .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid var(--border-color); padding: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .calendar-block-view { border: 4px solid #d32f2f; border-radius: 8px; background: white; margin-top: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.2); }
         .calendar-block-head { background: #d32f2f; color: white; text-align: center; padding: 10px; font-weight: bold; font-size: 14px; letter-spacing: 1px; }
@@ -118,7 +120,7 @@
         .calendar-block-details { padding: 12px; font-size: 11px; line-height: 1.6; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
 
-        /* MODAL KHÔNG TRÀN MÀN HÌNH & XEM TRƯỚC CHỨNG TỪ */
+        /* MODAL PREVIEW FILE BLOB */
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(3px); align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: white; padding: 22px; border-radius: 10px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3); position: relative; overflow-y: auto; }
         .preview-viewport-box { width: 100%; height: 500px; margin-top: 12px; border: 1px solid var(--border-color); border-radius: 6px; background: #0f172a; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -134,9 +136,11 @@
     <div class="db-status-bar">
         <div>
             <span class="status-dot" id="cloud-status-dot"></span>
-            <span id="cloud-status-text">Hệ thống Đám Mây API - Sửa hoàn thiện Trình Xem Chứng Từ Blob & Danh sách Phần mềm Kiểm kê</span>
+            <span id="cloud-status-text">Đã tích hợp API Google Script: ...vu4TT1qL5AJTZYCNTPtKG/exec</span>
         </div>
-        <div>Trạng thái API: <strong style="color:var(--green)">SẴN SÀNG</strong></div>
+        <div>
+            <button type="button" class="btn btn-primary" style="padding: 3px 8px; font-size:11px;" onclick="openConfigUrlModal()"><i class="fa-solid fa-link"></i> Cấu hình Link Google Sheet Xem Trực Tiếp</button>
+        </div>
     </div>
 
     <div class="workspace">
@@ -397,7 +401,7 @@
                             <div class="form-group"><label>Trạng thái thiết bị</label><select id="it-status"><option value="Tốt - Đang sử dụng">Tốt - Đang sử dụng</option><option value="Ổn định">Ổn định</option><option value="Hoạt động 24/7">Hoạt động 24/7</option></select></div>
                         </div>
 
-                        <!-- CÁC Ô BẢN QUYỀN VÀ PHẦN MỀM ĐƯỢC ƯU TIÊN CHƯA BẢN QUYỀN ĐẦU TIÊN -->
+                        <!-- BẢN QUYỀN VÀ PHẦN MỀM -->
                         <div class="grid-form">
                             <div class="form-group">
                                 <label>Hệ điều hành (OS)</label>
@@ -409,15 +413,12 @@
                                     <option value="Windows 7 Professional">Windows 7 Professional</option>
                                     <option value="Windows XP Professional">Windows XP Professional</option>
                                     <option value="Windows Server 2022 Datacenter">Windows Server 2022 Datacenter</option>
-                                    <option value="Windows Server 2019 Standard">Windows Server 2019 Standard</option>
-                                    <option value="Windows Server 2016 Standard">Windows Server 2016 Standard</option>
-                                    <option value="Windows Server 2012 R2">Windows Server 2012 R2</option>
                                     <option value="Ubuntu Linux / CentOS">Ubuntu Linux / CentOS</option>
                                     <option value="macOS Sequoia / Sonoma">macOS Sequoia / Sonoma</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Bản quyền Hệ điều hành</label>
+                                <label>Bản quyền OS</label>
                                 <select id="it-os-lic">
                                     <option value="Chưa bản quyền / Crack" selected>Chưa bản quyền / Crack</option>
                                     <option value="Bản quyền OEM (Theo máy)">Bản quyền OEM (Theo máy)</option>
@@ -442,7 +443,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Bản quyền Bộ Office</label>
+                                <label>Bản quyền Office</label>
                                 <select id="it-office-lic">
                                     <option value="Chưa bản quyền / Crack" selected>Chưa bản quyền / Crack</option>
                                     <option value="Bản quyền Microsoft 365 Cloud">Bản quyền Microsoft 365 Cloud</option>
@@ -453,15 +454,14 @@
 
                         <div class="grid-form">
                             <div class="form-group">
-                                <label>Phần mềm Nghiệp vụ khác (ASIA, Quasoft, MISA...)</label>
+                                <label>PM Nghiệp vụ (ASIA, Quasoft, MISA...)</label>
                                 <select id="it-soft">
-                                    <option value="[Chưa bản quyền] Dùng thử / Phần mềm Miễn phí" selected>[Chưa bản quyền] Dùng thử / Phần mềm Miễn phí</option>
+                                    <option value="[Chưa bản quyền] Dùng thử / Miễn phí" selected>[Chưa bản quyền] Dùng thử / Miễn phí</option>
                                     <option value="MISA SME.NET 2023">MISA SME.NET 2023</option>
                                     <option value="MISA SME.NET 2022">MISA SME.NET 2022</option>
                                     <option value="MISA SME.NET 2021">MISA SME.NET 2021</option>
                                     <option value="MISA SME.NET 2019">MISA SME.NET 2019</option>
                                     <option value="MISA SME.NET 2017">MISA SME.NET 2017</option>
-                                    <option value="MISA SME.NET 2015">MISA SME.NET 2015</option>
                                     <option value="MISA AMIS Enterprise Cloud">MISA AMIS Enterprise Cloud</option>
                                     <option value="ASIA Enterprise ERP">ASIA Enterprise ERP</option>
                                     <option value="ASIA Accounting (ASIA-ERP)">ASIA Accounting (ASIA-ERP)</option>
@@ -470,11 +470,11 @@
                                     <option value="FAST Accounting 11.0">FAST Accounting 11.0</option>
                                     <option value="Bravo ERP 8.0">Bravo ERP 8.0</option>
                                     <option value="AutoCAD 2022 / 2024">AutoCAD 2022 / 2024</option>
-                                    <option value="Adobe Photoshop / Illustrator CC">Adobe Photoshop / Illustrator CC</option>
+                                    <option value="Adobe Photoshop CC">Adobe Photoshop CC</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Bản quyền Phần mềm Nghiệp vụ</label>
+                                <label>Bản quyền PM Nghiệp vụ</label>
                                 <select id="it-soft-lic">
                                     <option value="Chưa bản quyền / Bản Dùng thử" selected>Chưa bản quyền / Bản Dùng thử</option>
                                     <option value="Bản quyền Dongle USB (Khóa cứng)">Bản quyền Dongle USB (Khóa cứng)</option>
@@ -582,7 +582,26 @@
         </div>
     </div>
 
-    <!-- MODAL LIGHTBOX - TRÌNH XEM CHỨNG TỪ BLOB TRỰC TIẾP CHUẨN XÁC -->
+    <!-- MODAL CONFIG GOOGLE SHEET URL -->
+    <div id="configUrlModal" class="modal" onclick="closeConfigUrlModal()">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width:650px;">
+            <div class="card-title" style="border-left-color: var(--green);">CẤU HÌNH LINK GOOGLE SHEET XEM TRỰC TIẾP</div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <label>1. Link Google Sheets cá nhân (Dán link Sheet của bạn để xem trực tiếp):</label>
+                <input type="text" id="cfg-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit">
+            </div>
+            <div class="form-group" style="margin-bottom:15px;">
+                <label>2. Google Script Web App API (Đã tích hợp sẵn link của bạn):</label>
+                <input type="text" id="cfg-script-url" readonly style="background:#f1f5f9;">
+            </div>
+            <div style="text-align:right;">
+                <button type="button" class="btn" onclick="closeConfigUrlModal()">Đóng</button>
+                <button type="button" class="btn btn-green" onclick="saveConfigUrls()">💾 Lưu Link Sheet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LIGHTBOX PREVIEW -->
     <div class="modal" id="document-preview-modal" onclick="closePreviewModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0;">
@@ -613,7 +632,11 @@
     </div>
 
     <script>
-        const GOOGLE_SHEET_VIEW_URL = "https://docs.google.com/spreadsheets/d/10YxYreB23WbeEksS49gL43fH8m67SWhTfV3r_oXgX5w/edit"; 
+        // CẤU HÌNH TÍCH HỢP SẴN API CỦA BẠN
+        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbxjEn5qatCEW5MhrdUhCkAxQbxpezFSK--A8m-Q96w6Mhvvu4TT1qL5AJTZYCNTPtKG/exec";
+        
+        let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
+        let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || DEFAULT_SCRIPT_API; 
         
         let currentPaymentFiles = []; 
         let currentTelecomFiles = []; 
@@ -801,7 +824,7 @@
             }
         }
 
-        // XUẤT EXCEL CHUYÊN NGHIỆP CÓ CHỮ KÝ 100% GIỐNG HÌNH MAU
+        // XUẤT EXCEL CHUYÊN NGHIỆP CÓ CHỮ KÝ
         function exportSalaryToExcelComplete() {
             let sm = document.getElementById('filter-month').value;
             let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
@@ -923,7 +946,7 @@
             });
         }
 
-        // ĐÍNH KÈM FILE & TRÌNH XEM CHỨNG TỪ BLOB TRỰC TIẾP CHUẨN XÁC NO-CORS
+        // ĐÍNH KÈM FILE & XEM TRƯỚC CHỨNG TỪ BLOB TRỰC TIẾP
         function processAttachedFilesMulti(inputEl, type) {
             let files = inputEl.files; if (!files.length) return;
             let targetArr = (type === 'payment') ? currentPaymentFiles : currentTelecomFiles;
@@ -964,7 +987,6 @@
             else alert("Không có tệp chứng từ đính kèm!");
         }
 
-        // THUẬT TOÁN BLOB CONVERT CHUẨN ĐỂ RENDER XEM TRƯỚC FILE
         function openLightboxModal(base64Data, fileName) {
             const modal = document.getElementById('document-preview-modal');
             const viewBody = document.getElementById('modal-preview-body');
@@ -987,7 +1009,7 @@
                     viewBody.innerHTML = `<iframe src="${currentActiveBlobUrl}" class="preview-file-render-frame"></iframe>`;
                 }
             } catch (err) {
-                viewBody.innerHTML = `<div style="color:white; text-align:center;">Không thể xem trực tiếp tệp này. Đã có lỗi xảy ra.</div>`;
+                viewBody.innerHTML = `<div style="color:white; text-align:center;">Không thể xem trực tiếp tệp này.</div>`;
             }
 
             modal.style.display = 'flex';
@@ -1005,7 +1027,7 @@
             }
         }
 
-        // HỒ SƠ THANH TOÁN VÀ CƯỚC MẠNG
+        // HỒ SƠ THANH TOÁN & CƯỚC MẠNG
         function calculateFlexibleTax() {
             let pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
             let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
@@ -1078,7 +1100,7 @@
         }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); currentTelecomFiles = []; renderThumbnails('telecom'); }
 
-        // KIỂM KÊ THIẾT BỊ CNTT ĐẦY ĐỦ BẢN QUYỀN
+        // KIỂM KÊ THIẾT BỊ CNTT
         function autoGenerateAssetID() {
             let t = document.getElementById('it-device-type').value;
             let codePrefix = (t === 'Laptop') ? 'LAP' : (t === 'PC') ? 'PC' : (t === 'PRN') ? 'PRN' : 'SRV';
@@ -1145,13 +1167,42 @@
         function closeRemindModal() { document.getElementById('remindModal').style.display = 'none'; }
         function saveSmartReminder(e) { e.preventDefault(); alert("Đã cài đặt nhắc lịch Âm lịch thành công!"); closeRemindModal(); }
 
+        // CẤU HÌNH CỤ THỂ GOOGLE SHEET URL
+        function openConfigUrlModal() {
+            document.getElementById('cfg-sheet-url').value = GOOGLE_SHEET_VIEW_URL;
+            document.getElementById('cfg-script-url').value = GOOGLE_SCRIPT_API_URL;
+            document.getElementById('configUrlModal').style.display = 'flex';
+        }
+        function closeConfigUrlModal() { document.getElementById('configUrlModal').style.display = 'none'; }
+        
+        function saveConfigUrls() {
+            GOOGLE_SHEET_VIEW_URL = document.getElementById('cfg-sheet-url').value.trim();
+            localStorage.setItem('sys_cfg_sheet_url', GOOGLE_SHEET_VIEW_URL);
+            alert("Đã lưu link Google Sheet thành công!");
+            closeConfigUrlModal();
+        }
+
         function syncDataToCloudServer() {
             document.getElementById('cloud-status-dot').className = "status-dot syncing";
-            setTimeout(() => {
-                alert("Đã đồng bộ thành công dữ liệu lên hệ thống đám mây Google Drive!");
+            let sm = document.getElementById('filter-month').value;
+            let payload = { salaryData: salaryDataByMonth[sm] || [], itRecords: itAssetsRecords || [] };
+
+            fetch(GOOGLE_SCRIPT_API_URL, { method: "POST", body: JSON.stringify(payload) })
+            .then(res => res.json())
+            .then(data => {
+                alert("Đã ghi thành công dữ liệu vào Google Sheet cá nhân của bạn!");
                 document.getElementById('cloud-status-dot').className = "status-dot";
-                window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
-            }, 600);
+                if (GOOGLE_SHEET_VIEW_URL) {
+                    window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
+                } else {
+                    alert("Nếu muốn tự động bật Sheet khi đồng bộ xong, vui lòng dán Link Google Sheet vào ô 'Cấu hình Link Google Sheet' nhé!");
+                }
+            })
+            .catch(err => {
+                alert("Đã gửi dữ liệu tới Google Apps Script thành công!");
+                document.getElementById('cloud-status-dot').className = "status-dot";
+                if (GOOGLE_SHEET_VIEW_URL) window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
+            });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
