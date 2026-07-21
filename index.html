@@ -76,16 +76,82 @@
         .stat-value { font-size: 14px; font-weight: bold; color: var(--primary); margin-top: 2px; }
         .stat-icon { font-size: 18px; opacity: 0.25; }
 
+        /* THU GỌN GÀNG KHUNG TỔNG QUAN LƯƠNG ĐẸP MẮT */
         .salary-visual-summary {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin: 0 auto 15px auto;
+            max-width: 850px;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
-        @media (max-width: 768px) { .salary-visual-summary { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { 
+            .salary-visual-summary { flex-direction: column; width: 100%; }
+            .visual-mini-card { width: 100%; }
+        }
         .visual-mini-card { 
-            background: white; padding: 6px 12px; border-radius: 4px; border: 1px solid #e2e8f0; 
-            display: flex; align-items: center; justify-content: space-between;
+            flex: 1;
+            background: white; 
+            padding: 8px 14px; 
+            border-radius: 6px; 
+            border: 1px solid #e2e8f0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            gap: 10px;
         }
-        .visual-lbl { font-size: 11px; font-weight: bold; color: #475569; }
-        .visual-val { font-size: 13px; font-weight: bold; color: var(--primary); }
+        .visual-lbl { font-size: 11px; font-weight: bold; color: #475569; white-space: nowrap; display: flex; align-items: center; }
+        .visual-val { font-size: 14px; font-weight: bold; color: var(--primary); white-space: nowrap; }
+
+        /* LAYOUT CẤU HÌNH THAM SỐ VÀ NÚT BẤM HIỆN ĐẠI */
+        .config-toolbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 15px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .config-inputs-group {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .config-inputs-group .form-group {
+            flex: 1;
+            min-width: 110px;
+        }
+
+        .config-inputs-group .form-group input {
+            height: 31px;
+            font-weight: bold;
+        }
+
+        .config-actions-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .config-actions-group .btn {
+            height: 31px;
+            padding: 0 12px;
+            font-size: 11px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
 
         .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 2px solid #cbd5e1; overflow-x: auto; }
         .nav-tabs .nav-tab { padding: 7px 14px; border: none; background: #e2e8f0; font-weight: bold; color: #475569; cursor: pointer; font-size: 12px; border-radius: 4px 4px 0 0; white-space: nowrap; }
@@ -252,47 +318,62 @@
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
                         <span><i class="fa-solid fa-sliders" style="color:var(--blue);"></i> CẤU HÌNH THAM SỐ VÀ NGƯỜI TRÌNH KÝ</span>
-                        <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()"><i class="fa-brands fa-google-drive"></i> MỞ BẢNG LƯƠNG GOOGLE SHEETS</button>
                     </div>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
-                        <div class="form-group" style="min-width: 120px;">
-                            <label>Tháng báo cáo</label>
-                            <input type="month" id="filter-month" value="2026-06" onchange="handleMonthChangeSelect()">
+                    
+                    <div class="config-toolbar-container">
+                        <!-- Khối nhập tham số chính -->
+                        <div class="config-inputs-group">
+                            <div class="form-group">
+                                <label><i class="fa-regular fa-calendar-days"></i> Tháng báo cáo</label>
+                                <input type="month" id="filter-month" value="2026-06" onchange="handleMonthChangeSelect()">
+                            </div>
+                            <div class="form-group">
+                                <label style="color:var(--orange);"><i class="fa-solid fa-chart-line"></i> Tối thiểu vùng</label>
+                                <input type="number" id="config-vung-pay" value="4140000" oninput="handleConfigChangeLive()">
+                            </div>
+                            <div class="form-group">
+                                <label style="color:var(--blue);"><i class="fa-solid fa-coins"></i> Cơ bản</label>
+                                <input type="number" id="config-base-pay" value="2650000" oninput="handleConfigChangeLive()">
+                            </div>
+                            <div class="form-group">
+                                <label style="color:var(--purple);"><i class="fa-solid fa-briefcase"></i> Công việc</label>
+                                <input type="number" id="config-lcv-pay" value="1991139" oninput="handleConfigChangeLive()">
+                            </div>
+                            <div class="form-group" style="min-width: 180px;">
+                                <label style="color:var(--primary);"><i class="fa-solid fa-signature"></i> Người Lập Biểu</label>
+                                <input type="text" id="config-signer-name" value="Nguyễn Thị Tuyết Nhung" oninput="handleConfigChangeLive()">
+                            </div>
                         </div>
-                        <div class="form-group" style="min-width: 120px;">
-                            <label style="color:var(--orange);">Tối thiểu vùng</label>
-                            <input type="number" id="config-vung-pay" value="4140000" oninput="handleConfigChangeLive()">
+
+                        <!-- Khối nút bấm thao tác gom chung bên phải -->
+                        <div class="config-actions-group">
+                            <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()">
+                                <i class="fa-brands fa-google-drive"></i> Mở Sheet
+                            </button>
+                            <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Đồng Bộ Mây
+                            </button>
+                            <button type="button" class="btn btn-green" onclick="exportSalaryToExcelComplete()">
+                                <i class="fa-solid fa-file-excel"></i> Xuất Excel
+                            </button>
                         </div>
-                        <div class="form-group" style="min-width: 120px;">
-                            <label style="color:var(--blue);">Cơ bản</label>
-                            <input type="number" id="config-base-pay" value="2650000" oninput="handleConfigChangeLive()">
-                        </div>
-                        <div class="form-group" style="min-width: 120px;">
-                            <label style="color:var(--purple);">Công việc</label>
-                            <input type="number" id="config-lcv-pay" value="1991139" oninput="handleConfigChangeLive()">
-                        </div>
-                        <div class="form-group" style="min-width: 170px;">
-                            <label style="color:var(--primary);">Người Lập Biểu</label>
-                            <input type="text" id="config-signer-name" value="Nguyễn Thị Tuyết Nhung" oninput="handleConfigChangeLive()">
-                        </div>
-                        <button type="button" class="btn btn-green" onclick="exportSalaryToExcelComplete()"><i class="fa-solid fa-file-excel"></i> XUẤT EXCEL CÓ CHỮ KÝ</button>
-                        <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()"><i class="fa-solid fa-cloud-arrow-up"></i> ĐỒNG BỘ MÂY LÊN GOOGLE SHEET</button>
                     </div>
                 </div>
 
                 <div class="main-card">
+                    <!-- KHUNG THỐNG KÊ LƯƠNG THU GỌN GÀNG TỐI ƯU -->
                     <div class="salary-visual-summary">
                         <div class="visual-mini-card">
-                            <span class="visual-lbl"><i class="fa-solid fa-wallet" style="color:var(--blue); margin-right:4px;"></i> TỔNG LƯƠNG CB:</span>
-                            <span class="visual-val" id="v-total-lcb">0 VND</span>
+                            <span class="visual-lbl"><i class="fa-solid fa-wallet" style="color:var(--blue); margin-right:6px;"></i> TỔNG LƯƠNG CB:</span>
+                            <span class="visual-val" id="v-total-lcb" style="color:var(--blue);">0 VND</span>
                         </div>
                         <div class="visual-mini-card">
-                            <span class="visual-lbl"><i class="fa-solid fa-briefcase" style="color:var(--purple); margin-right:4px;"></i> TỔNG LƯƠNG CV:</span>
+                            <span class="visual-lbl"><i class="fa-solid fa-briefcase" style="color:var(--purple); margin-right:6px;"></i> TỔNG LƯƠNG CV:</span>
                             <span class="visual-val" id="v-total-lcv-text" style="color:var(--purple);">0 VND</span>
                         </div>
-                        <div class="visual-mini-card">
-                            <span class="visual-lbl"><i class="fa-solid fa-circle-dollar-to-slot" style="color:var(--green); margin-right:4px;"></i> THỰC LĨNH NET:</span>
-                            <span class="visual-val" id="v-total-thuc" style="color:var(--green);">0 VND</span>
+                        <div class="visual-mini-card" style="background: #f0fdf4; border-color: #bbf7d0;">
+                            <span class="visual-lbl" style="color: #166534;"><i class="fa-solid fa-circle-dollar-to-slot" style="color:var(--green); margin-right:6px;"></i> THỰC LĨNH NET:</span>
+                            <span class="visual-val" id="v-total-thuc" style="color:var(--green); font-size:15px;">0 VND</span>
                         </div>
                     </div>
 
@@ -860,9 +941,7 @@
         ];
 
         let paymentRecords = JSON.parse(localStorage.getItem('sys_payment_records')) || [];
-        
         let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_records')) || [];
-        
         let itAssetsRecords = JSON.parse(localStorage.getItem('sys_it_records')) || [
             {
                 id: "1", serialId: "IT-LAP-2026-101", user: "Nguyễn Minh Ngọc", dept: "Ban Giám Đốc", type: "Laptop",
@@ -1480,27 +1559,27 @@
             renderThumbnails('payment'); 
         }
 
-        // HÀM UPLOAD TỆP TỰ ĐỘNG TẠO FOLDER GOOGLE DRIVE
-        async function uploadFileAndCreateDriveFolder(fileObj, folderName) {
-            const payload = {
-                action: "upload_file",
-                fileName: fileObj ? fileObj.name : "",
-                fileType: fileObj ? fileObj.type : "",
-                base64Data: fileObj ? fileObj.base64 : "",
-                folderName: folderName
-            };
+        // HÀM TẠO FOLDER DRIVE VÀ LẤY LINK THÔNG QUA CƠ CHẾ JSONP (CHỐNG CHẶN CORS 100%)
+        function createDriveFolderViaJSONP(folderName) {
+            return new Promise((resolve) => {
+                const callbackName = 'jsonp_cb_' + Math.round(100000 * Math.random());
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    if (script && script.parentNode) script.parentNode.removeChild(script);
+                    resolve(data);
+                };
 
-            try {
-                let response = await fetch(GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API, {
-                    method: "POST",
-                    body: JSON.stringify(payload)
-                });
-                let result = await response.json();
-                return result;
-            } catch (err) {
-                console.error("Lỗi khi kết nối Google Script API:", err);
-                return null;
-            }
+                const script = document.createElement('script');
+                const apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
+                const url = `${apiUrl}?action=create_folder&folderName=${encodeURIComponent(folderName)}&callback=${callbackName}`;
+                script.src = url;
+                script.onerror = function() {
+                    delete window[callbackName];
+                    if (script && script.parentNode) script.parentNode.removeChild(script);
+                    resolve(null);
+                };
+                document.body.appendChild(script);
+            });
         }
 
         async function saveTelecomRecord(e) {
@@ -1521,23 +1600,10 @@
                 let period = document.getElementById('tel-period').value || "2026-01";
 
                 const autoFolderName = `CuocMang_Thang_${period.replace('-', '_')}`;
-                let uploadedDriveFolderUrl = "";
-                let uploadedFiles = [];
-
-                if (currentTelecomFiles && currentTelecomFiles.length > 0) {
-                    for (let i = 0; i < currentTelecomFiles.length; i++) {
-                        let res = await uploadFileAndCreateDriveFolder(currentTelecomFiles[i], autoFolderName);
-                        if (res && res.status === "success") {
-                            if (res.fileUrl) uploadedFiles.push({ name: currentTelecomFiles[i].name, driveUrl: res.fileUrl });
-                            if (res.folderUrl) uploadedDriveFolderUrl = res.folderUrl;
-                        }
-                    }
-                } else {
-                    let dummyRes = await uploadFileAndCreateDriveFolder(null, autoFolderName);
-                    if (dummyRes && dummyRes.folderUrl) {
-                        uploadedDriveFolderUrl = dummyRes.folderUrl;
-                    }
-                }
+                
+                // Gọi API cấp link Folder Google Drive thực tế
+                let driveRes = await createDriveFolderViaJSONP(autoFolderName);
+                let uploadedDriveFolderUrl = (driveRes && driveRes.folderUrl) ? driveRes.folderUrl : "";
 
                 if (editId) {
                     let item = telecomRecords.find(d => d.id === editId);
@@ -1545,7 +1611,6 @@
                         item.location = location; item.provider = provider; item.package = pkg;
                         item.cid = cid; item.cost = cost; item.period = period;
                         if (uploadedDriveFolderUrl) item.folderDriveUrl = uploadedDriveFolderUrl;
-                        if (uploadedFiles.length > 0) item.files = uploadedFiles;
                     }
                 } else {
                     telecomRecords.push({
@@ -1553,7 +1618,7 @@
                         location: location, provider: provider, package: pkg,
                         cid: cid, cost: cost, period: period,
                         folderDriveUrl: uploadedDriveFolderUrl,
-                        files: uploadedFiles
+                        files: []
                     });
                 }
 
@@ -1563,7 +1628,11 @@
                 resetTelecomForm(); 
                 renderTelecomTable();
 
-                alert(`✅ Đã tạo/kiểm tra Thư mục Google Drive [${autoFolderName}] và lưu dữ liệu thành công!`);
+                if (uploadedDriveFolderUrl) {
+                    alert(`✅ Đã tạo/kiểm tra Thư mục Google Drive [${autoFolderName}] thành công!\n\nNút "Mở Folder Drive" màu xanh đã xuất hiện trên bảng.`);
+                } else {
+                    alert(`⚠️ Chưa lấy được URL Folder. Hãy kiểm tra lại cấu hình link Google Apps Script.`);
+                }
 
             } catch (error) {
                 alert('⚠️ Có lỗi: ' + error.message);
@@ -1591,7 +1660,7 @@
             } else {
                 activeTelecoms.forEach((r, i) => {
                     sum += Number(r.cost);
-                    let certDisplay = '<span style="color:#94a3b8;">Chưa tạo Link</span>';
+                    let certDisplay = '<span style="color:#94a3b8;">Chưa có link</span>';
                     
                     if (r.folderDriveUrl && r.folderDriveUrl.startsWith('http')) {
                         let fileCount = r.files ? r.files.length : 0;
