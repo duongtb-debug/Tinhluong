@@ -770,7 +770,7 @@
     </div>
 
     <script>
-        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
+        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbzQ0GgUAIwTzKu6BOJN5-9laa8opA7aQqbK0PiI9_ADqyAyPj3HkVPA51QoWU03p5K1/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
         let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || DEFAULT_SCRIPT_API; 
@@ -1240,8 +1240,10 @@
                 let targetFile = rec.files[0];
                 if (targetFile.driveUrl) {
                     window.open(targetFile.driveUrl, '_blank');
-                } else {
+                } else if (targetFile.base64) {
                     openLightboxModal(targetFile.base64, targetFile.name);
+                } else {
+                    alert("Tệp này đã được lưu an toàn lên Drive, hãy bấm nút 'Mở Drive'!");
                 }
             } else alert("Không có tệp chứng từ đính kèm!");
         }
@@ -1424,6 +1426,7 @@
             }
         }
 
+        // HÀM LƯU CƯỚC VỚI CƠ CHẾ KHÔNG LƯU BASE64 NẶNG VÀO LOCALSTORAGE (CHỐNG LỖI QUOTA EXCEEDED)
         async function saveTelecomRecord(e) {
             e.preventDefault();
             
@@ -1444,6 +1447,7 @@
                 const driveFolderName = `HoaDon_CuocMang_${period.replace('-', '_')}`;
                 let attachedFilesCopy = currentTelecomFiles ? JSON.parse(JSON.stringify(currentTelecomFiles)) : [];
 
+                // 1. Upload từng tệp đính kèm lên Google Drive
                 for (let i = 0; i < attachedFilesCopy.length; i++) {
                     if (!attachedFilesCopy[i].driveUrl) {
                         let driveUrl = await uploadFileToDriveFolder(attachedFilesCopy[i], driveFolderName);
@@ -1451,30 +1455,46 @@
                     }
                 }
 
+                // 2. TỐI ƯU BỘ NHỚ: Loại bỏ chuỗi Base64 siêu nặng sau khi đã tải lên Drive
+                let lightFilesArray = attachedFilesCopy.map(file => {
+                    return {
+                        name: file.name,
+                        type: file.type,
+                        driveUrl: file.driveUrl || null
+                    };
+                });
+
                 if (editId) {
                     let item = telecomRecords.find(d => d.id === editId);
                     if (item) {
                         item.location = location; item.provider = provider; item.package = pkg;
                         item.cid = cid; item.cost = cost; item.period = period;
-                        item.files = attachedFilesCopy;
+                        item.files = lightFilesArray;
                     }
                 } else {
                     telecomRecords.push({
                         id: Date.now().toString(),
                         location: location, provider: provider, package: pkg,
                         cid: cid, cost: cost, period: period,
-                        cert: attachedFilesCopy.length > 0 ? `Xem (${attachedFilesCopy.length})` : "Xem (0)",
-                        files: attachedFilesCopy
+                        cert: lightFilesArray.length > 0 ? `Xem (${lightFilesArray.length})` : "Xem (0)",
+                        files: lightFilesArray
                     });
                 }
 
-                localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
+                // 3. Tiến hành lưu bản ghi nhẹ vào LocalStorage
+                try {
+                    localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
+                } catch (stErr) {
+                    localStorage.removeItem('sys_telecom_records');
+                    localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
+                }
+
                 document.getElementById('telecom-view-mode').value = "ALL_2026";
                 
                 resetTelecomForm(); 
                 renderTelecomTable();
 
-                alert(`✅ Đã lưu cước ${formatPeriodVN(period)} thành công và đổ trực tiếp xuống bảng!`);
+                alert(`✅ Đã tải ${lightFilesArray.length} tệp lên Drive và lưu cước ${formatPeriodVN(period)} thành công!`);
 
             } catch (error) {
                 alert('⚠️ Có lỗi: ' + error.message);
