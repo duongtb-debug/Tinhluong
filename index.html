@@ -163,7 +163,8 @@
         
         .badge-no-license { background: #fee2e2; color: #dc2626; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #fecaca; }
         .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
-        .badge-cert { background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 10px; font-weight: bold; font-size: 11px; text-decoration: none; }
+        .badge-cert { background: #dcfce7; color: #15803d; padding: 3px 10px; border-radius: 12px; font-weight: bold; font-size: 11px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 5px; }
+        .badge-cert:hover { background: #bbf7d0; color: #166534; }
     </style>
 </head>
 <body>
@@ -195,7 +196,7 @@
                     <div class="stat-value" id="dash-paid-pay" style="color:var(--green);">0 VND</div>
                 </div>
                 <div class="stat-card orange">
-                    <div class="stat-title">TỔNG CƯỚC MẠNG TỪ THÁNG 1 TỚI HIỆN TẠI</div>
+                    <div class="stat-title">TỔNG CƯỚC MẠNG TOÀN BỘ CÁC THÁNG (2026)</div>
                     <div class="stat-value" id="dash-pending-pay" style="color:var(--orange);">0 VND</div>
                 </div>
                 <div class="stat-card purple">
@@ -381,11 +382,11 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG (NHẬP TRỌN BỘ TỪ THÁNG 1 TỚI THÁNG 12) -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
-                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> <span id="form-telecom-title">Cập Nhật Chi Phí Mạng (Nhập từ Tháng 1 đến Tháng 7)</span></span>
+                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> <span id="form-telecom-title">Cập Nhật Chi Phí Mạng (Hỗ trợ nhập trọn bộ Tháng 01 đến Tháng 12)</span></span>
                     </div>
                     <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)">
                         <input type="hidden" id="telecom-edit-id" value="">
@@ -423,10 +424,10 @@
                         </div>
 
                         <div class="form-group" style="margin-bottom: 12px;">
-                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Tải lên Folder Drive)</label>
+                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Tải lên Thư mục Google Drive)</label>
                             <div class="attach-box-redesign">
                                 <label class="attach-btn-trigger">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Chọn tệp đính kèm
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Chọn tệp chứng từ
                                     <input type="file" id="tel-file-uploader" multiple accept="image/*,application/pdf" onchange="processAttachedFilesMulti(this, 'telecom')" style="display:none;">
                                 </label>
                                 <span id="tel-upload-status-lbl" style="font-size: 11px; color: #64748b; font-weight: bold;">Chưa chọn tệp</span>
@@ -450,14 +451,19 @@
                         <div style="display:flex; align-items:center; gap:8px;">
                             <label style="font-size:12px; font-weight:bold; color:var(--primary);">Chế độ xem:</label>
                             <select id="telecom-view-mode" onchange="renderTelecomTable()" style="padding:4px 8px; border-radius:4px; border:1px solid var(--blue); font-weight:bold; color:var(--blue);">
-                                <option value="ALL_2026" selected>🌟 Tất cả từ Tháng 1 đến Hiện tại (2026)</option>
-                                <option value="2026-01">Riêng Tháng 01/2026</option>
-                                <option value="2026-02">Riêng Tháng 02/2026</option>
-                                <option value="2026-03">Riêng Tháng 03/2026</option>
-                                <option value="2026-04">Riêng Tháng 04/2026</option>
-                                <option value="2026-05">Riêng Tháng 05/2026</option>
-                                <option value="2026-06">Riêng Tháng 06/2026</option>
-                                <option value="2026-07">Riêng Tháng 07/2026</option>
+                                <option value="ALL_2026" selected>🌟 Tất cả từ Tháng 1 đến Tháng 12 (Năm 2026)</option>
+                                <option value="2026-01">Tháng 01/2026</option>
+                                <option value="2026-02">Tháng 02/2026</option>
+                                <option value="2026-03">Tháng 03/2026</option>
+                                <option value="2026-04">Tháng 04/2026</option>
+                                <option value="2026-05">Tháng 05/2026</option>
+                                <option value="2026-06">Tháng 06/2026</option>
+                                <option value="2026-07">Tháng 07/2026</option>
+                                <option value="2026-08">Tháng 08/2026</option>
+                                <option value="2026-09">Tháng 09/2026</option>
+                                <option value="2026-10">Tháng 10/2026</option>
+                                <option value="2026-11">Tháng 11/2026</option>
+                                <option value="2026-12">Tháng 12/2026</option>
                             </select>
                         </div>
                     </div>
@@ -1233,7 +1239,6 @@
         }
 
         function previewRecordFile(recordType, recordIdx) {
-            let sm = document.getElementById('filter-month').value;
             let records = (recordType === 'payment') ? paymentRecords : telecomRecords;
             let rec = records[recordIdx];
             if (rec && rec.files && rec.files.length > 0) {
@@ -1499,7 +1504,7 @@
                 resetTelecomForm(); 
                 renderTelecomTable();
 
-                alert(`✅ Đã tải ${lightFilesArray.length} tệp lên Drive và lưu cước ${formatPeriodVN(period)} thành công!`);
+                alert(`✅ Đã tải tệp lên Drive và lưu cước ${formatPeriodVN(period)} thành công!`);
 
             } catch (error) {
                 alert('⚠️ Có lỗi: ' + error.message);
@@ -1509,6 +1514,7 @@
             }
         }
 
+        // HÀM VẼ BẢNG CƯỚC MẠNG ĐÃ ĐƯỢC ÉP CHUYỂN TẤT CẢ THÀNH NÚT LINK DRIVE SẮC NÉT
         function renderTelecomTable() {
             let viewMode = document.getElementById('telecom-view-mode').value;
             const tbody = document.getElementById('tbody-telecom'); 
@@ -1528,12 +1534,16 @@
                 activeTelecoms.forEach((r, i) => {
                     sum += Number(r.cost);
                     let certDisplay = "Không";
-                    if (r.files && r.files.length > 0) {
-                        let fileUrl = r.files[0].driveUrl;
-                        if (fileUrl) {
-                            certDisplay = `<a href="${fileUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Drive (${r.files.length})</a>`;
+                    
+                    // TỰ ĐỘNG TẠO LINK DRIVE SẮC NÉT CHO CẢ BẢN GHI CŨ VÀ MỚI
+                    let fileCount = (r.files && r.files.length > 0) ? r.files.length : (r.cert && r.cert.includes('(')) ? r.cert.match(/\d+/)[0] : 0;
+                    
+                    if (fileCount > 0) {
+                        let driveLink = (r.files && r.files[0] && r.files[0].driveUrl) ? r.files[0].driveUrl : GOOGLE_SHEET_VIEW_URL;
+                        if (driveLink && driveLink.startsWith('http')) {
+                            certDisplay = `<a href="${driveLink}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Drive (${fileCount})</a>`;
                         } else {
-                            certDisplay = `<span class="badge-cert">Đã lưu (${r.files.length} tệp)</span>`;
+                            certDisplay = `<button type="button" class="btn-action-view" onclick="previewRecordFile('telecom', ${i})"><i class="fa-solid fa-eye"></i> Xem (${fileCount})</button>`;
                         }
                     }
 
@@ -1556,6 +1566,7 @@
             document.getElementById('dash-pending-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
         }
 
+        // TỰ ĐỘNG NHẢY SANG THÁNG TIẾP THEO (TỪ 1 ĐẾN 12)
         function resetTelecomForm() { 
             let curPeriod = document.getElementById('tel-period').value;
             document.getElementById('telecom-edit-id').value = '';
@@ -1563,17 +1574,17 @@
             
             if (curPeriod && curPeriod.startsWith("2026-")) {
                 let m = parseInt(curPeriod.split("-")[1]) + 1;
-                if (m <= 7) {
+                if (m <= 12) {
                     document.getElementById('tel-period').value = `2026-${String(m).padStart(2, '0')}`;
                 } else {
-                    document.getElementById('tel-period').value = "2026-07";
+                    document.getElementById('tel-period').value = "2026-12";
                 }
             } else {
                 document.getElementById('tel-period').value = "2026-01";
             }
 
             let telTitle = document.getElementById('form-telecom-title');
-            if (telTitle) telTitle.innerText = "Cập Nhật Chi Phí Mạng (Nhập từ Tháng 1 đến Tháng 7)";
+            if (telTitle) telTitle.innerText = "Cập Nhật Chi Phí Mạng (Hỗ trợ nhập trọn bộ Tháng 01 đến Tháng 12)";
             
             let btnText = document.getElementById('btn-telecom-text');
             if (btnText) btnText.innerText = "Lưu Cước & Tải Lên Drive";
@@ -1934,7 +1945,7 @@
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                alert("✅ ĐÃ ĐỒNG BỘ TỰ ĐỘNG CẬP NHẬT LÊN GOOGLE SHEETS!\nBảng lương Tháng " + monthLabelVN + " đã được xóa cũ và vẽ lại mới hoàn toàn.");
+                alert("✅ ĐÃ ĐỒNG BỘ TỰ ĐỘNG CẬP NHẬT LÊN GOOGLE SHEETS!\nBẢNG LƯƠNG THÁNG " + monthLabelVN + " đã được cập nhật thành công.");
                 document.getElementById('cloud-status-dot').className = "status-dot";
                 if (GOOGLE_SHEET_VIEW_URL) window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
             })
