@@ -49,7 +49,6 @@
         .header h1 { font-size: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
         .live-clock-box { background: rgba(255,255,255,0.12); padding: 6px 14px; border-radius: 4px; font-family: monospace !important; font-size: 13px; text-align: right; border: 1px solid rgba(255,255,255,0.2); font-weight: bold; color: #fef08a; }
 
-        /* TỐI ƯU CÁC THANH THỐNG KÊ RÕ RÀNG GỌN GÀNG */
         .stat-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
@@ -209,7 +208,7 @@
                 <div class="live-clock-box" id="live-system-clock">--:--:-- --/--/----</div>
             </div>
 
-            <!-- THANH THỐNG KÊ TỔNG QUAN TOP (ĐÃ ĐƯỢC TỐI ƯU CỰC CÌ GỌN GÀNG VÀ SANG TRỌNG) -->
+            <!-- THANH THỐNG KÊ TOP GỌN GÀNG -->
             <div class="stat-grid">
                 <div class="stat-card">
                     <div class="stat-info">
@@ -253,6 +252,8 @@
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
                         <span><i class="fa-solid fa-sliders" style="color:var(--blue);"></i> CẤU HÌNH THAM SỐ VÀ NGƯỜI TRÌNH KÝ</span>
+                        <!-- NÚT MỞ BẢNG LƯƠNG TRÊN GOOGLE SHEETS HIỂN THỊ RÕ RÀNG NỔI BẬT -->
+                        <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()"><i class="fa-brands fa-google-drive"></i> MỞ BẢNG LƯƠNG GOOGLE SHEETS</button>
                     </div>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
                         <div class="form-group" style="min-width: 120px;">
@@ -275,14 +276,12 @@
                             <label style="color:var(--primary);">Người Lập Biểu</label>
                             <input type="text" id="config-signer-name" value="Nguyễn Thị Tuyết Nhung" oninput="handleConfigChangeLive()">
                         </div>
-                        <button type="button" class="btn btn-green" onclick="exportSalaryToExcelComplete()"><i class="fa-solid fa-file-excel"></i> XUẤT EXCEL CHUYÊN NGHIỆP CÓ CHỮ KÝ</button>
-                        <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()"><i class="fa-solid fa-cloud-arrow-up"></i> ĐỒNG BỘ MÂY TỰ ĐỒNG SỬA Sheet</button>
-                        <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()"><i class="fa-brands fa-google-drive"></i> MỞ BẢNG LƯƠNG GOOGLE SHEETS</button>
+                        <button type="button" class="btn btn-green" onclick="exportSalaryToExcelComplete()"><i class="fa-solid fa-file-excel"></i> XUẤT EXCEL CÓ CHỮ KÝ</button>
+                        <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()"><i class="fa-solid fa-cloud-arrow-up"></i> ĐỒNG BỘ MÂY LÊN GOOGLE SHEET</button>
                     </div>
                 </div>
 
                 <div class="main-card">
-                    <!-- THANH TÓM TẮT LƯƠNG CƠ CẤU GỌN GÀNG -->
                     <div class="salary-visual-summary">
                         <div class="visual-mini-card">
                             <span class="visual-lbl"><i class="fa-solid fa-wallet" style="color:var(--blue); margin-right:4px;"></i> TỔNG LƯƠNG CB:</span>
@@ -768,7 +767,7 @@
     <!-- MODAL CONFIG URL API -->
     <div id="configUrlModal" class="modal" onclick="closeConfigUrlModal()">
         <div class="modal-content" onclick="event.stopPropagation()" style="max-width:650px;">
-            <div class="card-title" style="border-left-color: var(--green);">CẤU HÌNH LINK GOOGLE SHEET VÀ API WEB APP</div>
+            <div class="card-title" style="border-left-color: var(--green);">CẤU HÌNH LINK GOOGLE SHEET VÀ DRIVE</div>
             <div class="form-group" style="margin-bottom:12px;">
                 <label>1. Link Google Script Web App API (`.../exec`):</label>
                 <input type="text" id="cfg-script-url">
@@ -777,9 +776,13 @@
                 <label>2. Link Google Sheets Xem Bảng Lương Trực Tiếp:</label>
                 <input type="text" id="cfg-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit">
             </div>
+            <div class="form-group" style="margin-bottom:15px;">
+                <label>3. Link Thư Mục Google Drive Lưu Chứng Từ Cước Mạng:</label>
+                <input type="text" id="cfg-drive-url" placeholder="https://drive.google.com/drive/folders/YOUR_FOLDER_ID">
+            </div>
             <div style="text-align:right;">
                 <button type="button" class="btn btn-gray" onclick="closeConfigUrlModal()">Đóng</button>
-                <button type="button" class="btn btn-green" onclick="saveConfigUrls()">💾 Lưu Link Cấu Hình</button>
+                <button type="button" class="btn btn-green" onclick="saveConfigUrls()">💾 Lưu Cấu Hình Link</button>
             </div>
         </div>
     </div>
@@ -818,6 +821,7 @@
         const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbzQ0GgUAIwTzKu6BOJN5-9laa8opA7aQqbK0PiI9_ADqyAyPj3HkVPA51QoWU03p5K1/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
+        let GOOGLE_DRIVE_FOLDER_URL = localStorage.getItem('sys_cfg_drive_url') || "";
         let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || DEFAULT_SCRIPT_API; 
         
         let currentPaymentFiles = []; 
@@ -852,8 +856,8 @@
         let paymentRecords = JSON.parse(localStorage.getItem('sys_payment_records')) || [];
         
         let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_records')) || [
-            { id: "1", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33015571, period: "2026-03", cert: "Xem (1)", files: [{ name: "HoaDon_Thang3.pdf", type: "application/pdf", driveUrl: GOOGLE_SHEET_VIEW_URL }] },
-            { id: "2", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 8402864, period: "2026-06", cert: "Xem (1)", files: [{ name: "HoaDon_Thang6.pdf", type: "application/pdf", driveUrl: GOOGLE_SHEET_VIEW_URL }] }
+            { id: "1", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33015571, period: "2026-03", cert: "Xem (1)", files: [{ name: "HoaDon_Thang3.pdf", type: "application/pdf" }] },
+            { id: "2", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 8402864, period: "2026-06", cert: "Xem (1)", files: [{ name: "HoaDon_Thang6.pdf", type: "application/pdf" }] }
         ];
         
         let itAssetsRecords = JSON.parse(localStorage.getItem('sys_it_records')) || [
@@ -866,11 +870,12 @@
             }
         ];
 
+        // HÀM MỞ FILE BẢNG LƯƠNG TRÊN GOOGLE SHEETS
         function openMainSalaryGoogleSheet() {
             if (GOOGLE_SHEET_VIEW_URL && GOOGLE_SHEET_VIEW_URL.startsWith('http')) {
                 window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
             } else {
-                alert("⚠️ Bạn chưa cấu hình Link Google Sheet Bảng lương!\n\nHãy bấm nút 'Cấu hình API Web App & Link Sheet' (màu tím góc trên) và dán link Google Sheet Bảng lương vào mục số 2.");
+                alert("⚠️ Bạn chưa cấu hình Link Google Sheet Bảng lương!\n\nHãy bấm nút 'Cấu hình API Web App & Link Sheet' (màu tím góc trên) và dán link Google Sheet Bảng lương vào mục 2.");
             }
         }
 
@@ -1286,26 +1291,30 @@
             if(f) openLightboxModal(f.driveUrl || f.base64, f.name);
         }
 
+        // HÀM MỞ DRIVE SỬA TRIỆT ĐỂ KHÔNG BỊ NHẦM SANG BẢNG LƯƠNG
         function previewRecordFile(recordType, recordIdx) {
             let records = (recordType === 'payment') ? paymentRecords : telecomRecords;
             let rec = records[recordIdx];
             
             if (!rec) return;
 
+            // 1. Nếu có tệp chứa Link Drive riêng -> Mở luôn Tab mới
             if (rec.files && rec.files.length > 0 && rec.files[0].driveUrl) {
                 window.open(rec.files[0].driveUrl, '_blank');
                 return;
             }
 
+            // 2. Nếu là cước viễn thông -> Ưu tiên mở Thư mục Drive Cước Mạng riêng
             if (recordType === 'telecom') {
-                if (GOOGLE_SHEET_VIEW_URL && GOOGLE_SHEET_VIEW_URL.startsWith('http')) {
-                    window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
+                if (GOOGLE_DRIVE_FOLDER_URL && GOOGLE_DRIVE_FOLDER_URL.startsWith('http')) {
+                    window.open(GOOGLE_DRIVE_FOLDER_URL, '_blank');
                 } else {
-                    alert(`📂 Tệp chứng từ cước ${formatPeriodVN(rec.period)} đã lưu an toàn!\n\n💡 Bạn hãy dán Link Drive vào nút 'Cấu hình API Web App & Link Sheet' để mở thẳng tới thư mục Google Drive nhé!`);
+                    alert(`📂 Chứng từ cước ${formatPeriodVN(rec.period)} đã lưu an toàn!\n\n💡 Bạn hãy bấm nút 'Cấu hình API Web App & Link Sheet' (góc trên) và dán Link Thư mục Google Drive vào Mục số 3 nhé!`);
                 }
                 return;
             }
 
+            // 3. Nếu có file base64 đính kèm nội bộ -> Mở Popup xem ảnh/pdf
             if (rec.files && rec.files.length > 0 && rec.files[0].base64) {
                 openLightboxModal(rec.files[0].base64, rec.files[0].name);
                 return;
@@ -1536,7 +1545,7 @@
                     return {
                         name: file.name,
                         type: file.type,
-                        driveUrl: file.driveUrl || GOOGLE_SHEET_VIEW_URL
+                        driveUrl: file.driveUrl || GOOGLE_DRIVE_FOLDER_URL
                     };
                 });
 
@@ -1967,6 +1976,7 @@
 
         function openConfigUrlModal() {
             document.getElementById('cfg-sheet-url').value = GOOGLE_SHEET_VIEW_URL;
+            document.getElementById('cfg-drive-url').value = GOOGLE_DRIVE_FOLDER_URL;
             document.getElementById('cfg-script-url').value = GOOGLE_SCRIPT_API_URL;
             document.getElementById('configUrlModal').style.display = 'flex';
         }
@@ -1974,10 +1984,14 @@
         
         function saveConfigUrls() {
             GOOGLE_SHEET_VIEW_URL = document.getElementById('cfg-sheet-url').value.trim();
+            GOOGLE_DRIVE_FOLDER_URL = document.getElementById('cfg-drive-url').value.trim();
             GOOGLE_SCRIPT_API_URL = document.getElementById('cfg-script-url').value.trim();
+            
             localStorage.setItem('sys_cfg_sheet_url', GOOGLE_SHEET_VIEW_URL);
+            localStorage.setItem('sys_cfg_drive_url', GOOGLE_DRIVE_FOLDER_URL);
             localStorage.setItem('sys_cfg_script_url', GOOGLE_SCRIPT_API_URL);
-            alert("Đã lưu thông tin kết nối thành công!");
+            
+            alert("Đã lưu thông tin cấu hình thành công!");
             closeConfigUrlModal();
         }
 
