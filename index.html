@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG - ENTERPRISE PLATFORM</title>
     
-    <!-- Core Cloud Engine Libraries -->
+    <!-- Thư viện lõi Cloud Engine -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -30,8 +30,8 @@
             font-size: 13px; margin: 0; padding: 15px; background: var(--bg-light); color: var(--text-main);
         }
         
-        .workspace { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
-        @media (max-width: 1300px) { .workspace { grid-template-columns: 1fr; } }
+        .workspace { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+        @media (max-width: 1200px) { .workspace { grid-template-columns: 1fr; } }
 
         .db-status-bar {
             display: flex; align-items: center; justify-content: space-between;
@@ -44,9 +44,9 @@
         
         .header { display: flex; justify-content: space-between; align-items: center; background: #0b132b; color: white; padding: 10px 20px; border-radius: 4px; margin-bottom: 15px; }
         .header h1 { font-size: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
-        .live-clock-box { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 4px; font-family: monospace; font-size: 12px; text-align: right; }
+        .live-clock-box { background: rgba(255,255,255,0.12); padding: 6px 14px; border-radius: 4px; font-family: monospace; font-size: 13px; text-align: right; border: 1px solid rgba(255,255,255,0.2); font-weight: bold; color: #fef08a; }
 
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px; }
         .stat-card { background: white; padding: 12px 15px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); border: 1px solid var(--border-color); border-left: 4px solid var(--blue); }
         .stat-card.orange { border-left-color: var(--orange); }
         .stat-card.green { border-left-color: var(--green); }
@@ -75,8 +75,8 @@
         .main-card { background: white; border-radius: 4px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #cbd5e1; }
         .card-title { font-size: 13px; font-weight: bold; color: var(--primary); margin-bottom: 15px; border-left: 4px solid var(--blue); padding-left: 8px; display: flex; justify-content: space-between; align-items: center; }
         
-        .grid-form-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 12px; }
-        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
+        .grid-form-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 12px; }
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 12px; }
         
         .form-group { display: flex; flex-direction: column; gap: 4px; }
         .form-group label { font-weight: bold; color: #334155; font-size: 12px; }
@@ -118,14 +118,14 @@
         /* Khung Preview QR Code Realtime cho CNTT */
         .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 10px; border-radius: 6px; height: 100%; min-height: 180px; }
 
-        /* LỊCH BLOCK VẠN NIÊN */
-        .calendar-sidebar { background: white; border-radius: 4px; border: 1px solid #cbd5e1; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .calendar-block-view { border: 4px solid #d32f2f; border-radius: 8px; background: white; margin-top: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(211, 47, 47, 0.15); }
-        .calendar-block-head { background: #d32f2f; color: white; text-align: center; padding: 8px; font-weight: bold; font-size: 13px; letter-spacing: 0.5px; }
-        .calendar-block-body { text-align: center; padding: 12px 10px; background: #fff; }
-        .calendar-block-lunar { background: #fff5f5; border-top: 1px dashed #e57373; border-bottom: 1px dashed #e57373; padding: 8px; display: flex; justify-content: space-around; font-size: 11px; }
-        .calendar-block-details { padding: 10px; font-size: 11px; line-height: 1.5; color: #334155; background: #fafafa; }
-        .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
+        /* BỘ LỊCH VẠN NIÊN BLOCK ĐẦY ĐỦ CỤ THỂ */
+        .calendar-sidebar { background: white; border-radius: 6px; border: 1px solid #cbd5e1; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 12px; overflow: hidden; box-shadow: 0 6px 15px rgba(185, 28, 28, 0.18); }
+        .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 10px 8px; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .calendar-block-body { text-align: center; padding: 15px 10px; background: #fff; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 10px 8px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
+        .calendar-block-details { padding: 12px 10px; font-size: 11px; line-height: 1.6; color: #334155; background: #fafafa; }
+        .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 4px 0; display: flex; justify-content: space-between; }
 
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
@@ -153,7 +153,7 @@
 
     <div class="workspace">
         <div class="main-body">
-            <!-- HEADER TITLE & LIVE CLOCK -->
+            <!-- HEADER TITLE & LIVE CLOCK (ĐÃ SỬA VÀ KHÔI PHỤC ĐỒNG HỒ THỜI GIAN THỰC) -->
             <div class="header">
                 <h1>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG ENTERPRISE PLATFORM</h1>
                 <div class="live-clock-box" id="live-system-clock">--:--:-- --/--/----</div>
@@ -435,7 +435,7 @@
                     <form id="it-main-form" onsubmit="saveITRecord(event)">
                         <input type="hidden" id="it-edit-id" value="">
                         
-                        <div style="display: grid; grid-template-columns: 1fr 200px; gap: 15px; align-items: start;">
+                        <div style="display: grid; grid-template-columns: 1fr 180px; gap: 15px; align-items: start;">
                             <div>
                                 <div class="grid-form">
                                     <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required placeholder="Họ và tên..." oninput="updateRealtimeQR()"></div>
@@ -573,32 +573,35 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN BLOCK -->
+        <!-- CỘT PHẢI: BỘ LỊCH VẠN NIÊN BLOCK ĐẦY ĐỦ CỤ THỂ 100% -->
         <div class="calendar-sidebar">
-            <div style="background: var(--primary); color:white; padding:10px; border-radius:4px; font-weight:bold; text-align:center;"><i class="fa-solid fa-calendar-days"></i> LỊCH VẠN NIÊN BLOCK THÔNG MINH</div>
-            <div style="margin-top:10px;"><input type="date" id="calendar-picker" onchange="updateSmartCalendarView()" style="width:100%; padding:6px; font-family:'Times New Roman'; border:1px solid #cbd5e1; border-radius:4px;"></div>
+            <div style="background: var(--primary); color:white; padding:10px; border-radius:4px; font-weight:bold; text-align:center; font-size:13px;"><i class="fa-solid fa-calendar-days" style="color:#fef08a;"></i> LỊCH VẠN NIÊN BLOCK THÔNG MINH</div>
+            <div style="margin-top:10px;">
+                <label style="font-size:11px; font-weight:bold; color:#64748b; margin-bottom:3px; display:block;">Tra cứu ngày bất kỳ:</label>
+                <input type="date" id="calendar-picker" onchange="updateSmartCalendarView()" style="width:100%; padding:6px; font-family:'Times New Roman'; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;">
+            </div>
             
             <div class="calendar-block-view">
                 <div class="calendar-block-head" id="cal-solar-month-year">THÁNG 07 / 2026</div>
                 <div class="calendar-block-body">
-                    <div style="font-size:13px; color:#4a5568; font-weight:bold;" id="cal-solar-week">Thứ Ba</div>
-                    <div style="font-size:80px; font-weight:900; color:#d32f2f; line-height:1; margin:6px 0;" id="cal-solar-day">21</div>
-                    <div style="font-size:13px; font-weight:bold; color:#2d3748;" id="cal-solar-canchi-day">Ngày Ất Sửu</div>
+                    <div style="font-size:14px; color:#475569; font-weight:bold; text-transform:uppercase;" id="cal-solar-week">Thứ Ba</div>
+                    <div style="font-size:82px; font-weight:900; color:#dc2626; line-height:1; margin:8px 0; font-family:'Times New Roman';" id="cal-solar-day">21</div>
+                    <div style="font-size:13px; font-weight:bold; color:#1e293b;" id="cal-solar-canchi-day">Ngày Ất Sửu</div>
                 </div>
                 <div class="calendar-block-lunar">
-                    <div>Tháng Âm: <strong id="cal-lunar-month" style="color:#b71c1c;">06</strong><br><span id="cal-lunar-canchi-month" style="color:#718096; font-size:10px;">Bính Thân</span></div>
-                    <div>Ngày Âm: <strong id="cal-lunar-day" style="color:#b71c1c; font-size:16px;">08</strong></div>
-                    <div>Năm Âm: <strong id="cal-lunar-year" style="color:#b71c1c;">2026</strong><br><span id="cal-lunar-canchi-year" style="color:#718096; font-size:10px;">Bính Ngọ</span></div>
+                    <div>Tháng Âm<br><strong id="cal-lunar-month" style="color:#991b1b; font-size:15px;">06</strong><br><span id="cal-lunar-canchi-month" style="color:#64748b; font-size:10px;">Bính Thân</span></div>
+                    <div>Ngày Âm<br><strong id="cal-lunar-day" style="color:#991b1b; font-size:22px;">08</strong></div>
+                    <div>Năm Âm<br><strong id="cal-lunar-year" style="color:#991b1b; font-size:15px;">2026</strong><br><span id="cal-lunar-canchi-year" style="color:#64748b; font-size:10px;">Bính Ngọ</span></div>
                 </div>
                 <div class="calendar-block-details">
                     <div><span>Tiết khí:</span><strong style="color:var(--blue);">Tiểu Thử</strong></div>
-                    <div><span>Trực:</span><strong style="color:var(--green);">Trực Định (Tốt)</strong></div>
+                    <div><span>Trực phong thủy:</span><strong style="color:var(--green);">Trực Định (Tốt)</strong></div>
                     <div><span>Ngũ hành:</span><strong>Hải Trung Kim</strong></div>
-                    <div><span>Tài thần:</span><strong style="color:var(--orange);">Hướng Đông Nam</strong></div>
-                    <div><span>Hỷ thần:</span><strong style="color:var(--purple);">Hướng Đông Bắc</strong></div>
+                    <div><span>Hướng Tài thần:</span><strong style="color:var(--orange);">Hướng Đông Nam</strong></div>
+                    <div><span>Hướng Hỷ thần:</span><strong style="color:var(--purple);">Hướng Đông Bắc</strong></div>
                 </div>
             </div>
-            <button type="button" class="btn btn-purple" onclick="openRemindModal()" style="width:100%; margin-top:10px; justify-content:center;"><i class="fa-solid fa-bell"></i> Đặt Lịch Chu Kỳ Âm Lịch 🌟</button>
+            <button type="button" class="btn btn-purple" onclick="openRemindModal()" style="width:100%; margin-top:12px; justify-content:center; padding:8px;"><i class="fa-solid fa-bell"></i> Đặt Lịch Chu Kỳ Âm Lịch 🌟</button>
         </div>
     </div>
 
@@ -729,7 +732,31 @@
             }
         ];
 
-        // HÀM CHUYỂN ĐỔI ĐỊNH DẠNG THÁNG/NĂM CHUẨN VIỆT NAM (2026-06 -> 06/2026)
+        // HÀM KHÔI PHỤC ĐỒNG HỒ NHẢY GIÂY THỜI GIAN THỰC CHÍNH XÁC
+        function startRealtimeLiveClock() {
+            function updateClock() {
+                const now = new Date();
+                const dayNames = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                const dayName = dayNames[now.getDay()];
+                
+                const hh = String(now.getHours()).padStart(2, '0');
+                const mm = String(now.getMinutes()).padStart(2, '0');
+                const ss = String(now.getSeconds()).padStart(2, '0');
+                
+                const dd = String(now.getDate()).padStart(2, '0');
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const yyyy = now.getFullYear();
+
+                const clockElement = document.getElementById('live-system-clock');
+                if (clockElement) {
+                    clockElement.innerText = `${dayName}, ${dd}/${month}/${yyyy} - ${hh}:${mm}:${ss}`;
+                }
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // HÀM CHUYỂN ĐỔI KỲ CƯỚC THÁNG/NĂM VIỆT NAM (2026-06 -> 06/2026)
         function formatPeriodVN(periodStr) {
             if (!periodStr) return "N/A";
             if (periodStr.includes("-")) {
@@ -1324,8 +1351,8 @@
 
             realtimeQrInstance = new QRCode(qrTarget, {
                 text: rawText,
-                width: 120,
-                height: 120,
+                width: 110,
+                height: 110,
                 colorDark : "#0f172a",
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.M
@@ -1463,7 +1490,7 @@
             updateRealtimeQR();
         }
 
-        // ================= THUẬT TOÁN LỊCH VẠN NIÊN ÂM DƯƠNG CHUẨN XÁC =================
+        // ================= THUẬT TOÁN LỊCH VẠN NIÊN BLOCK ĐẦY ĐỦ CỤ THỂ =================
         function convertSolarToLunar(dd, mm, yyyy) {
             let baseSolar = new Date(2026, 6, 21);
             let targetSolar = new Date(yyyy, mm - 1, dd);
@@ -1572,16 +1599,14 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            initTodayCalendar();
+            startRealtimeLiveClock(); // Chạy đồng hồ thời gian thực
+            initTodayCalendar();     // Chạy lịch vạn niên block đầy đủ
             calculateSalaryLogic(); 
             renderPaymentTable(); 
             renderTelecomTable();
             autoGenerateAssetID(); 
             renderITTable();
             updateRealtimeQR();
-            setInterval(() => { 
-                document.getElementById('live-system-clock').innerText = new Date().toLocaleString('vi-VN'); 
-            }, 1000);
         });
     </script>
 </body>
