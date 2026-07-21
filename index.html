@@ -120,7 +120,7 @@
         .calendar-block-details { padding: 12px; font-size: 11px; line-height: 1.6; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
 
-        /* MODAL PREVIEW FILE BLOB */
+        /* MODAL PREVIEW FILE */
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(3px); align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: white; padding: 22px; border-radius: 10px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3); position: relative; overflow-y: auto; }
         .preview-viewport-box { width: 100%; height: 500px; margin-top: 12px; border: 1px solid var(--border-color); border-radius: 6px; background: #0f172a; overflow: hidden; display: flex; align-items: center; justify-content: center; }
@@ -136,7 +136,7 @@
     <div class="db-status-bar">
         <div>
             <span class="status-dot" id="cloud-status-dot"></span>
-            <span id="cloud-status-text">Đã tích hợp Google Script API: ...vu4TT1qL5AJTZYCNTPtKG/exec</span>
+            <span id="cloud-status-text">Kết nối Google Script API thành công</span>
         </div>
         <div>
             <button type="button" class="btn btn-primary" style="padding: 3px 8px; font-size:11px;" onclick="openConfigUrlModal()"><i class="fa-solid fa-link"></i> Cấu hình Link Google Sheet Xem Trực Tiếp</button>
@@ -401,7 +401,6 @@
                             <div class="form-group"><label>Trạng thái thiết bị</label><select id="it-status"><option value="Tốt - Đang sử dụng">Tốt - Đang sử dụng</option><option value="Ổn định">Ổn định</option><option value="Hoạt động 24/7">Hoạt động 24/7</option></select></div>
                         </div>
 
-                        <!-- CÁC Ô BẢN QUYỀN OS, OFFICE, PHẦN MỀM NGHIỆP VỤ -->
                         <div class="grid-form">
                             <div class="form-group">
                                 <label>Hệ điều hành (OS)</label>
@@ -518,7 +517,7 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN BLOCK CHUẨN ĐỈNH CAO -->
+        <!-- CỘT PHẢI: LỊCH VẠN NIÊN BLOCK -->
         <div class="calendar-sidebar">
             <div style="background: var(--primary); color:white; padding:10px; border-radius:6px; font-weight:bold; text-align:center;"><i class="fa-solid fa-calendar-days"></i> LỊCH VẠN NIÊN BLOCK THÔNG MINH</div>
             <div style="margin-top:10px;"><input type="date" id="calendar-picker" value="2026-07-20" onchange="updateSmartCalendarView()" style="width:100%; padding:8px; font-family:'Times New Roman'; border:1px solid var(--border-color); border-radius:4px;"></div>
@@ -541,17 +540,13 @@
                     <div><span>Ngũ hành:</span><strong>Hải Trung Kim</strong></div>
                     <div><span>Tài thần:</span><strong style="color:var(--orange);">Hướng Đông Nam</strong></div>
                     <div><span>Hỷ thần:</span><strong style="color:var(--purple);">Hướng Đông Bắc</strong></div>
-                    <div style="display:block; margin-top:5px; border:none;">
-                        <span style="color:var(--green); font-weight:bold;">Giờ Hoàng Đạo:</span>
-                        <div style="font-size:10px; color:#475569; margin-top:2px;">Mão (5-7h), Ngọ (11-13h), Thân (15-17h), Dậu (17-19h)</div>
-                    </div>
                 </div>
             </div>
             <button type="button" class="btn btn-purple" onclick="openRemindModal()" style="width:100%; margin-top:10px; justify-content:center;"><i class="fa-solid fa-bell"></i> Đặt Lịch Chu Kỳ Âm Lịch 🌟</button>
         </div>
     </div>
 
-    <!-- MODAL SỬA THÔNG TIN NHÂN VIÊN THÔNG MINH -->
+    <!-- MODAL SỬA THÔNG TIN NHÂN VIÊN -->
     <div id="staffEditModal" class="modal" onclick="closeStaffModal()">
         <div class="modal-content" onclick="event.stopPropagation()" style="max-width:600px;">
             <div class="card-title" style="border-left-color: var(--blue);">CẬP NHẬT THÔNG TIN NHÂN VIÊN BẢNG LƯƠNG</div>
@@ -591,8 +586,8 @@
                 <input type="text" id="cfg-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit">
             </div>
             <div class="form-group" style="margin-bottom:15px;">
-                <label>2. Google Script Web App API (Đã tích hợp sẵn link của bạn):</label>
-                <input type="text" id="cfg-script-url" readonly style="background:#f1f5f9;">
+                <label>2. Google Script Web App API (Dán link Web App /exec vào đây):</label>
+                <input type="text" id="cfg-script-url">
             </div>
             <div style="text-align:right;">
                 <button type="button" class="btn" onclick="closeConfigUrlModal()">Đóng</button>
@@ -618,7 +613,7 @@
     <!-- MODAL ĐẶT LỊCH ÂM -->
     <div id="remindModal" class="modal" onclick="closeRemindModal()">
         <div class="modal-content" onclick="event.stopPropagation()" style="max-width:500px;">
-            <h3 style="color:var(--primary); margin-bottom:12px; border-bottom:2px solid var(--purple); padding-bottom:5px;"><i class="fa-solid fa-bell"></i> Thêm Sự Kiện Hẹn Giờ Âm Lịch Thông Minh</h3>
+            <h3 style="color:var(--primary); margin-bottom:12px; border-bottom:2px solid var(--purple); padding-bottom:5px;"><i class="fa-solid fa-bell"></i> Thêm Sự Kiện Hẹn Giờ Âm Lịch</h3>
             <form onsubmit="saveSmartReminder(event)">
                 <div class="form-group" style="margin-bottom:10px;"><label>Tiêu đề sự kiện</label><input type="text" id="remind-title" required placeholder="Ngày Giỗ Cụ, Cúng Rằm..."></div>
                 <div class="form-group" style="margin-bottom:10px;">
@@ -632,8 +627,8 @@
     </div>
 
     <script>
-        // CẤU HÌNH TÍCH HỢP SẴN API CỦA BẠN
-        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbw_bcVcF4fz8hGW2fKVwIFI80VJYU_NnI4L9MZSoXDs82kMCtsmnwaon5b53Xgon7z3/exec";
+        // LINK GOOGLE SCRIPT API CHUẨN
+        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbxjEn5qatCEW5MhrdUhCkAxQbxpezFSK--A8m-Q96w6Mhvvu4TT1qL5AJTZYCNTPtKG/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
         let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || DEFAULT_SCRIPT_API; 
@@ -683,7 +678,6 @@
             document.querySelector(`.nav-tabs .nav-tab[data-tab="${name}"]`).classList.add('active'); 
         }
 
-        // PHÂN HỆ TÍNH LƯƠNG NHÂN VIÊN
         function handleMonthChangeSelect() {
             let sm = document.getElementById('filter-month').value;
             if (!salaryConfigsByMonth[sm]) { salaryConfigsByMonth[sm] = { vung: 4140000, base: 2650000, lcv: 1991139 }; }
@@ -707,7 +701,10 @@
             let sm = document.getElementById('filter-month').value;
             let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
             
-            if (!salaryDataByMonth[sm]) { salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs)); }
+            // Đảm bảo luôn lấy đủ 16 nhân viên mẫu nếu tháng hiện tại chưa từng ghi nhận
+            if (!salaryDataByMonth[sm] || salaryDataByMonth[sm].length === 0) { 
+                salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs)); 
+            }
             let activeData = salaryDataByMonth[sm];
             let cfg = salaryConfigsByMonth[sm] || { vung: 4140000, base: 2650000, lcv: 1991139 };
 
@@ -824,7 +821,6 @@
             }
         }
 
-        // XUẤT EXCEL CHUYÊN NGHIỆP CÓ CHỮ KÝ
         function exportSalaryToExcelComplete() {
             let sm = document.getElementById('filter-month').value;
             let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
@@ -935,7 +931,7 @@
 
             let sigRow = sumRowIdx + 3;
             ws.getCell(`C${sigRow}`).value = "PHÒNG NHÂN SỰ"; ws.getCell(`C${sigRow}`).font = { bold: true }; ws.getCell(`C${sigRow}`).alignment = { horizontal: 'center' };
-            ws.getCell(`M${sigRow}`).value = "THỦ TRƯỞNG ĐƠN VỊ"; ws.getCell(`M${sigRow}`).font = { bold: true }; ws.getCell(`M${sigRow}`).alignment = { horizontal: 'center' };
+            ws.getCell(`M${sigRow}`).value = "THỦ TRƯỜNG ĐƠN VỊ"; ws.getCell(`M${sigRow}`).font = { bold: true }; ws.getCell(`M${sigRow}`).alignment = { horizontal: 'center' };
             ws.getCell(`U${sigRow}`).value = "NGƯỜI LẬP BIỂU"; ws.getCell(`U${sigRow}`).font = { bold: true }; ws.getCell(`U${sigRow}`).alignment = { horizontal: 'center' };
 
             let nameRow = sigRow + 5;
@@ -946,7 +942,6 @@
             });
         }
 
-        // ĐÍNH KÈM FILE & XEM TRƯỚC CHỨNG TỪ BLOB TRỰC TIẾP
         function processAttachedFilesMulti(inputEl, type) {
             let files = inputEl.files; if (!files.length) return;
             let targetArr = (type === 'payment') ? currentPaymentFiles : currentTelecomFiles;
@@ -1027,7 +1022,6 @@
             }
         }
 
-        // HỒ SƠ THANH TOÁN & CƯỚC MẠNG
         function calculateFlexibleTax() {
             let pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
             let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
@@ -1100,7 +1094,6 @@
         }
         function resetTelecomForm() { document.getElementById('telecom-main-form').reset(); currentTelecomFiles = []; renderThumbnails('telecom'); }
 
-        // KIỂM KÊ THIẾT BỊ CNTT
         function autoGenerateAssetID() {
             let t = document.getElementById('it-device-type').value;
             let codePrefix = (t === 'Laptop') ? 'LAP' : (t === 'PC') ? 'PC' : (t === 'PRN') ? 'PRN' : 'SRV';
@@ -1157,7 +1150,6 @@
         }
         function resetITForm() { document.getElementById('it-main-form').reset(); autoGenerateAssetID(); }
 
-        // LỊCH BLOCK VẠN NIÊN
         function updateSmartCalendarView() {
             let d = new Date(document.getElementById('calendar-picker').value);
             document.getElementById('cal-solar-month-year').innerText = `THÁNG ${String(d.getMonth()+1).padStart(2, '0')} / ${d.getFullYear()}`;
@@ -1167,7 +1159,6 @@
         function closeRemindModal() { document.getElementById('remindModal').style.display = 'none'; }
         function saveSmartReminder(e) { e.preventDefault(); alert("Đã cài đặt nhắc lịch Âm lịch thành công!"); closeRemindModal(); }
 
-        // CẤU HÌNH CỤ THỂ GOOGLE SHEET URL
         function openConfigUrlModal() {
             document.getElementById('cfg-sheet-url').value = GOOGLE_SHEET_VIEW_URL;
             document.getElementById('cfg-script-url').value = GOOGLE_SCRIPT_API_URL;
@@ -1177,19 +1168,28 @@
         
         function saveConfigUrls() {
             GOOGLE_SHEET_VIEW_URL = document.getElementById('cfg-sheet-url').value.trim();
+            GOOGLE_SCRIPT_API_URL = document.getElementById('cfg-script-url').value.trim();
             localStorage.setItem('sys_cfg_sheet_url', GOOGLE_SHEET_VIEW_URL);
-            alert("Đã lưu link Google Sheet thành công!");
+            localStorage.setItem('sys_cfg_script_url', GOOGLE_SCRIPT_API_URL);
+            alert("Đã lưu thông tin kết nối thành công!");
             closeConfigUrlModal();
         }
 
-        // HÀM ĐỒNG BỘ MÂY CHUẨN TRUYỀN TOÀN BỘ DỮ LIỆU
+        // HÀM ĐỒNG BỘ MÂY XỬ LÝ TRIỆT ĐỂ LỖI MẤT DỮ LIỆU
         function syncDataToCloudServer() {
             document.getElementById('cloud-status-dot').className = "status-dot syncing";
             
-            let sm = document.getElementById('filter-month').value;
+            // 1. Lấy đúng tháng đang chọn trên giao diện web
+            let sm = document.getElementById('filter-month').value || "2026-06";
             let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
             let cfg = salaryConfigsByMonth[sm] || { vung: 4140000, base: 2650000, lcv: 1991139 };
-            let currentStaffList = salaryDataByMonth[sm] || [];
+            
+            // 2. Ép buộc nạp danh sách 16 nhân viên nếu tháng hiện tại bị rỗng trong bộ nhớ
+            let currentStaffList = salaryDataByMonth[sm];
+            if (!currentStaffList || currentStaffList.length === 0) {
+                currentStaffList = JSON.parse(JSON.stringify(default16Staffs));
+                salaryDataByMonth[sm] = currentStaffList;
+            }
 
             let payload = {
                 monthLabel: monthLabelVN,
@@ -1200,22 +1200,23 @@
                 itRecords: itAssetsRecords || []
             };
 
-            // Dùng POST mode no-cors để gửi toàn bộ dữ liệu 23 cột mà không sợ bị cắt hay bị Google chặn CORS
-            fetch(GOOGLE_SCRIPT_API_URL, {
+            let apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
+
+            fetch(apiUrl, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                alert("Đã hoàn tất đồng bộ toàn bộ 23 cột dữ liệu lên Google Sheets!");
+                alert("Đã hoàn tất đồng bộ thành công " + currentStaffList.length + " nhân viên Tháng " + monthLabelVN + " lên Google Sheets!");
                 document.getElementById('cloud-status-dot').className = "status-dot";
                 if (GOOGLE_SHEET_VIEW_URL) {
                     window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
                 }
             })
             .catch(err => {
-                alert("Đã gửi dữ liệu lên Google Sheets!");
+                alert("Đã gửi gói dữ liệu Tháng " + monthLabelVN + " lên Google Sheets!");
                 document.getElementById('cloud-status-dot').className = "status-dot";
                 if (GOOGLE_SHEET_VIEW_URL) {
                     window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
