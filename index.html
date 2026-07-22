@@ -124,7 +124,7 @@
         .inp-editable { width: 100%; padding: 2px; border: 1px solid #94a3b8; border-radius: 2px; font-size: 11px; }
         .inp-num-sm { width: 45px; text-align: center; }
 
-        /* TRÌNH KÝ */
+        /* TRÌNH KÝ EXCEL CHUẨN */
         .signature-section-wrapper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 2px dashed #cbd5e1; }
         .sig-column { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 4px; padding: 10px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; }
         .sig-title { font-weight: bold; font-size: 11px; color: #0f172a; text-transform: uppercase; }
@@ -161,7 +161,7 @@
         </div>
     </div>
 
-    <!-- TABS MỞ KHÓA HOÀN TOÀN -->
+    <!-- TABS NAVIGATION MỞ KHÓA TẤT CẢ -->
     <div class="nav-tabs">
         <button class="nav-tab active" data-tab="tab-salary" onclick="switchTab('tab-salary')"><i class="fa-solid fa-users"></i> Tính Lương Nhân Viên</button>
         <button class="nav-tab" data-tab="tab-payment" onclick="switchTab('tab-payment')"><i class="fa-solid fa-file-invoice-dollar"></i> Hồ Sơ Thanh Toán Văn Phòng</button>
@@ -169,11 +169,11 @@
         <button class="nav-tab" data-tab="tab-it" onclick="switchTab('tab-it')"><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</button>
     </div>
 
-    <!-- ================= TAB 1: TÍNH LƯƠNG NHÂN VIÊN ================= -->
+    <!-- ================= TAB 1: TÍNH LƯƠNG NHÂN VIÊN (ĐẦY ĐỦ 16 NGƯỜI) ================= -->
     <div id="tab-salary" class="tab-content active">
         <div class="card-box">
             <div class="card-title">
-                <span><i class="fa-solid fa-sliders"></i> THAM SỐ LƯƠNG & CẤU HÌNH</span>
+                <span><i class="fa-solid fa-sliders"></i> THAM SỐ LƯƠNG CƠ SỞ & CẤU HÌNH</span>
             </div>
             <div class="form-grid-4">
                 <div class="form-group"><label>Tháng Báo Cáo</label><input type="month" id="filter-month" value="2026-05" onchange="calculateSalaryLogic()"></div>
@@ -192,11 +192,11 @@
                             <th rowspan="2">STT</th>
                             <th rowspan="2" style="min-width:140px;">HỌ VÀ TÊN</th>
                             <th rowspan="2" style="min-width:100px;">Số Tài Khoản</th>
-                            <th colspan="2">LCB</th>
+                            <th colspan="2">LCB (Nhập)</th>
                             <th rowspan="2">Lương HĐLĐ</th>
-                            <th colspan="3">NGÀY CÔNG</th>
+                            <th colspan="3">NGÀY CÔNG (Nhập)</th>
                             <th colspan="3">TÍNH LƯƠNG CB THỰC TẾ</th>
-                            <th colspan="2">LCV</th>
+                            <th colspan="2">LCV (Nhập)</th>
                             <th rowspan="2">LCV Thực Tế</th>
                             <th rowspan="2">Tổng LCB+LCV</th>
                             <th rowspan="2" style="color:#ef4444;">BH (10.5%)</th>
@@ -214,7 +214,7 @@
                 </table>
             </div>
 
-            <!-- TRÌNH KÝ EXCEL -->
+            <!-- KHỐI TRÌNH KÝ EXCEL CHUẨN MẪU -->
             <div class="signature-section-wrapper">
                 <div class="sig-column">
                     <div class="sig-title">PHÒNG NHÂN SỰ</div>
@@ -235,7 +235,7 @@
         </div>
     </div>
 
-    <!-- ================= TAB 2: HỒ SƠ THANH TOÁN VP ================= -->
+    <!-- ================= TAB 2: HỒ SƠ THANH TOÁN VĂN PHÒNG ================= -->
     <div id="tab-payment" class="tab-content">
         <div class="card-box" style="border-left: 4px solid var(--green);">
             <div class="card-title" style="color:var(--green);"><i class="fa-solid fa-file-invoice-dollar"></i> Đề Nghị Thanh Toán Văn Phòng</div>
@@ -326,13 +326,14 @@
         </div>
     </div>
 
-    <!-- ================= TAB 4: THIẾT BỊ CNTT ================= -->
+    <!-- ================= TAB 4: THIẾT BỊ CNTT (GIAO DIỆN CHUẨN DỮ LIỆU ĐẦY ĐỦ) ================= -->
     <div id="tab-it" class="tab-content">
         <div class="card-box">
             <div class="card-title"><i class="fa-solid fa-laptop-code"></i> Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin</div>
             <form id="itAssetForm" onsubmit="handleSaveAsset(event)">
                 <div class="form-layout-wrapper">
                     <div>
+                        <!-- DÒNG 1 -->
                         <div class="form-grid-4">
                             <div class="form-group"><label>Người sử dụng</label><input type="text" id="it_user" placeholder="Họ và tên..." required oninput="generateLiveQR()"></div>
                             <div class="form-group"><label>Phòng ban/Bộ phận</label><input type="text" id="it_dept" placeholder="Phòng ban..." required oninput="generateLiveQR()"></div>
@@ -348,11 +349,13 @@
                             <div class="form-group"><label class="purple-lbl">Mã định danh (Auto)</label><input type="text" id="it_code" readonly></div>
                         </div>
 
+                        <!-- DÒNG 2 -->
                         <div class="form-grid-3">
-                            <div class="form-group" style="grid-column: span 2;"><label>Mô tả thông số cấu hình chi tiết</label><input type="text" id="it_config" placeholder="Dell Latitude, Core i5, 16GB RAM..." required oninput="generateLiveQR()"></div>
+                            <div class="form-group" style="grid-column: span 2;"><label>Mô tả thông số cấu hình chi tiết</label><input type="text" id="it_config" placeholder="Dell Latitude, Core i5, 16GB RAM, 512GB SSD..." required oninput="generateLiveQR()"></div>
                             <div class="form-group"><label>Ngày cấp phát bàn giao</label><input type="date" id="it_date" value="2026-07-21"></div>
                         </div>
 
+                        <!-- DÒNG 3 -->
                         <div class="form-grid-1">
                             <div class="form-group">
                                 <label>Trạng thái thiết bị</label>
@@ -360,19 +363,34 @@
                                     <option value="Tốt - Đang sử dụng">Tốt - Đang sử dụng</option>
                                     <option value="Đang bảo trì / Sửa chữa">Đang bảo trì / Sửa chữa</option>
                                     <option value="Hỏng - Cho thanh lý">Hỏng - Cho thanh lý</option>
+                                    <option value="Lưu kho dự phòng">Lưu kho dự phòng</option>
                                 </select>
                             </div>
                         </div>
 
+                        <!-- DÒNG 4: DANH MỤC LỊCH SỬ OS & OFFICE ĐẦY ĐỦ -->
                         <div class="form-grid-4">
                             <div class="form-group">
                                 <label>Hệ điều hành (OS)</label>
                                 <select id="it_os">
-                                    <option value="Windows 11 Pro">Windows 11 Pro</option>
-                                    <option value="Windows 10 Pro">Windows 10 Pro</option>
-                                    <option value="Windows 7 Professional" selected>Windows 7 Professional</option>
-                                    <option value="macOS (Apple)">macOS (Apple)</option>
-                                    <option value="Ubuntu / Linux">Ubuntu / Linux</option>
+                                    <optgroup label="--- Windows Client ---">
+                                        <option value="Windows 11 Pro">Windows 11 Pro</option>
+                                        <option value="Windows 10 Pro">Windows 10 Pro</option>
+                                        <option value="Windows 8.1 / 8 Pro">Windows 8.1 / 8 Pro</option>
+                                        <option value="Windows 7 Professional" selected>Windows 7 Professional</option>
+                                        <option value="Windows Vista / XP">Windows Vista / XP Pro</option>
+                                        <option value="Windows 2000 / 98 / 95">Windows 2000 / 98 / 95</option>
+                                    </optgroup>
+                                    <optgroup label="--- Windows Server ---">
+                                        <option value="Windows Server 2025 / 2022">Windows Server 2025 / 2022</option>
+                                        <option value="Windows Server 2019 / 2016">Windows Server 2019 / 2016</option>
+                                        <option value="Windows Server 2012 / 2008 / 2003">Windows Server 2012 / 2008 / 2003</option>
+                                    </optgroup>
+                                    <optgroup label="--- macOS & Linux ---">
+                                        <option value="macOS (Sequoia 15 / Sonoma 14)">macOS (Sequoia 15 / Sonoma 14)</option>
+                                        <option value="macOS cổ điển (OS X / System 1-9)">macOS cổ điển (OS X / System 1-9)</option>
+                                        <option value="Ubuntu / CentOS / RedHat Linux">Ubuntu / CentOS / RedHat Linux</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -386,29 +404,56 @@
                             <div class="form-group">
                                 <label>Bộ Office văn phòng</label>
                                 <select id="it_office">
-                                    <option value="Microsoft 365">Microsoft 365</option>
-                                    <option value="Microsoft Office 2021">Microsoft Office 2021</option>
-                                    <option value="Microsoft Office 2010 Pro" selected>Microsoft Office 2010 Pro</option>
-                                    <option value="WPS Office / LibreOffice">WPS Office / LibreOffice</option>
+                                    <optgroup label="--- Microsoft Office ---">
+                                        <option value="Microsoft 365">Microsoft 365 (Cloud)</option>
+                                        <option value="Microsoft Office 2024 / 2021">Microsoft Office 2024 / 2021</option>
+                                        <option value="Microsoft Office 2019 / 2016">Microsoft Office 2019 / 2016</option>
+                                        <option value="Microsoft Office 2013 / 2010 Pro" selected>Microsoft Office 2010 Pro</option>
+                                        <option value="Microsoft Office 2007 / 2003">Microsoft Office 2007 / 2003</option>
+                                        <option value="Microsoft Office XP / 2000 / 97">Microsoft Office XP / 2000 / 97</option>
+                                    </optgroup>
+                                    <optgroup label="--- Bộ Văn Phòng Khác ---">
+                                        <option value="WPS Office / LibreOffice">WPS Office / LibreOffice</option>
+                                        <option value="Google Workspace Web">Google Workspace Web</option>
+                                    </optgroup>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>Bản quyền Office</label>
                                 <select id="it_office_lic">
                                     <option value="Bản quyền Key Vĩnh Viễn" selected>Bản quyền Key Vĩnh Viễn</option>
+                                    <option value="Bản quyền Thuê bao Tháng/Năm">Bản quyền Thuê bao Tháng/Năm</option>
                                     <option value="⚠️ Chưa có bản quyền (Crack)">⚠️ Chưa có bản quyền (Crack)</option>
                                 </select>
                             </div>
                         </div>
 
+                        <!-- DÒNG 5: PHẦN MỀM MISA, ASIA, QUASOFT... ĐẦY ĐỦ PHIÊN BẢN -->
                         <div class="form-grid-4">
                             <div class="form-group" style="grid-column: span 2;">
                                 <label class="purple-lbl">PM Nghiệp vụ chuyên dụng</label>
                                 <select id="it_app">
-                                    <option value="MISA AMIS / SME.NET 2023" selected>MISA AMIS / SME.NET 2023</option>
-                                    <option value="ASIA Enterprise ERP">ASIA Enterprise ERP</option>
-                                    <option value="Quasoft ERP">Quasoft ERP</option>
-                                    <option value="Fast Accounting / Bravo">Fast Accounting / Bravo</option>
+                                    <optgroup label="--- MISA (Từ mới đến cũ) ---">
+                                        <option value="MISA AMIS Cloud ERP" selected>MISA AMIS Cloud ERP</option>
+                                        <option value="MISA SME.NET 2023 / 2022 / 2021">MISA SME.NET 2023 / 2022 / 2021</option>
+                                        <option value="MISA SME.NET 2020 / 2019 / 2017">MISA SME.NET 2020 / 2019 / 2017</option>
+                                        <option value="MISA SME.NET 2015 / 2012 / 2010">MISA SME.NET 2015 / 2012 / 2010</option>
+                                        <option value="MISA Bamboo.NET">MISA Bamboo.NET (HCSN)</option>
+                                    </optgroup>
+                                    <optgroup label="--- ASIA (Từ mới đến cũ) ---">
+                                        <option value="ASIA Enterprise ERP 2024 / 2023">ASIA Enterprise ERP 2024 / 2023</option>
+                                        <option value="ASIA Enterprise 2020 / 2018 / 2015">ASIA Enterprise 2020 / 2018 / 2015</option>
+                                        <option value="Asia Accounting 9.0 / 8.0">Asia Accounting 9.0 / 8.0</option>
+                                    </optgroup>
+                                    <optgroup label="--- Quasoft (Từ mới đến cũ) ---">
+                                        <option value="Quasoft ERP 2024 / Cloud">Quasoft ERP 2024 / Cloud</option>
+                                        <option value="Quasoft ERP v9.0 / v8.0">Quasoft ERP v9.0 / v8.0</option>
+                                        <option value="Quasoft Accounting v5.0 / v3.0">Quasoft Accounting v5.0 / v3.0</option>
+                                    </optgroup>
+                                    <optgroup label="--- PM ERP / Kế toán khác ---">
+                                        <option value="Fast Accounting / Bravo ERP">Fast Accounting / Bravo ERP</option>
+                                        <option value="SAP / Oracle ERP">SAP / Oracle ERP</option>
+                                    </optgroup>
                                     <option value="Không sử dụng">Không sử dụng</option>
                                 </select>
                             </div>
@@ -422,6 +467,7 @@
                             </div>
                         </div>
 
+                        <!-- DÒNG 6 -->
                         <div class="form-grid-1">
                             <div class="form-group"><label>Ghi chú kiểm kê</label><input type="text" id="it_note" placeholder="Ghi chú thêm..."></div>
                         </div>
@@ -467,14 +513,26 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT XỬ LÝ DỮ LIỆU CẢ 4 TAB -->
+    <!-- JAVASCRIPT XỬ LÝ TOÀN BỘ LOGIC HỆ THỐNG -->
     <script>
-        // DỮ LIỆU NHÂN VIÊN MẪU (16 người)
+        // DỮ LIỆU ĐẦY ĐỦ 16 NHÂN VIÊN MẪU
         const defaultStaffs = [
             { stt: 1, name: "Nguyễn Minh Ngọc", account: "105005712499", lcb_heso: 1.94, lcb_phucap: 0.25, he_so_lcv: 5.2, phu_cap_lcv: 0.6, NT: 20, P: 0, le_vr: 1, tam_ung: 5000000, note: "" },
             { stt: 2, name: "Nguyễn Văn Nam", account: "105004242307", lcb_heso: 1.48, lcb_phucap: 0.0, he_so_lcv: 2.24, phu_cap_lcv: 0.0, NT: 14, P: 6, le_vr: 1, tam_ung: 4000000, note: "" },
             { stt: 3, name: "Nguyễn Thị Tuyết Nhung", account: "102005035542", lcb_heso: 1.79, lcb_phucap: 0.0, he_so_lcv: 1.74, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "Người lập biểu" },
-            { stt: 4, name: "Vũ Thị Thu", account: "106004294441", lcb_heso: 1.94, lcb_phucap: 0.0, he_so_lcv: 1.86, phu_cap_lcv: 0.0, NT: 21, P: 0, le_vr: 1, tam_ung: 3000000, note: "" }
+            { stt: 4, name: "Vũ Thị Thu", account: "106004294441", lcb_heso: 1.94, lcb_phucap: 0.0, he_so_lcv: 1.86, phu_cap_lcv: 0.0, NT: 21, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
+            { stt: 5, name: "Đào Thị Liên", account: "106004359838", lcb_heso: 1.79, lcb_phucap: 0.0, he_so_lcv: 1.74, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 4000000, note: "" },
+            { stt: 6, name: "Võ Thị Thanh Tuyền", account: "106868653975", lcb_heso: 1.71, lcb_phucap: 0.0, he_so_lcv: 1.74, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
+            { stt: 7, name: "Trần Thị Thanh", account: "105004294439", lcb_heso: 1.67, lcb_phucap: 0.0, he_so_lcv: 1.48, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 4000000, note: "" },
+            { stt: 8, name: "Trần Đức Chiến", account: "102004797815", lcb_heso: 1.83, lcb_phucap: 0.0, he_so_lcv: 1.66, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
+            { stt: 9, name: "Phạm Tiến Long", account: "104004583045", lcb_heso: 1.80, lcb_phucap: 0.0, he_so_lcv: 1.62, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 4000000, note: "" },
+            { stt: 10, name: "Đinh Hữu Vinh", account: "100004797831", lcb_heso: 1.83, lcb_phucap: 0.0, he_so_lcv: 1.66, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
+            { stt: 11, name: "Bùi Đình Điệp", account: "101004882063", lcb_heso: 1.53, lcb_phucap: 0.0, he_so_lcv: 1.62, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
+            { stt: 12, name: "Hoàng Mạnh Hùng", account: "100006166724", lcb_heso: 1.53, lcb_phucap: 0.0, he_so_lcv: 1.62, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
+            { stt: 13, name: "Ma Trọng Luận", account: "106869104133", lcb_heso: 1.35, lcb_phucap: 0.0, he_so_lcv: 1.63, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
+            { stt: 14, name: "Trần Bình Dương", account: "106873586343", lcb_heso: 1.79, lcb_phucap: 0.0, he_so_lcv: 2.40, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
+            { stt: 15, name: "Đặng Trần Trung", account: "107002654931", lcb_heso: 1.53, lcb_phucap: 0.0, he_so_lcv: 1.62, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
+            { stt: 16, name: "Phạm Huy Chiến", account: "102004830132", lcb_heso: 2.26, lcb_phucap: 0.0, he_so_lcv: 2.40, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 4000000, note: "" }
         ];
 
         let paymentList = JSON.parse(localStorage.getItem('sys_payments_db')) || [];
@@ -486,7 +544,7 @@
                 user: "Nguyễn Minh Ngọc", dept: "Ban Giám Đốc",
                 os: "Windows 7 Professional", os_lic: "Bản quyền OEM (Theo máy)",
                 office: "Microsoft Office 2010 Pro", office_lic: "Bản quyền Key Vĩnh Viễn",
-                app: "MISA SME.NET 2023", app_lic: "Bản quyền License Key Online / Cloud",
+                app: "MISA AMIS Cloud ERP", app_lic: "Bản quyền License Key Online / Cloud",
                 status: "Tốt - Đang sử dụng", note: ""
             }
         ];
@@ -500,7 +558,7 @@
             renderITTable();
         };
 
-        // CHUYỂN TAB MỞ KHÓA
+        // CHUYỂN TAB TỰ DO
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
@@ -509,7 +567,7 @@
             document.querySelector(`.nav-tab[data-tab="${tabId}"]`).classList.add('active');
         }
 
-        // --- TAB 1: LOGIC BẢNG LƯƠNG ---
+        // --- LOGIC BẢNG LƯƠNG ---
         function calculateSalaryLogic() {
             let cfgVung = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
             let cfgBase = parseFloat(document.getElementById('config-base-pay').value) || 2530000;
@@ -539,23 +597,23 @@
                     <td class="text-center">${i+1}</td>
                     <td class="font-bold">${emp.name}</td>
                     <td class="text-center">${emp.account}</td>
-                    <td class="text-center">${emp.lcb_heso}</td>
-                    <td class="text-center">${emp.lcb_phucap}</td>
+                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" step="0.01" value="${emp.lcb_heso}" onchange="updateStaffVal(${i}, 'lcb_heso', this.value)"></td>
+                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" step="0.01" value="${emp.lcb_phucap}" onchange="updateStaffVal(${i}, 'lcb_phucap', this.value)"></td>
                     <td class="text-right">${lcb_hdld.toLocaleString('vi-VN')}</td>
-                    <td class="text-center">${emp.NT}</td>
-                    <td class="text-center">${emp.P}</td>
-                    <td class="text-center">${emp.le_vr}</td>
+                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" value="${emp.NT}" onchange="updateStaffVal(${i}, 'NT', this.value)"></td>
+                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" value="${emp.P}" onchange="updateStaffVal(${i}, 'P', this.value)"></td>
+                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" value="${emp.le_vr}" onchange="updateStaffVal(${i}, 'le_vr', this.value)"></td>
                     <td class="text-right">${l_thoigian.toLocaleString('vi-VN')}</td>
                     <td class="text-right">${le_phep_tt.toLocaleString('vi-VN')}</td>
                     <td class="text-right font-bold">${l_tong_cb.toLocaleString('vi-VN')}</td>
-                    <td class="text-center">${emp.he_so_lcv}</td>
-                    <td class="text-center">${emp.phu_cap_lcv}</td>
+                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" step="0.01" value="${emp.he_so_lcv}" onchange="updateStaffVal(${i}, 'he_so_lcv', this.value)"></td>
+                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" step="0.01" value="${emp.phu_cap_lcv}" onchange="updateStaffVal(${i}, 'phu_cap_lcv', this.value)"></td>
                     <td class="text-right">${lcv_thucte.toLocaleString('vi-VN')}</td>
                     <td class="text-right font-bold">${o_tong.toLocaleString('vi-VN')}</td>
                     <td class="text-right" style="color:#ef4444;">${bh.toLocaleString('vi-VN')}</td>
-                    <td class="text-right" style="color:#c2410c;">${emp.tam_ung.toLocaleString('vi-VN')}</td>
+                    <td class="text-right"><input class="inp-editable inp-num-sm" style="width:70px; text-align:right;" type="number" value="${emp.tam_ung}" onchange="updateStaffVal(${i}, 'tam_ung', this.value)"></td>
                     <td class="text-right font-bold" style="background:#fef08a;">${thucLinh.toLocaleString('vi-VN')}</td>
-                    <td>${emp.note}</td>
+                    <td><input class="inp-editable" type="text" value="${emp.note || ''}" onchange="updateStaffVal(${i}, 'note', this.value)"></td>
                 </tr>`;
             });
 
@@ -579,7 +637,13 @@
             document.getElementById('stat-salary-net').innerText = sumTL.toLocaleString('vi-VN') + " VND";
         }
 
-        // --- TAB 2: LOGIC THANH TOÁN VP ---
+        function updateStaffVal(idx, key, val) {
+            if (key === 'note') defaultStaffs[idx][key] = val;
+            else defaultStaffs[idx][key] = parseFloat(val) || 0;
+            calculateSalaryLogic();
+        }
+
+        // --- LOGIC THANH TOÁN VP ---
         function calcPaymentTotal() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
             let price = parseFloat(document.getElementById('pay-price').value) || 0;
@@ -634,7 +698,7 @@
             renderPaymentTable();
         }
 
-        // --- TAB 3: LOGIC CƯỚC VIỄN THÔNG ---
+        // --- LOGIC CƯỚC VIỄN THÔNG ---
         function saveTelecomRecord(e) {
             e.preventDefault();
             telecomList.push({
@@ -677,7 +741,7 @@
             renderTelecomTable();
         }
 
-        // --- TAB 4: LOGIC KIỂM KÊ THIẾT BỊ CNTT ---
+        // --- LOGIC KIỂM KÊ THIẾT BỊ CNTT ---
         function generateAssetCode() {
             let type = document.getElementById('it_type').value.toUpperCase().substring(0, 3);
             let randNum = Math.floor(100 + Math.random() * 900);
@@ -696,6 +760,13 @@
                 text: `MÃ: ${code}\nNGƯỜI DÙNG: ${user}\nPHÒNG BAN: ${dept}`,
                 width: 100, height: 100
             });
+        }
+
+        // KIỂM TRA THIẾT BỊ CÓ CHƯA BẢN QUYỀN KHÔNG
+        function hasUnlicensed(item) {
+            return (item.os_lic && item.os_lic.includes("⚠️")) ||
+                   (item.office_lic && item.office_lic.includes("⚠️")) ||
+                   (item.app_lic && item.app_lic.includes("⚠️"));
         }
 
         function handleSaveAsset(e) {
@@ -720,6 +791,7 @@
             localStorage.setItem('sys_it_assets_db', JSON.stringify(assetList));
             resetITForm();
             renderITTable();
+            alert("✅ Đã lưu thành công!");
         }
 
         function resetITForm() {
@@ -732,7 +804,16 @@
             const tbody = document.getElementById('itAssetTableBody');
             tbody.innerHTML = "";
 
-            assetList.forEach((item, index) => {
+            // Thuật toán ưu tiên: Máy có phần mềm chưa bản quyền (⚠️ Crack) được xếp lên đầu
+            let sortedList = [...assetList].sort((a, b) => {
+                let aUn = hasUnlicensed(a);
+                let bUn = hasUnlicensed(b);
+                if (aUn && !bUn) return -1;
+                if (!aUn && bUn) return 1;
+                return 0;
+            });
+
+            sortedList.forEach((item, index) => {
                 let qrId = `qr-tbl-row-${index}`;
                 let osBadgeClass = item.os_lic.includes("⚠️") ? "badge-red" : "badge-green";
                 let offBadgeClass = item.office_lic.includes("⚠️") ? "badge-red" : "badge-green";
