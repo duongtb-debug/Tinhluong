@@ -44,6 +44,13 @@
         .status-dot.syncing { background-color: var(--orange); animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.4; } }
         
+        .year-selector-box {
+            display: flex; align-items: center; gap: 8px; background: #ffffff; padding: 3px 10px; border-radius: 4px; border: 1.5px solid var(--blue); color: var(--blue);
+        }
+        .year-selector-box select {
+            border: none; font-weight: bold; color: var(--blue); outline: none; background: transparent; font-size: 13px; cursor: pointer;
+        }
+
         .header { display: flex; justify-content: space-between; align-items: center; background: #0b132b; color: white; padding: 10px 20px; border-radius: 4px; margin-bottom: 12px; }
         .header h1 { font-size: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
         .live-clock-box { background: rgba(255,255,255,0.12); padding: 6px 14px; border-radius: 4px; font-family: monospace !important; font-size: 13px; text-align: right; border: 1px solid rgba(255,255,255,0.2); font-weight: bold; color: #fef08a; }
@@ -76,79 +83,22 @@
         .stat-icon { font-size: 18px; opacity: 0.25; }
 
         .salary-visual-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin: 0 auto 15px auto;
-            max-width: 850px;
-            background: #f8fafc;
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 auto 15px auto; max-width: 850px; background: #f8fafc; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
         @media (max-width: 768px) { 
             .salary-visual-summary { flex-direction: column; width: 100%; }
             .visual-mini-card { width: 100%; }
         }
-        .visual-mini-card { 
-            flex: 1;
-            background: white; 
-            padding: 8px 14px; 
-            border-radius: 6px; 
-            border: 1px solid #e2e8f0; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-            gap: 10px;
-        }
+        .visual-mini-card { flex: 1; background: white; padding: 8px 14px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .visual-lbl { font-size: 11px; font-weight: bold; color: #475569; white-space: nowrap; display: flex; align-items: center; }
         .visual-val { font-size: 14px; font-weight: bold; color: var(--primary); white-space: nowrap; }
 
-        .config-toolbar-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: 15px;
-            flex-wrap: wrap;
-            background: #f8fafc;
-            padding: 10px 12px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .config-inputs-group {
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            flex-wrap: wrap;
-            flex: 1;
-        }
-
-        .config-inputs-group .form-group {
-            flex: 1;
-            min-width: 110px;
-        }
-
-        .config-inputs-group .form-group input {
-            height: 31px;
-            font-weight: bold;
-        }
-
-        .config-actions-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        .config-actions-group .btn {
-            height: 31px;
-            padding: 0 12px;
-            font-size: 11px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-        }
+        .config-toolbar-container { display: flex; justify-content: space-between; align-items: flex-end; gap: 15px; flex-wrap: wrap; background: #f8fafc; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .config-inputs-group { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; flex: 1; }
+        .config-inputs-group .form-group { flex: 1; min-width: 110px; }
+        .config-inputs-group .form-group input { height: 31px; font-weight: bold; }
+        .config-actions-group { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .config-actions-group .btn { height: 31px; padding: 0 12px; font-size: 11px; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
 
         .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 2px solid #cbd5e1; overflow-x: auto; }
         .nav-tabs .nav-tab { padding: 7px 14px; border: none; background: #e2e8f0; font-weight: bold; color: #475569; cursor: pointer; font-size: 12px; border-radius: 4px 4px 0 0; white-space: nowrap; }
@@ -171,12 +121,8 @@
         .form-group input, .form-group select, .form-group textarea { padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; outline: none; background: #fff; }
         .form-group input:focus, .form-group select:focus { border-color: var(--blue); }
 
-        .attach-box-redesign {
-            display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 5px 10px; border-radius: 4px; width: fit-content;
-        }
-        .attach-btn-trigger {
-            display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #334155; cursor: pointer; transition: all 0.2s;
-        }
+        .attach-box-redesign { display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 5px 10px; border-radius: 4px; width: fit-content; }
+        .attach-btn-trigger { display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #334155; cursor: pointer; transition: all 0.2s; }
         .attach-btn-trigger:hover { border-color: var(--blue); color: var(--blue); background: #f0f9ff; }
 
         .preview-thumbnails-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; padding: 6px; background: #f1f5f9; border-radius: 4px; border: 1px solid var(--border-color); }
@@ -219,10 +165,7 @@
         .inp-num-sm { min-width: 45px; width: 50px; text-align: center; }
         .inp-note { min-width: 100px; }
 
-        .inp-table.inp-tam-ung {
-            background-color: #fff7ed !important; border: 1.5px solid #f97316 !important;
-            color: #c2410c !important; font-weight: bold !important; min-width: 85px; text-align: right;
-        }
+        .inp-table.inp-tam-ung { background-color: #fff7ed !important; border: 1.5px solid #f97316 !important; color: #c2410c !important; font-weight: bold !important; min-width: 85px; text-align: right; }
 
         .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 180px; }
 
@@ -230,7 +173,7 @@
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
         .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
         .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-style: space-around; font-size: 11px; text-align: center; }
         
         .calendar-block-details { padding: 8px; font-size: 11px; line-height: 1.4; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
@@ -255,9 +198,25 @@
 <body>
 
     <div class="db-status-bar">
-        <div>
-            <span class="status-dot" id="cloud-status-dot"></span>
-            <span id="cloud-status-text">Kết nối Google Script API sẵn sàng</span>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <div>
+                <span class="status-dot" id="cloud-status-dot"></span>
+                <span id="cloud-status-text">Kết nối Google Script API sẵn sàng</span>
+            </div>
+            <!-- BỘ CHỌN NĂM LƯU TRỮ TỔNG HỢP -->
+            <div class="year-selector-box">
+                <i class="fa-solid fa-calendar-check"></i>
+                <label for="global-year-picker">NĂM LƯU TRỮ DỮ LIỆU:</label>
+                <select id="global-year-picker" onchange="handleGlobalYearChange()">
+                    <option value="2024">Năm 2024</option>
+                    <option value="2025">Năm 2025</option>
+                    <option value="2026" selected>Năm 2026</option>
+                    <option value="2027">Năm 2027</option>
+                    <option value="2028">Năm 2028</option>
+                    <option value="2029">Năm 2029</option>
+                    <option value="2030">Năm 2030</option>
+                </select>
+            </div>
         </div>
         <div>
             <button type="button" class="btn btn-purple" style="padding: 2px 8px; font-size:11px;" onclick="openConfigUrlModal()"><i class="fa-solid fa-link"></i> Cấu hình API Web App & Link Sheet</button>
@@ -289,7 +248,7 @@
                 </div>
                 <div class="stat-card orange">
                     <div class="stat-info">
-                        <span class="stat-title">CƯỚC MẠNG (2026)</span>
+                        <span class="stat-title">CƯỚC MẠNG (<span class="lbl-current-year">2026</span>)</span>
                         <span class="stat-value" id="dash-pending-pay" style="color:var(--orange);">0 VND</span>
                     </div>
                     <i class="fa-solid fa-wifi stat-icon" style="color:var(--orange);"></i>
@@ -314,7 +273,7 @@
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
-                        <span><i class="fa-solid fa-sliders" style="color:var(--blue);"></i> CẤU HÌNH THAM SỐ VÀ NGƯỜI TRÌNH KÝ</span>
+                        <span><i class="fa-solid fa-sliders" style="color:var(--blue);"></i> CẤU HÌNH THAM SỐ THÁNG - NĂM <span class="lbl-current-year">2026</span></span>
                     </div>
                     
                     <div class="config-toolbar-container">
@@ -372,7 +331,7 @@
                     </div>
 
                     <div class="card-title">
-                        <span>DANH SÁCH BẢNG LƯƠNG CHI TIẾT NHÂN VIÊN (NHẬP LIỆU TỰ DO)</span>
+                        <span>DANH SÁCH BẢNG LƯƠNG CHI TIẾT NHÂN VIÊN (NĂM <span class="lbl-current-year">2026</span>)</span>
                         <button type="button" class="btn btn-primary" style="padding:2px 7px; font-size:11px;" onclick="openAddStaffModal()"><i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên Mới</button>
                     </div>
                     <div class="table-responsive">
@@ -420,7 +379,7 @@
             <div id="tab-payment" class="tab-content">
                 <div class="main-card" style="border-left: 4px solid var(--green);">
                     <div class="card-title" style="color:var(--green);">
-                        <span><i class="fa-solid fa-file-invoice-dollar"></i> <span id="form-payment-title">Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng</span></span>
+                        <span><i class="fa-solid fa-file-invoice-dollar"></i> <span id="form-payment-title">Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng (Năm <span class="lbl-current-year">2026</span>)</span></span>
                     </div>
                     <form id="payment-main-form" onsubmit="savePaymentRecord(event)">
                         <input type="hidden" id="payment-edit-id" value="">
@@ -447,18 +406,6 @@
                             <div class="form-group"><label>Tổng cộng thanh toán</label><input type="text" id="pay-total" readonly style="background:#fef08a; font-weight:bold; color: var(--blue);"></div>
                             <div class="form-group"><label>Trạng thái duyệt</label><select id="pay-status"><option value="Chưa duyệt">Chưa duyệt</option><option value="Đã duyệt chi">Đã duyệt chi</option></select></div>
                         </div>
-                        
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ</label>
-                            <div class="attach-box-redesign">
-                                <label class="attach-btn-trigger">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Chọn tệp chứng từ
-                                    <input type="file" id="pay-file-uploader" multiple accept="image/*,application/pdf" onchange="processAttachedFilesMulti(this, 'payment')" style="display:none;">
-                                </label>
-                                <span id="pay-upload-status-lbl" style="font-size: 11px; color: #64748b; font-weight: bold;">Chưa chọn tệp</span>
-                            </div>
-                            <div class="preview-thumbnails-container" id="payment-thumbnails-zone" style="display: none;"></div>
-                        </div>
 
                         <div class="btn-group">
                             <button type="submit" id="btn-payment-submit" class="btn btn-green">
@@ -469,7 +416,7 @@
                     </form>
                 </div>
                 <div class="main-card">
-                    <div class="card-title">DANH SÁCH TỔNG HỢP HỒ SƠ THANH TOÁN VĂN PHÒNG</div>
+                    <div class="card-title">DANH SÁCH TỔNG HỢP HỒ SƠ THANH TOÁN (NĂM <span class="lbl-current-year">2026</span>)</div>
                     <div class="table-responsive">
                         <table class="main-table">
                             <thead>
@@ -482,7 +429,6 @@
                                     <th class="text-right">Trước thuế</th>
                                     <th class="text-right">Tiền thuế</th>
                                     <th class="text-right">Tổng chi</th>
-                                    <th class="text-center">Chứng từ</th>
                                     <th class="text-center">Trạng thái</th>
                                     <th class="text-center" style="width: 110px;">Hành động</th>
                                 </tr>
@@ -493,11 +439,11 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG (ĐẤY FILE TRỰC TIẾP KHÔNG QUA LOCALSTORAGE) -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG (ĐẤY FILE TRỰC TIẾP LÊN DRIVE THEO NĂM) -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
-                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> <span id="form-telecom-title">Cập Nhật Chi Phí Mạng (Tự Động Upload File Lên Drive Theo Tháng)</span></span>
+                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> <span id="form-telecom-title">Cập Nhật Chi Phí Mạng (Năm <span class="lbl-current-year">2026</span>)</span></span>
                     </div>
                     <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)">
                         <input type="hidden" id="telecom-edit-id" value="">
@@ -540,7 +486,7 @@
                         </div>
 
                         <div class="form-group" style="margin-bottom: 10px;">
-                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Đẩy tệp trực tiếp lên Drive)</label>
+                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Tự đẩy lên Drive)</label>
                             <div class="attach-box-redesign">
                                 <label class="attach-btn-trigger">
                                     <i class="fa-solid fa-cloud-arrow-up"></i> Chọn tệp chứng từ
@@ -562,24 +508,24 @@
 
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
-                        <span><i class="fa-solid fa-list-ul" style="color: var(--blue);"></i> DANH SÁCH CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</span>
+                        <span><i class="fa-solid fa-list-ul" style="color: var(--blue);"></i> DANH SÁCH CHI PHÍ ĐƯỜNG TRUYỀN INTERNET NĂM <span class="lbl-current-year">2026</span></span>
                         
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <label style="font-size:12px; font-weight:bold; color:var(--primary);">Chế độ xem:</label>
+                            <label style="font-size:12px; font-weight:bold; color:var(--primary);">Xem theo tháng:</label>
                             <select id="telecom-view-mode" onchange="renderTelecomTable()" style="padding:3px 6px; border-radius:4px; border:1px solid var(--blue); font-weight:bold; color:var(--blue);">
-                                <option value="ALL_2026" selected>🌟 Tất cả từ Tháng 1 đến Tháng 12 (2026)</option>
-                                <option value="2026-01">Tháng 01/2026</option>
-                                <option value="2026-02">Tháng 02/2026</option>
-                                <option value="2026-03">Tháng 03/2026</option>
-                                <option value="2026-04">Tháng 04/2026</option>
-                                <option value="2026-05">Tháng 05/2026</option>
-                                <option value="2026-06">Tháng 06/2026</option>
-                                <option value="2026-07">Tháng 07/2026</option>
-                                <option value="2026-08">Tháng 08/2026</option>
-                                <option value="2026-09">Tháng 09/2026</option>
-                                <option value="2026-10">Tháng 10/2026</option>
-                                <option value="2026-11">Tháng 11/2026</option>
-                                <option value="2026-12">Tháng 12/2026</option>
+                                <option value="ALL_YEAR" selected>🌟 Tất cả các tháng trong Năm</option>
+                                <option value="01">Tháng 01</option>
+                                <option value="02">Tháng 02</option>
+                                <option value="03">Tháng 03</option>
+                                <option value="04">Tháng 04</option>
+                                <option value="05">Tháng 05</option>
+                                <option value="06">Tháng 06</option>
+                                <option value="07">Tháng 07</option>
+                                <option value="08">Tháng 08</option>
+                                <option value="09">Tháng 09</option>
+                                <option value="10">Tháng 10</option>
+                                <option value="11">Tháng 11</option>
+                                <option value="12">Tháng 12</option>
                             </select>
                         </div>
                     </div>
@@ -609,7 +555,7 @@
             <div id="tab-it-assets" class="tab-content">
                 <div class="main-card" style="border-left: 4px solid var(--purple);">
                     <div class="card-title" style="color:var(--purple);">
-                        <span><i class="fa-solid fa-laptop-code"></i> <span id="form-it-title">Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin</span></span>
+                        <span><i class="fa-solid fa-laptop-code"></i> <span id="form-it-title">Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin (Năm <span class="lbl-current-year">2026</span>)</span></span>
                     </div>
                     <form id="it-main-form" onsubmit="saveITRecord(event)">
                         <input type="hidden" id="it-edit-id" value="">
@@ -735,7 +681,7 @@
                 </div>
                 
                 <div class="main-card">
-                    <div class="card-title">BẢNG TỔNG HỢP KIỂM KÊ TRANG THIẾT BỊ CÔNG NGHỆ THÔNG TIN</div>
+                    <div class="card-title">BẢNG TỔNG HỢP KIỂM KÊ TRANG THIẾT BỊ CNTT NĂM <span class="lbl-current-year">2026</span></div>
                     <div class="table-responsive">
                         <table class="main-table" id="main-it-table">
                             <thead>
@@ -863,7 +809,7 @@
                 <input type="text" id="cfg-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit">
             </div>
             <div class="form-group" style="margin-bottom:15px;">
-                <label>3. Link Thư Mục Google Drive Lưu Chứng Từ Cước Mạng Mặc Định:</label>
+                <label>3. Link Thư Mục Google Drive Mặc Định:</label>
                 <input type="text" id="cfg-drive-url" placeholder="https://drive.google.com/drive/folders/YOUR_FOLDER_ID">
             </div>
             <div style="text-align:right;">
@@ -910,19 +856,13 @@
         let GOOGLE_DRIVE_FOLDER_URL = localStorage.getItem('sys_cfg_drive_url') || "https://drive.google.com";
         let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || DEFAULT_SCRIPT_API; 
         
+        let CURRENT_SELECTED_YEAR = "2026";
         let currentPaymentFiles = []; 
         let currentTelecomFiles = []; 
         let currentActiveBlobUrl = null;
         let realtimeQrInstance = null;
 
-        // DỌN CẠCH BỘ NHỚ LỎNG TỰ ĐỘNG NẾU TRÁN DUNG LƯỢNG
-        try {
-            localStorage.removeItem('sys_telecom_records');
-        } catch(e){}
-
-        let salaryConfigsByMonth = JSON.parse(localStorage.getItem('sys_salary_configs_by_month')) || { 
-            "2026-06": { vung: 4140000, base: 2650000, lcv: 1991139, signer: "Nguyễn Thị Tuyết Nhung" } 
-        };
+        let salaryConfigsByMonth = JSON.parse(localStorage.getItem('sys_salary_configs_by_month')) || {};
         let salaryDataByMonth = JSON.parse(localStorage.getItem('sys_salary_by_month')) || {};
 
         const default16Staffs = [
@@ -944,17 +884,30 @@
             {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 2.40, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "102004830132", "note": ""}
         ];
 
-        let paymentRecords = JSON.parse(localStorage.getItem('sys_payment_records')) || [];
-        let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_clean_v2')) || [];
-        let itAssetsRecords = JSON.parse(localStorage.getItem('sys_it_records')) || [
+        let paymentRecordsAll = JSON.parse(localStorage.getItem('sys_payment_records_v3')) || [];
+        let telecomRecordsAll = JSON.parse(localStorage.getItem('sys_telecom_clean_v3')) || [];
+        let itAssetsRecordsAll = JSON.parse(localStorage.getItem('sys_it_records_v3')) || [
             {
-                id: "1", serialId: "IT-LAP-2026-101", user: "Nguyễn Minh Ngọc", dept: "Ban Giám Đốc", type: "Laptop",
+                id: "1", year: "2026", serialId: "IT-LAP-2026-101", user: "Nguyễn Minh Ngọc", dept: "Ban Giám Đốc", type: "Laptop",
                 config: "Dell Latitude 5420, Core i5, 16GB RAM, 512GB SSD", date: "2026-01-15", status: "Tốt - Đang sử dụng",
                 os: "Windows 7 Professional", osLic: "Bản quyền OEM (Theo máy)",
                 office: "Microsoft Office 2010 Pro", officeLic: "Bản quyền Key Vĩnh Viễn",
                 soft: "MISA SME.NET 2023", softLic: "Bản quyền License Key Online / Cloud", note: "Máy sếp"
             }
         ];
+
+        function handleGlobalYearChange() {
+            CURRENT_SELECTED_YEAR = document.getElementById('global-year-picker').value;
+            
+            document.querySelectorAll('.lbl-current-year').forEach(el => el.innerText = CURRENT_SELECTED_YEAR);
+            document.getElementById('filter-month').value = `${CURRENT_SELECTED_YEAR}-01`;
+            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-01`;
+
+            handleMonthChangeSelect();
+            renderPaymentTable();
+            renderTelecomTable();
+            renderITTable();
+        }
 
         function openMainSalaryGoogleSheet() {
             if (GOOGLE_SHEET_VIEW_URL && GOOGLE_SHEET_VIEW_URL.startsWith('http')) {
@@ -1026,9 +979,7 @@
             let sm = document.getElementById('filter-month').value;
             
             if (!salaryConfigsByMonth[sm]) {
-                let existingMonths = Object.keys(salaryConfigsByMonth);
-                let lastCfg = existingMonths.length > 0 ? salaryConfigsByMonth[existingMonths[existingMonths.length - 1]] : { vung: 4140000, base: 2650000, lcv: 1991139, signer: "Nguyễn Thị Tuyết Nhung" };
-                salaryConfigsByMonth[sm] = { ...lastCfg };
+                salaryConfigsByMonth[sm] = { vung: 4140000, base: 2650000, lcv: 1991139, signer: "Nguyễn Thị Tuyết Nhung" };
             }
             
             document.getElementById('config-vung-pay').value = salaryConfigsByMonth[sm].vung;
@@ -1039,19 +990,10 @@
             document.getElementById('tel-period').value = sm;
 
             if (!salaryDataByMonth[sm]) {
-                let existingMonths = Object.keys(salaryDataByMonth);
-                if (existingMonths.length > 0) {
-                    let prevMonthData = salaryDataByMonth[existingMonths[existingMonths.length - 1]];
-                    salaryDataByMonth[sm] = prevMonthData.map(emp => ({
-                        ...emp, NT: 22, P: 0, le_vr: 0, tam_ung: 0, note: ""
-                    }));
-                } else {
-                    salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs));
-                }
+                salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs));
             }
             
             calculateSalaryLogic();
-            renderTelecomTable();
         }
 
         function handleConfigChangeLive() {
@@ -1070,7 +1012,7 @@
         function calculateSalaryLogic() {
             let sm = document.getElementById('filter-month').value;
             
-            if (!salaryDataByMonth[sm] || salaryDataByMonth[sm].length === 0) { 
+            if (!salaryDataByMonth[sm]) { 
                 salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs)); 
             }
             let activeData = salaryDataByMonth[sm];
@@ -1336,13 +1278,12 @@
             });
         }
 
-        // CHỈ LƯU TỆP VÀO RAM - BỎ QUA LOCALSTORAGE
         function processAttachedFilesMulti(inputEl, type) {
             let files = inputEl.files; 
             if (!files || !files.length) return;
             
             let targetArr = (type === 'payment') ? currentPaymentFiles : currentTelecomFiles;
-            targetArr.length = 0; // Reset danh sách chọn mới
+            targetArr.length = 0;
             
             Array.from(files).forEach(file => {
                 let reader = new FileReader();
@@ -1392,71 +1333,6 @@
             if(f) openLightboxModal(f.base64, f.name);
         }
 
-        function previewRecordFile(recordType, recordIdx) {
-            let records = (recordType === 'payment') ? paymentRecords : telecomRecords;
-            let rec = records[recordIdx];
-            if (!rec) return;
-
-            if (rec.folderDriveUrl && rec.folderDriveUrl.startsWith('http')) {
-                window.open(rec.folderDriveUrl, '_blank');
-                return;
-            }
-
-            alert("Chưa có link Thư mục Google Drive!");
-        }
-
-        function openLightboxModal(base64OrUrl, fileName) {
-            const modal = document.getElementById('document-preview-modal');
-            const viewBody = document.getElementById('modal-preview-body');
-            let previewTitle = document.getElementById('modal-preview-title');
-            if (previewTitle) previewTitle.innerText = "Trình xem chứng từ: " + fileName;
-
-            if (!base64OrUrl) {
-                viewBody.innerHTML = `<div style="color:white; text-align:center;">Không có tệp để hiển thị.</div>`;
-                modal.style.display = 'flex';
-                return;
-            }
-
-            if (base64OrUrl.startsWith('http')) {
-                viewBody.innerHTML = `<iframe src="${base64OrUrl}" class="preview-file-render-frame"></iframe>`;
-                modal.style.display = 'flex';
-                return;
-            }
-
-            if (currentActiveBlobUrl) { URL.revokeObjectURL(currentActiveBlobUrl); currentActiveBlobUrl = null; }
-
-            try {
-                const parts = base64OrUrl.split(';base64,');
-                const contentType = parts[0].split(':')[1];
-                const raw = window.atob(parts[1]);
-                const uInt8Array = new Uint8Array(raw.length);
-                for (let i = 0; i < raw.length; ++i) { uInt8Array[i] = raw.charCodeAt(i); }
-                const blob = new Blob([uInt8Array], { type: contentType });
-                currentActiveBlobUrl = URL.createObjectURL(blob);
-
-                if (contentType.startsWith('image/')) {
-                    viewBody.innerHTML = `<img src="${currentActiveBlobUrl}" class="preview-img-render">`;
-                } else {
-                    viewBody.innerHTML = `<iframe src="${currentActiveBlobUrl}" class="preview-file-render-frame"></iframe>`;
-                }
-            } catch (err) {
-                viewBody.innerHTML = `<div style="color:white; text-align:center;">Không thể xem trực tiếp tệp này.</div>`;
-            }
-            modal.style.display = 'flex';
-        }
-
-        function closePreviewModal() { 
-            document.getElementById('document-preview-modal').style.display = 'none'; 
-            if (currentActiveBlobUrl) { URL.revokeObjectURL(currentActiveBlobUrl); currentActiveBlobUrl = null; }
-        }
-
-        function printActiveDocument() {
-            if (currentActiveBlobUrl) {
-                let printWin = window.open(currentActiveBlobUrl);
-                printWin.print();
-            }
-        }
-
         function calculateFlexibleTax() {
             let pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
             let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
@@ -1475,7 +1351,7 @@
             let taxVal = Math.round((pretax * qty) * (rate / 100));
 
             if (editId) {
-                let item = paymentRecords.find(d => d.id === editId);
+                let item = paymentRecordsAll.find(d => d.id === editId);
                 if (item) {
                     item.content = document.getElementById('pay-content').value;
                     item.beneficiary = document.getElementById('pay-beneficiary').value;
@@ -1484,24 +1360,25 @@
                     item.total = (pretax * qty) + taxVal;
                     item.status = document.getElementById('pay-status').value;
                 }
-                alert('✅ Đã cập nhật thành công hồ sơ thanh toán!');
+                alert('✅ Đã cập nhật hồ sơ thanh toán!');
             } else {
-                paymentRecords.push({
+                paymentRecordsAll.push({
                     id: Date.now().toString(),
+                    year: CURRENT_SELECTED_YEAR,
                     content: document.getElementById('pay-content').value,
                     beneficiary: document.getElementById('pay-beneficiary').value,
                     account: document.getElementById('pay-account').value,
                     qty: qty, pretax: pretax, tax: taxVal, total: (pretax * qty) + taxVal,
                     status: document.getElementById('pay-status').value
                 });
-                alert('✅ Đã lưu hồ sơ thanh toán mới thành công!');
+                alert('✅ Đã lưu hồ sơ thanh toán mới!');
             }
-            localStorage.setItem('sys_payment_records', JSON.stringify(paymentRecords));
+            localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
             resetPaymentForm(); renderPaymentTable();
         }
 
         function editPaymentRecord(id) {
-            let item = paymentRecords.find(d => d.id === id);
+            let item = paymentRecordsAll.find(d => d.id === id);
             if (!item) return;
 
             document.getElementById('payment-edit-id').value = item.id;
@@ -1513,21 +1390,13 @@
             document.getElementById('pay-status').value = item.status || "Chưa duyệt";
             
             calculateFlexibleTax();
-
-            let payTitle = document.getElementById('form-payment-title');
-            if (payTitle) payTitle.innerText = "Chỉnh Sửa Hồ Sơ Đề Nghị Thanh Toán Văn Phòng";
-            
-            let btnText = document.getElementById('btn-payment-text');
-            if (btnText) btnText.innerText = "Cập Nhật Hồ Sơ";
-            
-            document.getElementById('btn-payment-submit').className = "btn btn-green";
             window.scrollTo({ top: 120, behavior: 'smooth' });
         }
 
         function deletePaymentRecord(id) {
             if (confirm('Bạn có chắc chắn muốn xóa hồ sơ thanh toán này?')) {
-                paymentRecords = paymentRecords.filter(d => d.id !== id);
-                localStorage.setItem('sys_payment_records', JSON.stringify(paymentRecords));
+                paymentRecordsAll = paymentRecordsAll.filter(d => d.id !== id);
+                localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
                 renderPaymentTable();
             }
         }
@@ -1535,7 +1404,9 @@
         function renderPaymentTable() {
             const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = "";
             let sum = 0;
-            paymentRecords.forEach((r, i) => {
+            let currentYearPayment = paymentRecordsAll.filter(r => r.year === CURRENT_SELECTED_YEAR || (!r.year && CURRENT_SELECTED_YEAR === "2026"));
+
+            currentYearPayment.forEach((r, i) => {
                 sum += r.total;
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${i+1}</td>
@@ -1546,7 +1417,6 @@
                     <td class="text-right">${r.pretax.toLocaleString('vi-VN')}</td>
                     <td class="text-right">${r.tax.toLocaleString('vi-VN')}</td>
                     <td class="text-right font-bold">${r.total.toLocaleString('vi-VN')}</td>
-                    <td class="text-center">Đã lưu</td>
                     <td class="text-center">${r.status}</td>
                     <td class="text-center">
                         <button type="button" class="btn-edit" onclick="editPaymentRecord('${r.id}')"><i class="fa-solid fa-pen"></i> Sửa</button>
@@ -1560,19 +1430,11 @@
         function resetPaymentForm() { 
             document.getElementById('payment-edit-id').value = '';
             document.getElementById('payment-main-form').reset(); 
-            let payTitle = document.getElementById('form-payment-title');
-            if (payTitle) payTitle.innerText = "Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng";
-            
-            let btnText = document.getElementById('btn-payment-text');
-            if (btnText) btnText.innerText = "Lưu Hồ Sơ Thanh Toán";
-            
-            document.getElementById('btn-payment-submit').className = "btn btn-green";
             currentPaymentFiles = []; 
             document.getElementById('pay-file-uploader').value = '';
             renderThumbnails('payment'); 
         }
 
-        // HÀM ĐẤY TRỰC TIẾP TỪ RAM LÊN GOOGLE DRIVE SCRIPT
         async function uploadFileToDriveViaPost(folderName, fileObj) {
             const apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
             let rawBase64 = fileObj.base64 || "";
@@ -1587,8 +1449,7 @@
             };
 
             return fetch(apiUrl, {
-                method: "POST",
-                mode: "no-cors",
+                method: "POST", mode: "no-cors",
                 headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify(payload)
             });
@@ -1608,13 +1469,12 @@
                 const pkg = document.getElementById('tel-package').value;
                 const cid = document.getElementById('tel-cid').value;
                 const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
-                let period = document.getElementById('tel-period').value || "2026-01";
+                let period = document.getElementById('tel-period').value || `${CURRENT_SELECTED_YEAR}-01`;
                 let manualLink = document.getElementById('tel-manual-link').value.trim();
 
-                const autoFolderName = `CuocMang_Thang_${period.replace('-', '_')}`;
+                const autoFolderName = `CuocMang_${CURRENT_SELECTED_YEAR}/CuocMang_Thang_${period.replace('-', '_')}`;
                 let finalDriveUrl = manualLink || GOOGLE_DRIVE_FOLDER_URL || "https://drive.google.com";
 
-                // ĐẨY FILE TRỰC TIẾP LÊN DRIVE
                 if (currentTelecomFiles.length > 0) {
                     for (let i = 0; i < currentTelecomFiles.length; i++) {
                         btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải tệp (${i + 1}/${currentTelecomFiles.length}) lên Drive...`;
@@ -1622,32 +1482,31 @@
                     }
                 }
 
-                // KHÔNG LƯU BASE64 VÀO LOCALSTORAGE -> KHÔNG BAO GIỜ BỊ QUÁ TẢI LOCALSTORAGE
                 if (editId) {
-                    let item = telecomRecords.find(d => d.id === editId);
+                    let item = telecomRecordsAll.find(d => d.id === editId);
                     if (item) {
+                        item.year = CURRENT_SELECTED_YEAR;
                         item.location = location; item.provider = provider; item.package = pkg;
                         item.cid = cid; item.cost = cost; item.period = period;
                         item.folderDriveUrl = finalDriveUrl;
-                        item.fileCount = currentTelecomFiles.length || item.fileCount || 0;
+                        item.fileCount = currentTelecomFiles.length || item.fileCount || 1;
                     }
                 } else {
-                    telecomRecords.push({
+                    telecomRecordsAll.push({
                         id: Date.now().toString(),
+                        year: CURRENT_SELECTED_YEAR,
                         location: location, provider: provider, package: pkg,
                         cid: cid, cost: cost, period: period,
                         folderDriveUrl: finalDriveUrl,
-                        fileCount: currentTelecomFiles.length
+                        fileCount: currentTelecomFiles.length || 1
                     });
                 }
 
-                localStorage.setItem('sys_telecom_clean_v2', JSON.stringify(telecomRecords));
-                document.getElementById('telecom-view-mode').value = "ALL_2026";
-                
+                localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
                 resetTelecomForm(); 
                 renderTelecomTable();
 
-                alert(`✅ Đã đẩy file trực tiếp vào Drive thành công! Mở Folder Drive để kiểm tra.`);
+                alert(`✅ Đã đẩy file chứng từ lên Drive thành công!`);
 
             } catch (error) {
                 alert('⚠️ Có lỗi xảy ra: ' + error.message);
@@ -1658,20 +1517,22 @@
         }
 
         function renderTelecomTable() {
-            let viewMode = document.getElementById('telecom-view-mode').value;
+            let viewMonthMode = document.getElementById('telecom-view-mode').value;
             const tbody = document.getElementById('tbody-telecom'); 
             tbody.innerHTML = "";
             let sum = 0;
             
-            let activeTelecoms = telecomRecords.filter(r => {
-                if (viewMode === "ALL_2026") return r.period && r.period.startsWith("2026");
-                return r.period === viewMode;
+            let activeTelecoms = telecomRecordsAll.filter(r => {
+                let rYear = r.period ? r.period.split("-")[0] : r.year || "2026";
+                if (rYear !== CURRENT_SELECTED_YEAR) return false;
+                if (viewMonthMode === "ALL_YEAR") return true;
+                return r.period && r.period.endsWith(`-${viewMonthMode}`);
             });
 
             activeTelecoms.sort((a, b) => (a.period || "").localeCompare(b.period || ""));
 
             if (activeTelecoms.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="text-center" style="padding:15px; color:#64748b;">Chưa có dữ liệu cước viễn thông cho kỳ báo cáo đã chọn.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center" style="padding:15px; color:#64748b;">Chưa có dữ liệu cước viễn thông cho Năm ${CURRENT_SELECTED_YEAR}.</td></tr>`;
             } else {
                 activeTelecoms.forEach((r, i) => {
                     sum += Number(r.cost);
@@ -1700,36 +1561,18 @@
         }
 
         function resetTelecomForm() { 
-            let curPeriod = document.getElementById('tel-period').value;
             document.getElementById('telecom-edit-id').value = '';
             document.getElementById('telecom-main-form').reset(); 
             document.getElementById('tel-manual-link').value = '';
-            
-            if (curPeriod && curPeriod.startsWith("2026-")) {
-                let m = parseInt(curPeriod.split("-")[1]) + 1;
-                if (m <= 12) {
-                    document.getElementById('tel-period').value = `2026-${String(m).padStart(2, '0')}`;
-                } else {
-                    document.getElementById('tel-period').value = "2026-12";
-                }
-            } else {
-                document.getElementById('tel-period').value = "2026-01";
-            }
+            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-01`;
 
-            let telTitle = document.getElementById('form-telecom-title');
-            if (telTitle) telTitle.innerText = "Cập Nhật Chi Phí Mạng (Tự Động Upload File Lên Drive Theo Tháng)";
-            
-            let btnText = document.getElementById('btn-telecom-text');
-            if (btnText) btnText.innerText = "Lưu Cước & Tải Tệp Lên Drive";
-            
-            document.getElementById('btn-telecom-submit').className = "btn btn-orange";
             currentTelecomFiles = []; 
             document.getElementById('tel-file-uploader').value = '';
             renderThumbnails('telecom'); 
         }
 
         function editTelecomRecord(id) {
-            let item = telecomRecords.find(d => d.id === id);
+            let item = telecomRecordsAll.find(d => d.id === id);
             if (!item) return;
 
             document.getElementById('telecom-edit-id').value = item.id;
@@ -1738,23 +1581,16 @@
             document.getElementById('tel-package').value = item.package || "";
             document.getElementById('tel-cid').value = item.cid || "";
             document.getElementById('tel-cost').value = item.cost || 0;
-            document.getElementById('tel-period').value = item.period || "2026-01";
+            document.getElementById('tel-period').value = item.period || `${CURRENT_SELECTED_YEAR}-01`;
             document.getElementById('tel-manual-link').value = item.folderDriveUrl || "";
 
-            let telTitle = document.getElementById('form-telecom-title');
-            if (telTitle) telTitle.innerText = "Chỉnh Sửa Chi Phí Cước Mạng & Link Drive";
-            
-            let btnText = document.getElementById('btn-telecom-text');
-            if (btnText) btnText.innerText = "Cập Nhật Chi Phí";
-            
-            document.getElementById('btn-telecom-submit').className = "btn btn-green";
             window.scrollTo({ top: 120, behavior: 'smooth' });
         }
 
         function deleteTelecomRecord(id) {
             if (confirm('Bạn có chắc chắn muốn xóa dòng cước này?')) {
-                telecomRecords = telecomRecords.filter(d => d.id !== id);
-                localStorage.setItem('sys_telecom_clean_v2', JSON.stringify(telecomRecords));
+                telecomRecordsAll = telecomRecordsAll.filter(d => d.id !== id);
+                localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
                 renderTelecomTable();
             }
         }
@@ -1762,7 +1598,7 @@
         function autoGenerateAssetID() {
             let t = document.getElementById('it-device-type').value;
             let codePrefix = (t === 'Laptop') ? 'LAP' : (t === 'PC') ? 'PC' : (t === 'PRN') ? 'PRN' : 'SRV';
-            document.getElementById('it-serial-id').value = `IT-${codePrefix}-2026-${Math.floor(100 + Math.random() * 900)}`;
+            document.getElementById('it-serial-id').value = `IT-${codePrefix}-${CURRENT_SELECTED_YEAR}-${Math.floor(100 + Math.random() * 900)}`;
         }
 
         function toggleCustomSoftInputs() {
@@ -1800,7 +1636,7 @@
             let { softVal, licVal } = getSelectedSoftValues();
 
             let formattedText = 
-`--- TÀI SẢN CNTT ---
+`--- TÀI SẢN CNTT (${CURRENT_SELECTED_YEAR}) ---
 Mã định danh: ${serialId}
 Loại thiết bị: ${type}
 Người dùng: ${user} (${dept})
@@ -1815,10 +1651,8 @@ Trạng thái: ${status}`;
                 qrTarget.innerHTML = "";
                 realtimeQrInstance = new QRCode(qrTarget, {
                     text: formattedText, 
-                    width: 120, 
-                    height: 120,
-                    colorDark : "#0f172a", 
-                    colorLight : "#ffffff", 
+                    width: 120, height: 120,
+                    colorDark : "#0f172a", colorLight : "#ffffff", 
                     correctLevel : QRCode.CorrectLevel.M
                 });
             }
@@ -1830,8 +1664,9 @@ Trạng thái: ${status}`;
             let { softVal, licVal } = getSelectedSoftValues();
 
             if (editId) {
-                let item = itAssetsRecords.find(d => d.id === editId);
+                let item = itAssetsRecordsAll.find(d => d.id === editId);
                 if (item) {
+                    item.year = CURRENT_SELECTED_YEAR;
                     item.user = document.getElementById('it-user').value;
                     item.dept = document.getElementById('it-dept').value;
                     item.type = document.getElementById('it-device-type').value;
@@ -1842,14 +1677,14 @@ Trạng thái: ${status}`;
                     item.osLic = document.getElementById('it-os-lic').value;
                     item.office = document.getElementById('it-office').value;
                     item.officeLic = document.getElementById('it-office-lic').value;
-                    item.soft = softVal;
-                    item.softLic = licVal;
+                    item.soft = softVal; item.softLic = licVal;
                     item.note = document.getElementById('it-note').value;
                 }
                 alert('✅ Đã cập nhật thông tin thiết bị!');
             } else {
-                itAssetsRecords.push({
+                itAssetsRecordsAll.push({
                     id: Date.now().toString(),
+                    year: CURRENT_SELECTED_YEAR,
                     serialId: document.getElementById('it-serial-id').value,
                     user: document.getElementById('it-user').value,
                     dept: document.getElementById('it-dept').value,
@@ -1861,18 +1696,17 @@ Trạng thái: ${status}`;
                     osLic: document.getElementById('it-os-lic').value,
                     office: document.getElementById('it-office').value,
                     officeLic: document.getElementById('it-office-lic').value,
-                    soft: softVal,
-                    softLic: licVal,
+                    soft: softVal, softLic: licVal,
                     note: document.getElementById('it-note').value
                 });
                 alert('✅ Đã lưu thiết bị mới thành công!');
             }
-            localStorage.setItem('sys_it_records', JSON.stringify(itAssetsRecords));
+            localStorage.setItem('sys_it_records_v3', JSON.stringify(itAssetsRecordsAll));
             resetITForm(); renderITTable();
         }
 
         function editITRecord(id) {
-            let item = itAssetsRecords.find(d => d.id === id);
+            let item = itAssetsRecordsAll.find(d => d.id === id);
             if (!item) return;
 
             document.getElementById('it-edit-id').value = item.id;
@@ -1881,40 +1715,15 @@ Trạng thái: ${status}`;
             document.getElementById('it-dept').value = item.dept || "";
             document.getElementById('it-device-type').value = item.type || "Laptop";
             document.getElementById('it-config').value = item.config || "";
-            document.getElementById('it-date').value = item.date || "2026-07-21";
+            document.getElementById('it-date').value = item.date || `${CURRENT_SELECTED_YEAR}-01-15`;
             document.getElementById('it-status').value = item.status || "Tốt - Đang sử dụng";
             document.getElementById('it-os').value = item.os || "Windows 7 Professional";
             document.getElementById('it-os-lic').value = item.osLic || "Bản quyền OEM (Theo máy)";
             document.getElementById('it-office').value = item.office || "Microsoft Office 2010 Pro";
             document.getElementById('it-office-lic').value = item.officeLic || "Bản quyền Key Vĩnh Viễn";
             
-            const softOptions = Array.from(document.getElementById('it-soft').options).map(o => o.value);
-            if (softOptions.includes(item.soft)) {
-                document.getElementById('it-soft').value = item.soft;
-            } else {
-                document.getElementById('it-soft').value = "CUSTOM";
-                document.getElementById('it-soft-custom').value = item.soft || "";
-            }
-
-            const licOptions = Array.from(document.getElementById('it-soft-lic').options).map(o => o.value);
-            if (licOptions.includes(item.softLic)) {
-                document.getElementById('it-soft-lic').value = item.softLic;
-            } else {
-                document.getElementById('it-soft-lic').value = "CUSTOM_LIC";
-                document.getElementById('it-soft-lic-custom').value = item.softLic || "";
-            }
-
             toggleCustomSoftInputs();
-
             document.getElementById('it-note').value = item.note || "";
-
-            let itTitle = document.getElementById('form-it-title');
-            if (itTitle) itTitle.innerText = "Chỉnh Sửa Thông Tin Thiết Bị CNTT";
-            
-            let btnText = document.getElementById('btn-it-text');
-            if (btnText) btnText.innerText = "Cập Nhật Thiết Bị";
-            
-            document.getElementById('btn-it-submit').className = "btn btn-green";
             
             updateRealtimeQR();
             window.scrollTo({ top: 120, behavior: 'smooth' });
@@ -1922,15 +1731,17 @@ Trạng thái: ${status}`;
 
         function deleteITRecord(id) {
             if (confirm('Bạn có chắc chắn muốn xóa thiết bị này?')) {
-                itAssetsRecords = itAssetsRecords.filter(d => d.id !== id);
-                localStorage.setItem('sys_it_records', JSON.stringify(itAssetsRecords));
+                itAssetsRecordsAll = itAssetsRecordsAll.filter(d => d.id !== id);
+                localStorage.setItem('sys_it_records_v3', JSON.stringify(itAssetsRecordsAll));
                 renderITTable();
             }
         }
 
         function renderITTable() {
             const tbody = document.getElementById('tbody-it-assets'); tbody.innerHTML = "";
-            itAssetsRecords.forEach((r, i) => {
+            let currentYearIT = itAssetsRecordsAll.filter(r => r.year === CURRENT_SELECTED_YEAR || (!r.year && CURRENT_SELECTED_YEAR === "2026"));
+
+            currentYearIT.forEach((r, i) => {
                 let osClass = (r.osLic && r.osLic.includes("Chưa")) ? "badge-no-license" : "badge-licensed";
                 let offClass = (r.officeLic && r.officeLic.includes("Chưa")) ? "badge-no-license" : "badge-licensed";
                 let softClass = (r.softLic && r.softLic.includes("Chưa")) ? "badge-no-license" : "badge-licensed";
@@ -1953,18 +1764,21 @@ Trạng thái: ${status}`;
                     </td>
                 </tr>`;
             });
-            document.getElementById('dash-total-it-devices').innerText = itAssetsRecords.length + " Thiết bị";
+            document.getElementById('dash-total-it-devices').innerText = currentYearIT.length + " Thiết bị";
         }
 
         function popupQRCode(i) {
-            let rec = itAssetsRecords[i];
+            let currentYearIT = itAssetsRecordsAll.filter(r => r.year === CURRENT_SELECTED_YEAR || (!r.year && CURRENT_SELECTED_YEAR === "2026"));
+            let rec = currentYearIT[i];
+            if (!rec) return;
+
             const modal = document.getElementById('document-preview-modal');
             const viewBody = document.getElementById('modal-preview-body');
             let previewTitle = document.getElementById('modal-preview-title');
             if (previewTitle) previewTitle.innerText = "MÃ QR KIỂM KÊ CHUẨN XÁC: " + rec.serialId;
             
             let formattedText = 
-`--- TÀI SẢN CNTT ---
+`--- TÀI SẢN CNTT (${rec.year || CURRENT_SELECTED_YEAR}) ---
 Mã định danh: ${rec.serialId}
 Loại thiết bị: ${rec.type}
 Người dùng: ${rec.user} (${rec.dept})
@@ -1981,10 +1795,8 @@ Trạng thái: ${rec.status}`;
             
             new QRCode(document.getElementById("qr-target"), { 
                 text: formattedText, 
-                width: 220, 
-                height: 220,
-                colorDark : "#0f172a",
-                colorLight : "#ffffff",
+                width: 220, height: 220,
+                colorDark : "#0f172a", colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.M
             });
             modal.style.display = 'flex';
@@ -1993,17 +1805,6 @@ Trạng thái: ${rec.status}`;
         function resetITForm() { 
             document.getElementById('it-edit-id').value = '';
             document.getElementById('it-main-form').reset(); 
-            document.getElementById('it-soft-custom').value = '';
-            document.getElementById('it-soft-lic-custom').value = '';
-            toggleCustomSoftInputs();
-
-            let itTitle = document.getElementById('form-it-title');
-            if (itTitle) itTitle.innerText = "Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin";
-            
-            let btnText = document.getElementById('btn-it-text');
-            if (btnText) btnText.innerText = "Lưu Tài Sản Thiết Bị & Tạo QR";
-            
-            document.getElementById('btn-it-submit').className = "btn btn-purple";
             autoGenerateAssetID();
             updateRealtimeQR();
         }
@@ -2028,33 +1829,6 @@ Trạng thái: ${rec.status}`;
             const trucArr = ["Trực Kiến (Bình)", "Trực Trừ (Cát)", "Trực Mãn (Cát)", "Trực Bình (Bình)", "Trực Định (Cát)", "Trực Chấp (Cát)", "Trực Phá (Hung)", "Trực Nguy (Bình)", "Trực Thành (Tốt)", "Trực Thâu (Tốt)", "Trực Khai (Tốt)", "Trực Bế (Hung)"];
             const nguHanhArr = ["Hải Trung Kim", "Lư Trung Hỏa", "Đại Lâm Mộc", "Lộ Bàng Thổ", "Kiếm Phong Kim", "Sơn Đầu Hỏa", "Giản Hạ Thủy", "Thành Đầu Thổ", "Bạch Lạp Kim", "Dương Liễu Mộc", "Tuyền Trung Thủy", "Ốc Thượng Thổ"];
             
-            const taiThanArr = ["Hướng Đông Nam", "Hướng Chính Nam", "Hướng Đông Bắc", "Hướng Chính Bắc", "Hướng Chính Tây"];
-            const hyThanArr = ["Hướng Đông Bắc", "Hướng Tây Bắc", "Hướng Tây Nam", "Hướng Chính Nam", "Hướng Chính Đông"];
-            
-            const hoangDaoArr = [
-                "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)",
-                "Dần (3-5), Mão (5-7), Tỵ (9-11), Thân (15-17), Tuất (19-21), Hợi (21-23)",
-                "Tý (23-1), Dần (3-5), Thìn (7-9), Tỵ (9-11), Mùi (13-15), Tuất (19-21)"
-            ];
-
-            const tuoiXungArr = [
-                "Kỷ Mùi, Quý Mùi, Tân Mão, Tân Dậu",
-                "Nhâm Thân, Bính Thân, Giáp Tý, Giáp Ngọ",
-                "Đinh Dậu, Tân Dậu, Đinh Mão, Ất Hợi"
-            ];
-
-            const viecNenArr = [
-                "Họp hành, ký hợp đồng, xuất hành, cầu tài.",
-                "Cầu tài, khai trương, giao dịch, tế lễ.",
-                "Sửa sanh nhà cửa, mua sắm, kết giao, cúng lễ."
-            ];
-
-            const viecKyArr = [
-                "Động thổ, khởi công, an táng, làm nhà.",
-                "Tranh chấp, kiện tụng, di chuyển vị trí bàn thờ.",
-                "Vay mượn tiền, khởi công công trình lớn."
-            ];
-
             let modIndex = Math.abs(diffDays) % 3;
             let mod12 = Math.abs(diffDays) % 12;
 
@@ -2064,12 +1838,11 @@ Trạng thái: ${rec.status}`;
                 tietKhi: tietKhiArr[mod12 % tietKhiArr.length],
                 truc: trucArr[mod12],
                 nguHanh: nguHanhArr[mod12],
-                taiThan: taiThanArr[modIndex % taiThanArr.length],
-                hyThan: hyThanArr[modIndex % hyThanArr.length],
-                hoangDao: hoangDaoArr[modIndex],
-                tuoiXung: tuoiXungArr[modIndex],
-                viecNen: viecNenArr[modIndex],
-                viecKy: viecKyArr[modIndex]
+                taiThan: "Hướng Đông Nam", hyThan: "Hướng Đông Bắc",
+                hoangDao: "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)",
+                tuoiXung: "Kỷ Mùi, Quý Mùi, Tân Mão, Tân Dậu",
+                viecNen: "Họp hành, ký hợp đồng, xuất hành, cầu tài.",
+                viecKy: "Động thổ, khởi công, an táng, làm nhà."
             };
         }
 
@@ -2117,7 +1890,7 @@ Trạng thái: ${rec.status}`;
 
         function openRemindModal() { document.getElementById('remindModal').style.display = 'flex'; }
         function closeRemindModal() { document.getElementById('remindModal').style.display = 'none'; }
-        function saveSmartReminder(e) { e.preventDefault(); alert("Đã cài đặt nhắc lịch Âm lịch thành công!"); closeRemindModal(); }
+        function saveSmartReminder(e) { e.preventDefault(); alert("Đã cài đặt nhắc lịch Âm lịch!"); closeRemindModal(); }
 
         function openConfigUrlModal() {
             document.getElementById('cfg-sheet-url').value = GOOGLE_SHEET_VIEW_URL;
@@ -2136,15 +1909,14 @@ Trạng thái: ${rec.status}`;
             localStorage.setItem('sys_cfg_drive_url', GOOGLE_DRIVE_FOLDER_URL);
             localStorage.setItem('sys_cfg_script_url', GOOGLE_SCRIPT_API_URL);
             
-            alert("Đã lưu thông tin cấu hình thành công!");
+            alert("Đã lưu thông tin cấu hình!");
             closeConfigUrlModal();
-            renderTelecomTable();
         }
 
         function syncDataToCloudServer() {
             document.getElementById('cloud-status-dot').className = "status-dot syncing";
             
-            let sm = document.getElementById('filter-month').value || "2026-06";
+            let sm = document.getElementById('filter-month').value || `${CURRENT_SELECTED_YEAR}-01`;
             let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
             let cfg = salaryConfigsByMonth[sm] || { vung: 4140000, base: 2650000, lcv: 1991139, signer: "Nguyễn Thị Tuyết Nhung" };
             let currentStaffList = salaryDataByMonth[sm] || default16Staffs;
@@ -2162,7 +1934,7 @@ Trạng thái: ${rec.status}`;
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                alert("✅ ĐÃ ĐỒNG BỘ TỰ ĐỘNG CẬP NHẬT LÊN GOOGLE SHEETS!");
+                alert("✅ ĐÃ ĐỒNG BỘ TỰ ĐỘNG LÊN GOOGLE SHEETS!");
                 document.getElementById('cloud-status-dot').className = "status-dot";
                 if (GOOGLE_SHEET_VIEW_URL) window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
             })
@@ -2176,12 +1948,7 @@ Trạng thái: ${rec.status}`;
         document.addEventListener('DOMContentLoaded', () => {
             startRealtimeLiveClock();
             initTodayCalendar();
-            handleMonthChangeSelect(); 
-            renderPaymentTable(); 
-            autoGenerateAssetID(); 
-            renderITTable();
-            updateRealtimeQR();
-            renderTelecomTable();
+            handleGlobalYearChange();
         });
     </script>
 </body>
