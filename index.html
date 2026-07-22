@@ -118,7 +118,7 @@
         .btn-delete:hover { background: #dc2626; color: white; }
         .btn-action-qr { background: #f3e8ff; color: #6d28d9; border: 1px solid #c084fc; padding: 3px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-        /* TỐI ƯU CỘT HỌ VÀ TÊN RỘNG THOÁNG & RÕ DẤU TIẾNG VIỆT */
+        /* BẢNG DỮ LIỆU HIỂN THỊ RÕ NÉT - CỘT HỌ TÊN MỞ RỘNG TỰ DO */
         .table-responsive { overflow-x: auto; margin-top: 10px; width: 100%; border: 1px solid #64748b; border-radius: 4px; }
         .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; font-size: 13px; color: #0f172a; }
         .main-table th { background: #e2e8f0; color: #0f172a; padding: 10px 8px; border: 1px solid #64748b; font-weight: bold; text-align: center; }
@@ -137,7 +137,7 @@
         }
         .inp-table:focus { border: 2px solid var(--blue); background: #ffffff; box-shadow: 0 0 5px rgba(37,99,235,0.4); }
         
-        /* Đã mở rộng min-width lên 240px giúp tên dài không bị che khuất, hiển thị rõ ràng dấu ngã/hỏi */
+        /* CỘT HỌ VÀ TÊN RỘNG 240PX HIỂN THỊ ĐẮC ĐỊA, ĐẦY ĐỦ DẤU NGÃ/HỎI TIẾNG VIỆT */
         .inp-name { 
             min-width: 240px; text-align: left; font-size: 13px; font-weight: 700;
             font-family: 'Segoe UI', Roboto, Arial, sans-serif !important; 
@@ -148,7 +148,6 @@
         .inp-num-sm { min-width: 50px; width: 55px; text-align: center; font-size: 13px; }
         .inp-table.inp-tam-ung { background-color: #fff7ed !important; border: 1.5px solid #ea580c !important; color: #c2410c !important; font-weight: bold !important; min-width: 100px; text-align: right; font-size: 13px; }
 
-        /* Signature Section Styles */
         .signature-container { margin-top: 35px; display: flex; justify-content: space-between; text-align: center; padding: 10px 40px; }
         .signature-box { flex: 1; font-size: 13px; }
         .signature-title { font-weight: bold; font-size: 14px; text-transform: uppercase; margin-bottom: 4px; color: #0f172a; }
@@ -246,7 +245,7 @@
                 <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')"><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</button>
             </div>
 
-            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ CHUẨN ĐẦY ĐỦ CẢI TIẾN HIỂN THỊ CỘT TÊN -->
+            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
@@ -427,14 +426,14 @@
 
                         <div class="form-group" style="margin-bottom: 12px; background: #f0fdf4; padding: 10px; border: 1px dashed var(--green); border-radius: 4px;">
                             <label style="color: var(--green); font-weight: bold; font-size: 12px;">
-                                <i class="fa-solid fa-paperclip"></i> Chọn Tài Liệu / Hóa Đơn Đính Kèm VP (Chọn nhiều file):
+                                <i class="fa-solid fa-paperclip"></i> Chọn Hóa Đơn / Chứng Từ VP (Lưu tự động vào Thư mục riêng của Tháng):
                             </label>
                             <input type="file" id="pay-multiple-files" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.docx,.zip" style="margin-top: 4px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; width: 100%;">
                         </div>
 
                         <div class="btn-group">
                             <button type="submit" id="btn-payment-submit" class="btn btn-green">
-                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-payment-text">Lưu Hồ Sơ Thanh Toán & Tải Tệp Lên Drive</span>
+                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-payment-text">Lưu Hồ Sơ VP & Tải Lên Folder Tháng Drive</span>
                             </button>
                         </div>
                     </form>
@@ -458,7 +457,7 @@
                                     <th class="text-right">Tiền thuế</th>
                                     <th class="text-right">Tổng chi</th>
                                     <th class="text-center">Trạng thái</th>
-                                    <th class="text-center">Chứng từ Drive</th>
+                                    <th class="text-center">Folder Tháng Google Drive</th>
                                     <th class="text-center" style="width: 100px;">Hành động</th>
                                 </tr>
                             </thead>
@@ -511,12 +510,12 @@
 
                         <div class="form-group" style="margin-bottom: 12px; background: #f0fdf4; padding: 10px; border: 1px dashed var(--green); border-radius: 4px;">
                             <label style="color: var(--green); font-weight: bold; font-size: 12px;">
-                                <i class="fa-solid fa-paperclip"></i> Chọn Tài Liệu Đính Kèm Hóa Đơn (Chọn nhiều file):
+                                <i class="fa-solid fa-paperclip"></i> Chọn Tài Liệu Hóa Đơn Mạng (Lưu tự động vào Thư mục riêng của Tháng):
                             </label>
                             <input type="file" id="tel-multiple-files" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.docx,.zip" onchange="onFilesSelectedLive(this)" style="margin-top: 4px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; width: 100%;">
                             
                             <div id="upload-status-box" style="display:none; margin-top:10px; background:#fff; padding:8px; border:1px solid #cbd5e1; border-radius:4px;">
-                                <div style="display:flex; justify-between; font-weight:bold; font-size:12px; margin-bottom:4px;">
+                                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12px; margin-bottom:4px;">
                                     <span id="upload-progress-text">Đang chuẩn bị file...</span>
                                     <span id="upload-progress-percent" style="color:var(--blue);">0%</span>
                                 </div>
@@ -540,7 +539,7 @@
 
                         <div class="btn-group">
                             <button type="submit" id="btn-telecom-submit" class="btn btn-orange">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> <span id="btn-telecom-text">Lưu Cước & Tải Tệp Lên Drive</span>
+                                <i class="fa-solid fa-cloud-arrow-up"></i> <span id="btn-telecom-text">Lưu Cước & Tải Lên Folder Tháng Drive</span>
                             </button>
                             <button type="button" class="btn btn-gray" onclick="resetTelecomForm()"><i class="fa-solid fa-xmark"></i> Hủy</button>
                         </div>
@@ -574,7 +573,7 @@
                                     <th class="text-center">Mã thuê bao / Đường truyền</th>
                                     <th class="text-right">Chi phí (VND)</th>
                                     <th class="text-center" style="background:#fef08a; color:#9a3412;">Kỳ cước</th>
-                                    <th class="text-center">Folder & File Đính Kèm</th>
+                                    <th class="text-center">Folder Tháng Google Drive</th>
                                     <th class="text-center" style="width: 100px;">Hành động</th>
                                 </tr>
                             </thead>
@@ -810,7 +809,7 @@
 
         let CURRENT_SELECTED_YEAR = "2026";
 
-        // DANH SÁCH 16 NHÂN VIÊN CHUẨN FILE EXCEL BẢN GỐC (ĐÀO TẠO ĐẦY ĐỦ TIẾNG VIỆT CHUẨN)
+        // DANH SÁCH 16 NHÂN VIÊN CHUẨN FILE EXCEL BẢN GỐC
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004242307"},
@@ -1080,6 +1079,7 @@
             document.getElementById('pay-total').value = total.toLocaleString('vi-VN') + " VND";
         }
 
+        // TỰ ĐỘNG ĐẨY FILE ĐÍNH KÈM VÀO FOLDER RIÊNG CỦA TỪNG THÁNG CHO THANH TOÁN VP
         async function savePaymentRecord(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('btn-payment-submit');
@@ -1104,6 +1104,9 @@
                 period = `${CURRENT_SELECTED_YEAR}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             }
 
+            let monthPart = period.includes('-') ? period.split('-')[1] : "01";
+            let yearPart = period.includes('-') ? period.split('-')[0] : CURRENT_SELECTED_YEAR;
+
             const fileInput = document.getElementById('pay-multiple-files');
             const files = fileInput.files;
 
@@ -1112,7 +1115,7 @@
 
             if (files && files.length > 0) {
                 submitBtn.disabled = true;
-                if (submitText) submitText.innerText = `Đang tải ${files.length} file lên Drive...`;
+                if (submitText) submitText.innerText = `Đang tải ${files.length} file vào Folder Tháng ${monthPart}/${yearPart}...`;
 
                 try {
                     let preparedFiles = [];
@@ -1121,9 +1124,12 @@
                         preparedFiles.push(fData);
                     }
 
+                    // Đẩy dữ liệu file với tham số cấu trúc folder riêng theo tháng
                     let uploadPayload = {
                         action: "upload_files_monthly",
-                        modulePrefix: "HoaDon_ThanhToan_VP_Thang_",
+                        folderType: "THANH_TOAN_VP",
+                        folderName: `Thang_${monthPart}_${yearPart}`,
+                        modulePrefix: "HoaDon_ThanhToan_VP_",
                         period: period,
                         files: preparedFiles
                     };
@@ -1143,12 +1149,9 @@
                     alert("⚠️ Lỗi kết nối Tải file lên Drive, hệ thống vẫn sẽ lưu thông tin bản ghi vào bảng!");
                 } finally {
                     submitBtn.disabled = false;
-                    if (submitText) submitText.innerText = "Lưu Hồ Sơ Thanh Toán & Tải Tệp Lên Drive";
+                    if (submitText) submitText.innerText = "Lưu Hồ Sơ VP & Tải Lên Folder Tháng Drive";
                 }
             }
-
-            let monthPart = period.includes('-') ? period.split('-')[1] : "01";
-            let yearPart = period.includes('-') ? period.split('-')[0] : CURRENT_SELECTED_YEAR;
 
             if (editId) {
                 let item = paymentRecordsAll.find(d => d.id === editId);
@@ -1185,8 +1188,8 @@
 
             alert(`🎉 ĐÃ LƯU HỒ SƠ THANH TOÁN VP THÀNH CÔNG!\n\n` +
                   `- Kỳ thanh toán: ${period}\n` +
-                  `- Folder Drive: HoaDon_ThanhToan_VP_Thang_${monthPart}_${yearPart}\n` +
-                  `- Số tệp chứng từ đính kèm: ${uploadedFilesList.length} tệp`);
+                  `- Thư mục riêng Google Drive: HoaDon_ThanhToan_VP/Thang_${monthPart}_${yearPart}\n` +
+                  `- Số chứng từ đã lưu: ${uploadedFilesList.length} tệp`);
         }
 
         function loadPaymentRecordsFromCloud() {
@@ -1208,7 +1211,10 @@
             currentYearPayment.forEach((r, i) => {
                 sum += r.total;
 
-                let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder VP</a>`;
+                let monthDisplay = r.period ? r.period.split('-')[1] : "05";
+                let yearDisplay = r.period ? r.period.split('-')[0] : CURRENT_SELECTED_YEAR;
+
+                let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Folder Tháng ${monthDisplay}/${yearDisplay}</a>`;
                 if (r.fileList && r.fileList.length > 0) {
                     fileLinksHtml += `<div style="margin-top:3px; font-size:10px; color:var(--blue);">(${r.fileList.length} tệp chứng từ)</div>`;
                 }
@@ -1269,6 +1275,7 @@
             }
         }
 
+        // TỰ ĐỘNG ĐẨY FILE ĐÍNH KÈM VÀO FOLDER RIÊNG CỦA TỪNG THÁNG CHO CƯỚC VIỄN THÔNG
         async function saveTelecomRecord(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('btn-telecom-submit');
@@ -1288,6 +1295,9 @@
                 period = `${CURRENT_SELECTED_YEAR}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             }
 
+            let monthPart = period.includes('-') ? period.split('-')[1] : "01";
+            let yearPart = period.includes('-') ? period.split('-')[0] : CURRENT_SELECTED_YEAR;
+
             const fileInput = document.getElementById('tel-multiple-files');
             const files = fileInput.files;
 
@@ -1296,7 +1306,7 @@
 
             if (files && files.length > 0) {
                 submitBtn.disabled = true;
-                if (submitText) submitText.innerText = `Đang tải ${files.length} file lên Drive...`;
+                if (submitText) submitText.innerText = `Đang tải ${files.length} file vào Folder Tháng ${monthPart}/${yearPart}...`;
 
                 try {
                     let preparedFiles = [];
@@ -1313,10 +1323,13 @@
                         document.getElementById('upload-progress-text').innerText = `Đã chuẩn hóa ${i + 1}/${files.length} tệp...`;
                     }
 
-                    document.getElementById('upload-progress-text').innerText = `Đang đẩy dữ liệu sang Google Drive...`;
+                    document.getElementById('upload-progress-text').innerText = `Đang đẩy dữ liệu sang Folder Tháng ${monthPart}/${yearPart} trên Google Drive...`;
 
+                    // Đẩy dữ liệu file với tham số cấu trúc folder riêng theo tháng
                     let uploadPayload = {
                         action: "upload_files_monthly",
+                        folderType: "CUOC_VIEN_THONG",
+                        folderName: `Thang_${monthPart}_${yearPart}`,
                         modulePrefix: "HoaDon_Cuoc_Thang_",
                         period: period,
                         files: preparedFiles
@@ -1346,12 +1359,9 @@
                     alert("⚠️ Lỗi kết nối Tải file lên Drive, hệ thống vẫn sẽ lưu thông tin bản ghi cước vào bảng!");
                 } finally {
                     submitBtn.disabled = false;
-                    if (submitText) submitText.innerText = "Lưu Cước & Tải Tệp Lên Drive";
+                    if (submitText) submitText.innerText = "Lưu Cước & Tải Lên Folder Tháng Drive";
                 }
             }
-
-            let monthPart = period.includes('-') ? period.split('-')[1] : "01";
-            let yearPart = period.includes('-') ? period.split('-')[0] : CURRENT_SELECTED_YEAR;
 
             if (editId) {
                 let item = telecomRecordsAll.find(d => d.id === editId);
@@ -1382,7 +1392,7 @@
 
             alert(`🎉 ĐÃ LƯU CƯỚC THÀNH CÔNG!\n\n` +
                   `- Kỳ cước: ${period}\n` +
-                  `- Folder Drive Tháng: HoaDon_Cuoc_Thang_${monthPart}_${yearPart}\n` +
+                  `- Thư mục riêng Google Drive: HoaDon_Cuoc_Internet/Thang_${monthPart}_${yearPart}\n` +
                   `- Số tệp đính kèm đã lưu: ${uploadedFilesList.length} tệp`);
         }
 
@@ -1413,7 +1423,10 @@
             activeTelecoms.forEach((r, i) => {
                 sum += Number(r.cost);
                 
-                let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder Tháng</a>`;
+                let monthDisplay = r.period ? r.period.split('-')[1] : "05";
+                let yearDisplay = r.period ? r.period.split('-')[0] : CURRENT_SELECTED_YEAR;
+
+                let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Folder Tháng ${monthDisplay}/${yearDisplay}</a>`;
                 if (r.fileList && r.fileList.length > 0) {
                     fileLinksHtml += `<div style="margin-top:3px; font-size:10px; color:var(--blue);">(${r.fileList.length} file đính kèm)</div>`;
                 }
