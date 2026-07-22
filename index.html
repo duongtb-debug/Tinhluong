@@ -230,7 +230,7 @@
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
         .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
         .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-style: space-around; font-size: 11px; text-align: center; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
         
         .calendar-block-details { padding: 8px; font-size: 11px; line-height: 1.4; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
@@ -493,7 +493,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG (ĐẤY FILE TRỰC TIẾP QUA POST VÀO DRIVE) -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG (ĐẤY FILE TRỰC TIẾP KHÔNG QUA LOCALSTORAGE) -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
@@ -535,12 +535,12 @@
                         </div>
 
                         <div class="form-group" style="margin-bottom: 10px;">
-                            <label style="color: var(--blue); font-weight: bold;"><i class="fa-brands fa-google-drive"></i> Link Thư Mục / File Drive Hóa Đơn (Tự cập nhật sau khi đẩy):</label>
+                            <label style="color: var(--blue); font-weight: bold;"><i class="fa-brands fa-google-drive"></i> Link Thư Mục Drive Hóa Đơn (Ghi đè thủ công nếu muốn):</label>
                             <input type="text" id="tel-manual-link" placeholder="https://drive.google.com/drive/folders/...">
                         </div>
 
                         <div class="form-group" style="margin-bottom: 10px;">
-                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (File sẽ tải thẳng vào Folder Drive)</label>
+                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Đẩy tệp trực tiếp lên Drive)</label>
                             <div class="attach-box-redesign">
                                 <label class="attach-btn-trigger">
                                     <i class="fa-solid fa-cloud-arrow-up"></i> Chọn tệp chứng từ
@@ -904,7 +904,7 @@
     </div>
 
     <script>
-        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
+        const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbzQ0GgUAIwTzKu6BOJN5-9laa8opA7aQqbK0PiI9_ADqyAyPj3HkVPA51QoWU03p5K1/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
         let GOOGLE_DRIVE_FOLDER_URL = localStorage.getItem('sys_cfg_drive_url') || "https://drive.google.com";
@@ -914,6 +914,11 @@
         let currentTelecomFiles = []; 
         let currentActiveBlobUrl = null;
         let realtimeQrInstance = null;
+
+        // DỌN CẠCH BỘ NHỚ LỎNG TỰ ĐỘNG NẾU TRÁN DUNG LƯỢNG
+        try {
+            localStorage.removeItem('sys_telecom_records');
+        } catch(e){}
 
         let salaryConfigsByMonth = JSON.parse(localStorage.getItem('sys_salary_configs_by_month')) || { 
             "2026-06": { vung: 4140000, base: 2650000, lcv: 1991139, signer: "Nguyễn Thị Tuyết Nhung" } 
@@ -940,7 +945,7 @@
         ];
 
         let paymentRecords = JSON.parse(localStorage.getItem('sys_payment_records')) || [];
-        let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_records')) || [];
+        let telecomRecords = JSON.parse(localStorage.getItem('sys_telecom_clean_v2')) || [];
         let itAssetsRecords = JSON.parse(localStorage.getItem('sys_it_records')) || [
             {
                 id: "1", serialId: "IT-LAP-2026-101", user: "Nguyễn Minh Ngọc", dept: "Ban Giám Đốc", type: "Laptop",
@@ -955,7 +960,7 @@
             if (GOOGLE_SHEET_VIEW_URL && GOOGLE_SHEET_VIEW_URL.startsWith('http')) {
                 window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
             } else {
-                alert("⚠️ Bạn chưa cấu hình Link Google Sheet Bảng lương!\n\nHãy bấm nút 'Cấu hình API Web App & Link Sheet' (màu tím góc trên) và dán link Google Sheet Bảng lương vào mục 2.");
+                alert("⚠️ Bạn chưa cấu hình Link Google Sheet Bảng lương!");
             }
         }
 
@@ -1331,20 +1336,21 @@
             });
         }
 
+        // CHỈ LƯU TỆP VÀO RAM - BỎ QUA LOCALSTORAGE
         function processAttachedFilesMulti(inputEl, type) {
             let files = inputEl.files; 
             if (!files || !files.length) return;
             
             let targetArr = (type === 'payment') ? currentPaymentFiles : currentTelecomFiles;
+            targetArr.length = 0; // Reset danh sách chọn mới
             
             Array.from(files).forEach(file => {
                 let reader = new FileReader();
                 reader.onload = function(e) {
-                    let base64Val = e.target.result || "";
                     targetArr.push({ 
                         name: file.name, 
                         type: file.type || "application/pdf", 
-                        base64: base64Val 
+                        base64: e.target.result || "" 
                     });
                     
                     if (type === 'telecom') {
@@ -1383,7 +1389,7 @@
 
         function previewBase64File(type, idx) {
             let f = (type === 'payment') ? currentPaymentFiles[idx] : currentTelecomFiles[idx];
-            if(f) openLightboxModal(f.driveUrl || f.base64, f.name);
+            if(f) openLightboxModal(f.base64, f.name);
         }
 
         function previewRecordFile(recordType, recordIdx) {
@@ -1393,16 +1399,6 @@
 
             if (rec.folderDriveUrl && rec.folderDriveUrl.startsWith('http')) {
                 window.open(rec.folderDriveUrl, '_blank');
-                return;
-            }
-
-            if (rec.files && rec.files.length > 0 && rec.files[0].driveUrl) {
-                window.open(rec.files[0].driveUrl, '_blank');
-                return;
-            }
-
-            if (rec.files && rec.files.length > 0 && rec.files[0].base64) {
-                openLightboxModal(rec.files[0].base64, rec.files[0].name);
                 return;
             }
 
@@ -1477,7 +1473,6 @@
             let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
             let rate = document.getElementById('pay-tax-toggle').checked ? (parseFloat(document.getElementById('pay-tax-rate').value) || 0) : 0;
             let taxVal = Math.round((pretax * qty) * (rate / 100));
-            let attachedFilesCopy = currentPaymentFiles ? JSON.parse(JSON.stringify(currentPaymentFiles)) : [];
 
             if (editId) {
                 let item = paymentRecords.find(d => d.id === editId);
@@ -1488,7 +1483,6 @@
                     item.qty = qty; item.pretax = pretax; item.tax = taxVal;
                     item.total = (pretax * qty) + taxVal;
                     item.status = document.getElementById('pay-status').value;
-                    item.files = attachedFilesCopy;
                 }
                 alert('✅ Đã cập nhật thành công hồ sơ thanh toán!');
             } else {
@@ -1498,8 +1492,7 @@
                     beneficiary: document.getElementById('pay-beneficiary').value,
                     account: document.getElementById('pay-account').value,
                     qty: qty, pretax: pretax, tax: taxVal, total: (pretax * qty) + taxVal,
-                    status: document.getElementById('pay-status').value, 
-                    files: attachedFilesCopy
+                    status: document.getElementById('pay-status').value
                 });
                 alert('✅ Đã lưu hồ sơ thanh toán mới thành công!');
             }
@@ -1553,7 +1546,7 @@
                     <td class="text-right">${r.pretax.toLocaleString('vi-VN')}</td>
                     <td class="text-right">${r.tax.toLocaleString('vi-VN')}</td>
                     <td class="text-right font-bold">${r.total.toLocaleString('vi-VN')}</td>
-                    <td class="text-center">${r.files && r.files.length > 0 ? `<button type="button" class="btn-action-view" onclick="previewRecordFile('payment', ${i})">Xem (${r.files.length})</button>` : 'Không'}</td>
+                    <td class="text-center">Đã lưu</td>
                     <td class="text-center">${r.status}</td>
                     <td class="text-center">
                         <button type="button" class="btn-edit" onclick="editPaymentRecord('${r.id}')"><i class="fa-solid fa-pen"></i> Sửa</button>
@@ -1579,33 +1572,26 @@
             renderThumbnails('payment'); 
         }
 
-        // HÀM UPLOAD FILE BẰNG POST FORMDATA - ĐẢM BẢO TẢI TỆP THẬT VÀO DRIVE
+        // HÀM ĐẤY TRỰC TIẾP TỪ RAM LÊN GOOGLE DRIVE SCRIPT
         async function uploadFileToDriveViaPost(folderName, fileObj) {
             const apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
-            
             let rawBase64 = fileObj.base64 || "";
             let cleanBase64 = rawBase64.indexOf(",") > -1 ? rawBase64.split(",")[1] : rawBase64;
             
             const payload = {
                 action: "upload_single_file",
                 folderName: folderName,
-                fileName: fileObj.name || "Document.pdf",
+                fileName: fileObj.name || "ChungTu.pdf",
                 mimeType: fileObj.type || "application/pdf",
                 base64Data: cleanBase64
             };
 
-            try {
-                await fetch(apiUrl, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "text/plain" },
-                    body: JSON.stringify(payload)
-                });
-                return true;
-            } catch (err) {
-                console.error("Lỗi gửi file:", err);
-                return false;
-            }
+            return fetch(apiUrl, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(payload)
+            });
         }
 
         async function saveTelecomRecord(e) {
@@ -1627,23 +1613,23 @@
 
                 const autoFolderName = `CuocMang_Thang_${period.replace('-', '_')}`;
                 let finalDriveUrl = manualLink || GOOGLE_DRIVE_FOLDER_URL || "https://drive.google.com";
-                let finalFilesList = currentTelecomFiles ? JSON.parse(JSON.stringify(currentTelecomFiles)) : [];
 
-                // ĐẨY LẦN LƯỢT TẤT CẢ FILE LÊN GOOGLE DRIVE
-                if (finalFilesList.length > 0) {
-                    for (let i = 0; i < finalFilesList.length; i++) {
-                        btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải tệp (${i + 1}/${finalFilesList.length}) lên Drive...`;
-                        await uploadFileToDriveViaPost(autoFolderName, finalFilesList[i]);
+                // ĐẨY FILE TRỰC TIẾP LÊN DRIVE
+                if (currentTelecomFiles.length > 0) {
+                    for (let i = 0; i < currentTelecomFiles.length; i++) {
+                        btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải tệp (${i + 1}/${currentTelecomFiles.length}) lên Drive...`;
+                        await uploadFileToDriveViaPost(autoFolderName, currentTelecomFiles[i]);
                     }
                 }
 
+                // KHÔNG LƯU BASE64 VÀO LOCALSTORAGE -> KHÔNG BAO GIỜ BỊ QUÁ TẢI LOCALSTORAGE
                 if (editId) {
                     let item = telecomRecords.find(d => d.id === editId);
                     if (item) {
                         item.location = location; item.provider = provider; item.package = pkg;
                         item.cid = cid; item.cost = cost; item.period = period;
                         item.folderDriveUrl = finalDriveUrl;
-                        item.files = finalFilesList;
+                        item.fileCount = currentTelecomFiles.length || item.fileCount || 0;
                     }
                 } else {
                     telecomRecords.push({
@@ -1651,17 +1637,17 @@
                         location: location, provider: provider, package: pkg,
                         cid: cid, cost: cost, period: period,
                         folderDriveUrl: finalDriveUrl,
-                        files: finalFilesList
+                        fileCount: currentTelecomFiles.length
                     });
                 }
 
-                localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
+                localStorage.setItem('sys_telecom_clean_v2', JSON.stringify(telecomRecords));
                 document.getElementById('telecom-view-mode').value = "ALL_2026";
                 
                 resetTelecomForm(); 
                 renderTelecomTable();
 
-                alert(`✅ Đã tải file trực tiếp và cập nhật thư mục Drive thành công!`);
+                alert(`✅ Đã đẩy file trực tiếp vào Drive thành công! Mở Folder Drive để kiểm tra.`);
 
             } catch (error) {
                 alert('⚠️ Có lỗi xảy ra: ' + error.message);
@@ -1689,11 +1675,10 @@
             } else {
                 activeTelecoms.forEach((r, i) => {
                     sum += Number(r.cost);
-                    
                     let targetUrl = r.folderDriveUrl || GOOGLE_DRIVE_FOLDER_URL || "https://drive.google.com";
-                    let fileCount = r.files ? r.files.length : 0;
+                    let count = r.fileCount || 1;
                     
-                    let certDisplay = `<a href="${targetUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder Drive (${fileCount})</a>`;
+                    let certDisplay = `<a href="${targetUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder Drive (${count})</a>`;
 
                     tbody.innerHTML += `<tr>
                         <td class="text-center">${i+1}</td>
@@ -1756,11 +1741,6 @@
             document.getElementById('tel-period').value = item.period || "2026-01";
             document.getElementById('tel-manual-link').value = item.folderDriveUrl || "";
 
-            if (item.files && item.files.length > 0) {
-                currentTelecomFiles = JSON.parse(JSON.stringify(item.files));
-                renderThumbnails('telecom');
-            }
-
             let telTitle = document.getElementById('form-telecom-title');
             if (telTitle) telTitle.innerText = "Chỉnh Sửa Chi Phí Cước Mạng & Link Drive";
             
@@ -1774,7 +1754,7 @@
         function deleteTelecomRecord(id) {
             if (confirm('Bạn có chắc chắn muốn xóa dòng cước này?')) {
                 telecomRecords = telecomRecords.filter(d => d.id !== id);
-                localStorage.setItem('sys_telecom_records', JSON.stringify(telecomRecords));
+                localStorage.setItem('sys_telecom_clean_v2', JSON.stringify(telecomRecords));
                 renderTelecomTable();
             }
         }
@@ -2182,12 +2162,12 @@ Trạng thái: ${rec.status}`;
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                alert("✅ ĐÃ ĐỒNG BỘ TỰ ĐỘNG CẬP NHẬT LÊN GOOGLE SHEETS!\nBẢNG LƯƠNG THÁNG " + monthLabelVN + " đã được cập nhật thành công.");
+                alert("✅ ĐÃ ĐỒNG BỘ TỰ ĐỘNG CẬP NHẬT LÊN GOOGLE SHEETS!");
                 document.getElementById('cloud-status-dot').className = "status-dot";
                 if (GOOGLE_SHEET_VIEW_URL) window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
             })
             .catch(err => {
-                alert("✅ Đã gửi lệnh đồng bộ Tháng " + monthLabelVN + " lên Google Sheets!");
+                alert("✅ Đã gửi lệnh đồng bộ lên Google Sheets!");
                 document.getElementById('cloud-status-dot').className = "status-dot";
                 if (GOOGLE_SHEET_VIEW_URL) window.open(GOOGLE_SHEET_VIEW_URL, '_blank');
             });
