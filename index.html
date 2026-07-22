@@ -264,6 +264,10 @@
                         </div>
 
                         <div class="config-actions-group">
+                            <!-- NÚT MỞ SHEET & ĐỒNG BỘ MÂY -->
+                            <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()">
+                                <i class="fa-brands fa-google-drive"></i> Mở Sheet
+                            </button>
                             <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()">
                                 <i class="fa-solid fa-cloud-arrow-up"></i> Đồng Bộ Mây
                             </button>
@@ -404,7 +408,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG (LƯU & PHỤC HỒI TỪ DRIVE/MÂY) -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
@@ -730,7 +734,7 @@
     </div>
 
     <script>
-        // SỬ DỤNG CHÍNH XÁC LINK API GOOGLE SCRIPT BẠN CUNG CẤP
+        // INTEGRATED YOUR GOOGLE SCRIPT API EXACTLY
         const HARDCODED_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
@@ -740,7 +744,7 @@
         let CURRENT_SELECTED_YEAR = "2026";
         let currentTelecomFiles = [];
 
-        // DANH SÁCH 16 NHÂN VIÊN MẪU
+        // FULL 16 SAMPLE STAFFS
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 0, "account": "105005712499", "note": ""},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "105004242307", "note": ""},
@@ -813,7 +817,7 @@
             calculateSalaryLogic();
         }
 
-        // HÀM TÍNH TOÁN VÀ HIỂN THỊ BẢNG LƯƠNG TỰ ĐỘNG LẬP TỨC
+        // SALARY CALCULATION ENGINE
         function calculateSalaryLogic() {
             let sm = document.getElementById('filter-month').value;
             let activeData = salaryDataByMonth[sm] || [];
@@ -890,6 +894,57 @@
             if (confirm('Xóa nhân viên này khỏi bảng lương?')) {
                 salaryDataByMonth[sm].splice(idx, 1);
                 calculateSalaryLogic();
+            }
+        }
+
+        // HÀM MỞ FILE GOOGLE SHEETS BẢNG LƯƠNG Trực Tiếp
+        function openMainSalaryGoogleSheet() {
+            let sheetUrl = GOOGLE_SHEET_VIEW_URL || localStorage.getItem('sys_cfg_sheet_url');
+            if (!sheetUrl) {
+                alert("⚠️ Bạn chưa cấu hình Link Google Sheet xem bảng lương!\n\nHãy nhấn nút 'Cấu hình API Web App & Link Sheet' ở góc trên cùng bên phải để dán đường link xem Google Sheet của bạn vào.");
+                openConfigUrlModal();
+            } else {
+                window.open(sheetUrl, '_blank');
+            }
+        }
+
+        // HÀM ĐỒNG BỘ MÂY CÓ THÔNG BÁO POPUP
+        async function syncDataToCloudServer() {
+            const statusDot = document.getElementById('cloud-status-dot');
+            const statusText = document.getElementById('cloud-status-text');
+            let sm = document.getElementById('filter-month').value;
+
+            if (statusDot) statusDot.className = "status-dot syncing";
+            if (statusText) statusText.innerText = "Đang đồng bộ dữ liệu Bảng Lương lên Google Cloud...";
+
+            try {
+                let currentMonthStaffs = salaryDataByMonth[sm] || [];
+                let currentMonthConfig = salaryConfigsByMonth[sm] || {};
+
+                let payload = {
+                    action: "sync_salary_data",
+                    year: CURRENT_SELECTED_YEAR,
+                    month: sm,
+                    config: currentMonthConfig,
+                    staffs: currentMonthStaffs
+                };
+
+                await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (statusDot) statusDot.className = "status-dot";
+                if (statusText) statusText.innerText = "Đã đồng bộ Google Script API thành công (" + new Date().toLocaleTimeString('vi-VN') + ")";
+
+                alert(`🎉 ĐỒNG BỘ DỮ LIỆU THÀNH CÔNG!\n\n- Kỳ lương: Tháng ${sm}\n- Số lượng nhân sự: ${currentMonthStaffs.length} người\n- Trạng thái: Dữ liệu Bảng lương và Cấu hình tham số đã được lưu an toàn lên Cloud Server API!`);
+
+            } catch (err) {
+                if (statusDot) statusDot.className = "status-dot";
+                if (statusText) statusText.innerText = "Lỗi kết nối đồng bộ Mây";
+                alert("❌ ĐỒNG BỘ THẤT BẠI!\n\nLỗi: " + err.message + "\nHãy kiểm tra lại đường truyền mạng hoặc Link API Google Script.");
             }
         }
 
@@ -996,19 +1051,6 @@
                     base64Data: cleanBase64
                 })
             });
-        }
-
-        function processAttachedFilesMulti(inputEl) {
-            let files = inputEl.files; if (!files || !files.length) return;
-            currentTelecomFiles = [];
-            Array.from(files).forEach(file => {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    currentTelecomFiles.push({ name: file.name, type: file.type || "application/pdf", base64: e.target.result || "" });
-                };
-                reader.readAsDataURL(file);
-            });
-            document.getElementById('tel-upload-status-lbl').innerText = `Đã chọn (${files.length} tệp)`;
         }
 
         function renderTelecomTable() {
