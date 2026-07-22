@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG - ENTERPRISE PLATFORM</title>
     
-    <!-- Thư viện Engine -->
+    <!-- Engine Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -55,24 +55,13 @@
         .header h1 { font-size: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
         .live-clock-box { background: rgba(255,255,255,0.12); padding: 6px 14px; border-radius: 4px; font-family: monospace !important; font-size: 13px; text-align: right; border: 1px solid rgba(255,255,255,0.2); font-weight: bold; color: #fef08a; }
 
-        .stat-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 10px; 
-            margin-bottom: 12px; 
-        }
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
         @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
 
         .stat-card { 
-            background: white; 
-            padding: 8px 12px; 
-            border-radius: 6px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
-            border: 1px solid var(--border-color); 
-            border-left: 4px solid var(--blue);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            background: white; padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
+            border: 1px solid var(--border-color); border-left: 4px solid var(--blue);
+            display: flex; align-items: center; justify-content: space-between;
         }
         .stat-card.orange { border-left-color: var(--orange); }
         .stat-card.green { border-left-color: var(--green); }
@@ -85,10 +74,7 @@
         .salary-visual-summary {
             display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 auto 15px auto; max-width: 850px; background: #f8fafc; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
-        @media (max-width: 768px) { 
-            .salary-visual-summary { flex-direction: column; width: 100%; }
-            .visual-mini-card { width: 100%; }
-        }
+        @media (max-width: 768px) { .salary-visual-summary { flex-direction: column; width: 100%; } .visual-mini-card { width: 100%; } }
         .visual-mini-card { flex: 1; background: white; padding: 8px 14px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .visual-lbl { font-size: 11px; font-weight: bold; color: #475569; white-space: nowrap; display: flex; align-items: center; }
         .visual-val { font-size: 14px; font-weight: bold; color: var(--primary); white-space: nowrap; }
@@ -121,14 +107,6 @@
         .form-group input, .form-group select, .form-group textarea { padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; outline: none; background: #fff; }
         .form-group input:focus, .form-group select:focus { border-color: var(--blue); }
 
-        .attach-box-redesign { display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 5px 10px; border-radius: 4px; width: fit-content; }
-        .attach-btn-trigger { display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #334155; cursor: pointer; transition: all 0.2s; }
-        .attach-btn-trigger:hover { border-color: var(--blue); color: var(--blue); background: #f0f9ff; }
-
-        .preview-thumbnails-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; padding: 6px; background: #f1f5f9; border-radius: 4px; border: 1px solid var(--border-color); }
-        .thumb-wrapper { position: relative; width: 55px; height: 55px; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: white; cursor: pointer; }
-        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-
         .btn { padding: 5px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
         .btn-primary { background: var(--blue); color: white; }
         .btn-purple { background: var(--purple); color: white; }
@@ -136,7 +114,6 @@
         .btn-orange { background: var(--orange); color: white; }
         .btn-gray { background: #64748b; color: white; }
         
-        .btn-edit { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; padding: 2px 6px; font-size: 11px; border-radius: 3px; cursor: pointer; font-weight: bold; }
         .btn-delete { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 6px; font-size: 11px; border-radius: 3px; cursor: pointer; font-weight: bold; }
         .btn-action-qr { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; padding: 2px 6px; font-size: 11px; border-radius: 3px; cursor: pointer; font-weight: bold; }
 
@@ -159,7 +136,6 @@
         .inp-name { min-width: 175px; text-align: left; }
         .inp-account { min-width: 120px; text-align: center; font-family: monospace; }
         .inp-num-sm { min-width: 45px; width: 50px; text-align: center; }
-
         .inp-table.inp-tam-ung { background-color: #fff7ed !important; border: 1.5px solid #f97316 !important; color: #c2410c !important; font-weight: bold !important; min-width: 85px; text-align: right; }
 
         .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 180px; }
@@ -170,10 +146,8 @@
         .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
         .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
         .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
-        
         .calendar-block-details { padding: 8px; font-size: 11px; line-height: 1.4; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
-        
         .cal-box-section { margin-top: 6px; padding-top: 5px; border-top: 1px dashed #cbd5e1; }
         .cal-box-title { font-weight: bold; color: var(--purple); font-size: 11px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
         .cal-tag-good { background: #dcfce7; color: #166534; padding: 1px 4px; border-radius: 3px; font-weight: bold; font-size: 10px; }
@@ -185,7 +159,6 @@
         .badge-no-license { background: #fee2e2; color: #dc2626; padding: 2px 5px; border-radius: 3px; font-weight: bold; border: 1px solid #fecaca; }
         .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 5px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
         .badge-cert { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
-        .badge-cert:hover { background: #bbf7d0; color: #166534; }
     </style>
 </head>
 <body>
@@ -196,7 +169,6 @@
                 <span class="status-dot" id="cloud-status-dot"></span>
                 <span id="cloud-status-text">Kết nối Google Script API sẵn sàng</span>
             </div>
-            <!-- CHỌN NĂM LƯU TRỮ -->
             <div class="year-selector-box">
                 <i class="fa-solid fa-calendar-check"></i>
                 <label for="global-year-picker">NĂM LƯU TRỮ DỮ LIỆU:</label>
@@ -260,7 +232,7 @@
                 <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')"><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</button>
             </div>
 
-            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ -->
+            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ ĐẦY ĐỦ 100% -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
@@ -292,9 +264,6 @@
                         </div>
 
                         <div class="config-actions-group">
-                            <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()">
-                                <i class="fa-brands fa-google-drive"></i> Mở Sheet
-                            </button>
                             <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()">
                                 <i class="fa-solid fa-cloud-arrow-up"></i> Đồng Bộ Mây
                             </button>
@@ -325,7 +294,7 @@
                         <span>DANH SÁCH BẢNG LƯƠNG CHI TIẾT NHÂN VIÊN (NĂM <span class="lbl-current-year">2026</span>)</span>
                         <div>
                             <button type="button" class="btn btn-orange" style="padding:2px 7px; font-size:11px;" onclick="restoreDefaultStaffs()"><i class="fa-solid fa-rotate-left"></i> Nạp Dữ Liệu Nhân Viên Mẫu</button>
-                            <button type="button" class="btn btn-primary" style="padding:2px 7px; font-size:11px;" onclick="openAddStaffModal()"><i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên Mới</button>
+                            <button type="button" class="btn btn-primary" style="padding:2px 7px; font-size:11px;" onclick="addNewSalaryRow()"><i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên Mới</button>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -344,7 +313,7 @@
                                     <th rowspan="2" class="text-center" style="background-color: #ffedd5; color: #c2410c;">Tạm Ứng (VND)</th>
                                     <th rowspan="2" class="text-right" style="background-color: #fef08a;">Thực Lĩnh</th>
                                     <th rowspan="2" class="text-center">Ghi Chú</th>
-                                    <th rowspan="2" class="text-center">Hành động</th>
+                                    <th rowspan="2" class="text-center">Xóa</th>
                                 </tr>
                                 <tr style="background-color: #f1f5f9;">
                                     <th style="background:#fffde7; width:55px;">Hệ số LCB</th>
@@ -481,17 +450,6 @@
                             <input type="text" id="tel-manual-link" placeholder="https://drive.google.com/drive/folders/...">
                         </div>
 
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Đẩy thẳng lên Google Drive)</label>
-                            <div class="attach-box-redesign">
-                                <label class="attach-btn-trigger">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Chọn tệp chứng từ
-                                    <input type="file" id="tel-file-uploader" multiple accept="image/*,application/pdf" onchange="processAttachedFilesMulti(this)" style="display:none;">
-                                </label>
-                                <span id="tel-upload-status-lbl" style="font-size: 11px; color: #64748b; font-weight: bold;">Chưa chọn tệp</span>
-                            </div>
-                        </div>
-
                         <div class="btn-group">
                             <button type="submit" id="btn-telecom-submit" class="btn btn-orange">
                                 <i class="fa-solid fa-cloud-arrow-up"></i> <span id="btn-telecom-text">Lưu Cước & Tải Tệp Lên Drive</span>
@@ -509,18 +467,10 @@
                             <button type="button" class="btn btn-purple" style="padding:3px 8px; font-size:11px;" onclick="loadTelecomRecordsFromCloud()"><i class="fa-solid fa-cloud-arrow-down"></i> Tải / Phục Hồi Dữ Liệu Từ Mây</button>
                             <select id="telecom-view-mode" onchange="renderTelecomTable()" style="padding:3px 6px; border-radius:4px; border:1px solid var(--blue); font-weight:bold; color:var(--blue);">
                                 <option value="ALL_YEAR" selected>🌟 Tất cả các tháng trong Năm</option>
-                                <option value="01">Tháng 01</option>
-                                <option value="02">Tháng 02</option>
-                                <option value="03">Tháng 03</option>
-                                <option value="04">Tháng 04</option>
-                                <option value="05">Tháng 05</option>
-                                <option value="06">Tháng 06</option>
-                                <option value="07">Tháng 07</option>
-                                <option value="08">Tháng 08</option>
-                                <option value="09">Tháng 09</option>
-                                <option value="10">Tháng 10</option>
-                                <option value="11">Tháng 11</option>
-                                <option value="12">Tháng 12</option>
+                                <option value="01">Tháng 01</option><option value="02">Tháng 02</option><option value="03">Tháng 03</option>
+                                <option value="04">Tháng 04</option><option value="05">Tháng 05</option><option value="06">Tháng 06</option>
+                                <option value="07">Tháng 07</option><option value="08">Tháng 08</option><option value="09">Tháng 09</option>
+                                <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
                             </select>
                         </div>
                     </div>
@@ -780,7 +730,7 @@
     </div>
 
     <script>
-        // INTEGRATED USER SCRIPT API DIRECTLY
+        // SỬ DỤNG CHÍNH XÁC LINK API GOOGLE SCRIPT BẠN CUNG CẤP
         const HARDCODED_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
@@ -790,6 +740,7 @@
         let CURRENT_SELECTED_YEAR = "2026";
         let currentTelecomFiles = [];
 
+        // DANH SÁCH 16 NHÂN VIÊN MẪU
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 0, "account": "105005712499", "note": ""},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "105004242307", "note": ""},
@@ -850,6 +801,19 @@
             calculateSalaryLogic();
         }
 
+        function handleConfigChangeLive() {
+            let sm = document.getElementById('filter-month').value;
+            salaryConfigsByMonth[sm] = {
+                vung: parseFloat(document.getElementById('config-vung-pay').value) || 4140000,
+                base: parseFloat(document.getElementById('config-base-pay').value) || 2650000,
+                lcv: parseFloat(document.getElementById('config-lcv-pay').value) || 1991139,
+                signer: document.getElementById('config-signer-name').value.trim()
+            };
+            localStorage.setItem('sys_salary_configs_by_month', JSON.stringify(salaryConfigsByMonth));
+            calculateSalaryLogic();
+        }
+
+        // HÀM TÍNH TOÁN VÀ HIỂN THỊ BẢNG LƯƠNG TỰ ĐỘNG LẬP TỨC
         function calculateSalaryLogic() {
             let sm = document.getElementById('filter-month').value;
             let activeData = salaryDataByMonth[sm] || [];
@@ -859,14 +823,14 @@
             let T_l_tong_cb = 0, T_lcv_thucte = 0, T_o_thuc_linh = 0;
 
             activeData.forEach((row, index) => {
-                let lcb_goc = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * cfg.vung); 
-                let luong_cb_ht = Math.round((parseFloat(row.lcb_heso) + parseFloat(row.lcb_phucap || 0)) * cfg.base);
-                let l_thoigian = Math.round((luong_cb_ht / 22) * parseFloat(row.NT)); 
+                let lcb_goc = Math.round((parseFloat(row.lcb_heso || 0) + parseFloat(row.lcb_phucap || 0)) * cfg.vung); 
+                let luong_cb_ht = Math.round((parseFloat(row.lcb_heso || 0) + parseFloat(row.lcb_phucap || 0)) * cfg.base);
+                let l_thoigian = Math.round((luong_cb_ht / 22) * parseFloat(row.NT || 0)); 
                 let le_phep_tt = Math.round((lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
                 let l_tong_cb = l_thoigian + le_phep_tt; 
                 
-                let lcv_goc = Math.round((parseFloat(row.he_so_lcv) + parseFloat(row.phu_cap_lcv || 0)) * cfg.lcv);
-                let lcv_thucte = Math.round((lcv_goc / 22) * parseFloat(row.NT)); 
+                let lcv_goc = Math.round((parseFloat(row.he_so_lcv || 0) + parseFloat(row.phu_cap_lcv || 0)) * cfg.lcv);
+                let lcv_thucte = Math.round((lcv_goc / 22) * parseFloat(row.NT || 0)); 
                 let o_tong = l_tong_cb + lcv_thucte; 
                 let bh = Math.round(lcb_goc * 0.105); 
                 let thuc_linh = o_tong - bh - parseFloat(row.tam_ung || 0);
@@ -875,28 +839,28 @@
 
                 tbody.innerHTML += `<tr>
                     <td class="text-center font-bold">${index + 1}</td>
-                    <td class="font-bold"><input class="inp-table inp-name" type="text" value="${row.name}"></td>
-                    <td class="text-center"><input class="inp-table inp-account" type="text" value="${row.account}"></td>
-                    <td class="text-center">${row.lcb_heso}</td>
-                    <td class="text-center">${row.lcb_phucap || 0}</td>
+                    <td class="font-bold"><input class="inp-table inp-name" type="text" value="${row.name}" oninput="updateSalaryRowValue(${index}, 'name', this.value)"></td>
+                    <td class="text-center"><input class="inp-table inp-account" type="text" value="${row.account}" oninput="updateSalaryRowValue(${index}, 'account', this.value)"></td>
+                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.lcb_heso}" oninput="updateSalaryRowValue(${index}, 'lcb_heso', this.value)"></td>
+                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.lcb_phucap || 0}" oninput="updateSalaryRowValue(${index}, 'lcb_phucap', this.value)"></td>
                     <td class="text-right font-bold">${lcb_goc.toLocaleString('vi-VN')}</td>
                     <td class="text-right">${luong_cb_ht.toLocaleString('vi-VN')}</td>
-                    <td class="text-center">${row.NT}</td>
-                    <td class="text-center">${row.P || 0}</td>
-                    <td class="text-center">${row.le_vr || 0}</td>
+                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.NT}" oninput="updateSalaryRowValue(${index}, 'NT', this.value)"></td>
+                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.P || 0}" oninput="updateSalaryRowValue(${index}, 'P', this.value)"></td>
+                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.le_vr || 0}" oninput="updateSalaryRowValue(${index}, 'le_vr', this.value)"></td>
                     <td class="text-right">${l_thoigian.toLocaleString('vi-VN')}</td>
                     <td class="text-right">${le_phep_tt.toLocaleString('vi-VN')}</td>
                     <td class="text-right font-bold">${l_tong_cb.toLocaleString('vi-VN')}</td>
-                    <td class="text-center">${row.he_so_lcv}</td>
-                    <td class="text-center">${row.phu_cap_lcv || 0}</td>
+                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.he_so_lcv}" oninput="updateSalaryRowValue(${index}, 'he_so_lcv', this.value)"></td>
+                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.phu_cap_lcv || 0}" oninput="updateSalaryRowValue(${index}, 'phu_cap_lcv', this.value)"></td>
                     <td class="text-right">${lcv_goc.toLocaleString('vi-VN')}</td>
                     <td class="text-right">${lcv_thucte.toLocaleString('vi-VN')}</td>
                     <td class="text-right font-bold">${o_tong.toLocaleString('vi-VN')}</td>
                     <td class="text-right" style="color:var(--red); font-weight:bold;">${bh.toLocaleString('vi-VN')}</td>
-                    <td class="text-right">${(row.tam_ung || 0).toLocaleString('vi-VN')}</td>
+                    <td class="text-right"><input class="inp-table inp-tam-ung" type="number" value="${row.tam_ung || 0}" oninput="updateSalaryRowValue(${index}, 'tam_ung', this.value)"></td>
                     <td class="text-right font-bold" style="background:#fef08a;">${thuc_linh.toLocaleString('vi-VN')}</td>
-                    <td><input class="inp-table" type="text" value="${row.note || ''}"></td>
-                    <td class="text-center">Active</td>
+                    <td><input class="inp-table" type="text" value="${row.note || ''}" oninput="updateSalaryRowValue(${index}, 'note', this.value)"></td>
+                    <td class="text-center"><button type="button" class="btn-delete" onclick="deleteSalaryRow(${index})"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>`;
             });
 
@@ -905,6 +869,28 @@
             document.getElementById('v-total-lcb').innerText = T_l_tong_cb.toLocaleString('vi-VN') + " VND";
             document.getElementById('v-total-lcv-text').innerText = T_lcv_thucte.toLocaleString('vi-VN') + " VND";
             document.getElementById('v-total-thuc').innerText = T_o_thuc_linh.toLocaleString('vi-VN') + " VND";
+        }
+
+        function updateSalaryRowValue(index, field, val) {
+            let sm = document.getElementById('filter-month').value;
+            salaryDataByMonth[sm][index][field] = (field === 'name' || field === 'account' || field === 'note') ? val : (parseFloat(val) || 0);
+            calculateSalaryLogic();
+        }
+
+        function addNewSalaryRow() {
+            let sm = document.getElementById('filter-month').value;
+            salaryDataByMonth[sm].push({
+                "stt": salaryDataByMonth[sm].length + 1, "name": "Nhân viên mới", "lcb_heso": 1.5, "lcb_phucap": 0.0, "NT": 22, "P": 0, "le_vr": 0, "he_so_lcv": 1.6, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "0000000000", "note": ""
+            });
+            calculateSalaryLogic();
+        }
+
+        function deleteSalaryRow(idx) {
+            let sm = document.getElementById('filter-month').value;
+            if (confirm('Xóa nhân viên này khỏi bảng lương?')) {
+                salaryDataByMonth[sm].splice(idx, 1);
+                calculateSalaryLogic();
+            }
         }
 
         // CƯỚC VIỄN THÔNG SYNC
@@ -1259,7 +1245,6 @@
             document.getElementById('cal-viec-ky').innerText = lunar.viecKy;
         }
 
-        // OTHER FUNCTIONS & SYSTEM INITIALIZATION
         function loadPaymentRecordsFromCloud() {
             const apiUrl = (GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API) + `?action=get_payment_records&year=${CURRENT_SELECTED_YEAR}`;
             fetch(apiUrl).then(res => res.json()).then(data => {
