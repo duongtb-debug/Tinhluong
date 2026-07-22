@@ -3,55 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TỔNG CÔNG TY GIẤY VIỆT NAM - QUẢN LÝ LƯƠNG VÀ HỒ SƠ DRIVE</title>
+    <title>TỔNG CÔNG TY GIẤY VIỆT NAM - HỆ THỐNG QUẢN LÝ LƯƠNG VÀ HỒ SƠ DRIVE</title>
     
-    <!-- Icons & Styling Libraries -->
+    <!-- Google Fonts Phông chữ chuẩn Tiếng Việt (Roboto & Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
     <style>
         :root {
-            --primary: #0f172a; --blue: #1d4ed8; --orange: #ea580c; --green: #047857;
-            --purple: #6d28d9; --red: #b91c1c; --border-color: #cbd5e1; --bg-light: #f1f5f9;
+            --primary: #0f172a; 
+            --blue: #1d4ed8; 
+            --orange: #ea580c; 
+            --green: #047857;
+            --purple: #6d28d9; 
+            --red: #b91c1c; 
+            --border-color: #cbd5e1; 
+            --bg-light: #f1f5f9;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; }
-        body { background: var(--bg-light); color: var(--primary); padding: 16px; font-size: 13px; }
+
+        /* Áp dụng phông chữ Việt Nam chuẩn Inter & Roboto cho toàn bộ trang web */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif !important; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body { 
+            background: var(--bg-light); 
+            color: var(--primary); 
+            padding: 16px; 
+            font-size: 13px; 
+            line-height: 1.5;
+        }
         
         .db-status-bar {
-            display: flex; align-items: center; justify-content: space-between; padding: 10px 16px;
-            background: #e2e8f0; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 12px;
-            flex-wrap: wrap; gap: 10px; font-weight: bold;
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 10px 16px;
+            background: #e2e8f0; 
+            border: 1px solid var(--border-color); 
+            border-radius: 6px; 
+            margin-bottom: 12px;
+            flex-wrap: wrap; 
+            gap: 10px; 
+            font-weight: 600;
         }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: var(--green); margin-right: 6px; }
+        .status-dot { 
+            width: 10px; 
+            height: 10px; 
+            border-radius: 50%; 
+            display: inline-block; 
+            background: var(--green); 
+            margin-right: 6px; 
+        }
         
         .header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--primary); color: white; padding: 12px 20px; border-radius: 6px; margin-bottom: 12px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            background: var(--primary); 
+            color: white; 
+            padding: 14px 20px; 
+            border-radius: 6px; 
+            margin-bottom: 12px;
         }
-        .header h1 { font-size: 18px; text-transform: uppercase; font-weight: 700; }
-        .live-clock-box { background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 4px; font-family: monospace !important; font-size: 13px; color: #fef08a; font-weight: bold; }
+        .header h1 { 
+            font-size: 18px; 
+            text-transform: uppercase; 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+        }
+        .live-clock-box { 
+            background: rgba(255,255,255,0.15); 
+            padding: 6px 14px; 
+            border-radius: 4px; 
+            font-family: 'Roboto Mono', monospace, sans-serif !important; 
+            font-size: 13px; 
+            color: #fef08a; 
+            font-weight: 700; 
+        }
 
         .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
-        .stat-card { background: white; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); border-left: 5px solid var(--blue); display: flex; align-items: center; justify-content: space-between; }
-        .stat-card.orange { border-left-color: var(--orange); } .stat-card.green { border-left-color: var(--green); } .stat-card.purple { border-left-color: var(--purple); }
-        .stat-title { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; }
-        .stat-value { font-size: 16px; font-weight: bold; margin-top: 4px; }
+        .stat-card { 
+            background: white; 
+            padding: 12px 16px; 
+            border-radius: 6px; 
+            border: 1px solid var(--border-color); 
+            border-left: 5px solid var(--blue); 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+        }
+        .stat-card.orange { border-left-color: var(--orange); } 
+        .stat-card.green { border-left-color: var(--green); } 
+        .stat-card.purple { border-left-color: var(--purple); }
+        .stat-title { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; }
+        .stat-value { font-size: 16px; font-weight: 700; margin-top: 4px; }
 
-        .workspace { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: start; }
+        .workspace { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; }
         @media (max-width: 1200px) { .workspace { grid-template-columns: 1fr; } }
 
         .nav-tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border-color); margin-bottom: 12px; }
-        .tab-btn { padding: 10px 18px; border: 1px solid var(--border-color); border-bottom: none; background: #e2e8f0; font-weight: 700; color: #475569; cursor: pointer; border-radius: 6px 6px 0 0; font-size: 13px; }
-        .tab-btn.active { background: white; border-bottom: 3px solid var(--blue); color: var(--blue); }
-        .tab-content { display: none; } .tab-content.active { display: block; }
+        .tab-btn { 
+            padding: 10px 18px; 
+            border: 1px solid var(--border-color); 
+            border-bottom: none; 
+            background: #e2e8f0; 
+            font-weight: 600; 
+            color: #475569; 
+            cursor: pointer; 
+            border-radius: 6px 6px 0 0; 
+            font-size: 13px; 
+            transition: all 0.2s;
+        }
+        .tab-btn.active { background: white; border-bottom: 3px solid var(--blue); color: var(--blue); font-weight: 700; }
+        .tab-content { display: none; } 
+        .tab-content.active { display: block; }
 
         .main-card { background: white; border-radius: 6px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border-color); }
-        .card-title { font-size: 14px; font-weight: bold; color: var(--primary); margin-bottom: 12px; border-left: 4px solid var(--blue); padding-left: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .card-title { 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: var(--primary); 
+            margin-bottom: 12px; 
+            border-left: 4px solid var(--blue); 
+            padding-left: 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
 
         .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 10px; }
         .form-group { display: flex; flex-direction: column; gap: 4px; }
-        .form-group label { font-weight: bold; font-size: 11px; color: #334155; }
-        .form-group input, .form-group select { padding: 6px 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; outline: none; }
+        .form-group label { font-weight: 600; font-size: 12px; color: #334155; }
+        .form-group input, .form-group select { 
+            padding: 7px 10px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 4px; 
+            font-size: 12.5px; 
+            outline: none; 
+        }
 
-        .btn { padding: 8px 14px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; transition: all 0.2s; }
+        .btn { 
+            padding: 8px 14px; 
+            border: none; 
+            border-radius: 4px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            font-size: 12px; 
+            transition: all 0.2s; 
+        }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-primary { background: var(--blue); color: white; }
         .btn-success { background: var(--green); color: white; }
@@ -61,19 +173,20 @@
 
         .table-responsive { overflow-x: auto; width: 100%; border: 1px solid var(--border-color); border-radius: 4px; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
-        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; }
-        th { background: #f1f5f9; font-weight: 700; }
-        input.inp-tbl { width: 100%; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; }
+        th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: center; }
+        th { background: #f1f5f9; font-weight: 700; color: #1e293b; }
+        input.inp-tbl { width: 100%; padding: 5px 7px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px; }
 
         .file-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px; border-radius: 4px; text-align: left; }
-        .file-item { display: flex; align-items: center; justify-content: space-between; background: white; border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 3px; margin-bottom: 3px; font-size: 11px; }
-        .btn-gof { background: #ef4444; color: white; border: none; padding: 1px 5px; border-radius: 3px; cursor: pointer; font-size: 10px; margin-left: 6px; }
+        .file-item { display: flex; align-items: center; justify-content: space-between; background: white; border: 1px solid var(--border-color); padding: 3px 6px; border-radius: 3px; margin-bottom: 3px; font-size: 11px; }
+        .btn-gof { background: #ef4444; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px; margin-left: 6px; }
 
         .calendar-sidebar { background: white; border-radius: 6px; border: 1px solid var(--border-color); padding: 14px; }
     </style>
 </head>
 <body>
 
+    <!-- THANH TRẠNG THÁI DỰ ÁN -->
     <div class="db-status-bar">
         <div><span class="status-dot"></span><span>Kết nối Google Script Web App API Sẵn Sàng</span></div>
         <div>
@@ -82,11 +195,13 @@
         </div>
     </div>
 
+    <!-- HEADER TIÊU ĐỀ TỔNG CÔNG TY -->
     <div class="header">
         <h1>TỔNG CÔNG TY GIẤY VIỆT NAM - VĂN PHÒNG</h1>
         <div class="live-clock-box" id="live-clock">--:--:--</div>
     </div>
 
+    <!-- THỐNG KÊ TỔNG QUAN -->
     <div class="stat-grid">
         <div class="stat-card">
             <div><span class="stat-title">LƯƠNG THỰC TẾ (NET)</span><div class="stat-value" style="color:var(--blue);" id="dash-total-pay">0 VND</div></div>
@@ -108,6 +223,7 @@
 
     <div class="workspace">
         <div>
+            <!-- THANH TAB CHUYỂN PHÂN HỆ -->
             <div class="nav-tabs">
                 <button class="tab-btn active" onclick="switchTab('salary')"><i class="fa-solid fa-users"></i> Bảng Lương Nhân Viên</button>
                 <button class="tab-btn" onclick="switchTab('payment')"><i class="fa-solid fa-file-invoice"></i> Hồ Sơ Thanh Toán VP</button>
@@ -121,16 +237,16 @@
                     <div class="card-title"><span>THAM SỐ BẢNG LƯƠNG</span></div>
                     <div class="grid-form">
                         <div class="form-group"><label>Kỳ Lương Tháng/Năm:</label><input type="month" id="filter-month" value="2026-05" onchange="renderSalaryTable()"></div>
-                        <div class="form-group"><label>Tối thiểu vùng:</label><input type="number" id="cfg-vung" value="4140000" oninput="renderSalaryTable()"></div>
-                        <div class="form-group"><label>Lương Cơ bản:</label><input type="number" id="cfg-base" value="2530000" oninput="renderSalaryTable()"></div>
-                        <div class="form-group"><label>Lương Công việc:</label><input type="number" id="cfg-lcv" value="2087970" oninput="renderSalaryTable()"></div>
+                        <div class="form-group"><label>Tối thiểu vùng (VNĐ):</label><input type="number" id="cfg-vung" value="4140000" oninput="renderSalaryTable()"></div>
+                        <div class="form-group"><label>Lương Cơ bản (VNĐ):</label><input type="number" id="cfg-base" value="2530000" oninput="renderSalaryTable()"></div>
+                        <div class="form-group"><label>Lương Công việc (VNĐ):</label><input type="number" id="cfg-lcv" value="2087970" oninput="renderSalaryTable()"></div>
                     </div>
                 </div>
 
                 <div class="main-card">
                     <div class="card-title">
                         <span>BẢNG TÍNH LƯƠNG 16 NHÂN SỰ CHI TIẾT</span>
-                        <button class="btn btn-primary" onclick="addSalaryRow()"><i class="fa-solid fa-plus"></i> Thêm Nhân Viên</button>
+                        <button class="btn btn-primary" onclick="addSalaryRow()"><i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên</button>
                     </div>
                     <div class="table-responsive">
                         <table>
@@ -143,7 +259,7 @@
                                     <th colspan="3">Ngày Công Thực Tế</th>
                                     <th colspan="2">Lương CV (Hệ số & Phụ cấp)</th>
                                     <th rowspan="2">Tạm Ứng</th>
-                                    <th rowspan="2" style="background:#fef08a;">Thực Lĩnh (VND)</th>
+                                    <th rowspan="2" style="background:#fef08a;">Thực Lĩnh (VNĐ)</th>
                                     <th rowspan="2">Xóa</th>
                                 </tr>
                                 <tr>
@@ -163,8 +279,8 @@
                 <div class="main-card">
                     <div class="card-title" style="border-left-color:var(--green);"><span>ĐỀ NGHỊ THANH TOÁN VĂN PHÒNG</span></div>
                     <div class="grid-form">
-                        <div class="form-group"><label>Nội dung thanh toán:</label><input type="text" id="pay-content" placeholder="Thanh toán văn phòng phẩm tháng 5"></div>
-                        <div class="form-group"><label>Số tiền (VND):</label><input type="number" id="pay-amount" value="2500000"></div>
+                        <div class="form-group"><label>Nội dung thanh toán:</label><input type="text" id="pay-content" placeholder="Thanh toán tiền văn phòng phẩm tháng 05"></div>
+                        <div class="form-group"><label>Số tiền (VNĐ):</label><input type="number" id="pay-amount" value="2500000"></div>
                         <div class="form-group"><label>Đơn vị thụ hưởng:</label><input type="text" id="pay-vendor" value="Công ty Văn phòng phẩm"></div>
                     </div>
                     <button class="btn btn-success" onclick="addPaymentRecord()"><i class="fa-solid fa-plus"></i> Thêm Đề Nghị Thanh Toán</button>
@@ -174,7 +290,7 @@
                     <div class="table-responsive">
                         <table>
                             <thead>
-                                <tr><th>STT</th><th>Nội dung thanh toán</th><th>Số tiền</th><th>Đơn vị thụ hưởng</th><th>Thư mục & Tệp Đính Kèm Drive</th><th>Xóa</th></tr>
+                                <tr><th>STT</th><th>Nội dung thanh toán</th><th>Số tiền</th><th>Đơn vị thụ hưởng</th><th>Tệp Đính Kèm Drive</th><th>Xóa</th></tr>
                             </thead>
                             <tbody id="tbody-payment"></tbody>
                         </table>
@@ -189,7 +305,7 @@
                     <div class="grid-form">
                         <div class="form-group"><label>Nhà mạng / Dịch vụ:</label><input type="text" id="tel-provider" value="VNPT Internet Cáp Quang"></div>
                         <div class="form-group"><label>Mã hợp đồng / Đường truyền:</label><input type="text" id="tel-cid" value="PTO-02-0066479"></div>
-                        <div class="form-group"><label>Cước phí (VND):</label><input type="number" id="tel-cost" value="3301557"></div>
+                        <div class="form-group"><label>Cước phí (VNĐ):</label><input type="number" id="tel-cost" value="3301557"></div>
                     </div>
                     <button class="btn btn-orange" onclick="addTelecomRecord()"><i class="fa-solid fa-plus"></i> Thêm Chi Phí Internet</button>
                 </div>
@@ -213,7 +329,7 @@
                     <div class="grid-form">
                         <div class="form-group"><label>Người sử dụng:</label><input type="text" id="it-user" placeholder="Nguyễn Văn A"></div>
                         <div class="form-group"><label>Loại thiết bị:</label><select id="it-type"><option>Laptop</option><option>PC Workstation</option><option>Máy In</option></select></div>
-                        <div class="form-group"><label>Cấu hình máy:</label><input type="text" id="it-config" placeholder="Core i5, 16GB RAM"></div>
+                        <div class="form-group"><label>Cấu hình máy:</label><input type="text" id="it-config" placeholder="Core i7, 16GB RAM, SSD 512GB"></div>
                     </div>
                     <button class="btn btn-purple" onclick="addITRecord()"><i class="fa-solid fa-plus"></i> Thêm Thiết Bị CNTT</button>
                 </div>
@@ -244,7 +360,7 @@
     </div>
 
     <script>
-        // ⚠️ THAY LINK DEPLOYMENT WEB APP API CỦA BẠN VÀO ĐÂY:
+        // ⚠️ THAY ĐƯỜNG LINK GOOGLE APPS SCRIPT WEB APP /exec CỦA BẠN VÀO ĐÂY:
         const GOOGLE_SCRIPT_API_URL = "THAY_LINK_WEB_APP_CỦA_BẠN_VÀO_ĐÂY";
 
         let default16Staffs = [
@@ -287,7 +403,6 @@
             event.currentTarget.classList.add('active');
         }
 
-        // HÀM CALL API CHỐNG LỖI UNEXPECTED TOKEN JSON
         async function callAppsScriptAPI(payload) {
             try {
                 let response = await fetch(GOOGLE_SCRIPT_API_URL, {
@@ -297,7 +412,7 @@
                 });
                 let text = await response.text();
                 if (text.trim().startsWith("<")) {
-                    throw new Error("Ứng dụng chưa mở quyền 'Anyone' trên Google Apps Script Deployment!");
+                    throw new Error("Cảnh báo: Ứng dụng chưa được bật quyền 'Anyone' trên Deployment Google Apps Script!");
                 }
                 return JSON.parse(text);
             } catch (err) {
@@ -308,7 +423,7 @@
         async function initDriveStructure() {
             let yearInput = prompt("Nhập năm tạo 12 thư mục Drive:", "2026");
             if (!yearInput) return;
-            alert("Đang tạo 12 folder trên Drive...");
+            alert("Đang khởi tạo 12 folder trên Drive...");
             try {
                 let res = await callAppsScriptAPI({ action: "init_drive_structure", year: yearInput.trim() });
                 if (res.status === "success") alert(`🎉 ${res.message}`);
@@ -353,7 +468,7 @@
                     <td><button class="btn btn-danger" style="padding:2px 6px;" onclick="default16Staffs.splice(${i},1); renderSalaryTable()"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>`;
             });
-            document.getElementById('dash-total-pay').innerText = totalNet.toLocaleString('vi-VN') + " VND";
+            document.getElementById('dash-total-pay').innerText = totalNet.toLocaleString('vi-VN') + " VNĐ";
         }
 
         function addSalaryRow() {
@@ -390,13 +505,13 @@
                 tbody.innerHTML += `<tr>
                     <td>${i+1}</td>
                     <td class="font-bold">${r.content}</td>
-                    <td>${r.amount.toLocaleString('vi-VN')} VND</td>
+                    <td>${r.amount.toLocaleString('vi-VN')} VNĐ</td>
                     <td>${r.vendor}</td>
                     <td><input type="file" multiple onchange="uploadRowFiles('THANH_TOAN_VP', ${i}, this)"></td>
                     <td><button class="btn btn-danger" style="padding:2px 6px;" onclick="paymentRecords.splice(${i},1); renderPaymentTable()"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>`;
             });
-            document.getElementById('dash-paid-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
+            document.getElementById('dash-paid-pay').innerText = sum.toLocaleString('vi-VN') + " VNĐ";
         }
 
         function addPaymentRecord() {
@@ -418,12 +533,12 @@
                     <td>${i+1}</td>
                     <td>${r.provider}</td>
                     <td class="font-bold">${r.cid}</td>
-                    <td>${r.cost.toLocaleString('vi-VN')} VND</td>
+                    <td>${r.cost.toLocaleString('vi-VN')} VNĐ</td>
                     <td><input type="file" multiple onchange="uploadRowFiles('CUOC_INTERNET', ${i}, this)"></td>
                     <td><button class="btn btn-danger" style="padding:2px 6px;" onclick="telecomRecords.splice(${i},1); renderTelecomTable()"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>`;
             });
-            document.getElementById('dash-pending-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
+            document.getElementById('dash-pending-pay').innerText = sum.toLocaleString('vi-VN') + " VNĐ";
         }
 
         function addTelecomRecord() {
