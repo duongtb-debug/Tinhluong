@@ -4,13 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TỔNG CÔNG TY GIẤY VIỆT NAM - QUẢN LÝ LƯƠNG VÀ HỒ SƠ</title>
+    <!-- FontAwesome Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f1f5f9; margin: 0; padding: 20px; color: #1e293b; }
         .container { max-width: 1400px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 24px; }
+        
+        /* Header */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px; }
-        .header h1 { font-size: 20px; color: #1e3a8a; margin: 0; font-weight: 700; }
+        .header h1 { font-size: 20px; color: #1e3a8a; margin: 0; font-weight: 700; text-transform: uppercase; }
+        .header-sub { font-size: 13px; color: #64748b; margin-top: 4px; display: block; }
+        
+        /* Toolbar */
         .toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .btn { padding: 8px 16px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; transition: all 0.2s; }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -19,76 +25,90 @@
         .btn-success { background-color: #16a34a; color: white; }
         .btn-success:hover:not(:disabled) { background-color: #15803d; }
         .btn-danger { background-color: #dc2626; color: white; }
+        .btn-danger:hover:not(:disabled) { background-color: #b91c1c; }
+        
+        /* Tabs */
         .tabs { display: flex; gap: 4px; border-bottom: 2px solid #cbd5e1; margin-bottom: 16px; }
-        .tab-btn { padding: 10px 20px; border: none; background: #e2e8f0; cursor: pointer; font-weight: 600; border-radius: 8px 8px 0 0; color: #475569; }
+        .tab-btn { padding: 10px 20px; border: none; background: #e2e8f0; cursor: pointer; font-weight: 600; border-radius: 8px 8px 0 0; color: #475569; font-size: 13px; }
         .tab-btn.active { background: #2563eb; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        
+        /* Table Styles */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
         th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: center; }
         th { background-color: #f1f5f9; font-weight: 700; color: #1e293b; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; }
         .file-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px; border-radius: 4px; text-align: left; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- HEADER HỆ THỐNG -->
     <div class="header">
         <div>
             <h1>TỔNG CÔNG TY GIẤY VIỆT NAM - VĂN PHÒNG</h1>
-            <span style="font-size: 13px; color: #64748b;">Hệ thống Quản lý Bảng lương & Hồ sơ Đính kèm Drive</span>
+            <span class="header-sub">Hệ thống Quản lý Bảng lương & Hồ sơ Chứng từ Lưu trữ Drive</span>
         </div>
         <div>
-            <label style="font-weight: bold; margin-right: 8px;">Tháng/Năm:</label>
+            <label style="font-weight: bold; margin-right: 8px; font-size: 13px;">Tháng/Năm Kỳ Lương:</label>
             <input type="month" id="filter-month" value="2026-05" style="padding: 6px; border-radius: 6px; border: 1px solid #cbd5e1;">
         </div>
     </div>
 
+    <!-- THANH CÔNG CỤ -->
     <div class="toolbar">
         <button class="btn btn-primary" onclick="initDriveStructure()">
-            <i class="fa-solid fa-folder-plus"></i> Khởi Tạo Folder 12 Tháng Drive
+            <i class="fa-solid fa-folder-plus"></i> Khởi Tạo Cấu Trúc Folder 12 Tháng
         </button>
         <button class="btn btn-success" onclick="syncSalaryToGoogleSheet()">
-            <i class="fa-solid fa-file-excel"></i> Đồng Bộ Lên Sheet (Bảng Lương)
+            <i class="fa-solid fa-file-excel"></i> Đồng Bộ Bảng Lương Lên Google Sheet
         </button>
     </div>
 
+    <!-- THANH TAB PHÂN HỆ -->
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('THANH_TOAN_VP')">Hồ sơ Thanh toán VP</button>
-        <button class="tab-btn" onclick="switchTab('CUOC_INTERNET')">Cước Viễn thông Internet</button>
+        <button class="tab-btn active" onclick="switchTab('THANH_TOAN_VP')">
+            <i class="fa-solid fa-file-invoice-dollar"></i> Hồ sơ Thanh toán VP
+        </button>
+        <button class="tab-btn" onclick="switchTab('CUOC_INTERNET')">
+            <i class="fa-solid fa-wifi"></i> Cước Viễn thông Internet
+        </button>
     </div>
 
+    <!-- PHÂN HỆ 1: HỒ SƠ THANH TOÁN VP -->
     <div id="tab-THANH_TOAN_VP" class="tab-content active">
         <button class="btn btn-primary" style="margin-bottom: 10px;" onclick="addRow('THANH_TOAN_VP')">
-            <i class="fa-solid fa-plus"></i> Thêm Hồ Sơ VP
+            <i class="fa-solid fa-plus"></i> Thêm Dòng Hồ Sơ VP
         </button>
         <table>
             <thead>
                 <tr>
                     <th style="width: 50px;">STT</th>
                     <th>Nội dung thanh toán</th>
-                    <th style="width: 150px;">Số tiền (VND)</th>
-                    <th style="width: 380px;">Tệp đính kèm</th>
-                    <th style="width: 100px;">Thao tác</th>
+                    <th style="width: 160px;">Số tiền (VND)</th>
+                    <th style="width: 400px;">Tệp đính kèm Drive</th>
+                    <th style="width: 90px;">Thao tác</th>
                 </tr>
             </thead>
             <tbody id="tbody-THANH_TOAN_VP"></tbody>
         </table>
     </div>
 
+    <!-- PHÂN HỆ 2: CƯỚC VIỄN THÔNG INTERNET -->
     <div id="tab-CUOC_INTERNET" class="tab-content">
         <button class="btn btn-primary" style="margin-bottom: 10px;" onclick="addRow('CUOC_INTERNET')">
-            <i class="fa-solid fa-plus"></i> Thêm Cước Internet
+            <i class="fa-solid fa-plus"></i> Thêm Dòng Cước Internet
         </button>
         <table>
             <thead>
                 <tr>
                     <th style="width: 50px;">STT</th>
                     <th>Nhà cung cấp / Mã hợp đồng</th>
-                    <th style="width: 150px;">Số tiền (VND)</th>
-                    <th style="width: 380px;">Tệp đính kèm</th>
-                    <th style="width: 100px;">Thao tác</th>
+                    <th style="width: 160px;">Số tiền (VND)</th>
+                    <th style="width: 400px;">Tệp đính kèm Drive</th>
+                    <th style="width: 90px;">Thao tác</th>
                 </tr>
             </thead>
             <tbody id="tbody-CUOC_INTERNET"></tbody>
@@ -97,20 +117,27 @@
 </div>
 
 <script>
-    // ⚠️ THAY ĐƯỜNG LINK WEB APP MỚI CỦA BẠN VÀO ĐÂY:
-    const GOOGLE_SCRIPT_API_URL = "THAY_LINK_WEB_APP_CỦA_BẠN_VÀO_ĐÂY";
+    // ⚠️ ĐIỀN ĐƯỜNG LINK WEB APP GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY (Link đuôi /exec):
+    const GOOGLE_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
 
-    let officeData = [{ name: "Thanh toán tiền văn phòng phẩm Tháng 05", amount: 2500000, files: [], pendingFiles: [] }];
-    let internetData = [{ name: "Cước Internet VNPT Hợp đồng HD-2026/VP", amount: 1200000, files: [], pendingFiles: [] }];
+    // Dữ liệu khởi tạo cho 2 phân hệ
+    let officeData = [
+        { name: "Thanh toán tiền văn phòng phẩm Tháng 05", amount: 2500000, files: [], pendingFiles: [] }
+    ];
+    let internetData = [
+        { name: "Cước Internet VNPT Hợp đồng HD-2026/VP", amount: 1200000, files: [], pendingFiles: [] }
+    ];
 
     document.addEventListener("DOMContentLoaded", function() {
         renderTable('THANH_TOAN_VP');
         renderTable('CUOC_INTERNET');
     });
 
+    // HÀM CHUYỂN TAB PHÂN HỆ
     function switchTab(tabType) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(ct => ct.classList.remove('active'));
+
         if (tabType === 'THANH_TOAN_VP') {
             document.querySelectorAll('.tab-btn')[0].classList.add('active');
             document.getElementById('tab-THANH_TOAN_VP').classList.add('active');
@@ -120,6 +147,7 @@
         }
     }
 
+    // HÀM VẼ BẢNG DỮ LIỆU GIAO DIỆN
     function renderTable(tabType) {
         let tbody = document.getElementById(`tbody-${tabType}`);
         let data = (tabType === 'THANH_TOAN_VP') ? officeData : internetData;
@@ -176,6 +204,7 @@
         data[index].amount = parseFloat(val) || 0;
     }
 
+    // ĐỌC FILE CHUYỂN SANG BASE64
     function handleSelectFiles(tabType, index, inputElem) {
         let files = Array.from(inputElem.files);
         if (files.length === 0) return;
@@ -200,10 +229,11 @@
 
         Promise.all(promises).then(resFiles => {
             targetItem.pendingFiles = resFiles;
-            alert(`Đã chuẩn bị ${resFiles.length} file. Hãy bấm nút 'Đẩy'!`);
+            alert(`Đã chuẩn bị ${resFiles.length} file đính kèm. Bấm nút 'Đẩy' để tải lên Google Drive!`);
         });
     }
 
+    // HIỂN THỊ TỆP ĐÃ TẢI LÊN HOẶC NÚT GỠ TỆP
     function renderAttachmentFileList(tabType, index) {
         let container = document.getElementById(`file-list-${tabType}-${index}`);
         if (!container) return;
@@ -220,9 +250,13 @@
         files.forEach((f, fIdx) => {
             html += `
                 <li style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; margin-bottom: 3px; font-size: 11px;">
-                    <a href="${f.fileUrl}" target="_blank" style="color: #2563eb; font-weight: 600; text-decoration: underline; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;">
+                    <a href="${f.fileUrl}" target="_blank" style="color: #2563eb; font-weight: 600; text-decoration: underline; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px;">
                         <i class="fa-solid fa-paperclip"></i> ${f.fileName}
                     </a>
+                    <button type="button" onclick="removeAttachmentFile('${tabType}', ${index}, ${fIdx})" 
+                            style="background: #ef4444; color: white; border: none; padding: 1px 5px; border-radius: 3px; cursor: pointer; font-size: 10px; margin-left: 6px;">
+                        <i class="fa-solid fa-xmark"></i> Gỡ
+                    </button>
                 </li>
             `;
         });
@@ -230,32 +264,62 @@
         container.innerHTML = html;
     }
 
-    // TỐI ƯU HÀM KHỞI TẠO DRIVE - KHÔNG BỊ TREO
+    function removeAttachmentFile(tabType, index, fileIndex) {
+        if (!confirm("Bạn có chắc muốn gỡ liên kết tệp đính kèm này?")) return;
+        let targetItem = (tabType === 'THANH_TOAN_VP') ? officeData[index] : internetData[index];
+        targetItem.files.splice(fileIndex, 1);
+        renderAttachmentFileList(tabType, index);
+    }
+
+    // ==============================================================================
+    // CORE HÀM GỬI API AN TOÀN CHỐNG LỖI UNEXPECTED TOKEN JSON
+    // ==============================================================================
+    async function callAppsScriptAPI(payload) {
+        try {
+            let response = await fetch(GOOGLE_SCRIPT_API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            let text = await response.text();
+
+            if (text.trim().startsWith("<")) {
+                throw new Error("Ứng dụng chưa được phân quyền 'Anyone' trên Google Apps Script hoặc URL Web App bị sai. Vui lòng kiểm tra Deployment!");
+            }
+
+            return JSON.parse(text);
+        } catch (err) {
+            throw new Error(err.message);
+        }
+    }
+
+    // 1. KHỞI TẠO CẤU TRÚC FOLDER 12 THÁNG
     async function initDriveStructure() {
-        let yearInput = prompt("Nhập năm cần tạo 12 Folder trên Drive:", "2026");
+        let yearInput = prompt("Nhập năm cần tạo 12 Thư mục trên Drive:", "2026");
         if (!yearInput) return;
 
         alert("Đang khởi tạo thư mục 12 tháng trên Drive, xin chờ vài giây...");
 
         try {
-            let res = await fetch(GOOGLE_SCRIPT_API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "init_drive_structure", year: yearInput.trim() })
+            let result = await callAppsScriptAPI({
+                action: "init_drive_structure",
+                year: yearInput.trim()
             });
 
-            let result = await res.json();
             if (result.status === "success") {
                 alert(`🎉 ${result.message}`);
             } else {
-                alert("❌ Lỗi: " + result.message);
+                alert("❌ Lỗi từ server: " + result.message);
             }
         } catch (err) {
-            alert("❌ Lỗi kết nối Google Apps Script! Kiểm tra lại phân quyền Deployment: " + err.message);
+            alert("❌ Lỗi kết nối: " + err.message);
         }
     }
 
-    // TỐI ƯU HÀM UPLOAD FILE - KHÔNG BỊ TREO
+    // 2. ĐẨY FILE VÀO THƯ MỤC THÁNG
     async function uploadFilesToMonthlyFolder(tabType, index) {
         let btn = document.getElementById(`btn-upload-${tabType}-${index}`);
         let selectedMonth = document.getElementById('filter-month').value;
@@ -264,27 +328,23 @@
 
         let targetItem = (tabType === 'THANH_TOAN_VP') ? officeData[index] : internetData[index];
         if (!targetItem || !targetItem.pendingFiles || targetItem.pendingFiles.length === 0) {
-            alert("⚠️ Vui lòng bấm 'Choose Files' để chọn tệp trước!");
+            alert("⚠️ Vui lòng bấm nút 'Choose Files' để chọn tệp đính kèm trước!");
             return;
         }
 
-        // Đổi trạng thái nút bấm
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...`;
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...`;
+        }
 
         try {
-            let res = await fetch(GOOGLE_SCRIPT_API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({
-                    action: "upload_files_monthly",
-                    folderType: tabType,
-                    folderName: folderName,
-                    files: targetItem.pendingFiles
-                })
+            let result = await callAppsScriptAPI({
+                action: "upload_files_monthly",
+                folderType: tabType,
+                folderName: folderName,
+                files: targetItem.pendingFiles
             });
 
-            let result = await res.json();
             if (result.status === "success") {
                 if (!targetItem.files) targetItem.files = [];
                 result.fileLinks.forEach(fl => {
@@ -294,20 +354,22 @@
                 renderAttachmentFileList(tabType, index);
                 alert(`✅ Đã đẩy thành công file vào thư mục [${folderName}] trên Drive!`);
             } else {
-                alert("❌ Lỗi từ Server: " + result.message);
+                alert("❌ Lỗi upload: " + result.message);
             }
         } catch (err) {
             alert("❌ Lỗi đẩy tệp: " + err.message);
         } finally {
-            btn.disabled = false;
-            btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Đẩy`;
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Đẩy`;
+            }
         }
     }
 
-    // ĐỒNG BỘ BẢNG LƯƠNG LÊN SHEETS
+    // 3. ĐỒNG BỘ BẢNG LƯƠNG LÊN GOOGLE SHEET
     async function syncSalaryToGoogleSheet() {
         let monthStr = document.getElementById('filter-month').value;
-        alert("Đang đồng bộ dữ liệu bảng lương lên Google Sheet...");
+        alert("Đang đồng bộ dữ liệu Bảng lương lên Google Sheet...");
 
         let sampleStaffs = [
             { name: "Nguyễn Văn A", account: "1012345678", lcb_heso: 5.2, lcb_phucap: 0.6, NT: 20, P: 0, le_vr: 1, he_so_lcv: 5.2, phu_cap_lcv: 0.6, tam_ung: 5000000 },
@@ -315,32 +377,27 @@
         ];
 
         try {
-            let res = await fetch(GOOGLE_SCRIPT_API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({
-                    action: "sync_salary_data",
-                    month: monthStr,
-                    config: {
-                        companyTitle: "TỔNG CÔNG TY GIẤY VIỆT NAM",
-                        deptTitle: "VĂN PHÒNG",
-                        vung: 4140000,
-                        base: 2530000,
-                        lcv: 2087970,
-                        signer: "Nguyễn Thị Tuyết Nhung"
-                    },
-                    staffs: sampleStaffs
-                })
+            let result = await callAppsScriptAPI({
+                action: "sync_salary_data",
+                month: monthStr,
+                config: {
+                    companyTitle: "TỔNG CÔNG TY GIẤY VIỆT NAM",
+                    deptTitle: "VĂN PHÒNG",
+                    vung: 4140000,
+                    base: 2530000,
+                    lcv: 2087970,
+                    signer: "Nguyễn Thị Tuyết Nhung"
+                },
+                staffs: sampleStaffs
             });
 
-            let result = await res.json();
             if (result.status === "success") {
                 alert(`🎉 ${result.message}`);
             } else {
                 alert("❌ Lỗi đồng bộ: " + result.message);
             }
         } catch (err) {
-            alert("❌ Lỗi kết nối: " + err.message);
+            alert("❌ Lỗi kết nối API: " + err.message);
         }
     }
 </script>
