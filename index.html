@@ -3,965 +3,507 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HỆ THỐNG QUẢN TRỊ TỔNG HỢP ENTERPRISE PLATFORM 2026</title>
+    <title>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG ENTERPRISE PLATFORM</title>
     
-    <!-- Thư viện Engine -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- Thư viện QRCode JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #0f172a; --blue: #2563eb; --orange: #ea580c; 
-            --green: #059669; --purple: #7c3aed; --red: #dc2626; 
-            --border-color: #cbd5e1; --text-main: #334155; --bg-light: #f1f5f9;
+            --primary-bg: #0b132b;
+            --purple-main: #6b21a8;
+            --purple-btn: #7e22ce;
+            --purple-light: #faf5ff;
+            --border-color: #cbd5e1;
+            --text-dark: #1e293b;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        body, input, select, textarea, button, table { font-family: 'Times New Roman', Times, serif !important; }
-        body { font-size: 12px; margin: 0; padding: 12px; background: var(--bg-light); color: var(--text-main); }
-        
-        .workspace { display: grid; grid-template-columns: 1fr 280px; gap: 12px; align-items: start; }
-        @media (max-width: 1280px) { .workspace { grid-template-columns: 1fr; } }
-
-        .db-status-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 6px 12px; background: #e2e8f0; border-bottom: 1px solid var(--border-color);
-            font-size: 11px; font-weight: bold; border-radius: 4px; margin-bottom: 10px;
+        body, input, select, textarea, button, table { 
+            font-family: 'Times New Roman', Times, serif !important; 
         }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; background-color: var(--green); }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; background: #0b132b; color: white; padding: 10px 16px; border-radius: 4px; margin-bottom: 10px; }
-        .header h1 { font-size: 14px; text-transform: uppercase; font-weight: bold; }
-        .live-clock-box { background: rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 4px; font-family: monospace !important; font-size: 12px; color: #fef08a; font-weight: bold; }
 
-        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
-        .stat-card { background: white; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border-color); border-left: 4px solid var(--blue); display: flex; align-items: center; justify-content: space-between; }
-        .stat-card.orange { border-left-color: var(--orange); }
-        .stat-card.green { border-left-color: var(--green); }
-        .stat-card.purple { border-left-color: var(--purple); }
-        .stat-title { font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: bold; }
-        .stat-value { font-size: 14px; font-weight: bold; color: var(--primary); margin-top: 2px; }
+        body { 
+            background-color: #f1f5f9; 
+            padding: 12px; 
+            color: var(--text-dark);
+            font-size: 13px;
+        }
 
-        .nav-tabs { display: flex; gap: 4px; margin-bottom: 10px; border-bottom: 2px solid #cbd5e1; }
-        .nav-tabs .nav-tab { padding: 6px 14px; border: none; background: #e2e8f0; font-weight: bold; color: #475569; cursor: pointer; font-size: 11px; border-radius: 4px 4px 0 0; }
-        .nav-tabs .nav-tab.active { background: white !important; border: 1px solid #cbd5e1 !important; border-bottom: 3px solid var(--blue) !important; color: var(--blue) !important; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        .main-card { background: white; border-radius: 4px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 10px; border: 1px solid #cbd5e1; }
-        .card-title { font-size: 12px; font-weight: bold; color: var(--primary); margin-bottom: 10px; border-left: 4px solid var(--blue); padding-left: 6px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin-bottom: 8px; }
-        .form-group { display: flex; flex-direction: column; gap: 2px; }
-        .form-group label { font-weight: bold; color: #334155; font-size: 10px; }
-        .form-group input, .form-group select { padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 3px; font-size: 11px; }
+        /* HEADER & DASHBOARD STATS */
+        .app-header {
+            background-color: var(--primary-bg);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .app-header h1 { font-size: 15px; font-weight: bold; text-transform: uppercase; }
+        .live-clock { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 4px; font-family: monospace !important; color: #fef08a; font-size: 12px; }
 
-        .btn { padding: 5px 12px; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; text-decoration: none; }
-        .btn-primary { background: var(--blue); color: white; }
-        .btn-purple { background: var(--purple); color: white; }
-        .btn-green { background: var(--green); color: white; }
-        .btn-orange { background: var(--orange); color: white; }
-        .btn-drive-view { background: #0284c7; color: white; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 3px; }
-        .btn-drive-view:hover { background: #0369a1; }
-        .btn-delete { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 4px; font-size: 10px; border-radius: 2px; cursor: pointer; }
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+        .stat-card {
+            background: white; border: 1px solid var(--border-color); border-radius: 4px;
+            padding: 10px 14px; border-left: 4px solid #2563eb; display: flex; justify-content: space-between; align-items: center;
+        }
+        .stat-card.green { border-left-color: #059669; }
+        .stat-card.orange { border-left-color: #ea580c; }
+        .stat-card.purple { border-left-color: #7e22ce; }
+        .stat-title { font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; }
+        .stat-value { font-size: 15px; font-weight: bold; margin-top: 2px; }
 
-        .table-responsive { overflow-x: auto; margin-top: 6px; width: 100%; }
+        /* TABS NAVIGATION */
+        .nav-tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border-color); margin-bottom: 12px; }
+        .nav-tab { padding: 8px 16px; border: none; background: #e2e8f0; font-weight: bold; color: #475569; cursor: pointer; font-size: 12px; border-radius: 4px 4px 0 0; }
+        .nav-tab.active { background: white !important; border: 1px solid var(--border-color) !important; border-bottom: 3px solid var(--purple-btn) !important; color: var(--purple-btn) !important; }
+
+        /* MAIN FORM CONTAINER */
+        .card-box { background: white; border: 1px solid var(--border-color); border-radius: 4px; padding: 14px; margin-bottom: 12px; }
+        .card-title { font-size: 13px; font-weight: bold; color: var(--purple-main); border-left: 4px solid var(--purple-main); padding-left: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+        .form-layout-wrapper { display: grid; grid-template-columns: 1fr 200px; gap: 15px; }
+        @media (max-width: 900px) { .form-layout-wrapper { grid-template-columns: 1fr; } }
+
+        .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
+        .form-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+        .form-grid-1 { margin-bottom: 10px; }
+
+        .form-group { display: flex; flex-direction: column; gap: 3px; }
+        .form-group label { font-size: 11px; font-weight: bold; color: #334155; }
+        .form-group label.purple-lbl { color: var(--purple-main); }
+        .form-group input, .form-group select {
+            padding: 5px 8px; border: 1px solid var(--border-color); border-radius: 3px; font-size: 12px; outline: none; background: #fff;
+        }
+        .form-group input[readonly] { background: #f1f5f9; font-weight: bold; color: var(--purple-main); }
+
+        /* BOX QR CODE PREVIEW LIVE */
+        .qr-live-container {
+            border: 1px dashed var(--purple-main); border-radius: 6px; background: var(--purple-light);
+            padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+        }
+        .qr-live-title { font-size: 11px; font-weight: bold; color: var(--purple-main); margin-bottom: 8px; }
+        .qr-box { background: white; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; }
+        .qr-subtext { font-size: 10px; color: #64748b; margin-top: 6px; }
+
+        /* ACTION BUTTONS */
+        .btn-group { display: flex; gap: 8px; margin-top: 10px; }
+        .btn { padding: 6px 14px; border: none; border-radius: 3px; font-weight: bold; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-purple { background: var(--purple-btn); color: white; }
+        .btn-gray { background: #64748b; color: white; }
+
+        /* TABLE DESIGN */
+        .table-responsive { overflow-x: auto; width: 100%; margin-top: 8px; }
         .main-table { width: 100%; border-collapse: collapse; white-space: nowrap; font-size: 11px; }
-        .main-table th { background: #1e293b; color: #ffffff; padding: 6px 4px; border: 1px solid #cbd5e1; font-weight: bold; text-align: center; }
-        .main-table td { padding: 4px; border: 1px solid #cbd5e1; vertical-align: middle; }
-        
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .font-bold { font-weight: bold; }
-        
-        .inp-editable { width: 100%; padding: 2px; border: 1px solid #94a3b8; border-radius: 2px; font-size: 11px; background: #ffffff; }
-        .inp-num-sm { width: 45px; text-align: center; }
-        .inp-tam-ung { background: #fff7ed !important; border-color: #f97316 !important; color: #c2410c !important; font-weight: bold; text-align: right; width: 75px; }
+        .main-table th { background: #1e293b; color: white; padding: 7px 5px; border: 1px solid var(--border-color); font-weight: bold; text-align: center; }
+        .main-table td { padding: 5px; border: 1px solid var(--border-color); vertical-align: middle; }
 
-        /* HUY HIỆU BẢN QUYỀN VÀ TRẠNG THÁI */
-        .badge-no-lic { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 1px 5px; border-radius: 3px; font-size: 9px; font-weight: bold; display: inline-block; margin-top: 2px; }
-        .badge-has-lic { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; padding: 1px 5px; border-radius: 3px; font-size: 9px; font-weight: bold; display: inline-block; margin-top: 2px; }
+        /* BADGES FOR LICENSES */
+        .badge-lic { padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; display: inline-block; margin-top: 2px; }
+        .badge-green { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .badge-red { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
 
-        .signature-section-wrapper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 2px dashed #cbd5e1; }
-        .sig-column { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 4px; padding: 10px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; }
-        .sig-title { font-weight: bold; font-size: 11px; color: #0f172a; text-transform: uppercase; }
-        .sig-badge { padding: 3px 8px; border-radius: 12px; font-size: 9px; font-weight: bold; }
-        .badge-pending { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
-        .badge-approved { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
-
-        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); align-items: center; justify-content: center; padding: 15px; }
-        .modal-content { background: white; padding: 15px; border-radius: 6px; width: 100%; max-width: 500px; }
+        .btn-action-edit { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; cursor: pointer; }
+        .btn-action-del { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="db-status-bar">
-        <div>
-            <span class="status-dot"></span>
-            <span>Hệ thống Google Apps Script API sẵn sàng</span>
+    <!-- HEADER SYSTEM -->
+    <div class="app-header">
+        <h1>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG ENTERPRISE PLATFORM</h1>
+        <div class="live-clock" id="live-clock">Thứ Tư, 22/07/2026 - 20:01:12</div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div><div class="stat-title">LƯƠNG THỰC TẾ (NET)</div><div class="stat-value" style="color:#2563eb;">72.061.810 VND</div></div>
+            <i class="fa-solid fa-money-bill-wave" style="font-size:20px; opacity:0.3; color:#2563eb;"></i>
         </div>
-        <div>
-            <button type="button" class="btn btn-purple" style="padding: 2px 6px; font-size:10px;" onclick="openConfigModal()"><i class="fa-solid fa-link"></i> Cấu hình Script API</button>
+        <div class="stat-card green">
+            <div><div class="stat-title">THANH TOÁN VP</div><div class="stat-value" style="color:#059669;">0 VND</div></div>
+            <i class="fa-solid fa-file-invoice" style="font-size:20px; opacity:0.3; color:#059669;"></i>
+        </div>
+        <div class="stat-card orange">
+            <div><div class="stat-title">CƯỚC MẠNG (2026)</div><div class="stat-value" style="color:#ea580c;">33.015.571 VND</div></div>
+            <i class="fa-solid fa-wifi" style="font-size:20px; opacity:0.3; color:#ea580c;"></i>
+        </div>
+        <div class="stat-card purple">
+            <div><div class="stat-title">MÁY CNTT KIỂM KÊ</div><div class="stat-value" id="stat-it-count" style="color:#7e22ce;">1 Thiết bị</div></div>
+            <i class="fa-solid fa-laptop" style="font-size:20px; opacity:0.3; color:#7e22ce;"></i>
         </div>
     </div>
 
-    <div class="workspace">
-        <div class="main-body">
-            <div class="header">
-                <h1>HỆ THỐNG QUẢN TRỊ TỔNG HỢP ENTERPRISE PLATFORM 2026</h1>
-                <div class="live-clock-box" id="live-clock">--:--:-- --/--/----</div>
-            </div>
+    <!-- TABS -->
+    <div class="nav-tabs">
+        <button class="nav-tab"><i class="fa-solid fa-users"></i> Tính Lương Nhân Viên</button>
+        <button class="nav-tab"><i class="fa-solid fa-file-invoice-dollar"></i> Hồ Sơ Thanh Toán Văn Phòng</button>
+        <button class="nav-tab"><i class="fa-solid fa-globe"></i> Cước Viễn Thông & Internet</button>
+        <button class="nav-tab active"><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</button>
+    </div>
 
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-info"><span class="stat-title">LƯƠNG THỰC TẾ (NET)</span><span class="stat-value" id="dash-total-pay" style="color:var(--blue);">0 VND</span></div>
-                    <i class="fa-solid fa-money-check-dollar" style="font-size:18px; opacity:0.3; color:var(--blue);"></i>
-                </div>
-                <div class="stat-card green">
-                    <div class="stat-info"><span class="stat-title">THANH TOÁN VP</span><span class="stat-value" id="dash-paid-pay" style="color:var(--green);">0 VND</span></div>
-                    <i class="fa-solid fa-file-invoice-dollar" style="font-size:18px; opacity:0.3; color:var(--green);"></i>
-                </div>
-                <div class="stat-card orange">
-                    <div class="stat-info"><span class="stat-title">CƯỚC VIỄN THÔNG</span><span class="stat-value" id="dash-telecom-pay" style="color:var(--orange);">0 VND</span></div>
-                    <i class="fa-solid fa-wifi" style="font-size:18px; opacity:0.3; color:var(--orange);"></i>
-                </div>
-                <div class="stat-card purple">
-                    <div class="stat-info"><span class="stat-title">THIẾT BỊ CNTT</span><span class="stat-value" id="dash-it-count" style="color:var(--purple);">0 Thiết bị</span></div>
-                    <i class="fa-solid fa-laptop-code" style="font-size:18px; opacity:0.3; color:var(--purple);"></i>
-                </div>
-            </div>
-
-            <div class="nav-tabs">
-                <button type="button" class="nav-tab active" data-tab="salary" onclick="switchMainTab('salary')"><i class="fa-solid fa-users"></i> Bảng Lương Nhân Viên</button>
-                <button type="button" class="nav-tab" data-tab="payment" onclick="switchMainTab('payment')"><i class="fa-solid fa-file-invoice"></i> Hồ Sơ Thanh Toán VP</button>
-                <button type="button" class="nav-tab" data-tab="telecom" onclick="switchMainTab('telecom')"><i class="fa-solid fa-globe"></i> Cước Viễn Thông & Internet</button>
-                <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')"><i class="fa-solid fa-laptop"></i> Kiểm Kê CNTT & Bản Quyền Phần Mềm</button>
-            </div>
-
-            <!-- ================= PHÂN HỆ 1: BẢNG LƯƠNG NHÂN VIÊN ================= -->
-            <div id="tab-salary" class="tab-content active">
-                <div class="main-card">
-                    <div class="card-title">
-                        <span><i class="fa-solid fa-sliders"></i> THAM SỐ LƯƠNG & ĐỒNG BỘ GOOGLE SHEET</span>
-                        <div>
-                            <button type="button" class="btn btn-purple" onclick="syncSalaryToGoogleSheet()"><i class="fa-solid fa-cloud-arrow-up"></i> Đồng Bộ Mây</button>
-                            <a id="btn-open-gsheet" href="#" target="_blank" class="btn btn-green" style="display:none;"><i class="fa-solid fa-table"></i> 🟢 Mở Google Sheet Trực Tiếp</a>
-                        </div>
-                    </div>
-                    <div class="grid-form">
-                        <div class="form-group"><label>Tháng Báo Cáo</label><input type="month" id="filter-month" value="2026-05" onchange="calculateSalaryLogic()"></div>
-                        <div class="form-group"><label style="color:var(--orange);">Tối Thiểu Vùng (VNĐ)</label><input type="number" id="config-vung-pay" value="4140000" oninput="calculateSalaryLogic()"></div>
-                        <div class="form-group"><label style="color:var(--blue);">Mức LCB Cơ Sở (VNĐ)</label><input type="number" id="config-base-pay" value="2530000" oninput="calculateSalaryLogic()"></div>
-                        <div class="form-group"><label style="color:var(--purple);">Mức LCV Chuẩn (VNĐ)</label><input type="number" id="config-lcv-pay" value="2087970" oninput="calculateSalaryLogic()"></div>
-                        <div class="form-group"><label style="color:var(--primary);">Người Lập Biểu</label><input type="text" id="config-signer-name" value="Nguyễn Thị Tuyết Nhung" oninput="updateSignerName()"></div>
-                    </div>
-                </div>
-
-                <div class="main-card">
-                    <div class="card-title">BẢNG LƯƠNG CHI TIẾT CƠ BẢN VÀ CÔNG VIỆC THÁNG 05/2026</div>
-                    <div class="table-responsive">
-                        <table class="main-table">
-                            <thead>
-                                <tr>
-                                    <th rowspan="2">STT</th>
-                                    <th rowspan="2" style="min-width:140px;">HỌ VÀ TÊN</th>
-                                    <th rowspan="2" style="min-width:100px;">Số Tài Khoản</th>
-                                    <th colspan="2">LCB (Nhập)</th>
-                                    <th rowspan="2">Lương HĐLĐ</th>
-                                    <th colspan="3">NGÀY CÔNG (Nhập)</th>
-                                    <th colspan="3">TÍNH LƯƠNG CB THỰC TẾ</th>
-                                    <th colspan="2">LCV (Nhập)</th>
-                                    <th rowspan="2">LCV Thực Tế</th>
-                                    <th rowspan="2">Tổng LCB+LCV</th>
-                                    <th rowspan="2" style="color:#ef4444;">BH (10.5%)</th>
-                                    <th rowspan="2" style="background:#ffedd5; color:#c2410c;">Tạm Ứng</th>
-                                    <th rowspan="2" style="background:#fef08a; color:#854d0e;">THỰC LĨNH</th>
-                                    <th rowspan="2">Ghi Chú</th>
-                                </tr>
-                                <tr>
-                                    <th>Hệ Số</th><th>Phụ Cấp</th><th>N</th><th>P</th><th>L/VR</th>
-                                    <th>Thời Gian</th><th>Lễ/Phép</th><th>Tổng CB</th><th>Hệ Số</th><th>Phụ Cấp</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-salary"></tbody>
-                            <tfoot><tr id="tfoot-salary" class="font-bold" style="background:#f1f5f9;"></tr></tfoot>
-                        </table>
-                    </div>
-
-                    <div class="signature-section-wrapper">
-                        <div class="sig-column">
-                            <div class="sig-title">PHÒNG NHÂN SỰ</div>
-                            <div><span class="sig-badge badge-pending">Chờ thẩm định</span></div>
-                            <div></div>
-                        </div>
-                        <div class="sig-column">
-                            <div class="sig-title">THỦ TRƯỜNG ĐƠN VỊ</div>
-                            <div><span class="sig-badge badge-pending">Chờ phê duyệt</span></div>
-                            <div></div>
-                        </div>
-                        <div class="sig-column">
-                            <div class="sig-title">NGƯỜI LẬP BIỂU</div>
-                            <div><span class="sig-badge badge-approved">✓ Đã Lập Biểu</span></div>
-                            <div id="sig-display-signer" style="font-weight:bold;">Nguyễn Thị Tuyết Nhung</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= PHÂN HỆ 2: HỒ SƠ THANH TOÁN VĂN PHÒNG ================= -->
-            <div id="tab-payment" class="tab-content">
-                <div class="main-card" style="border-left: 4px solid var(--green);">
-                    <div class="card-title" style="color:var(--green);"><i class="fa-solid fa-file-invoice-dollar"></i> Đề Nghị Thanh Toán Văn Phòng & Đính Kèm Tệp Drive</div>
-                    <form id="payment-form" onsubmit="savePaymentRecord(event)">
-                        <div class="grid-form">
-                            <div class="form-group"><label>Nội dung thanh toán</label><input type="text" id="pay-content" required placeholder="Mua VPP, dịch vụ sửa chữa..."></div>
-                            <div class="form-group"><label>Đơn vị thụ hưởng</label><input type="text" id="pay-beneficiary" required placeholder="Nhà cung cấp..."></div>
-                            <div class="form-group"><label>Số tài khoản & Ngân hàng</label><input type="text" id="pay-account" required placeholder="STK thụ hưởng..."></div>
-                        </div>
-                        <div class="grid-form">
-                            <div class="form-group"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" oninput="calcPaymentTotal()"></div>
-                            <div class="form-group"><label>Đơn giá trước thuế (VNĐ)</label><input type="number" id="pay-price" value="0" min="0" oninput="calcPaymentTotal()"></div>
-                            <div class="form-group">
-                                <label>Thuế VAT</label>
-                                <select id="pay-tax-rate" onchange="calcPaymentTotal()">
-                                    <option value="0">0%</option><option value="5">5%</option><option value="8">8%</option><option value="10" selected>10%</option>
-                                </select>
-                            </div>
-                            <div class="form-group"><label>Tổng cộng chi (VNĐ)</label><input type="text" id="pay-total" readonly style="background:#fef08a; font-weight:bold; color:var(--blue);"></div>
-                        </div>
-                        <div class="grid-form">
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label style="color:var(--green); font-weight:bold;"><i class="fa-solid fa-paperclip"></i> Chọn Hóa Đơn / Chứng Từ (Sẽ lưu vào Drive & Tạo link xem trực tiếp)</label>
-                                <input type="file" id="pay-file" accept="image/*,.pdf">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-green"><i class="fa-solid fa-plus"></i> Lưu Hồ Sơ & Đẩy Lên Drive</button>
-                    </form>
-                </div>
-                <div class="main-card">
-                    <div class="card-title">DANH SÁCH TỔNG HỢP HỒ SƠ THANH TOÁN VĂN PHÒNG</div>
-                    <div class="table-responsive">
-                        <table class="main-table">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">STT</th>
-                                    <th>Nội dung thanh toán</th>
-                                    <th>Đơn vị thụ hưởng</th>
-                                    <th>Tài khoản</th>
-                                    <th class="text-center">SL</th>
-                                    <th class="text-right">Đơn giá</th>
-                                    <th class="text-right">Tổng thanh toán</th>
-                                    <th class="text-center">Chứng từ Google Drive</th>
-                                    <th class="text-center">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-payment"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= PHÂN HỆ 3: CƯỚC VIỄN THÔNG & INTERNET ================= -->
-            <div id="tab-telecom" class="tab-content">
-                <div class="main-card" style="border-left: 4px solid var(--orange);">
-                    <div class="card-title" style="color:var(--orange);"><i class="fa-solid fa-signal"></i> Cập Nhật Chi Phí Cước Viễn Thông & Internet</div>
-                    <form id="telecom-form" onsubmit="saveTelecomRecord(event)">
-                        <div class="grid-form">
-                            <div class="form-group"><label>Điểm kết nối / Văn phòng</label><input type="text" id="tel-location" value="Tổng công ty Giấy Việt Nam" required></div>
-                            <div class="form-group">
-                                <label>Nhà mạng</label>
-                                <select id="tel-provider">
-                                    <option value="VNPT" selected>VNPT</option><option value="Viettel">Viettel</option><option value="FPT">FPT Telecom</option><option value="CMC">CMC Telecom</option>
-                                </select>
-                            </div>
-                            <div class="form-group"><label>Gói cước / Băng thông</label><input type="text" id="tel-package" value="Fiber VIP 1GB" required></div>
-                        </div>
-                        <div class="grid-form">
-                            <div class="form-group"><label>Mã đường truyền (CID)</label><input type="text" id="tel-cid" value="PTO-02-0066479" required></div>
-                            <div class="form-group"><label>Cước phí (VNĐ)</label><input type="number" id="tel-cost" placeholder="Nhập số tiền..." required></div>
-                            <div class="form-group"><label>Kỳ cước (Tháng/Năm)</label><input type="month" id="tel-period" value="2026-05" required></div>
-                        </div>
-                        <div class="grid-form">
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label style="color:var(--orange); font-weight:bold;"><i class="fa-solid fa-paperclip"></i> Chọn Hóa Đơn Cước Internet (Lưu Drive & Tạo nút xem)</label>
-                                <input type="file" id="tel-file" accept="image/*,.pdf">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-orange"><i class="fa-solid fa-plus"></i> Lưu Cước & Đẩy Lên Drive</button>
-                    </form>
-                </div>
-                <div class="main-card">
-                    <div class="card-title">DANH SÁCH CHI PHÍ ĐƯỜNG TRUYỀN INTERNET CÁC THÁNG</div>
-                    <div class="table-responsive">
-                        <table class="main-table">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">STT</th>
-                                    <th>Điểm kết nối</th>
-                                    <th class="text-center">Nhà mạng</th>
-                                    <th>Gói cước</th>
-                                    <th class="text-center">Mã CID</th>
-                                    <th class="text-right">Cước phí (VNĐ)</th>
-                                    <th class="text-center">Kỳ cước</th>
-                                    <th class="text-center">Hóa đơn Drive</th>
-                                    <th class="text-center">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-telecom"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ================= PHÂN HỆ 4: KIỂM KÊ CNTT & BẢN QUYỀN TOÀN DIỆN ================= -->
-            <div id="tab-it-assets" class="tab-content">
-                <div class="main-card" style="border-left: 4px solid var(--purple);">
-                    <div class="card-title" style="color:var(--purple);"><i class="fa-solid fa-laptop-code"></i> Quản Lý Thiết Bị CNTT & Bản Quyền Phần Mềm Chi Tiết</div>
-                    <form id="it-form" onsubmit="saveITRecord(event)">
-                        <div style="display: grid; grid-template-columns: 1fr 160px; gap: 12px;">
-                            <div>
-                                <div class="grid-form">
-                                    <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required placeholder="Họ và tên..." oninput="updateRealtimeQR()"></div>
-                                    <div class="form-group"><label>Phòng ban</label><input type="text" id="it-dept" required placeholder="Phòng ban..." oninput="updateRealtimeQR()"></div>
-                                    <div class="form-group">
-                                        <label>Loại thiết bị</label>
-                                        <select id="it-type" onchange="autoGenAssetID(); updateRealtimeQR();">
-                                            <option value="Laptop" selected>Laptop Doanh Nghiệp</option>
-                                            <option value="PC">Máy Bàn Workstation</option>
-                                            <option value="PRN">Máy In Văn Phòng</option>
-                                            <option value="SRV">Máy Chủ Server</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group"><label style="color:var(--purple);">Mã tài sản</label><input type="text" id="it-serial" readonly style="background:#f1f5f9; font-weight:bold;"></div>
-                                </div>
-
-                                <!-- 1. HỆ ĐIỀU HÀNH & BẢN QUYỀN OS -->
-                                <div class="grid-form" style="background:#f8fafc; padding:6px; border-radius:4px; border:1px solid #cbd5e1; margin-bottom:6px;">
-                                    <div class="form-group">
-                                        <label>Hệ Điều Hành (OS)</label>
-                                        <select id="it-os">
-                                            <option value="Windows 11 Pro">Windows 11 Pro</option>
-                                            <option value="Windows 10 Pro" selected>Windows 10 Pro</option>
-                                            <option value="Windows 8.1 / 8">Windows 8.1 / 8</option>
-                                            <option value="Windows 7">Windows 7</option>
-                                            <option value="macOS (Apple)">macOS (Apple)</option>
-                                            <option value="Linux (Ubuntu/CentOS)">Linux (Ubuntu/CentOS)</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Bản quyền OS</label>
-                                        <select id="it-os-lic" style="font-weight:bold;">
-                                            <option value="✅ Có BQ (OEM/Retail)" style="color:green;">✅ Có bản quyền (OEM/Key)</option>
-                                            <option value="⚠️ Chưa có BQ" style="color:red;" selected>⚠️ Chưa có bản quyền / Crack</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- 2. BỘ OFFICE & BẢN QUYỀN OFFICE -->
-                                <div class="grid-form" style="background:#f8fafc; padding:6px; border-radius:4px; border:1px solid #cbd5e1; margin-bottom:6px;">
-                                    <div class="form-group">
-                                        <label>Bộ Phần Mềm Office</label>
-                                        <select id="it-office">
-                                            <option value="Microsoft 365">Microsoft 365 (Office 365)</option>
-                                            <option value="Office 2024 / 2021" selected>Office 2024 / 2021</option>
-                                            <option value="Office 2019 / 2016">Office 2019 / 2016</option>
-                                            <option value="Office 2013 / 2010">Office 2013 / 2010</option>
-                                            <option value="Office 2007 / 2003">Office 2007 / 2003</option>
-                                            <option value="WPS Office / LibreOffice">WPS Office / LibreOffice</option>
-                                            <option value="Chưa cài đặt">Chưa cài đặt</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Bản quyền Office</label>
-                                        <select id="it-office-lic" style="font-weight:bold;">
-                                            <option value="✅ Có BQ (Bản quyền)" style="color:green;">✅ Có bản quyền chính thức</option>
-                                            <option value="⚠️ Chưa có BQ" style="color:red;" selected>⚠️ Chưa có bản quyền / Crack</option>
-                                            <option value="Miễn phí (Free)">Miễn phí / Khác</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- 3. PHẦN MỀM KẾ TOÁN / ERP -->
-                                <div class="grid-form" style="background:#f8fafc; padding:6px; border-radius:4px; border:1px solid #cbd5e1; margin-bottom:6px;">
-                                    <div class="form-group">
-                                        <label>Phần mềm Kế Toán / ERP</label>
-                                        <select id="it-erp">
-                                            <option value="MISA AMIS / SME" selected>MISA (AMIS / SME / Invoice)</option>
-                                            <option value="ASIA Enterprise">ASIA Enterprise ERP</option>
-                                            <option value="Fast Financial">Fast Financial / Accounting</option>
-                                            <option value="Bravo ERP">Bravo ERP</option>
-                                            <option value="Quasoft ERP">Quasoft ERP</option>
-                                            <option value="SAP / Oracle">SAP / Oracle ERP</option>
-                                            <option value="Không sử dụng">Không sử dụng</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Bản quyền ERP/Kế toán</label>
-                                        <select id="it-erp-lic" style="font-weight:bold;">
-                                            <option value="✅ Có BQ (Bản quyền)" style="color:green;" selected>✅ Có bản quyền doanh nghiệp</option>
-                                            <option value="⚠️ Chưa có BQ" style="color:red;">⚠️ Chưa có bản quyền</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- 4. PHẦN MỀM ĐỒ HỌA & KỸ THUẬT (CAD/ADOBE) -->
-                                <div class="grid-form" style="background:#f8fafc; padding:6px; border-radius:4px; border:1px solid #cbd5e1; margin-bottom:6px;">
-                                    <div class="form-group">
-                                        <label>PM Đồ họa / Kỹ thuật</label>
-                                        <select id="it-design">
-                                            <option value="Không sử dụng" selected>Không sử dụng</option>
-                                            <option value="AutoCAD">AutoCAD (Autodesk)</option>
-                                            <option value="SolidWorks">SolidWorks</option>
-                                            <option value="Adobe Photoshop/Illustrator">Adobe Photoshop / Illustrator</option>
-                                            <option value="CorelDRAW">CorelDRAW</option>
-                                            <option value="Revit / SketchUp">Revit / SketchUp</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Bản quyền Đồ họa</label>
-                                        <select id="it-design-lic" style="font-weight:bold;">
-                                            <option value="N/A">N/A (Không dùng)</option>
-                                            <option value="✅ Có BQ (Bản quyền)" style="color:green;">✅ Có bản quyền</option>
-                                            <option value="⚠️ Chưa có BQ" style="color:red;">⚠️ Chưa có bản quyền / Crack</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- 5. BẢO MẬT & ANTIVIRUS -->
-                                <div class="grid-form" style="background:#f8fafc; padding:6px; border-radius:4px; border:1px solid #cbd5e1;">
-                                    <div class="form-group">
-                                        <label>Phần mềm Diệt Virus / Bảo mật</label>
-                                        <select id="it-antivirus">
-                                            <option value="Windows Defender" selected>Windows Defender Default</option>
-                                            <option value="Kaspersky Internet Security">Kaspersky Internet Security</option>
-                                            <option value="Trend Micro / Bitdefender">Trend Micro / Bitdefender</option>
-                                            <option value="Sophos / Malwarebytes">Sophos / Malwarebytes</option>
-                                            <option value="Chưa cài đặt">Chưa cài đặt PM Diệt Virus</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Bản quyền Antivirus</label>
-                                        <select id="it-antivirus-lic" style="font-weight:bold;">
-                                            <option value="✅ Có BQ (Bản quyền)" style="color:green;">✅ Có bản quyền Trả phí</option>
-                                            <option value="Miễn phí (Free / Win Def)" selected>Miễn phí / Win Defender</option>
-                                            <option value="⚠️ Chưa có BQ" style="color:red;">⚠️ Chưa có bản quyền / Hết hạn</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f8fafc; border:1px dashed var(--purple); border-radius:6px; padding:8px;">
-                                <label style="font-weight:bold; color:var(--purple); font-size:10px; margin-bottom:4px;">QR Code Live</label>
-                                <div id="realtime-qr" style="padding:2px; background:white; border:1px solid #cbd5e1;"></div>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-purple" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Lưu Thiết Bị & Chi Tiết Bản Quyền</button>
-                    </form>
-                </div>
-
-                <div class="main-card">
-                    <div class="card-title">BẢNG TỔNG HỢP CNTT & TRẠNG THÁI BẢN QUYỀN (TỰ ĐỘNG LỌC ĐẨY 'CHƯA CÓ BẢN QUYỀN' LÊN ĐẦU)</div>
-                    <div class="table-responsive">
-                        <table class="main-table">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">STT</th>
-                                    <th>Mã tài sản</th>
-                                    <th>Loại</th>
-                                    <th>Người dùng & PB</th>
-                                    <th>Hệ điều hành & BQ</th>
-                                    <th>Bộ Office & BQ</th>
-                                    <th>Kế toán/ERP & BQ</th>
-                                    <th>Đồ họa/Kỹ thuật & BQ</th>
-                                    <th>Bảo mật & BQ</th>
-                                    <th class="text-center">QR Code</th>
-                                    <th class="text-center">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-it"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <!-- MAIN FORM: QUẢN LÝ TÀI SẢN & KIỂM KÊ THIẾT BỊ CNTT -->
+    <div class="card-box">
+        <div class="card-title">
+            <i class="fa-solid fa-laptop-code"></i> Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin
         </div>
 
-        <!-- SIDEBAR -->
-        <div class="sidebar">
-            <div class="main-card">
-                <div class="card-title"><i class="fa-solid fa-circle-info"></i> QUẢN TRỊ ENTERPRISE</div>
-                <p style="font-size:11px; line-height:1.5; color:#64748b;">
-                    Hệ thống đã nâng cấp toàn diện: Quản lý chi tiết bản quyền OS, Office, ERP, CAD, Antivirus, hỗ trợ mở trực tiếp Google Sheet và xem nhanh file chứng từ trên Google Drive.
-                </p>
+        <form id="itAssetForm" onsubmit="handleSaveAsset(event)">
+            <div class="form-layout-wrapper">
+                
+                <!-- BÊN TRÁI: FORM NHẬP THÔNG TIN TÀI SẢN -->
+                <div>
+                    <!-- DÒNG 1: 4 CỘT -->
+                    <div class="form-grid-4">
+                        <div class="form-group">
+                            <label>Người sử dụng</label>
+                            <input type="text" id="it_user" placeholder="Họ và tên..." required oninput="generateLiveQR()">
+                        </div>
+                        <div class="form-group">
+                            <label>Phòng ban/Bộ phận</label>
+                            <input type="text" id="it_dept" placeholder="Phòng ban..." required oninput="generateLiveQR()">
+                        </div>
+                        <div class="form-group">
+                            <label>Loại thiết bị phần cứng</label>
+                            <select id="it_type" onchange="generateAssetCode(); generateLiveQR();">
+                                <option value="Laptop">Laptop Doanh Nghiệp</option>
+                                <option value="PC">Máy Bàn Workstation</option>
+                                <option value="PRN">Máy In Văn Phòng</option>
+                                <option value="SRV">Máy Chủ Server</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="purple-lbl">Mã định danh (Auto)</label>
+                            <input type="text" id="it_code" readonly>
+                        </div>
+                    </div>
+
+                    <!-- DÒNG 2: MÔ TẢ CẤU HÌNH -->
+                    <div class="form-grid-3">
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label>Mô tả thông số cấu hình chi tiết</label>
+                            <input type="text" id="it_config" placeholder="Dell Latitude, Core i5, 16GB RAM, 512GB SSD..." required oninput="generateLiveQR()">
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày cấp phát bàn giao</label>
+                            <input type="date" id="it_date" value="2026-07-21">
+                        </div>
+                    </div>
+
+                    <!-- DÒNG 3: TRẠNG THÁI THIẾT BỊ -->
+                    <div class="form-grid-1">
+                        <div class="form-group">
+                            <label>Trạng thái thiết bị</label>
+                            <select id="it_status">
+                                <option value="Tốt - Đang sử dụng">Tốt - Đang sử dụng</option>
+                                <option value="Đang bảo trì / Sửa chữa">Đang bảo trì / Sửa chữa</option>
+                                <option value="Hỏng - Cho thanh lý">Hỏng - Cho thanh lý</option>
+                                <option value="Lưu kho dự phòng">Lưu kho dự phòng</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- DÒNG 4: HỆ ĐIỀU HÀNH & BẢN QUYỀN OS -->
+                    <div class="form-grid-4">
+                        <div class="form-group">
+                            <label>Hệ điều hành (OS)</label>
+                            <select id="it_os">
+                                <option value="Windows 11 Pro">Windows 11 Pro</option>
+                                <option value="Windows 10 Pro">Windows 10 Pro</option>
+                                <option value="Windows 7 Professional" selected>Windows 7 Professional</option>
+                                <option value="Windows 8.1 Pro">Windows 8.1 Pro</option>
+                                <option value="Windows Vista / XP">Windows Vista / XP</option>
+                                <option value="macOS (Apple)">macOS (Apple)</option>
+                                <option value="Linux (Ubuntu/CentOS)">Linux (Ubuntu/CentOS)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Bản quyền OS</label>
+                            <select id="it_os_lic">
+                                <option value="Bản quyền OEM (Theo máy)" selected>Bản quyền OEM (Theo máy)</option>
+                                <option value="Bản quyền Retail / Volume">Bản quyền Retail / Volume</option>
+                                <option value="⚠️ Chưa có bản quyền (Crack)">⚠️ Chưa có bản quyền (Crack)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Bộ Office văn phòng</label>
+                            <select id="it_office">
+                                <option value="Microsoft Office 2024 / 2021">Microsoft Office 2024 / 2021</option>
+                                <option value="Microsoft Office 2019 / 2016">Microsoft Office 2019 / 2016</option>
+                                <option value="Microsoft Office 2013 / 2010 Pro" selected>Microsoft Office 2010 Pro</option>
+                                <option value="Microsoft 365">Microsoft 365</option>
+                                <option value="WPS Office / LibreOffice">WPS Office / LibreOffice</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Bản quyền Office</label>
+                            <select id="it_office_lic">
+                                <option value="Bản quyền Key Vĩnh Viễn" selected>Bản quyền Key Vĩnh Viễn</option>
+                                <option value="Bản quyền Đăng ký Tháng/Năm">Bản quyền Đăng ký Tháng/Năm</option>
+                                <option value="⚠️ Chưa có bản quyền (Crack)">⚠️ Chưa có bản quyền (Crack)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- DÒNG 5: PM NGHIỆP VỤ & BẢN QUYỀN -->
+                    <div class="form-grid-4">
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="purple-lbl">PM Nghiệp vụ chuyên dụng</label>
+                            <select id="it_app">
+                                <option value="MISA SME.NET 2023" selected>MISA SME.NET 2023 / AMIS</option>
+                                <option value="ASIA Enterprise ERP">ASIA Enterprise ERP</option>
+                                <option value="Quasoft ERP">Quasoft ERP / Kế toán</option>
+                                <option value="Fast Accounting">Fast Accounting</option>
+                                <option value="Bravo ERP">Bravo ERP</option>
+                                <option value="AutoCAD / SolidWorks">AutoCAD / SolidWorks</option>
+                                <option value="Adobe Photoshop / Illustrator">Adobe Photoshop / Illustrator</option>
+                                <option value="Không sử dụng">Không sử dụng</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="purple-lbl">Bản quyền PM Nghiệp vụ</label>
+                            <select id="it_app_lic">
+                                <option value="Bản quyền License Key Online / Cloud" selected>Bản quyền License Key Online / Cloud</option>
+                                <option value="Bản quyền Dongle USB">Bản quyền Dongle USB</option>
+                                <option value="⚠️ Chưa có bản quyền (Crack)">⚠️ Chưa có bản quyền (Crack)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- DÒNG 6: GHI CHÚ KIỂM KÊ -->
+                    <div class="form-grid-1">
+                        <div class="form-group">
+                            <label>Ghi chú kiểm kê</label>
+                            <input type="text" id="it_note" placeholder="Ghi chú thêm...">
+                        </div>
+                    </div>
+
+                    <!-- NÚT BẤM THAO TÁC -->
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-purple"><i class="fa-solid fa-floppy-disk"></i> Lưu Tài Sản Thiết Bị & Tạo QR</button>
+                        <button type="button" class="btn btn-gray" onclick="resetForm()"><i class="fa-solid fa-xmark"></i> Hủy</button>
+                    </div>
+                </div>
+
+                <!-- BÊN PHẢI: KHỐI QR CODE PREVIEW LIVE -->
+                <div class="qr-live-container">
+                    <div class="qr-live-title"><i class="fa-solid fa-qrcode"></i> QR Preview Live</div>
+                    <div class="qr-box" id="qr-live-target"></div>
+                    <div class="qr-subtext">Mã QR quét chuẩn xác 100%</div>
+                </div>
+
             </div>
+        </form>
+    </div>
+
+    <!-- TABLE: BẢNG TỔNG HỢP KIỂM KÊ -->
+    <div class="card-box">
+        <div class="card-title">
+            <i class="fa-solid fa-table-list"></i> BẢNG TỔNG HỢP KIỂM KÊ TRANG THIẾT BỊ CÔNG NGHỆ THÔNG TIN
+        </div>
+
+        <div class="table-responsive">
+            <table class="main-table">
+                <thead>
+                    <tr>
+                        <th style="width:40px;">STT</th>
+                        <th>Mã tài sản</th>
+                        <th>Loại</th>
+                        <th>Cấu hình phần cứng</th>
+                        <th>Người dùng</th>
+                        <th>Phòng ban</th>
+                        <th>Hệ điều hành & BQ OS</th>
+                        <th>Bộ Office & BQ Office</th>
+                        <th>PM Nghiệp vụ chuyên dụng</th>
+                        <th>Trạng thái</th>
+                        <th style="width:50px;">QR Code</th>
+                        <th style="width:90px;">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="itAssetTableBody">
+                    <!-- Dữ liệu thiết bị sẽ render vào đây -->
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- MODAL CONFIG -->
-    <div id="configModal" class="modal" onclick="closeConfigModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="card-title"><i class="fa-solid fa-link"></i> CẤU HÌNH GOOGLE APPS SCRIPT URL</div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <label>Dán URL Web App Google Apps Script (`.../exec`):</label>
-                <input type="text" id="cfg-script-url" placeholder="https://script.google.com/macros/s/.../exec">
-            </div>
-            <div style="text-align:right;">
-                <button type="button" class="btn btn-gray" onclick="closeConfigModal()">Hủy</button>
-                <button type="button" class="btn btn-purple" onclick="saveConfigURL()">Lưu Cấu Hình</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        const DEFAULT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
-        let SCRIPT_URL = localStorage.getItem('cfg_script_url') || DEFAULT_API;
-
-        const defaultStaffs = [
-            { stt: 1, name: "Nguyễn Minh Ngọc", account: "105005712499", lcb_heso: 1.94, lcb_phucap: 0.25, he_so_lcv: 5.2, phu_cap_lcv: 0.6, NT: 20, P: 0, le_vr: 1, tam_ung: 5000000, note: "" },
-            { stt: 2, name: "Nguyễn Văn Nam", account: "105004242307", lcb_heso: 1.48, lcb_phucap: 0.0, he_so_lcv: 2.24, phu_cap_lcv: 0.0, NT: 14, P: 6, le_vr: 1, tam_ung: 4000000, note: "" },
-            { stt: 3, name: "Nguyễn Thị Tuyết Nhung", account: "102005035542", lcb_heso: 1.79, lcb_phucap: 0.0, he_so_lcv: 1.74, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "Người lập biểu" },
-            { stt: 4, name: "Vũ Thị Thu", account: "106004294441", lcb_heso: 1.94, lcb_phucap: 0.0, he_so_lcv: 1.86, phu_cap_lcv: 0.0, NT: 21, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
-            { stt: 5, name: "Đào Thị Liên", account: "106004359838", lcb_heso: 1.79, lcb_phucap: 0.0, he_so_lcv: 1.74, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 4000000, note: "" },
-            { stt: 6, name: "Võ Thị Thanh Tuyền", account: "106868653975", lcb_heso: 1.71, lcb_phucap: 0.0, he_so_lcv: 1.74, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
-            { stt: 7, name: "Trần Thị Thanh", account: "105004294439", lcb_heso: 1.67, lcb_phucap: 0.0, he_so_lcv: 1.48, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 4000000, note: "" },
-            { stt: 8, name: "Trần Đức Chiến", account: "102004797815", lcb_heso: 1.83, lcb_phucap: 0.0, he_so_lcv: 1.66, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
-            { stt: 9, name: "Phạm Tiến Long", account: "104004583045", lcb_heso: 1.80, lcb_phucap: 0.0, he_so_lcv: 1.62, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 4000000, note: "" },
-            { stt: 10, name: "Đinh Hữu Vinh", account: "100004797831", lcb_heso: 1.83, lcb_phucap: 0.0, he_so_lcv: 1.66, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
-            { stt: 11, name: "Bùi Đình Điệp", account: "101004882063", lcb_heso: 1.53, lcb_phucap: 0.0, he_so_lcv: 1.62, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
-            { stt: 12, name: "Hoàng Mạnh Hùng", account: "100006166724", lcb_heso: 1.53, lcb_phucap: 0.0, he_so_lcv: 1.62, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
-            { stt: 13, name: "Ma Trọng Luận", account: "106869104133", lcb_heso: 1.35, lcb_phucap: 0.0, he_so_lcv: 1.63, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
-            { stt: 14, name: "Trần Bình Dương", account: "106873586343", lcb_heso: 1.79, lcb_phucap: 0.0, he_so_lcv: 2.40, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
-            { stt: 15, name: "Đặng Trần Trung", account: "107002654931", lcb_heso: 1.53, lcb_phucap: 0.0, he_so_lcv: 1.62, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 3000000, note: "" },
-            { stt: 16, name: "Phạm Huy Chiến", account: "102004830132", lcb_heso: 2.26, lcb_phucap: 0.0, he_so_lcv: 2.40, phu_cap_lcv: 0.0, NT: 20, P: 0, le_vr: 1, tam_ung: 4000000, note: "" }
-        ];
-
-        let paymentList = JSON.parse(localStorage.getItem('sys_payments')) || [];
-        let telecomList = JSON.parse(localStorage.getItem('sys_telecoms')) || [];
-        let itAssetList = JSON.parse(localStorage.getItem('sys_it_assets')) || [
-            { id: "1", serial: "IT-Laptop-2026-101", user: "Nguyễn Minh Ngọc", dept: "Ban Giám Đốc", type: "Laptop", os: "Windows 11 Pro", os_lic: "✅ Có BQ (OEM/Retail)", office: "Microsoft 365", office_lic: "✅ Có BQ (Bản quyền)", erp: "MISA AMIS / SME", erp_lic: "✅ Có BQ (Bản quyền)", design: "AutoCAD", design_lic: "⚠️ Chưa có BQ", antivirus: "Kaspersky Internet Security", antivirus_lic: "✅ Có BQ (Bản quyền)" },
-            { id: "2", serial: "IT-PC-2026-102", user: "Nguyễn Thị Tuyết Nhung", dept: "Phòng Kế Toán", type: "PC", os: "Windows 10 Pro", os_lic: "⚠️ Chưa có BQ", office: "Office 2021", office_lic: "⚠️ Chưa có BQ", erp: "ASIA Enterprise", erp_lic: "✅ Có BQ (Bản quyền)", design: "Không sử dụng", design_lic: "N/A", antivirus: "Windows Defender", antivirus_lic: "Miễn phí (Free / Win Def)" }
+        // Dữ liệu ban đầu
+        let assetList = JSON.parse(localStorage.getItem('sys_it_assets_db')) || [
+            {
+                id: "1",
+                code: "IT-LAP-2026-101",
+                type: "Laptop",
+                config: "Dell Latitude 5420, Core i5, 16GB RAM, 512GB SSD",
+                user: "Nguyễn Minh Ngọc",
+                dept: "Ban Giám Đốc",
+                os: "Windows 7 Professional",
+                os_lic: "Bản quyền OEM (Theo máy)",
+                office: "Microsoft Office 2010 Pro",
+                office_lic: "Bản quyền Key Vĩnh Viễn",
+                app: "MISA SME.NET 2023",
+                app_lic: "Bản quyền License Key Online / Cloud",
+                status: "Tốt - Đang sử dụng",
+                note: ""
+            }
         ];
 
         window.onload = function() {
-            startClock();
-            calculateSalaryLogic();
-            renderPaymentTable();
-            renderTelecomTable();
-            renderITTable();
-            autoGenAssetID();
-            updateRealtimeQR();
+            generateAssetCode();
+            generateLiveQR();
+            renderTable();
         };
 
-        function startClock() {
-            setInterval(() => {
-                let now = new Date();
-                document.getElementById('live-clock').innerText = now.toLocaleString('vi-VN');
-            }, 1000);
+        // Tạo mã định danh tự động
+        function generateAssetCode() {
+            let type = document.getElementById('it_type').value.toUpperCase().substring(0, 3);
+            let randNum = Math.floor(100 + Math.random() * 900);
+            document.getElementById('it_code').value = `IT-${type}-2026-${randNum}`;
         }
 
-        function switchMainTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tab).classList.add('active');
-            document.querySelector(`.nav-tabs .nav-tab[data-tab="${tab}"]`).classList.add('active');
-        }
+        // Tạo QR Code Live
+        function generateLiveQR() {
+            let code = document.getElementById('it_code').value;
+            let user = document.getElementById('it_user').value || "Chưa nhập";
+            let dept = document.getElementById('it_dept').value || "Chưa nhập";
+            let config = document.getElementById('it_config').value || "Chưa nhập";
 
-        function updateSignerName() {
-            document.getElementById('sig-display-signer').innerText = document.getElementById('config-signer-name').value || "Nguyễn Thị Tuyết Nhung";
-        }
+            let qrBox = document.getElementById('qr-live-target');
+            qrBox.innerHTML = "";
 
-        function calculateSalaryLogic() {
-            let cfgVung = parseFloat(document.getElementById('config-vung-pay').value) || 4140000;
-            let cfgBase = parseFloat(document.getElementById('config-base-pay').value) || 2530000;
-            let cfgLcv = parseFloat(document.getElementById('config-lcv-pay').value) || 2087970;
+            let qrContent = `MÃ TÀI SẢN: ${code}\nNGƯỜI SỬ DỤNG: ${user}\nPHÒNG BAN: ${dept}\nCẤU HÌNH: ${config}`;
 
-            const tbody = document.getElementById('tbody-salary');
-            tbody.innerHTML = "";
-
-            let sumHD = 0, sumTG = 0, sumLP = 0, sumLCB = 0, sumLCV = 0, sumTong = 0, sumBH = 0, sumTU = 0, sumTL = 0;
-
-            defaultStaffs.forEach((emp, i) => {
-                let lcb_hdld = Math.round((emp.lcb_heso + emp.lcb_phucap) * cfgVung);
-                let lcb_goc = Math.round((emp.lcb_heso + emp.lcb_phucap) * cfgBase);
-                let l_thoigian = Math.round((lcb_goc / 22) * emp.NT);
-                let le_phep_tt = Math.round((lcb_hdld / 22) * (emp.P + emp.le_vr));
-                let l_tong_cb = l_thoigian + le_phep_tt;
-
-                let lcv_goc = Math.round((emp.he_so_lcv + emp.phu_cap_lcv) * cfgLcv);
-                let lcv_thucte = Math.round((lcv_goc / 22) * emp.NT);
-                let o_tong = l_tong_cb + lcv_thucte;
-                let bh = Math.round(lcb_hdld * 0.105);
-                let thucLinh = o_tong - bh - emp.tam_ung;
-
-                sumHD += lcb_hdld; sumTG += l_thoigian; sumLP += le_phep_tt; sumLCB += l_tong_cb;
-                sumLCV += lcv_thucte; sumTong += o_tong; sumBH += bh; sumTU += emp.tam_ung; sumTL += thucLinh;
-
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="font-bold">${emp.name}</td>
-                    <td class="text-center">${emp.account}</td>
-                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" step="0.01" value="${emp.lcb_heso}" onchange="updateStaffVal(${i}, 'lcb_heso', this.value)"></td>
-                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" step="0.01" value="${emp.lcb_phucap}" onchange="updateStaffVal(${i}, 'lcb_phucap', this.value)"></td>
-                    <td class="text-right">${lcb_hdld.toLocaleString('vi-VN')}</td>
-                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" value="${emp.NT}" onchange="updateStaffVal(${i}, 'NT', this.value)"></td>
-                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" value="${emp.P}" onchange="updateStaffVal(${i}, 'P', this.value)"></td>
-                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" value="${emp.le_vr}" onchange="updateStaffVal(${i}, 'le_vr', this.value)"></td>
-                    <td class="text-right">${l_thoigian.toLocaleString('vi-VN')}</td>
-                    <td class="text-right">${le_phep_tt.toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold">${l_tong_cb.toLocaleString('vi-VN')}</td>
-                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" step="0.01" value="${emp.he_so_lcv}" onchange="updateStaffVal(${i}, 'he_so_lcv', this.value)"></td>
-                    <td class="text-center"><input class="inp-editable inp-num-sm" type="number" step="0.01" value="${emp.phu_cap_lcv}" onchange="updateStaffVal(${i}, 'phu_cap_lcv', this.value)"></td>
-                    <td class="text-right">${lcv_thucte.toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold">${o_tong.toLocaleString('vi-VN')}</td>
-                    <td class="text-right" style="color:#ef4444;">${bh.toLocaleString('vi-VN')}</td>
-                    <td class="text-right"><input class="inp-editable inp-tam-ung" type="number" value="${emp.tam_ung}" onchange="updateStaffVal(${i}, 'tam_ung', this.value)"></td>
-                    <td class="text-right font-bold" style="background:#fef08a;">${thucLinh.toLocaleString('vi-VN')}</td>
-                    <td><input class="inp-editable" type="text" value="${emp.note || ''}" onchange="updateStaffVal(${i}, 'note', this.value)"></td>
-                </tr>`;
+            new QRCode(qrBox, {
+                text: qrContent,
+                width: 110,
+                height: 110
             });
-
-            document.getElementById('tfoot-salary').innerHTML = `
-                <td colspan="3" class="text-left">TỔNG CỘNG</td>
-                <td colspan="2"></td>
-                <td class="text-right">${sumHD.toLocaleString('vi-VN')}</td>
-                <td colspan="3"></td>
-                <td class="text-right">${sumTG.toLocaleString('vi-VN')}</td>
-                <td class="text-right">${sumLP.toLocaleString('vi-VN')}</td>
-                <td class="text-right">${sumLCB.toLocaleString('vi-VN')}</td>
-                <td colspan="2"></td>
-                <td class="text-right">${sumLCV.toLocaleString('vi-VN')}</td>
-                <td class="text-right">${sumTong.toLocaleString('vi-VN')}</td>
-                <td class="text-right" style="color:#ef4444;">${sumBH.toLocaleString('vi-VN')}</td>
-                <td class="text-right">${sumTU.toLocaleString('vi-VN')}</td>
-                <td class="text-right font-bold" style="background:#fef08a;">${sumTL.toLocaleString('vi-VN')} VNĐ</td>
-                <td></td>
-            `;
-
-            document.getElementById('dash-total-pay').innerText = sumTL.toLocaleString('vi-VN') + " VND";
         }
 
-        function updateStaffVal(idx, key, val) {
-            if (key === 'note') defaultStaffs[idx][key] = val;
-            else defaultStaffs[idx][key] = parseFloat(val) || 0;
-            calculateSalaryLogic();
+        // Kiểm tra xem thiết bị có bản quyền không chính thức không
+        function hasUnlicensed(item) {
+            return (item.os_lic && item.os_lic.includes("⚠️")) ||
+                   (item.office_lic && item.office_lic.includes("⚠️")) ||
+                   (item.app_lic && item.app_lic.includes("⚠️"));
         }
 
-        function syncSalaryToGoogleSheet() {
-            let sm = document.getElementById('filter-month').value;
-            let monthLabelVN = sm.split("-")[1] + "/" + sm.split("-")[0];
+        // Lưu tài sản
+        function handleSaveAsset(e) {
+            e.preventDefault();
 
-            let payload = {
-                action: "sync_salary",
-                monthLabel: monthLabelVN,
-                cfgVung: parseFloat(document.getElementById('config-vung-pay').value),
-                cfgBase: parseFloat(document.getElementById('config-base-pay').value),
-                cfgLcv: parseFloat(document.getElementById('config-lcv-pay').value),
-                signerName: document.getElementById('config-signer-name').value,
-                salaryData: defaultStaffs
+            let newAsset = {
+                id: Date.now().toString(),
+                code: document.getElementById('it_code').value,
+                user: document.getElementById('it_user').value,
+                dept: document.getElementById('it_dept').value,
+                type: document.getElementById('it_type').value,
+                config: document.getElementById('it_config').value,
+                date: document.getElementById('it_date').value,
+                status: document.getElementById('it_status').value,
+                os: document.getElementById('it_os').value,
+                os_lic: document.getElementById('it_os_lic').value,
+                office: document.getElementById('it_office').value,
+                office_lic: document.getElementById('it_office_lic').value,
+                app: document.getElementById('it_app').value,
+                app_lic: document.getElementById('it_app_lic').value,
+                note: document.getElementById('it_note').value
             };
 
-            alert("⏳ Đang gửi dữ liệu Bảng Lương sang Google Apps Script...");
-
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(res => {
-                if (res.status === "success") {
-                    alert("✅ " + res.message);
-                    if (res.sheetUrl) {
-                        let btn = document.getElementById('btn-open-gsheet');
-                        btn.href = res.sheetUrl;
-                        btn.style.display = "inline-flex";
-                    }
-                } else {
-                    alert("❌ Lỗi: " + res.message);
-                }
-            })
-            .catch(err => alert("❌ Không thể kết nối API Google Apps Script: " + err.message));
-        }
-
-        function calcPaymentTotal() {
-            let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
-            let price = parseFloat(document.getElementById('pay-price').value) || 0;
-            let rate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
-            let pre = qty * price;
-            let total = pre + (pre * (rate / 100));
-            document.getElementById('pay-total').value = Math.round(total).toLocaleString('vi-VN') + " VND";
-        }
-
-        function savePaymentRecord(e) {
-            e.preventDefault();
-            let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
-            let price = parseFloat(document.getElementById('pay-price').value) || 0;
-            let rate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
-            let pre = qty * price;
-            let total = pre + (pre * (rate / 100));
-
-            let fileInput = document.getElementById('pay-file');
-            let file = fileInput.files[0];
-
-            if (file) {
-                let reader = new FileReader();
-                reader.onload = function(evt) {
-                    let base64Data = evt.target.result.split(',')[1];
-                    let sm = document.getElementById('filter-month').value || "2026-05";
-                    let folderName = "ThuMuc_HoSo_" + sm.replace("-", "_");
-
-                    fetch(SCRIPT_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: JSON.stringify({
-                            action: "upload_single_file",
-                            folderName: folderName,
-                            fileName: file.name,
-                            mimeType: file.type,
-                            base64Data: base64Data
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(res => addPaymentToList(qty, price, total, res.fileUrl || ""))
-                    .catch(() => addPaymentToList(qty, price, total, ""));
-                };
-                reader.readAsDataURL(file);
-            } else {
-                addPaymentToList(qty, price, total, "");
-            }
-        }
-
-        function addPaymentToList(qty, price, total, driveUrl) {
-            paymentList.push({
-                id: Date.now().toString(),
-                content: document.getElementById('pay-content').value,
-                beneficiary: document.getElementById('pay-beneficiary').value,
-                account: document.getElementById('pay-account').value,
-                qty: qty, price: price, total: total, driveUrl: driveUrl
-            });
-            localStorage.setItem('sys_payments', JSON.stringify(paymentList));
-            document.getElementById('payment-form').reset();
-            renderPaymentTable();
-            alert("✅ Đã lưu Hồ sơ thanh toán & Tạo đường dẫn tệp Drive!");
-        }
-
-        function renderPaymentTable() {
-            const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = "";
-            let sum = 0;
-            paymentList.forEach((r, i) => {
-                sum += r.total;
-                let fileBtn = r.driveUrl ? `<a href="${r.driveUrl}" target="_blank" class="btn-drive-view"><i class="fa-solid fa-arrow-up-right-from-square"></i> Mở xem tệp Drive</a>` : `<span style="color:#94a3b8;">Chưa đính kèm</span>`;
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="font-bold">${r.content}</td>
-                    <td>${r.beneficiary}</td>
-                    <td>${r.account}</td>
-                    <td class="text-center">${r.qty}</td>
-                    <td class="text-right">${r.price.toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold">${r.total.toLocaleString('vi-VN')}</td>
-                    <td class="text-center">${fileBtn}</td>
-                    <td class="text-center"><button class="btn-delete" onclick="deletePayment('${r.id}')">Xóa</button></td>
-                </tr>`;
-            });
-            document.getElementById('dash-paid-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
-        }
-
-        function deletePayment(id) {
-            paymentList = paymentList.filter(r => r.id !== id);
-            localStorage.setItem('sys_payments', JSON.stringify(paymentList));
-            renderPaymentTable();
-        }
-
-        function saveTelecomRecord(e) {
-            e.preventDefault();
-            let cost = parseFloat(document.getElementById('tel-cost').value) || 0;
-            let fileInput = document.getElementById('tel-file');
-            let file = fileInput.files[0];
-
-            if (file) {
-                let reader = new FileReader();
-                reader.onload = function(evt) {
-                    let base64Data = evt.target.result.split(',')[1];
-                    let sm = document.getElementById('tel-period').value || "2026-05";
-                    let folderName = "ThuMuc_Cuoc_" + sm.replace("-", "_");
-
-                    fetch(SCRIPT_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: JSON.stringify({
-                            action: "upload_single_file",
-                            folderName: folderName,
-                            fileName: file.name,
-                            mimeType: file.type,
-                            base64Data: base64Data
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(res => addTelecomToList(cost, res.fileUrl || ""))
-                    .catch(() => addTelecomToList(cost, ""));
-                };
-                reader.readAsDataURL(file);
-            } else {
-                addTelecomToList(cost, "");
-            }
-        }
-
-        function addTelecomToList(cost, driveUrl) {
-            telecomList.push({
-                id: Date.now().toString(),
-                location: document.getElementById('tel-location').value,
-                provider: document.getElementById('tel-provider').value,
-                package: document.getElementById('tel-package').value,
-                cid: document.getElementById('tel-cid').value,
-                cost: cost,
-                period: document.getElementById('tel-period').value,
-                driveUrl: driveUrl
-            });
-            localStorage.setItem('sys_telecoms', JSON.stringify(telecomList));
-            document.getElementById('telecom-form').reset();
-            renderTelecomTable();
-            alert("✅ Đã lưu Cước viễn thông thành công!");
-        }
-
-        function renderTelecomTable() {
-            const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = "";
-            let sum = 0;
-            telecomList.forEach((r, i) => {
-                sum += r.cost;
-                let fileBtn = r.driveUrl ? `<a href="${r.driveUrl}" target="_blank" class="btn-drive-view" style="background:#ea580c;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Mở xem tệp Drive</a>` : `<span style="color:#94a3b8;">Chưa đính kèm</span>`;
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="font-bold">${r.location}</td>
-                    <td class="text-center font-bold">${r.provider}</td>
-                    <td>${r.package}</td>
-                    <td class="text-center">${r.cid}</td>
-                    <td class="text-right font-bold">${r.cost.toLocaleString('vi-VN')}</td>
-                    <td class="text-center">${r.period}</td>
-                    <td class="text-center">${fileBtn}</td>
-                    <td class="text-center"><button class="btn-delete" onclick="deleteTelecom('${r.id}')">Xóa</button></td>
-                </tr>`;
-            });
-            document.getElementById('dash-telecom-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
-        }
-
-        function deleteTelecom(id) {
-            telecomList = telecomList.filter(r => r.id !== id);
-            localStorage.setItem('sys_telecoms', JSON.stringify(telecomList));
-            renderTelecomTable();
-        }
-
-        function autoGenAssetID() {
-            let t = document.getElementById('it-type').value;
-            document.getElementById('it-serial').value = `IT-${t}-2026-${Math.floor(100+Math.random()*900)}`;
-        }
-
-        function updateRealtimeQR() {
-            let u = document.getElementById('it-user').value || "N/A";
-            let d = document.getElementById('it-dept').value || "N/A";
-            let s = document.getElementById('it-serial').value || "IT-Laptop-2026-101";
-            let box = document.getElementById('realtime-qr');
-            if (box) {
-                box.innerHTML = "";
-                new QRCode(box, { text: `MÃ TÀI SẢN: ${s}\nNGƯỜI DÙNG: ${u}\nPHÒNG BAN: ${d}`, width: 80, height: 80 });
-            }
-        }
-
-        function saveITRecord(e) {
-            e.preventDefault();
-            itAssetList.push({
-                id: Date.now().toString(),
-                serial: document.getElementById('it-serial').value,
-                user: document.getElementById('it-user').value,
-                dept: document.getElementById('it-dept').value,
-                type: document.getElementById('it-type').value,
-                os: document.getElementById('it-os').value,
-                os_lic: document.getElementById('it-os-lic').value,
-                office: document.getElementById('it-office').value,
-                office_lic: document.getElementById('it-office-lic').value,
-                erp: document.getElementById('it-erp').value,
-                erp_lic: document.getElementById('it-erp-lic').value,
-                design: document.getElementById('it-design').value,
-                design_lic: document.getElementById('it-design-lic').value,
-                antivirus: document.getElementById('it-antivirus').value,
-                antivirus_lic: document.getElementById('it-antivirus-lic').value
-            });
-            localStorage.setItem('sys_it_assets', JSON.stringify(itAssetList));
-            document.getElementById('it-form').reset();
-            autoGenAssetID(); updateRealtimeQR();
-            renderITTable();
-            alert("✅ Đã lưu thông tin thiết bị và bản quyền phần mềm!");
-        }
-
-        // KIỂM TRA THIẾT BỊ CÓ CHƯA BẢN QUYỀN HAY KHÔNG
-        function hasNoLicense(r) {
-            return (r.os_lic && r.os_lic.includes("⚠️")) ||
-                   (r.office_lic && r.office_lic.includes("⚠️")) ||
-                   (r.erp_lic && r.erp_lic.includes("⚠️")) ||
-                   (r.design_lic && r.design_lic.includes("⚠️")) ||
-                   (r.antivirus_lic && r.antivirus_lic.includes("⚠️"));
-        }
-
-        function renderITTable() {
-            const tbody = document.getElementById('tbody-it'); tbody.innerHTML = "";
+            assetList.push(newAsset);
+            localStorage.setItem('sys_it_assets_db', JSON.stringify(assetList));
             
-            // ƯU TIÊN SẮP XẾP CÁC THIẾT BỊ CÓ CHƯA BẢN QUYỀN LÊN ĐẦU
-            let sortedList = [...itAssetList].sort((a, b) => {
-                let aUnlic = hasNoLicense(a);
-                let bUnlic = hasNoLicense(b);
-                if (aUnlic && !bUnlic) return -1;
-                if (!aUnlic && bUnlic) return 1;
+            resetForm();
+            renderTable();
+            alert("✅ Đã lưu thông tin kiểm kê tài sản thành công!");
+        }
+
+        // Reset Form
+        function resetForm() {
+            document.getElementById('itAssetForm').reset();
+            generateAssetCode();
+            generateLiveQR();
+        }
+
+        // Render Bảng Kiểm Kê (Sắp xếp ưu tiên chưa có bản quyền lên đầu)
+        function renderTable() {
+            const tbody = document.getElementById('itAssetTableBody');
+            tbody.innerHTML = "";
+
+            // Sắp xếp: Thiết bị nào có phần mềm chưa bản quyền (có biểu tượng ⚠️) đứng trước
+            let sortedList = [...assetList].sort((a, b) => {
+                let aUn = hasUnlicensed(a);
+                let bUn = hasUnlicensed(b);
+                if (aUn && !bUn) return -1;
+                if (!aUn && bUn) return 1;
                 return 0;
             });
 
-            sortedList.forEach((r, i) => {
-                let qid = `qr-tbl-${i}`;
+            sortedList.forEach((item, index) => {
+                let qrId = `qr-tbl-row-${index}`;
 
-                let osBadge = r.os_lic && r.os_lic.includes("⚠️") ? `<span class="badge-no-lic">${r.os_lic}</span>` : `<span class="badge-has-lic">${r.os_lic || '✅'}</span>`;
-                let offBadge = r.office_lic && r.office_lic.includes("⚠️") ? `<span class="badge-no-lic">${r.office_lic}</span>` : `<span class="badge-has-lic">${r.office_lic || '✅'}</span>`;
-                let erpBadge = r.erp_lic && r.erp_lic.includes("⚠️") ? `<span class="badge-no-lic">${r.erp_lic}</span>` : `<span class="badge-has-lic">${r.erp_lic || '✅'}</span>`;
-                let desBadge = r.design_lic && r.design_lic.includes("⚠️") ? `<span class="badge-no-lic">${r.design_lic}</span>` : `<span style="font-size:9px; color:#64748b;">${r.design_lic || 'N/A'}</span>`;
-                let avBadge = r.antivirus_lic && r.antivirus_lic.includes("⚠️") ? `<span class="badge-no-lic">${r.antivirus_lic}</span>` : `<span style="font-size:9px; color:#166534;">${r.antivirus_lic || 'Free/Def'}</span>`;
+                let osBadgeClass = item.os_lic.includes("⚠️") ? "badge-red" : "badge-green";
+                let offBadgeClass = item.office_lic.includes("⚠️") ? "badge-red" : "badge-green";
+                let appBadgeClass = item.app_lic.includes("⚠️") ? "badge-red" : "badge-green";
 
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="font-bold" style="color:var(--purple);">${r.serial}</td>
-                    <td>${r.type}</td>
-                    <td><b>${r.user}</b> (${r.dept})</td>
-                    <td><div><b>${r.os}</b></div>${osBadge}</td>
-                    <td><div><b>${r.office}</b></div>${offBadge}</td>
-                    <td><div><b>${r.erp || 'N/A'}</b></div>${erpBadge}</td>
-                    <td><div><b>${r.design || 'N/A'}</b></div>${desBadge}</td>
-                    <td><div><b>${r.antivirus || 'N/A'}</b></div>${avBadge}</td>
-                    <td class="text-center"><div id="${qid}"></div></td>
-                    <td class="text-center"><button class="btn-delete" onclick="deleteIT('${r.id}')">Xóa</button></td>
-                </tr>`;
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="text-center">${index + 1}</td>
+                        <td class="font-bold" style="color:#2563eb;">${item.code}</td>
+                        <td>${item.type}</td>
+                        <td>${item.config}</td>
+                        <td style="color:#6b21a8; font-weight:bold;">${item.user}</td>
+                        <td>${item.dept}</td>
+                        <td>
+                            <div>${item.os}</div>
+                            <span class="badge-lic ${osBadgeClass}">${item.os_lic}</span>
+                        </td>
+                        <td>
+                            <div>${item.office}</div>
+                            <span class="badge-lic ${offBadgeClass}">${item.office_lic}</span>
+                        </td>
+                        <td>
+                            <div class="font-bold">${item.app}</div>
+                            <span class="badge-lic ${appBadgeClass}">${item.app_lic}</span>
+                        </td>
+                        <td class="text-center">${item.status}</td>
+                        <td class="text-center"><div id="${qrId}"></div></td>
+                        <td class="text-center">
+                            <button class="btn-action-edit"><i class="fa-solid fa-pen"></i> Sửa</button>
+                            <button class="btn-action-del" onclick="deleteAsset('${item.id}')"><i class="fa-solid fa-trash"></i> Xóa</button>
+                        </td>
+                    </tr>
+                `;
 
+                // Render mã QR nhỏ trong từng dòng bảng
                 setTimeout(() => {
-                    let box = document.getElementById(qid);
-                    if (box) { box.innerHTML = ""; new QRCode(box, { text: `TÀI SẢN: ${r.serial}\nNGƯỜI DÙNG: ${r.user}`, width: 35, height: 35 }); }
-                }, 100);
+                    let box = document.getElementById(qrId);
+                    if (box) {
+                        box.innerHTML = "";
+                        new QRCode(box, {
+                            text: `MÃ: ${item.code}\nNGƯỜI DÙNG: ${item.user}`,
+                            width: 32,
+                            height: 32
+                        });
+                    }
+                }, 50);
             });
-            document.getElementById('dash-it-count').innerText = `${itAssetList.length} Thiết bị`;
+
+            document.getElementById('stat-it-count').innerText = `${assetList.length} Thiết bị`;
         }
 
-        function deleteIT(id) {
-            itAssetList = itAssetList.filter(r => r.id !== id);
-            localStorage.setItem('sys_it_assets', JSON.stringify(itAssetList));
-            renderITTable();
-        }
-
-        function openConfigModal() {
-            document.getElementById('cfg-script-url').value = SCRIPT_URL;
-            document.getElementById('configModal').style.display = 'flex';
-        }
-        function closeConfigModal() { document.getElementById('configModal').style.display = 'none'; }
-        function saveConfigURL() {
-            SCRIPT_URL = document.getElementById('cfg-script-url').value.trim() || DEFAULT_API;
-            localStorage.setItem('cfg_script_url', SCRIPT_URL);
-            alert("✅ Đã lưu cấu hình Script URL!");
-            closeConfigModal();
+        // Xóa thiết bị
+        function deleteAsset(id) {
+            if (confirm("Bạn có chắc chắn muốn xóa tài sản này khỏi danh sách?")) {
+                assetList = assetList.filter(item => item.id !== id);
+                localStorage.setItem('sys_it_assets_db', JSON.stringify(assetList));
+                renderTable();
+            }
         }
     </script>
 </body>
