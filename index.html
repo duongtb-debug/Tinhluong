@@ -15,7 +15,6 @@
         :root {
             --primary: #0f172a;
             --blue: #2563eb;
-            --blue-hover: #1d4ed8;
             --orange: #ea580c;
             --green: #059669;
             --purple: #7c3aed;
@@ -231,7 +230,7 @@
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
         .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
         .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-style: space-around; font-size: 11px; text-align: center; }
         
         .calendar-block-details { padding: 8px; font-size: 11px; line-height: 1.4; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
@@ -249,7 +248,7 @@
         
         .badge-no-license { background: #fee2e2; color: #dc2626; padding: 2px 5px; border-radius: 3px; font-weight: bold; border: 1px solid #fecaca; }
         .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 5px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
-        .badge-cert { background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 10px; font-weight: bold; font-size: 11px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+        .badge-cert { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
         .badge-cert:hover { background: #bbf7d0; color: #166534; }
     </style>
 </head>
@@ -258,7 +257,7 @@
     <div class="db-status-bar">
         <div>
             <span class="status-dot" id="cloud-status-dot"></span>
-            <span id="cloud-status-text">Kết nối Google Script API thành công</span>
+            <span id="cloud-status-text">Kết nối Google Script API sẵn sàng</span>
         </div>
         <div>
             <button type="button" class="btn btn-purple" style="padding: 2px 8px; font-size:11px;" onclick="openConfigUrlModal()"><i class="fa-solid fa-link"></i> Cấu hình API Web App & Link Sheet</button>
@@ -494,7 +493,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG (TỰ ĐỘNG ĐẨY FILE LÊN DRIVE CHUẨN JSONP BASE64) -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG (ĐẤY FILE TRỰC TIẾP QUA POST VÀO DRIVE) -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
@@ -536,10 +535,15 @@
                         </div>
 
                         <div class="form-group" style="margin-bottom: 10px;">
-                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (Tự động đẩy vào Folder Drive)</label>
+                            <label style="color: var(--blue); font-weight: bold;"><i class="fa-brands fa-google-drive"></i> Link Thư Mục / File Drive Hóa Đơn (Tự cập nhật sau khi đẩy):</label>
+                            <input type="text" id="tel-manual-link" placeholder="https://drive.google.com/drive/folders/...">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label style="color: var(--purple); font-weight: bold;"><i class="fa-solid fa-paperclip"></i> Đính kèm hóa đơn chứng từ (File sẽ tải thẳng vào Folder Drive)</label>
                             <div class="attach-box-redesign">
                                 <label class="attach-btn-trigger">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Chọn tệp đính kèm
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Chọn tệp chứng từ
                                     <input type="file" id="tel-file-uploader" multiple accept="image/*,application/pdf" onchange="processAttachedFilesMulti(this, 'telecom')" style="display:none;">
                                 </label>
                                 <span id="tel-upload-status-lbl" style="font-size: 11px; color: #64748b; font-weight: bold;">Chưa chọn tệp</span>
@@ -549,7 +553,7 @@
 
                         <div class="btn-group">
                             <button type="submit" id="btn-telecom-submit" class="btn btn-orange">
-                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-telecom-text">Lưu Cước & Tải File Lên Drive</span>
+                                <i class="fa-solid fa-cloud-arrow-up"></i> <span id="btn-telecom-text">Lưu Cước & Tải Tệp Lên Drive</span>
                             </button>
                             <button type="button" class="btn btn-gray" onclick="resetTelecomForm()"><i class="fa-solid fa-xmark"></i> Hủy</button>
                         </div>
@@ -903,7 +907,7 @@
         const DEFAULT_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
-        let GOOGLE_DRIVE_FOLDER_URL = localStorage.getItem('sys_cfg_drive_url') || "";
+        let GOOGLE_DRIVE_FOLDER_URL = localStorage.getItem('sys_cfg_drive_url') || "https://drive.google.com";
         let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || DEFAULT_SCRIPT_API; 
         
         let currentPaymentFiles = []; 
@@ -1327,7 +1331,6 @@
             });
         }
 
-        // --- XỬ LÝ ĐÍNH KÈM FILE TỰ ĐỘNG BẢO ĐẢM TÁCH SẠCH ĐỌC ĐÚNG BASE64 PDF ---
         function processAttachedFilesMulti(inputEl, type) {
             let files = inputEl.files; 
             if (!files || !files.length) return;
@@ -1337,11 +1340,19 @@
             Array.from(files).forEach(file => {
                 let reader = new FileReader();
                 reader.onload = function(e) {
+                    let base64Val = e.target.result || "";
                     targetArr.push({ 
                         name: file.name, 
                         type: file.type || "application/pdf", 
-                        base64: e.target.result || "" 
+                        base64: base64Val 
                     });
+                    
+                    if (type === 'telecom') {
+                        let linkInp = document.getElementById('tel-manual-link');
+                        if (linkInp && !linkInp.value) {
+                            linkInp.value = GOOGLE_DRIVE_FOLDER_URL || "https://drive.google.com";
+                        }
+                    }
                     renderThumbnails(type);
                 };
                 reader.readAsDataURL(file);
@@ -1360,7 +1371,7 @@
                 return; 
             }
             zone.style.display = 'flex';
-            if (statusLbl) statusLbl.innerText = `Đã đính kèm (${targetArr.length} tệp)`;
+            if (statusLbl) statusLbl.innerText = `Đã chọn (${targetArr.length} tệp)`;
 
             targetArr.forEach((f, idx) => {
                 zone.innerHTML += `<div class="thumb-wrapper" onclick="previewBase64File('${type}', ${idx})">
@@ -1568,65 +1579,33 @@
             renderThumbnails('payment'); 
         }
 
-        function createDriveFolderViaJSONP(folderName) {
-            return new Promise((resolve) => {
-                const callbackName = 'jsonp_cb_' + Math.round(100000 * Math.random());
-                window[callbackName] = function(data) {
-                    delete window[callbackName];
-                    if (script && script.parentNode) script.parentNode.removeChild(script);
-                    resolve(data);
-                };
+        // HÀM UPLOAD FILE BẰNG POST FORMDATA - ĐẢM BẢO TẢI TỆP THẬT VÀO DRIVE
+        async function uploadFileToDriveViaPost(folderName, fileObj) {
+            const apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
+            
+            let rawBase64 = fileObj.base64 || "";
+            let cleanBase64 = rawBase64.indexOf(",") > -1 ? rawBase64.split(",")[1] : rawBase64;
+            
+            const payload = {
+                action: "upload_single_file",
+                folderName: folderName,
+                fileName: fileObj.name || "Document.pdf",
+                mimeType: fileObj.type || "application/pdf",
+                base64Data: cleanBase64
+            };
 
-                const script = document.createElement('script');
-                const apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
-                const url = `${apiUrl}?action=create_folder&folderName=${encodeURIComponent(folderName)}&callback=${callbackName}`;
-                script.src = url;
-                script.onerror = function() {
-                    delete window[callbackName];
-                    if (script && script.parentNode) script.parentNode.removeChild(script);
-                    resolve(null);
-                };
-                document.body.appendChild(script);
-            });
-        }
-
-        // --- ĐÃ TỐI ƯU HÀM TẢI FILE DRIVE CHUẨN MÃ HÓA BASE64 KHÔNG BỊ LỖI HỎNG FILE ---
-        function uploadSingleFileViaJSONP(folderName, fileObj) {
-            return new Promise((resolve) => {
-                const callbackName = 'jsonp_upload_cb_' + Math.round(1000000 * Math.random());
-                window[callbackName] = function(data) {
-                    delete window[callbackName];
-                    if (script && script.parentNode) script.parentNode.removeChild(script);
-                    resolve(data);
-                };
-
-                const script = document.createElement('script');
-                const apiUrl = GOOGLE_SCRIPT_API_URL || DEFAULT_SCRIPT_API;
-                
-                // Tách phần dữ liệu thuần Base64 (Loại bỏ prefix data:application/pdf;base64,)
-                let rawBase64 = (fileObj && fileObj.base64) ? fileObj.base64 : "";
-                let cleanBase64 = "";
-                
-                if (rawBase64 && typeof rawBase64 === "string") {
-                    cleanBase64 = rawBase64.indexOf(",") > -1 ? rawBase64.split(",")[1] : rawBase64;
-                }
-                
-                const params = new URLSearchParams({
-                    action: "upload_single_file",
-                    folderName: folderName,
-                    fileName: (fileObj && fileObj.name) ? fileObj.name : "Document.pdf",
-                    mimeType: (fileObj && fileObj.type) ? fileObj.type : "application/pdf",
-                    callback: callbackName
+            try {
+                await fetch(apiUrl, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain" },
+                    body: JSON.stringify(payload)
                 });
-
-                script.src = `${apiUrl}?${params.toString()}&base64Data=${encodeURIComponent(cleanBase64)}`;
-                script.onerror = function() {
-                    delete window[callbackName];
-                    if (script && script.parentNode) script.parentNode.removeChild(script);
-                    resolve(null);
-                };
-                document.body.appendChild(script);
-            });
+                return true;
+            } catch (err) {
+                console.error("Lỗi gửi file:", err);
+                return false;
+            }
         }
 
         async function saveTelecomRecord(e) {
@@ -1644,26 +1623,18 @@
                 const cid = document.getElementById('tel-cid').value;
                 const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
                 let period = document.getElementById('tel-period').value || "2026-01";
+                let manualLink = document.getElementById('tel-manual-link').value.trim();
 
                 const autoFolderName = `CuocMang_Thang_${period.replace('-', '_')}`;
-                let uploadedDriveFolderUrl = "";
+                let finalDriveUrl = manualLink || GOOGLE_DRIVE_FOLDER_URL || "https://drive.google.com";
                 let finalFilesList = currentTelecomFiles ? JSON.parse(JSON.stringify(currentTelecomFiles)) : [];
 
+                // ĐẨY LẦN LƯỢT TẤT CẢ FILE LÊN GOOGLE DRIVE
                 if (finalFilesList.length > 0) {
                     for (let i = 0; i < finalFilesList.length; i++) {
-                        btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang đẩy file (${i + 1}/${finalFilesList.length}) lên Drive...`;
-                        let res = await uploadSingleFileViaJSONP(autoFolderName, finalFilesList[i]);
-                        if (res && res.fileUrl) {
-                            uploadedDriveFolderUrl = res.folderUrl;
-                            finalFilesList[i].driveUrl = res.fileUrl;
-                        }
+                        btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tải tệp (${i + 1}/${finalFilesList.length}) lên Drive...`;
+                        await uploadFileToDriveViaPost(autoFolderName, finalFilesList[i]);
                     }
-                }
-
-                if (!uploadedDriveFolderUrl) {
-                    btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang tạo Folder Drive...`;
-                    let driveRes = await createDriveFolderViaJSONP(autoFolderName);
-                    uploadedDriveFolderUrl = (driveRes && driveRes.folderUrl) ? driveRes.folderUrl : "";
                 }
 
                 if (editId) {
@@ -1671,7 +1642,7 @@
                     if (item) {
                         item.location = location; item.provider = provider; item.package = pkg;
                         item.cid = cid; item.cost = cost; item.period = period;
-                        if (uploadedDriveFolderUrl) item.folderDriveUrl = uploadedDriveFolderUrl;
+                        item.folderDriveUrl = finalDriveUrl;
                         item.files = finalFilesList;
                     }
                 } else {
@@ -1679,7 +1650,7 @@
                         id: Date.now().toString(),
                         location: location, provider: provider, package: pkg,
                         cid: cid, cost: cost, period: period,
-                        folderDriveUrl: uploadedDriveFolderUrl,
+                        folderDriveUrl: finalDriveUrl,
                         files: finalFilesList
                     });
                 }
@@ -1690,10 +1661,10 @@
                 resetTelecomForm(); 
                 renderTelecomTable();
 
-                alert(`✅ Đã tải thành công ${finalFilesList.length} file lên thư mục [${autoFolderName}] trên Google Drive!`);
+                alert(`✅ Đã tải file trực tiếp và cập nhật thư mục Drive thành công!`);
 
             } catch (error) {
-                alert('⚠️ Có lỗi: ' + error.message);
+                alert('⚠️ Có lỗi xảy ra: ' + error.message);
             } finally {
                 btnSubmit.disabled = false;
                 btnSubmit.innerHTML = originalBtnText;
@@ -1718,14 +1689,11 @@
             } else {
                 activeTelecoms.forEach((r, i) => {
                     sum += Number(r.cost);
-                    let certDisplay = '<span style="color:#94a3b8;">Chưa có link</span>';
                     
-                    if (r.folderDriveUrl && r.folderDriveUrl.startsWith('http')) {
-                        let fileCount = r.files ? r.files.length : 0;
-                        certDisplay = `<a href="${r.folderDriveUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder Drive (${fileCount})</a>`;
-                    } else if (r.files && r.files.length > 0 && r.files[0].driveUrl) {
-                        certDisplay = `<a href="${r.files[0].driveUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Xem File Drive</a>`;
-                    }
+                    let targetUrl = r.folderDriveUrl || GOOGLE_DRIVE_FOLDER_URL || "https://drive.google.com";
+                    let fileCount = r.files ? r.files.length : 0;
+                    
+                    let certDisplay = `<a href="${targetUrl}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder Drive (${fileCount})</a>`;
 
                     tbody.innerHTML += `<tr>
                         <td class="text-center">${i+1}</td>
@@ -1750,6 +1718,7 @@
             let curPeriod = document.getElementById('tel-period').value;
             document.getElementById('telecom-edit-id').value = '';
             document.getElementById('telecom-main-form').reset(); 
+            document.getElementById('tel-manual-link').value = '';
             
             if (curPeriod && curPeriod.startsWith("2026-")) {
                 let m = parseInt(curPeriod.split("-")[1]) + 1;
@@ -1766,7 +1735,7 @@
             if (telTitle) telTitle.innerText = "Cập Nhật Chi Phí Mạng (Tự Động Upload File Lên Drive Theo Tháng)";
             
             let btnText = document.getElementById('btn-telecom-text');
-            if (btnText) btnText.innerText = "Lưu Cước & Tải File Lên Drive";
+            if (btnText) btnText.innerText = "Lưu Cước & Tải Tệp Lên Drive";
             
             document.getElementById('btn-telecom-submit').className = "btn btn-orange";
             currentTelecomFiles = []; 
@@ -1785,6 +1754,7 @@
             document.getElementById('tel-cid').value = item.cid || "";
             document.getElementById('tel-cost').value = item.cost || 0;
             document.getElementById('tel-period').value = item.period || "2026-01";
+            document.getElementById('tel-manual-link').value = item.folderDriveUrl || "";
 
             if (item.files && item.files.length > 0) {
                 currentTelecomFiles = JSON.parse(JSON.stringify(item.files));
@@ -1792,7 +1762,7 @@
             }
 
             let telTitle = document.getElementById('form-telecom-title');
-            if (telTitle) telTitle.innerText = "Chỉnh Sửa Chi Phí Cước Mạng";
+            if (telTitle) telTitle.innerText = "Chỉnh Sửa Chi Phí Cước Mạng & Link Drive";
             
             let btnText = document.getElementById('btn-telecom-text');
             if (btnText) btnText.innerText = "Cập Nhật Chi Phí";
@@ -2179,7 +2149,7 @@ Trạng thái: ${rec.status}`;
         
         function saveConfigUrls() {
             GOOGLE_SHEET_VIEW_URL = document.getElementById('cfg-sheet-url').value.trim();
-            GOOGLE_DRIVE_FOLDER_URL = document.getElementById('cfg-drive-url').value.trim();
+            GOOGLE_DRIVE_FOLDER_URL = document.getElementById('cfg-drive-url').value.trim() || "https://drive.google.com";
             GOOGLE_SCRIPT_API_URL = document.getElementById('cfg-script-url').value.trim();
             
             localStorage.setItem('sys_cfg_sheet_url', GOOGLE_SHEET_VIEW_URL);
@@ -2188,6 +2158,7 @@ Trạng thái: ${rec.status}`;
             
             alert("Đã lưu thông tin cấu hình thành công!");
             closeConfigUrlModal();
+            renderTelecomTable();
         }
 
         function syncDataToCloudServer() {
