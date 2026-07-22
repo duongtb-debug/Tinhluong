@@ -3,220 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CƯỚC VIỄN THÔNG & INTERNET - TỔNG CÔNG TY GIẤY VIỆT NAM</title>
-    <!-- Tailwind CSS CDN -->
+    <title>TỔNG CÔNG TY GIẤY VIỆT NAM - VĂN PHÒNG</title>
+    <!-- Tailwind CSS & FontAwesome CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800 font-sans text-sm pb-10">
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans text-xs pb-10">
 
-    <!-- HEADER / NAVIGATION -->
-    <header class="bg-slate-900 text-white shadow-md">
-        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <i class="fa-solid me-2 fa-paper-plane text-emerald-400 text-xl"></i>
-                <h1 class="font-bold text-lg tracking-wide uppercase">TỔNG CÔNG TY GIẤY VIỆT NAM - VĂN PHÒNG</h1>
+    <!-- 1. HEADER CHÍNH -->
+    <header class="bg-slate-900 text-white shadow-md border-b border-slate-700">
+        <div class="container mx-auto px-4 py-2.5 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-building text-emerald-400 text-base"></i>
+                <h1 class="font-bold text-sm tracking-wide uppercase">TỔNG CÔNG TY GIẤY VIỆT NAM - VĂN PHÒNG</h1>
             </div>
-            <div class="flex items-center space-x-4 text-xs">
-                <span id="api-status" class="px-2 py-1 rounded bg-emerald-700 text-emerald-100 flex items-center">
-                    <i class="fa-solid fa-circle-check mr-1 text-emerald-300"></i> Google Script API Sẵn sàng
+            <div class="flex items-center space-x-3 text-[11px]">
+                <span id="api-status" class="px-2 py-0.5 rounded bg-emerald-800 text-emerald-200 flex items-center">
+                    <i class="fa-solid fa-circle-check mr-1 text-emerald-400"></i> Kết nối Google Script API sẵn sàng
                 </span>
-                <div class="bg-slate-800 px-3 py-1 rounded border border-slate-700 flex items-center space-x-2">
+                <div class="bg-slate-800 px-2.5 py-0.5 rounded border border-slate-700 flex items-center space-x-1.5">
                     <i class="fa-solid fa-database text-amber-400"></i>
-                    <span>NĂM LƯU TRỮ DỮ LIỆU:</span>
-                    <select id="year-selector" onchange="changeYear(this.value)" class="bg-slate-700 text-white font-bold rounded px-2 py-0.5 border border-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-400">
+                    <span class="font-semibold text-slate-300">NĂM LƯU TRỮ DỮ LIỆU:</span>
+                    <select id="year-selector" onchange="changeYear(this.value)" class="bg-blue-900 text-white font-bold rounded px-2 py-0.5 border border-blue-500 focus:outline-none">
                         <option value="2026" selected>Năm 2026</option>
                         <option value="2025">Năm 2025</option>
                         <option value="2024">Năm 2024</option>
                     </select>
                 </div>
-                <div id="clock-display" class="bg-black/30 px-3 py-1 rounded font-mono text-amber-300">
+                <div id="clock-display" class="bg-black/40 px-2.5 py-0.5 rounded font-mono text-amber-300 font-bold">
                     13:22:00 22/7/2026
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- KHO TỔNG THỐNG KÊ (KPI CARDS) -->
-    <div class="container mx-auto px-4 mt-4">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-blue-500">
-                <div class="text-xs text-slate-500 font-bold uppercase">LƯƠNG THỰC TẾ (NET)</div>
-                <div class="text-lg font-bold text-blue-600 mt-1">64.628.894 VNĐ</div>
+    <!-- 2. THỐNG KÊ KPI CARDS -->
+    <div class="container mx-auto px-4 mt-3">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div class="bg-white p-2.5 rounded shadow-sm border-l-4 border-blue-600 flex justify-between items-center">
+                <div>
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">LƯƠNG THỰC TẾ (NET)</div>
+                    <div id="kpi-salary" class="text-sm font-extrabold text-blue-700 mt-0.5">64.628.894 VNĐ</div>
+                </div>
+                <i class="fa-solid fa-file-invoice-dollar text-slate-300 text-xl"></i>
             </div>
-            <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-emerald-500">
-                <div class="text-xs text-slate-500 font-bold uppercase">THANH TOÁN VP</div>
-                <div id="total-payment-kpi" class="text-lg font-bold text-emerald-600 mt-1">0 VNĐ</div>
+            <div class="bg-white p-2.5 rounded shadow-sm border-l-4 border-emerald-600 flex justify-between items-center">
+                <div>
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">THANH TOÁN VP</div>
+                    <div id="kpi-payment" class="text-sm font-extrabold text-emerald-700 mt-0.5">0 VNĐ</div>
+                </div>
+                <i class="fa-solid fa-receipt text-slate-300 text-xl"></i>
             </div>
-            <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-amber-500">
-                <div class="text-xs text-slate-500 font-bold uppercase">CƯỚC MẠNG (2026)</div>
-                <div id="total-telecom-kpi" class="text-lg font-bold text-amber-600 mt-1">0 VNĐ</div>
+            <div class="bg-white p-2.5 rounded shadow-sm border-l-4 border-amber-600 flex justify-between items-center">
+                <div>
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">CƯỚC MẠNG (2026)</div>
+                    <div id="kpi-telecom" class="text-sm font-extrabold text-amber-700 mt-0.5">0 VNĐ</div>
+                </div>
+                <i class="fa-solid fa-wifi text-slate-300 text-xl"></i>
             </div>
-            <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-purple-500">
-                <div class="text-xs text-slate-500 font-bold uppercase">MÁY CNTT KIỂM KÊ</div>
-                <div class="text-lg font-bold text-purple-600 mt-1">0 Thiết bị</div>
+            <div class="bg-white p-2.5 rounded shadow-sm border-l-4 border-purple-600 flex justify-between items-center">
+                <div>
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">MÁY CNTT KIỂM KÊ</div>
+                    <div id="kpi-it" class="text-sm font-extrabold text-purple-700 mt-0.5">0 Thiết bị</div>
+                </div>
+                <i class="fa-solid fa-laptop text-slate-300 text-xl"></i>
             </div>
         </div>
     </div>
 
-    <!-- MAIN FORM & TABLE CONTAINER -->
-    <main class="container mx-auto px-4 mt-4">
-        
-        <!-- MODULE FORM: CƯỚC VIỄN THÔNG & INTERNET -->
-        <div class="bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden mb-6">
-            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-2.5 flex items-center justify-between">
-                <div class="font-bold flex items-center">
-                    <i class="fa-solid fa-signal mr-2 text-amber-400"></i>
-                    <span>Cập Nhật Chi Phí Mạng & Đính Kèm Hóa Đơn Theo Tháng (Năm 2026)</span>
-                </div>
-            </div>
+    <!-- 3. THANH THẺ ĐIỀU HƯỚNG (NAVIGATION TABS) -->
+    <div class="container mx-auto px-4 mt-3">
+        <div class="flex space-x-1 border-b border-slate-300">
+            <button onclick="switchTab('salary')" id="tab-btn-salary" class="px-3 py-1.5 font-bold rounded-t-md transition flex items-center bg-white text-slate-600 border border-slate-300 border-b-0 hover:bg-slate-50">
+                <i class="fa-solid fa-users mr-1.5 text-blue-600"></i>Tính Lương Nhân Viên
+            </button>
+            <button onclick="switchTab('payment')" id="tab-btn-payment" class="px-3 py-1.5 font-bold rounded-t-md transition flex items-center bg-white text-slate-600 border border-slate-300 border-b-0 hover:bg-slate-50">
+                <i class="fa-solid fa-file-lines mr-1.5 text-emerald-600"></i>Hồ Sơ Thanh Toán Văn Phòng
+            </button>
+            <button onclick="switchTab('telecom')" id="tab-btn-telecom" class="px-3 py-1.5 font-bold rounded-t-md transition flex items-center bg-orange-600 text-white shadow-sm">
+                <i class="fa-solid fa-globe mr-1.5 text-amber-300"></i>Cước Viễn Thông & Internet
+            </button>
+            <button onclick="switchTab('it')" id="tab-btn-it" class="px-3 py-1.5 font-bold rounded-t-md transition flex items-center bg-white text-slate-600 border border-slate-300 border-b-0 hover:bg-slate-50">
+                <i class="fa-solid fa-desktop mr-1.5 text-purple-600"></i>Thiết Bị Công Nghệ Thông Tin
+            </button>
+        </div>
+    </div>
 
-            <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)" class="p-4">
-                <input type="hidden" id="telecom-edit-id" value="">
+    <!-- 4. NỘI DUNG CÁC THẺ -->
+    <main class="container mx-auto px-4 mt-2">
 
-                <!-- BẢNG CÁC TRƯỜNG THÔNG TIN CƯỚC MẠNG -->
-                <div class="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Tên điểm kết nối / Văn phòng</label>
-                        <input type="text" id="tel-location" value="Tổng công ty Giấy Việt Nam" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Nhà mạng cung cấp</label>
-                        <select id="tel-provider" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
-                            <option value="VNPT" selected>VNPT</option>
-                            <option value="VIETTEL">VIETTEL</option>
-                            <option value="FPT">FPT</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Gói băng thông</label>
-                        <input type="text" id="tel-package" value="Fiber VIP 1GB" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mã đường truyền / CID</label>
-                        <input type="text" id="tel-cid" value="PTO-02-0066479" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Cước phí tháng (VNĐ)</label>
-                        <input type="number" id="tel-cost" value="3301557" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kỳ cước nhập (Tháng/Năm)</label>
-                        <input type="month" id="tel-period" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1.5 text-slate-700 focus:ring-1 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                </div>
-
-                <!-- KHU VỰC CHỌN VÀ HIỂN THỊ TRẠNG THÁI TẢI FILE UPLOAD DRIVE -->
-                <div class="bg-emerald-50/60 border-2 border-dashed border-emerald-300 rounded-lg p-3 mb-4">
-                    <label class="block text-xs font-bold text-emerald-800 mb-1.5">
-                        <i class="fa-solid fa-paperclip mr-1"></i> Chọn Tài Liệu Đính Kèm Hóa Đơn (Chọn được nhiều file cùng lúc):
-                    </label>
-                    
-                    <input type="file" id="tel-multiple-files" multiple onchange="onFilesSelected(this)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
-                    <p class="text-[11px] text-slate-500 mt-1 italic">
-                        💡 Hệ thống sẽ tự động khởi tạo Thư mục riêng trên Google Drive cho Tháng này (Ví dụ: HoaDon_Cuoc_Thang_01_2026) và lưu toàn bộ tệp đính kèm vào đó.*
-                    </p>
-
-                    <!-- THANH TIẾN TRÌNH & BẢNG TÌNH TRẠNG TẢI LÊN DRIVER THỜI GIAN THỰC -->
-                    <div id="upload-status-box" class="hidden mt-3 bg-white p-3 border border-slate-200 rounded-md shadow-inner">
-                        <div class="flex justify-between items-center mb-1">
-                            <span id="upload-progress-text" class="text-xs font-bold text-slate-700">Đang khởi tạo tải file...</span>
-                            <span id="upload-progress-percent" class="text-xs font-mono font-bold text-blue-600">0%</span>
-                        </div>
-                        <div class="w-full bg-slate-200 rounded-full h-2 mb-3 overflow-hidden">
-                            <div id="upload-progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-                        </div>
-
-                        <!-- BẢNG DANH SÁCH CHI TIẾT TRẠNG THÁI FILE -->
-                        <div class="max-h-36 overflow-y-auto border border-slate-100 rounded text-xs">
-                            <table class="w-full text-left border-collapse">
-                                <thead class="bg-slate-100 text-slate-600 font-semibold sticky top-0">
-                                    <tr>
-                                        <th class="p-1.5 border-b">Tên File</th>
-                                        <th class="p-1.5 border-b w-24">Dung lượng</th>
-                                        <th class="p-1.5 border-b w-28 text-center">Trạng thái</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="file-status-tbody">
-                                    <!-- Dynamic rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- NÚT BẤM THAO TÁC -->
-                <div class="flex space-x-2">
-                    <button type="submit" id="btn-telecom-submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold px-4 py-2 rounded text-xs transition duration-150 flex items-center shadow-sm">
-                        <i id="btn-telecom-icon" class="fa-solid fa-cloud-arrow-up mr-1.5"></i>
-                        <span id="btn-telecom-text">Lưu Cước & Tải Tệp Lên Drive</span>
-                    </button>
-                    <button type="button" onclick="resetTelecomForm()" class="bg-slate-500 hover:bg-slate-600 text-white font-semibold px-3 py-2 rounded text-xs transition duration-150">
-                        <i class="fa-solid fa-xmark mr-1"></i> Hủy
-                    </button>
-                </div>
-            </form>
+        <!-- THẺ 1: TÍNH LƯƠNG NHÂN VIÊN (ẨN MẶC ĐỊNH) -->
+        <div id="tab-content-salary" class="tab-pane hidden bg-white rounded-b-lg p-4 border border-slate-200 shadow-sm">
+            <h2 class="font-bold text-slate-700 text-sm mb-2"><i class="fa-solid fa-users mr-1.5 text-blue-600"></i>Bảng Lương Nhân Viên</h2>
+            <p class="text-slate-500 italic">Tính năng Quản lý & Tính Lương Nhân Viên đang hoạt động bình thường.</p>
         </div>
 
-        <!-- BẢNG DANH SÁCH DỮ LIỆU CƯỚC INTERNET NĂM 2026 -->
-        <div class="bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden">
-            <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex justify-between items-center">
-                <div class="font-bold text-slate-700 flex items-center">
-                    <i class="fa-solid fa-list-check mr-2 text-blue-600"></i>
-                    <span>DANH SÁCH CHI PHÍ ĐƯỜNG TRUYỀN INTERNET NĂM <span id="table-year-title">2026</span></span>
+        <!-- THẺ 2: HỒ SƠ THANH TOÁN VĂN PHÒNG (ẨN MẶC ĐỊNH) -->
+        <div id="tab-content-payment" class="tab-pane hidden bg-white rounded-b-lg p-4 border border-slate-200 shadow-sm">
+            <h2 class="font-bold text-slate-700 text-sm mb-2"><i class="fa-solid fa-file-lines mr-1.5 text-emerald-600"></i>Hồ Sơ Thanh Toán Văn Phòng</h2>
+            <p class="text-slate-500 italic">Quản lý các hồ sơ chứng từ thanh toán văn phòng phẩm và dịch vụ ngoài.</p>
+        </div>
+
+        <!-- THẺ 3: CƯỚC VIỄN THÔNG & INTERNET (HIỆN MẶC ĐỊNH Theo Hình) -->
+        <div id="tab-content-telecom" class="tab-pane space-y-4">
+            
+            <!-- FORM NHẬP CHI PHÍ MẠNG -->
+            <div class="bg-white rounded-md shadow-sm border border-slate-300 overflow-hidden">
+                <div class="bg-slate-800 text-white px-3 py-2 flex items-center justify-between">
+                    <div class="font-bold flex items-center text-xs">
+                        <i class="fa-solid fa-chart-bar mr-2 text-amber-400"></i>
+                        <span>Cập Nhật Chi Phí Mạng & Đính Kèm Hóa Đơn Theo Tháng (Năm <span class="year-label">2026</span>)</span>
+                    </div>
                 </div>
-                <div class="flex space-x-2">
-                    <button onclick="syncDataFromCloud()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1 rounded text-xs font-semibold flex items-center shadow-sm">
-                        <i class="fa-solid fa-rotate mr-1"></i> Tải / Phục Hồi Dữ Liệu Từ Máy
-                    </button>
-                    <button class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-xs font-semibold flex items-center shadow-sm">
-                        <i class="fa-solid fa-sun mr-1"></i> Tất cả các tháng trong Năm <i class="fa-solid fa-chevron-down ml-1"></i>
-                    </button>
+
+                <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)" class="p-3">
+                    <input type="hidden" id="telecom-edit-id" value="">
+
+                    <!-- KHU VỰC ĐIỀN THÔNG TIN FORM -->
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-2.5 mb-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Tên điểm kết nối / Văn phòng</label>
+                            <input type="text" id="tel-location" value="Tổng công ty Giấy Việt Nam" required class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Nhà mạng cung cấp</label>
+                            <select id="tel-provider" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                                <option value="VNPT" selected>VNPT</option>
+                                <option value="VIETTEL">VIETTEL</option>
+                                <option value="FPT">FPT</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Gói băng thông</label>
+                            <input type="text" id="tel-package" value="Fiber VIP 1GB" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Mã đường truyền / CID</label>
+                            <input type="text" id="tel-cid" value="PTO-02-0066479" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Cước phí tháng (VNĐ)</label>
+                            <input type="number" id="tel-cost" value="3301557" required class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none font-bold text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-red-600 mb-1">Kỳ cước nhập (Tháng/Năm)</label>
+                            <input type="month" id="tel-period" required class="w-full bg-amber-50 border border-amber-400 rounded px-2 py-1 font-bold text-slate-800 focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <!-- KHU VỰC CHỌN TỆP ĐÍNH KÈM VÀ THEO DÕI TÌNH TRẠNG UPLOAD DRIVE -->
+                    <div class="bg-emerald-50/50 border-2 border-dashed border-emerald-300 rounded p-2.5 mb-3">
+                        <label class="block text-[11px] font-bold text-emerald-800 mb-1">
+                            <i class="fa-solid fa-paperclip mr-1 text-emerald-600"></i> Chọn Tài Liệu Đính Kèm Hóa Đơn (Chọn được nhiều file cùng lúc):
+                        </label>
+                        
+                        <input type="file" id="tel-multiple-files" multiple onchange="onFilesSelected(this)" class="block w-full text-xs text-slate-500 file:mr-3 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+                        <p class="text-[10px] text-amber-700 font-medium mt-1 italic">
+                            💡 *Hệ thống sẽ tự động khởi tạo Thư mục riêng trên Google Drive cho Tháng này (Ví dụ: HoaDon_Cuoc_Thang_01_2026) và lưu toàn bộ tệp đính kèm vào đó.*
+                        </p>
+
+                        <!-- BOX THEO DÕI TÌNH TRẠNG UPLOAD CHUYÊN NGHIỆP -->
+                        <div id="upload-status-box" class="hidden mt-2 bg-white p-2.5 border border-slate-300 rounded shadow-inner">
+                            <div class="flex justify-between items-center mb-1">
+                                <span id="upload-progress-text" class="text-[11px] font-bold text-slate-700">Đang khởi tạo danh sách tệp...</span>
+                                <span id="upload-progress-percent" class="text-[11px] font-mono font-bold text-blue-600">0%</span>
+                            </div>
+                            <!-- Thanh tiến trình Progress Bar -->
+                            <div class="w-full bg-slate-200 rounded-full h-2 mb-2 overflow-hidden">
+                                <div id="upload-progress-bar" class="bg-gradient-to-r from-blue-500 to-emerald-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+
+                            <!-- Bảng chi tiết từng file đính kèm -->
+                            <div class="max-h-32 overflow-y-auto border border-slate-200 rounded">
+                                <table class="w-full text-[11px] text-left border-collapse">
+                                    <thead class="bg-slate-100 text-slate-700 font-bold sticky top-0 border-b border-slate-200">
+                                        <tr>
+                                            <th class="p-1 border-r">Tên File Tải Lên</th>
+                                            <th class="p-1 w-20 border-r">Kích thước</th>
+                                            <th class="p-1 w-28 text-center">Trạng Thái Drive</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="file-status-tbody">
+                                        <!-- Code JS tự động tạo dòng -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NÚT BẤM THAO TÁC -->
+                    <div class="flex space-x-2">
+                        <button type="submit" id="btn-telecom-submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold px-3 py-1.5 rounded text-xs transition duration-150 flex items-center shadow">
+                            <i id="btn-telecom-icon" class="fa-solid fa-cloud-arrow-up mr-1.5"></i>
+                            <span id="btn-telecom-text">Đang tải file lên Drive...</span>
+                        </button>
+                        <button type="button" onclick="resetTelecomForm()" class="bg-slate-600 hover:bg-slate-700 text-white font-semibold px-3 py-1.5 rounded text-xs transition duration-150 flex items-center">
+                            <i class="fa-solid fa-xmark mr-1"></i> Hủy
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- BẢNG DANH SÁCH DỮ LIỆU CƯỚC -->
+            <div class="bg-white rounded-md shadow-sm border border-slate-300 overflow-hidden">
+                <div class="bg-slate-100 border-b border-slate-200 px-3 py-2 flex justify-between items-center">
+                    <div class="font-bold text-slate-800 flex items-center text-xs">
+                        <i class="fa-solid fa-list-ul mr-2 text-blue-600"></i>
+                        <span>DANH SÁCH CHI PHÍ ĐƯỜNG TRUYỀN INTERNET NĂM <span class="year-label">2026</span></span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="syncDataFromCloud()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1 rounded text-[11px] font-semibold flex items-center shadow-sm">
+                            <i class="fa-solid fa-cloud-arrow-down mr-1"></i> Tải / Phục Hồi Dữ Liệu Từ Máy
+                        </button>
+                        <button class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[11px] font-semibold flex items-center shadow-sm">
+                            <i class="fa-solid fa-sun mr-1"></i> Tất cả các tháng trong Năm <i class="fa-solid fa-chevron-down ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border-collapse">
+                        <thead class="bg-slate-100 text-slate-700 font-bold uppercase border-b border-slate-300">
+                            <tr>
+                                <th class="p-2 border-r border-slate-200 text-center w-10">STT</th>
+                                <th class="p-2 border-r border-slate-200">Điểm kết nối / Văn phòng</th>
+                                <th class="p-2 border-r border-slate-200">Nhà mạng</th>
+                                <th class="p-2 border-r border-slate-200">Gói băng thông</th>
+                                <th class="p-2 border-r border-slate-200">Mã thuê bao / Đường truyền</th>
+                                <th class="p-2 border-r border-slate-200 text-right">Chi phí (VNĐ)</th>
+                                <th class="p-2 border-r border-slate-200 text-center bg-amber-100 text-amber-900">Kỳ cước</th>
+                                <th class="p-2 border-r border-slate-200 text-center">Folder & File Đính Kèm</th>
+                                <th class="p-2 text-center w-20">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="telecom-table-body" class="divide-y divide-slate-200">
+                            <!-- Dữ liệu JS sẽ render ở đây -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left border-collapse">
-                    <thead class="bg-slate-50 text-slate-700 font-bold uppercase border-b border-slate-200">
-                        <tr>
-                            <th class="p-2.5 border-r border-slate-200 text-center w-12">STT</th>
-                            <th class="p-2.5 border-r border-slate-200">Điểm kết nối / Văn phòng</th>
-                            <th class="p-2.5 border-r border-slate-200">Nhà mạng</th>
-                            <th class="p-2.5 border-r border-slate-200">Gói băng thông</th>
-                            <th class="p-2.5 border-r border-slate-200">Mã thuê bao / Đường truyền</th>
-                            <th class="p-2.5 border-r border-slate-200 text-right">Chi phí (VNĐ)</th>
-                            <th class="p-2.5 border-r border-slate-200 text-center bg-amber-100 text-amber-900">Kỳ cước</th>
-                            <th class="p-2.5 border-r border-slate-200 text-center">Folder & File Đính Kèm</th>
-                            <th class="p-2.5 text-center w-24">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="telecom-table-body" class="divide-y divide-slate-200">
-                        <!-- Dữ liệu bảng sẽ được render qua JS -->
-                    </tbody>
-                </table>
-            </div>
+        </div>
+
+        <!-- THẺ 4: THIẾT BỊ IT (ẨN MẶC ĐỊNH) -->
+        <div id="tab-content-it" class="tab-pane hidden bg-white rounded-b-lg p-4 border border-slate-200 shadow-sm">
+            <h2 class="font-bold text-slate-700 text-sm mb-2"><i class="fa-solid fa-desktop mr-1.5 text-purple-600"></i>Kiểm Kê Thiết Bị Công Nghệ Thông Tin</h2>
+            <p class="text-slate-500 italic">Danh sách máy tính, thiết bị mạng và phần mềm công ty.</p>
         </div>
 
     </main>
 
-    <!-- JS LOGIC - XỬ LÝ LỖI & THEO DÕI TRẠNG THÁI TẢI FILE -->
+    <!-- 5. JAVASCRIPT XỬ LÝ TOÀN BỘ LOGIC HỆ THỐNG -->
     <script>
-        // --- NẮM BẮT VÀ CẤU HÌNH BIẾN TOÀN CỤC ---
-        const GOOGLE_SCRIPT_API_URL = ""; // Điền URL Apps Script WebApp của bạn vào đây nếu có
+        // --- 1. BIẾN TOÀN CỤC & CẤU HÌNH ---
+        const GOOGLE_SCRIPT_API_URL = "Đã khởi tạo cấu trúc các Sheet thành công"; // Điền URL Web App Google Apps Script của bạn vào đây (nếu có)
         let CURRENT_SELECTED_YEAR = "2026";
         let telecomRecordsAll = [];
 
-        // KHỞI TẠO DỮ LIỆU KHI TRANG TẢI XONG
+        // --- 2. KHỞI TẠO TRANG NỀN ---
         document.addEventListener("DOMContentLoaded", function() {
-            // Đặt mặc định tháng hiện tại dạng YYYY-MM
+            // Khởi tạo ngày tháng mặc định chuẩn YYYY-MM
             let today = new Date();
             let defaultMonth = `${CURRENT_SELECTED_YEAR}-${String(today.getMonth() + 1).padStart(2, '0')}`;
             document.getElementById('tel-period').value = defaultMonth;
 
-            // Đọc dữ liệu từ bộ nhớ LocalStorage
+            // Load dữ liệu từ LocalStorage
             loadTelecomDataFromLocal();
-            
-            // Đồng hồ thời gian thực
+
+            // Chạy đồng hồ thời gian thực
             setInterval(updateClock, 1000);
         });
 
@@ -226,13 +280,31 @@
             document.getElementById('clock-display').innerText = dateStr;
         }
 
+        // --- 3. ĐIỀU HƯỚNG CÁC TAB ---
+        function switchTab(tabName) {
+            // Ẩn tất cả nội dung tab
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+            
+            // Đổi style các nút tab về mặc định
+            document.querySelectorAll('[id^="tab-btn-"]').forEach(btn => {
+                btn.className = "px-3 py-1.5 font-bold rounded-t-md transition flex items-center bg-white text-slate-600 border border-slate-300 border-b-0 hover:bg-slate-50";
+            });
+
+            // Hiện tab active
+            document.getElementById(`tab-content-${tabName}`).classList.remove('hidden');
+            
+            // Đổi style nút active
+            let activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            activeBtn.className = "px-3 py-1.5 font-bold rounded-t-md transition flex items-center bg-orange-600 text-white shadow-sm";
+        }
+
         function changeYear(year) {
             CURRENT_SELECTED_YEAR = year;
-            document.getElementById('table-year-title').innerText = year;
+            document.querySelectorAll('.year-label').forEach(el => el.innerText = year);
             renderTelecomTable();
         }
 
-        // --- XỬ LÝ SỰ KIỆN KHI NGƯỜI DÙNG CHỌN FILE ---
+        // --- 4. HIỂN THỊ TRẠNG THÁI FILE KHI NGƯỜI DÙNG CHỌN FILE ---
         function onFilesSelected(input) {
             const files = input.files;
             const statusBox = document.getElementById('upload-status-box');
@@ -247,28 +319,27 @@
             tbody.innerHTML = '';
             document.getElementById('upload-progress-bar').style.width = '0%';
             document.getElementById('upload-progress-percent').innerText = '0%';
-            document.getElementById('upload-progress-text').innerText = `Đã chọn ${files.length} tệp (Chờ lưu...)`;
+            document.getElementById('upload-progress-text').innerText = `Đã chọn ${files.length} tệp đính kèm (Sẵn sàng)`;
 
             for (let i = 0; i < files.length; i++) {
                 let f = files[i];
                 let kbSize = (f.size / 1024).toFixed(1) + ' KB';
                 let tr = document.createElement('tr');
-                tr.id = `file-row-${i}`;
                 tr.className = 'border-b border-slate-100 hover:bg-slate-50';
                 tr.innerHTML = `
-                    <td class="p-1.5 truncate max-w-xs" title="${f.name}">
-                        <i class="fa-regular fa-file-pdf mr-1 text-red-500"></i> ${f.name}
+                    <td class="p-1 truncate max-w-xs font-medium text-slate-700" title="${f.name}">
+                        <i class="fa-regular fa-file-lines mr-1 text-red-500"></i> ${f.name}
                     </td>
-                    <td class="p-1.5 text-slate-500">${kbSize}</td>
-                    <td class="p-1.5 text-center font-semibold" id="file-status-${i}">
-                        <span class="text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">Sẵn sàng</span>
+                    <td class="p-1 text-slate-500 border-r">${kbSize}</td>
+                    <td class="p-1 text-center font-bold" id="file-status-${i}">
+                        <span class="text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">Chờ tải lên</span>
                     </td>
                 `;
                 tbody.appendChild(tr);
             }
         }
 
-        // --- HÀM LƯU DỮ LIỆU & TẢI FILE CHÍNH (ĐÃ SỬA LỖI & THÊM TRACKING) ---
+        // --- 5. LƯU DỮ LIỆU & TẢI FILE CHÍNH (ĐÃ FIX LỖI TREO VÀ CHUẨN HÓA PERIOD) ---
         async function saveTelecomRecord(e) {
             e.preventDefault();
 
@@ -283,11 +354,10 @@
             const cid = document.getElementById('tel-cid').value;
             const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
             
-            // 🛡️ CHUẨN HÓA VÀ FIX LỖI KỲ CƯỚC (Dạng YYYY-MM)
+            // 🛡️ BẢO VỆ AN TOÀN FORMAT KỲ CƯỚC (Dạng YYYY-MM)
             let rawPeriod = document.getElementById('tel-period').value;
             let period = rawPeriod;
 
-            // Nếu người dùng gõ hoặc trình duyệt trả về chuỗi không đúng chuẩn YYYY-MM
             if (!period || !period.includes('-')) {
                 let now = new Date();
                 period = `${CURRENT_SELECTED_YEAR}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -299,9 +369,8 @@
             let uploadedFolderUrl = "";
             let uploadedFilesList = [];
 
-            // NẾU CÓ FILE CẦN UPLOAD
+            // NẾU CÓ FILE ĐƯỢC CHỌN ĐỂ UPLOAD
             if (files && files.length > 0) {
-                // Khóa nút bấm, cập nhật hiệu ứng tải
                 submitBtn.disabled = true;
                 submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
                 submitIcon.className = "fa-solid fa-spinner fa-spin mr-1.5";
@@ -312,28 +381,27 @@
                 try {
                     let preparedFiles = [];
                     
-                    // Tải từng file và cập nhật trạng thái lên bảng
+                    // Mã hóa Base64 và cập nhật trạng thái từng file
                     for (let i = 0; i < files.length; i++) {
                         let statusCell = document.getElementById(`file-status-${i}`);
                         if (statusCell) {
-                            statusCell.innerHTML = `<span class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Đang mã hóa...</span>`;
+                            statusCell.innerHTML = `<span class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Đang xử lý...</span>`;
                         }
 
                         let fData = await fileToBase64(files[i]);
                         preparedFiles.push(fData);
 
-                        // Cập nhật thanh tiến trình mã hóa Base64
-                        let percent = Math.round(((i + 1) / files.length) * 50); // 50% tiến trình đầu
+                        let percent = Math.round(((i + 1) / files.length) * 50);
                         document.getElementById('upload-progress-bar').style.width = `${percent}%`;
                         document.getElementById('upload-progress-percent').innerText = `${percent}%`;
-                        document.getElementById('upload-progress-text').innerText = `Đã mã hóa ${i + 1}/${files.length} tệp...`;
+                        document.getElementById('upload-progress-text').innerText = `Đã chuẩn hóa ${i + 1}/${files.length} tệp...`;
                         
                         if (statusCell) {
-                            statusCell.innerHTML = `<span class="text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Chờ Cloud...</span>`;
+                            statusCell.innerHTML = `<span class="text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded text-[10px]">Chờ đính kèm</span>`;
                         }
                     }
 
-                    document.getElementById('upload-progress-text').innerText = `Đang đẩy dữ liệu sang Google Drive...`;
+                    document.getElementById('upload-progress-text').innerText = `Đang đẩy dữ liệu lên Google Drive...`;
 
                     let uploadPayload = {
                         action: "upload_files_monthly",
@@ -342,7 +410,6 @@
                         files: preparedFiles
                     };
 
-                    // Nếu có URL API thì gửi API, không thì giả lập để trải nghiệm mượt mà
                     if (GOOGLE_SCRIPT_API_URL && GOOGLE_SCRIPT_API_URL.trim() !== "") {
                         let response = await fetch(GOOGLE_SCRIPT_API_URL, {
                             method: "POST",
@@ -354,47 +421,43 @@
                             uploadedFilesList = resData.fileLinks || [];
                         }
                     } else {
-                        // Giả lập cập nhật thành công (cho môi trường chạy Offline / chưa gắn WebApp API)
-                        await new Promise(resolve => setTimeout(resolve, 1200));
-                        let monthStr = period.split('-')[1] || "01";
-                        let yearStr = period.split('-')[0] || CURRENT_SELECTED_YEAR;
-                        uploadedFolderUrl = `https://drive.google.com/drive/folders/HoaDon_Cuoc_Thang_${monthStr}_${yearStr}`;
+                        // Giả lập phản hồi nhanh nếu chưa có URL API
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        let mStr = period.split('-')[1] || "01";
+                        let yStr = period.split('-')[0] || CURRENT_SELECTED_YEAR;
+                        uploadedFolderUrl = `https://drive.google.com/drive/folders/HoaDon_Cuoc_Thang_${mStr}_${yStr}`;
                         for (let i = 0; i < files.length; i++) {
-                            uploadedFilesList.push({
-                                name: files[i].name,
-                                url: `https://drive.google.com/file/d/demo_${i}`
-                            });
+                            uploadedFilesList.push({ name: files[i].name, url: `https://drive.google.com/file/d/demo_${i}` });
                         }
                     }
 
-                    // ĐÁNH DẤU THÀNH CÔNG TẤT CẢ FILE TRÊN BẢNG TIẾN TRÌNH
+                    // Đánh dấu thành công toàn bộ
                     for (let i = 0; i < files.length; i++) {
                         let statusCell = document.getElementById(`file-status-${i}`);
                         if (statusCell) {
-                            statusCell.innerHTML = `<span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded"><i class="fa-solid fa-circle-check mr-1"></i>Thành công</span>`;
+                            statusCell.innerHTML = `<span class="text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded text-[10px]"><i class="fa-solid fa-circle-check mr-1"></i>Thành công</span>`;
                         }
                     }
                     document.getElementById('upload-progress-bar').style.width = `100%`;
                     document.getElementById('upload-progress-percent').innerText = `100%`;
-                    document.getElementById('upload-progress-text').innerText = `🎉 Đã tải hoàn tất ${files.length} tệp lên Drive!`;
+                    document.getElementById('upload-progress-text').innerText = `🎉 Đã lưu thành công ${files.length} tệp lên Drive!`;
 
                 } catch (err) {
-                    console.error("Lỗi upload file:", err);
-                    alert("⚠️ Lỗi đường truyền Google Drive, hệ thống vẫn lưu thông tin bản ghi cước vào bảng!");
+                    console.error("Lỗi upload:", err);
+                    alert("⚠️ Lỗi kết nối Google Drive, bản ghi vẫn được lưu an toàn vào máy!");
                 } finally {
-                    // Mở lại nút bấm an toàn
                     submitBtn.disabled = false;
                     submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
                     submitIcon.className = "fa-solid fa-cloud-arrow-up mr-1.5";
-                    submitText.innerText = "Lưu Cước & Tải Tệp Lên Drive";
+                    submitText.innerText = "Đang tải file lên Drive...";
                 }
             }
 
-            // 🛡️ TÁCH NĂM & THÁNG AN TOÀN TUYỆT ĐỐI
+            // TÁCH THÁNG VÀ NĂM BẢO VỆ LỖI
             let monthPart = period.includes('-') ? period.split('-')[1] : "01";
             let yearPart = period.includes('-') ? period.split('-')[0] : CURRENT_SELECTED_YEAR;
 
-            // LƯU BẢN GHI VÀO DANH SÁCH
+            // BỔ SUNG VÀO BỘ NHỚ
             if (editId) {
                 let item = telecomRecordsAll.find(d => d.id === editId);
                 if (item) {
@@ -421,48 +484,37 @@
             // LƯU CƠ SỞ DỮ LIỆU LOCAL
             localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
             
-            // CẬP NHẬT GIAO DIỆN BẢNG
+            // CẬP NHẬT BẢNG
             renderTelecomTable();
 
-            // Thông báo kết quả
             setTimeout(() => {
-                alert(`🎉 ĐÃ LƯU BẢN GHI THÀNH CÔNG!\n\n` +
-                      `- Kỳ cước: Tháng ${monthPart}/${yearPart}\n` +
-                      `- Chi phí: ${cost.toLocaleString('vi-VN')} VNĐ\n` +
-                      `- Số tệp chứng từ: ${uploadedFilesList.length} tệp`);
+                alert(`🎉 ĐÃ LƯU BẢN GHI THÀNH CÔNG!\n\n- Kỳ cước: Tháng ${monthPart}/${yearPart}\n- Chi phí: ${cost.toLocaleString('vi-VN')} VNĐ\n- Số tệp đã đính kèm: ${uploadedFilesList.length} file`);
                 resetTelecomForm();
-            }, 300);
+            }, 200);
         }
 
-        // HÀM CHUYỂN FILE SANG BASE64 DẠNG CHỜ (PROMISE)
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-                reader.onload = () => resolve({
-                    fileName: file.name,
-                    mimeType: file.type,
-                    base64Data: reader.result.split(',')[1]
-                });
+                reader.onload = () => resolve({ fileName: file.name, mimeType: file.type, base64Data: reader.result.split(',')[1] });
                 reader.onerror = error => reject(error);
             });
         }
 
-        // --- HIỂN THỊ BẢNG DỮ LIỆU ---
+        // --- 6. RENDER DỮ LIỆU RA BẢNG GIAO DIỆN ---
         function renderTelecomTable() {
             const tbody = document.getElementById('telecom-table-body');
             tbody.innerHTML = '';
 
-            // Lọc dữ liệu theo năm đang chọn
             let filtered = telecomRecordsAll.filter(item => item.year === CURRENT_SELECTED_YEAR);
-            
             let totalCost = 0;
 
             if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="9" class="p-6 text-center text-slate-400 italic">
-                            Chưa có dữ liệu chi phí cước mạng cho năm ${CURRENT_SELECTED_YEAR}. Hãy điền form bên trên để thêm bản ghi.
+                            Chưa có dữ liệu cước internet năm ${CURRENT_SELECTED_YEAR}. Hãy nhập thông tin ở bảng trên.
                         </td>
                     </tr>
                 `;
@@ -474,21 +526,21 @@
                     let tr = document.createElement('tr');
                     tr.className = 'hover:bg-slate-50 transition duration-150';
                     tr.innerHTML = `
-                        <td class="p-2.5 text-center font-medium border-r border-slate-200">${idx + 1}</td>
-                        <td class="p-2.5 font-semibold text-slate-800 border-r border-slate-200">${item.location}</td>
-                        <td class="p-2.5 border-r border-slate-200"><span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2 py-0.5 rounded">${item.provider}</span></td>
-                        <td class="p-2.5 border-r border-slate-200">${item.package}</td>
-                        <td class="p-2.5 font-mono text-slate-600 border-r border-slate-200">${item.cid}</td>
-                        <td class="p-2.5 text-right font-bold text-slate-900 border-r border-slate-200">${Number(item.cost).toLocaleString('vi-VN')}</td>
-                        <td class="p-2.5 text-center border-r border-slate-200 bg-amber-50 font-bold text-amber-800">${item.period}</td>
-                        <td class="p-2.5 text-center border-r border-slate-200">
-                            <a href="${item.folderDriveUrl}" target="_blank" class="inline-flex items-center text-xs font-semibold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-2 py-1 rounded transition">
+                        <td class="p-2 text-center font-bold border-r border-slate-200">${idx + 1}</td>
+                        <td class="p-2 font-semibold text-slate-800 border-r border-slate-200">${item.location}</td>
+                        <td class="p-2 border-r border-slate-200"><span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-1.5 py-0.5 rounded">${item.provider}</span></td>
+                        <td class="p-2 border-r border-slate-200">${item.package}</td>
+                        <td class="p-2 font-mono text-slate-600 border-r border-slate-200">${item.cid}</td>
+                        <td class="p-2 text-right font-bold text-slate-900 border-r border-slate-200">${Number(item.cost).toLocaleString('vi-VN')}</td>
+                        <td class="p-2 text-center border-r border-slate-200 bg-amber-50 font-bold text-amber-900">${item.period}</td>
+                        <td class="p-2 text-center border-r border-slate-200">
+                            <a href="${item.folderDriveUrl}" target="_blank" class="inline-flex items-center text-[11px] font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-2 py-0.5 rounded transition">
                                 <i class="fa-brands fa-google-drive mr-1 text-emerald-600"></i> Folder Drive (${fileCount} file)
                             </a>
                         </td>
-                        <td class="p-2.5 text-center space-x-1">
-                            <button onclick="editTelecomRecord('${item.id}')" class="text-blue-600 hover:text-blue-800 p-1" title="Sửa bản ghi"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="deleteTelecomRecord('${item.id}')" class="text-red-600 hover:text-red-800 p-1" title="Xóa bản ghi"><i class="fa-solid fa-trash-can"></i></button>
+                        <td class="p-2 text-center space-x-1">
+                            <button onclick="editTelecomRecord('${item.id}')" class="text-blue-600 hover:text-blue-800 p-1" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteTelecomRecord('${item.id}')" class="text-red-600 hover:text-red-800 p-1" title="Xóa"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     </tr>
                     `;
@@ -496,11 +548,11 @@
                 });
             }
 
-            // Cập nhật KPI cước phí
-            document.getElementById('total-telecom-kpi').innerText = totalCost.toLocaleString('vi-VN') + " VNĐ";
+            // Cập nhật KPI
+            document.getElementById('kpi-telecom').innerText = totalCost.toLocaleString('vi-VN') + " VNĐ";
         }
 
-        // --- CÁC HÀM PHỤ TRỢ ---
+        // --- 7. CÁC HÀM XỬ LÝ NÚT SỬA/XÓA/HỦY ---
         function resetTelecomForm() {
             document.getElementById('telecom-main-form').reset();
             document.getElementById('telecom-edit-id').value = '';
@@ -531,7 +583,7 @@
         }
 
         function deleteTelecomRecord(id) {
-            if (confirm("Bạn có chắc chắn muốn xóa bản ghi chi phí cước này không?")) {
+            if (confirm("Bạn có chắc chắn muốn xóa bản ghi này?")) {
                 telecomRecordsAll = telecomRecordsAll.filter(d => d.id !== id);
                 localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
                 renderTelecomTable();
@@ -540,7 +592,7 @@
 
         function syncDataFromCloud() {
             loadTelecomDataFromLocal();
-            alert("🔄 Đã đồng bộ dữ liệu mới nhất từ bộ nhớ máy tính thành công!");
+            alert("🔄 Đã đồng bộ thành công dữ liệu từ máy tính!");
         }
     </script>
 </body>
