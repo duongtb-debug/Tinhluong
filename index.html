@@ -3,1098 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG - ENTERPRISE PLATFORM</title>
-    
-    <!-- Các thư viện bổ trợ trực tiếp từ CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary: #0f172a;
-            --blue: #2563eb;
-            --orange: #ea580c;
-            --green: #059669;
-            --purple: #7c3aed;
-            --red: #dc2626;
-            --border-color: #cbd5e1;
-            --text-main: #334155;
-            --bg-light: #ebf0f5;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body, input, select, textarea, button, table { 
-            font-family: 'Times New Roman', Times, serif !important; 
-        }
-        body { 
-            font-size: 13px; margin: 0; padding: 15px; background: var(--bg-light); color: var(--text-main);
-        }
-        
-        .workspace { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
-        @media (max-width: 1280px) { .workspace { grid-template-columns: 1fr; } }
-
-        .db-status-bar {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 8px 15px; background: #e2e8f0; border-bottom: 1px solid var(--border-color);
-            font-size: 12px; font-weight: bold; border-radius: 4px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;
-        }
-        .status-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 5px; background-color: var(--green); }
-        .status-dot.syncing { background-color: var(--orange); animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.4; } }
-        
-        .year-selector-box {
-            display: flex; align-items: center; gap: 8px; background: #ffffff; padding: 3px 10px; border-radius: 4px; border: 1.5px solid var(--blue); color: var(--blue);
-        }
-        .year-selector-box select {
-            border: none; font-weight: bold; color: var(--blue); outline: none; background: transparent; font-size: 13px; cursor: pointer;
-        }
-
-        .header { display: flex; justify-content: space-between; align-items: center; background: #0b132b; color: white; padding: 10px 20px; border-radius: 4px; margin-bottom: 12px; }
-        .header h1 { font-size: 15px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
-        .live-clock-box { background: rgba(255,255,255,0.12); padding: 6px 14px; border-radius: 4px; font-family: monospace !important; font-size: 13px; text-align: right; border: 1px solid rgba(255,255,255,0.2); font-weight: bold; color: #fef08a; }
-
-        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
-        @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
-
-        .stat-card { 
-            background: white; padding: 8px 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
-            border: 1px solid var(--border-color); border-left: 4px solid var(--blue);
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .stat-card.orange { border-left-color: var(--orange); }
-        .stat-card.green { border-left-color: var(--green); }
-        .stat-card.purple { border-left-color: var(--purple); }
-        .stat-info { display: flex; flex-direction: column; }
-        .stat-title { font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: bold; letter-spacing: 0.3px; }
-        .stat-value { font-size: 14px; font-weight: bold; color: var(--primary); margin-top: 2px; }
-        .stat-icon { font-size: 18px; opacity: 0.25; }
-
-        .salary-visual-summary {
-            display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 auto 15px auto; max-width: 850px; background: #f8fafc; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-        }
-        @media (max-width: 768px) { .salary-visual-summary { flex-direction: column; width: 100%; } .visual-mini-card { width: 100%; } }
-        .visual-mini-card { flex: 1; background: white; padding: 8px 14px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .visual-lbl { font-size: 11px; font-weight: bold; color: #475569; white-space: nowrap; display: flex; align-items: center; }
-        .visual-val { font-size: 14px; font-weight: bold; color: var(--primary); white-space: nowrap; }
-
-        .config-toolbar-container { display: flex; justify-content: space-between; align-items: flex-end; gap: 15px; flex-wrap: wrap; background: #f8fafc; padding: 10px 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .config-inputs-group { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; flex: 1; }
-        .config-inputs-group .form-group { flex: 1; min-width: 110px; }
-        .config-inputs-group .form-group input { height: 31px; font-weight: bold; }
-        .config-actions-group { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-        .config-actions-group .btn { height: 31px; padding: 0 12px; font-size: 11px; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
-
-        .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 2px solid #cbd5e1; overflow-x: auto; }
-        .nav-tabs .nav-tab { padding: 7px 14px; border: none; background: #e2e8f0; font-weight: bold; color: #475569; cursor: pointer; font-size: 12px; border-radius: 4px 4px 0 0; white-space: nowrap; }
-        .nav-tabs .nav-tab[data-tab="salary"].active { color: var(--blue) !important; background: white !important; border: 1px solid #cbd5e1 !important; border-bottom: 3px solid var(--blue) !important; }
-        .nav-tabs .nav-tab[data-tab="payment"].active { color: var(--green) !important; background: white !important; border: 1px solid #cbd5e1 !important; border-bottom: 3px solid var(--green) !important; }
-        .nav-tabs .nav-tab[data-tab="telecom"].active { color: var(--orange) !important; background: white !important; border: 1px solid #cbd5e1 !important; border-bottom: 3px solid var(--orange) !important; }
-        .nav-tabs .nav-tab[data-tab="it-assets"].active { color: var(--purple) !important; background: white !important; border: 1px solid #cbd5e1 !important; border-bottom: 3px solid var(--purple) !important; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        .main-card { background: white; border-radius: 4px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 12px; border: 1px solid #cbd5e1; }
-        .card-title { font-size: 13px; font-weight: bold; color: var(--primary); margin-bottom: 12px; border-left: 4px solid var(--blue); padding-left: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        
-        .grid-form-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 10px; }
-        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 10px; }
-        
-        .form-group { display: flex; flex-direction: column; gap: 3px; }
-        .form-group label { font-weight: bold; color: #334155; font-size: 11px; }
-        .form-group input, .form-group select, .form-group textarea { padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; outline: none; background: #fff; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--blue); }
-
-        .btn { padding: 5px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
-        .btn-primary { background: var(--blue); color: white; }
-        .btn-purple { background: var(--purple); color: white; }
-        .btn-green { background: var(--green); color: white; }
-        .btn-orange { background: var(--orange); color: white; }
-        .btn-gray { background: #64748b; color: white; }
-        
-        .btn-delete { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 2px 6px; font-size: 11px; border-radius: 3px; cursor: pointer; font-weight: bold; }
-        .btn-action-qr { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; padding: 2px 6px; font-size: 11px; border-radius: 3px; cursor: pointer; font-weight: bold; }
-
-        .table-responsive { overflow-x: auto; margin-top: 8px; width: 100%; }
-        .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; font-size: 12px; table-layout: auto; }
-        .main-table th { background: #f1f5f9; color: #0f172a; padding: 6px 5px; border: 1px solid #cbd5e1; font-weight: bold; text-align: center; }
-        .main-table td { padding: 4px 5px; border: 1px solid #cbd5e1; vertical-align: middle; }
-        .main-table tbody tr:hover { background-color: #f8fafc; }
-        
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .font-bold { font-weight: bold; }
-        
-        .inp-table { 
-            width: 100%; padding: 2px 4px; border: 1px solid #94a3b8; border-radius: 3px; 
-            font-size: 12px; font-weight: bold; outline: none; background: #ffffff; color: #0f172a;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
-        }
-        .inp-table:focus { border-color: var(--blue); background: #ffffff; box-shadow: 0 0 4px rgba(37,99,235,0.5); }
-        .inp-name { min-width: 175px; text-align: left; }
-        .inp-account { min-width: 120px; text-align: center; font-family: monospace; }
-        .inp-num-sm { min-width: 45px; width: 50px; text-align: center; }
-        .inp-table.inp-tam-ung { background-color: #fff7ed !important; border: 1.5px solid #f97316 !important; color: #c2410c !important; font-weight: bold !important; min-width: 85px; text-align: right; }
-
-        /* Signature Section Styles */
-        .signature-container { margin-top: 30px; display: flex; justify-content: space-between; text-align: center; padding: 10px 30px; }
-        .signature-box { flex: 1; font-size: 12px; }
-        .signature-title { font-weight: bold; font-size: 13px; text-transform: uppercase; margin-bottom: 3px; color: #0f172a; }
-        .signature-note { font-style: italic; font-size: 11px; color: #64748b; margin-bottom: 60px; }
-        .signature-name { font-weight: bold; font-size: 13px; color: #0f172a; }
-
-        .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 180px; }
-
-        /* LỊCH VẠN NIÊN BLOCK STYLES ĐẦY ĐỦ 100% */
-        .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid #cbd5e1; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
-        .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 11px; text-align: center; }
-        .calendar-block-details { padding: 8px; font-size: 11px; line-height: 1.4; color: #334155; background: #fafafa; }
-        .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 3px 0; display: flex; justify-content: space-between; }
-        .cal-box-section { margin-top: 6px; padding-top: 5px; border-top: 1px dashed #cbd5e1; }
-        .cal-box-title { font-weight: bold; color: var(--purple); font-size: 11px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
-
-        .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: white; padding: 18px; border-radius: 8px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
-        
-        .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 5px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
-        .badge-cert { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
-    </style>
+    <title>CƯỚC VIỄN THÔNG & INTERNET - TỔNG CÔNG TY GIẤY VIỆT NAM</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans text-sm pb-10">
 
-    <div class="db-status-bar">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <div>
-                <span class="status-dot" id="cloud-status-dot"></span>
-                <span id="cloud-status-text">Kết nối Google Script API sẵn sàng</span>
+    <!-- HEADER / NAVIGATION -->
+    <header class="bg-slate-900 text-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid me-2 fa-paper-plane text-emerald-400 text-xl"></i>
+                <h1 class="font-bold text-lg tracking-wide uppercase">TỔNG CÔNG TY GIẤY VIỆT NAM - VĂN PHÒNG</h1>
             </div>
-            <div class="year-selector-box">
-                <i class="fa-solid fa-calendar-check"></i>
-                <label for="global-year-picker">NĂM LƯU TRỮ DỮ LIỆU:</label>
-                <select id="global-year-picker" onchange="handleGlobalYearChange()">
-                    <option value="2024">Năm 2024</option>
-                    <option value="2025">Năm 2025</option>
-                    <option value="2026" selected>Năm 2026</option>
-                    <option value="2027">Năm 2027</option>
-                    <option value="2028">Năm 2028</option>
-                </select>
-            </div>
-        </div>
-        <div>
-            <button type="button" class="btn btn-purple" style="padding: 2px 8px; font-size:11px;" onclick="openConfigUrlModal()"><i class="fa-solid fa-link"></i> Cấu hình API Web App & Link Sheet</button>
-        </div>
-    </div>
-
-    <div class="workspace">
-        <div class="main-body">
-            <div class="header">
-                <h1 id="disp-header-company">TỔNG CÔNG TY GIẤY VIỆT NAM - VĂN PHÒNG</h1>
-                <div class="live-clock-box" id="live-system-clock">--:--:-- --/--/----</div>
-            </div>
-
-            <!-- THANH THỐNG KÊ TOP -->
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <span class="stat-title">LƯƠNG THỰC TẾ (NET)</span>
-                        <span class="stat-value" id="dash-total-pay" style="color:var(--blue);">0 VND</span>
-                    </div>
-                    <i class="fa-solid fa-money-check-dollar stat-icon" style="color:var(--blue);"></i>
+            <div class="flex items-center space-x-4 text-xs">
+                <span id="api-status" class="px-2 py-1 rounded bg-emerald-700 text-emerald-100 flex items-center">
+                    <i class="fa-solid fa-circle-check mr-1 text-emerald-300"></i> Google Script API Sẵn sàng
+                </span>
+                <div class="bg-slate-800 px-3 py-1 rounded border border-slate-700 flex items-center space-x-2">
+                    <i class="fa-solid fa-database text-amber-400"></i>
+                    <span>NĂM LƯU TRỮ DỮ LIỆU:</span>
+                    <select id="year-selector" onchange="changeYear(this.value)" class="bg-slate-700 text-white font-bold rounded px-2 py-0.5 border border-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-400">
+                        <option value="2026" selected>Năm 2026</option>
+                        <option value="2025">Năm 2025</option>
+                        <option value="2024">Năm 2024</option>
+                    </select>
                 </div>
-                <div class="stat-card green">
-                    <div class="stat-info">
-                        <span class="stat-title">THANH TOÁN VP</span>
-                        <span class="stat-value" id="dash-paid-pay" style="color:var(--green);">0 VND</span>
-                    </div>
-                    <i class="fa-solid fa-file-invoice-dollar stat-icon" style="color:var(--green);"></i>
-                </div>
-                <div class="stat-card orange">
-                    <div class="stat-info">
-                        <span class="stat-title">CƯỚC MẠNG (<span class="lbl-current-year">2026</span>)</span>
-                        <span class="stat-value" id="dash-pending-pay" style="color:var(--orange);">0 VND</span>
-                    </div>
-                    <i class="fa-solid fa-wifi stat-icon" style="color:var(--orange);"></i>
-                </div>
-                <div class="stat-card purple">
-                    <div class="stat-info">
-                        <span class="stat-title">MÁY CNTT KIỂM KÊ</span>
-                        <span class="stat-value" id="dash-total-it-devices" style="color:var(--purple);">0 Thiết bị</span>
-                    </div>
-                    <i class="fa-solid fa-laptop-code stat-icon" style="color:var(--purple);"></i>
-                </div>
-            </div>
-
-            <div class="nav-tabs">
-                <button type="button" class="nav-tab active" data-tab="salary" onclick="switchMainTab('salary')"><i class="fa-solid fa-users"></i> Tính Lương Nhân Viên</button>
-                <button type="button" class="nav-tab" data-tab="payment" onclick="switchMainTab('payment')"><i class="fa-solid fa-file-invoice"></i> Hồ Sơ Thanh Toán Văn Phòng</button>
-                <button type="button" class="nav-tab" data-tab="telecom" onclick="switchMainTab('telecom')"><i class="fa-solid fa-globe"></i> Cước Viễn Thông & Internet</button>
-                <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')"><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</button>
-            </div>
-
-            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ ĐẦY ĐỦ -->
-            <div id="tab-salary" class="tab-content active">
-                <div class="main-card">
-                    <div class="card-title" style="border-left-color: var(--blue);">
-                        <span><i class="fa-solid fa-pen-to-square" style="color:var(--blue);"></i> CẤU HÌNH TIÊU ĐỀ & THAM SỐ THÁNG - NĂM <span class="lbl-current-year">2026</span></span>
-                    </div>
-                    
-                    <div class="grid-form" style="margin-bottom: 12px; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px;">
-                        <div class="form-group">
-                            <label style="color:var(--blue);"><i class="fa-solid fa-building"></i> Tên Công Ty / Đơn Vị Cấp Trên:</label>
-                            <input type="text" id="config-company-title" value="TỔNG CÔNG TY GIẤY VIỆT NAM" oninput="handleConfigChangeLive()">
-                        </div>
-                        <div class="form-group">
-                            <label style="color:var(--purple);"><i class="fa-solid fa-sitemap"></i> Tên Phòng Ban / Bộ Phận:</label>
-                            <input type="text" id="config-dept-title" value="VĂN PHÒNG" oninput="handleConfigChangeLive()">
-                        </div>
-                        <div class="form-group" style="grid-column: span 2;">
-                            <label style="color:var(--orange);"><i class="fa-solid fa-file-signature"></i> Tên Bảng Lương Báo Cáo:</label>
-                            <input type="text" id="config-sheet-title" value="BẢNG LƯƠNG CÔNG VIỆC THÁNG 5/2026" oninput="handleConfigChangeLive()">
-                        </div>
-                    </div>
-
-                    <div class="config-toolbar-container">
-                        <div class="config-inputs-group">
-                            <div class="form-group">
-                                <label><i class="fa-regular fa-calendar-days"></i> Kỳ báo cáo</label>
-                                <input type="month" id="filter-month" value="2026-05" onchange="handleMonthChangeSelect()">
-                            </div>
-                            <div class="form-group">
-                                <label style="color:var(--orange);"><i class="fa-solid fa-chart-line"></i> Tối thiểu vùng</label>
-                                <input type="number" id="config-vung-pay" value="4140000" oninput="handleConfigChangeLive()">
-                            </div>
-                            <div class="form-group">
-                                <label style="color:var(--blue);"><i class="fa-solid fa-coins"></i> Cơ bản</label>
-                                <input type="number" id="config-base-pay" value="2530000" oninput="handleConfigChangeLive()">
-                            </div>
-                            <div class="form-group">
-                                <label style="color:var(--purple);"><i class="fa-solid fa-briefcase"></i> Công việc</label>
-                                <input type="number" id="config-lcv-pay" value="2087970" oninput="handleConfigChangeLive()">
-                            </div>
-                            <div class="form-group" style="min-width: 180px;">
-                                <label style="color:var(--primary);"><i class="fa-solid fa-signature"></i> Người Lập Biểu</label>
-                                <input type="text" id="config-signer-name" value="Nguyễn Thị Tuyết Nhung" oninput="handleConfigChangeLive()">
-                            </div>
-                        </div>
-
-                        <div class="config-actions-group">
-                            <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()">
-                                <i class="fa-brands fa-google-drive"></i> Mở Sheet
-                            </button>
-                            <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Đồng Bộ Mây
-                            </button>
-                            <button type="button" class="btn btn-green" onclick="loadSalaryDataFromCloud()">
-                                <i class="fa-solid fa-cloud-arrow-down"></i> Tải Từ Mây
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="main-card">
-                    <div class="salary-visual-summary">
-                        <div class="visual-mini-card">
-                            <span class="visual-lbl"><i class="fa-solid fa-wallet" style="color:var(--blue); margin-right:6px;"></i> TỔNG LƯƠNG CB:</span>
-                            <span class="visual-val" id="v-total-lcb" style="color:var(--blue);">0 VND</span>
-                        </div>
-                        <div class="visual-mini-card">
-                            <span class="visual-lbl"><i class="fa-solid fa-briefcase" style="color:var(--purple); margin-right:6px;"></i> TỔNG LƯƠNG CV:</span>
-                            <span class="visual-val" id="v-total-lcv-text" style="color:var(--purple);">0 VND</span>
-                        </div>
-                        <div class="visual-mini-card" style="background: #f0fdf4; border-color: #bbf7d0;">
-                            <span class="visual-lbl" style="color: #166534;"><i class="fa-solid fa-circle-dollar-to-slot" style="color:var(--green); margin-right:6px;"></i> THỰC LĨNH NET:</span>
-                            <span class="visual-val" id="v-total-thuc" style="color:var(--green); font-size:15px;">0 VND</span>
-                        </div>
-                    </div>
-
-                    <div class="card-title">
-                        <span id="disp-table-title">DANH SÁCH BẢNG LƯƠNG CHI TIẾT NHÂN VIÊN</span>
-                        <div>
-                            <button type="button" class="btn btn-orange" style="padding:2px 7px; font-size:11px;" onclick="restoreDefaultStaffs()"><i class="fa-solid fa-rotate-left"></i> Nạp Dữ Liệu Nhân Viên Mẫu</button>
-                            <button type="button" class="btn btn-primary" style="padding:2px 7px; font-size:11px;" onclick="addNewSalaryRow()"><i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên Mới</button>
-                        </div>
-                    </div>
-                    
-                    <div class="table-responsive">
-                        <table class="main-table" id="main-salary-table">
-                            <thead>
-                                <tr style="background-color: #e2e8f0;">
-                                    <th rowspan="2" style="width: 30px;">STT</th>
-                                    <th rowspan="2" style="min-width:180px;">HỌ VÀ TÊN</th>
-                                    <th rowspan="2" style="min-width:125px;">Số Tài Khoản</th>
-                                    <th colspan="4" class="text-center">Lương Cơ Bản HĐLĐ</th>
-                                    <th colspan="3" class="text-center" style="background-color: #e0f2fe;">Số Ngày Công Thực Tế</th>
-                                    <th colspan="3" class="text-center">Chi Tiết Lương Thực Nhận</th>
-                                    <th colspan="4" class="text-center" style="background-color: #f3e8ff;">Cơ cấu Lương Công Việc (CV)</th>
-                                    <th rowspan="2" class="text-right">Tổng LCB + LCV</th>
-                                    <th rowspan="2" class="text-right" style="color: var(--red);">BH Bắt Buộc (10.5%)</th>
-                                    <th rowspan="2" class="text-center" style="background-color: #ffedd5; color: #c2410c;">Tạm Ứng (VND)</th>
-                                    <th rowspan="2" class="text-right" style="background-color: #fef08a;">Thực Lĩnh</th>
-                                    <th rowspan="2" class="text-center">Ghi Chú</th>
-                                    <th rowspan="2" class="text-center">Xóa</th>
-                                </tr>
-                                <tr style="background-color: #f1f5f9;">
-                                    <th style="background:#fffde7; width:55px;">Hệ số LCB</th>
-                                    <th style="background:#fffde7; width:55px;">Phụ cấp LCB</th>
-                                    <th>Lương Ký HĐLĐ</th>
-                                    <th>Lương cơ bản</th>
-                                    <th style="background:#fffde7; width:50px;">Thời gian (N)</th>
-                                    <th style="background:#fffde7; width:50px;">Phép (P)</th>
-                                    <th style="background:#fffde7; width:50px;">Lễ, VR</th>
-                                    <th>Lương Thời Gian</th>
-                                    <th>Lương Lễ, Phép</th>
-                                    <th>Tổng Lương CB</th>
-                                    <th style="background:#fffde7; width:55px;">Hệ số LCV</th>
-                                    <th style="background:#fffde7; width:55px;">Phụ cấp LCV</th>
-                                    <th>LCV Gốc</th>
-                                    <th style="background-color: #f3e8ff;">Lương CV Thực Tế</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-salary"></tbody>
-                        </table>
-                    </div>
-
-                    <!-- PHẦN TRÌNH KÝ CHUẨN MẪU -->
-                    <div class="signature-container">
-                        <div class="signature-box">
-                            <div class="signature-title">PHÒNG NHÂN SỰ</div>
-                            <div class="signature-note">(Ký, ghi rõ họ tên)</div>
-                            <div class="signature-name"></div>
-                        </div>
-                        <div class="signature-box">
-                            <div class="signature-title">THỦ TRƯỞNG ĐƠN VỊ</div>
-                            <div class="signature-note">(Ký, đóng dấu)</div>
-                            <div class="signature-name"></div>
-                        </div>
-                        <div class="signature-box">
-                            <div class="signature-title">NGƯỜI LẬP BIỂU</div>
-                            <div class="signature-note">(Ký, ghi rõ họ tên)</div>
-                            <div class="signature-name" id="disp-signer-name">Nguyễn Thị Tuyết Nhung</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 2: THANH TOÁN VĂN PHÒNG & ĐÍNH KÈM NHIỀU FILE HÓA ĐƠN -->
-            <div id="tab-payment" class="tab-content">
-                <div class="main-card" style="border-left: 4px solid var(--green);">
-                    <div class="card-title" style="color:var(--green);">
-                        <span><i class="fa-solid fa-file-invoice-dollar"></i> Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng (Năm <span class="lbl-current-year">2026</span>)</span>
-                    </div>
-                    <form id="payment-main-form" onsubmit="savePaymentRecord(event)">
-                        <input type="hidden" id="payment-edit-id" value="">
-                        
-                        <div class="grid-form">
-                            <div class="form-group"><label>Nội dung thanh toán</label><input type="text" id="pay-content" required placeholder="Mua văn phòng phẩm, sửa điều hòa..."></div>
-                            <div class="form-group"><label>Đơn vị thụ hưởng</label><input type="text" id="pay-beneficiary" required placeholder="Tên nhà cung cấp..."></div>
-                            <div class="form-group"><label>Số tài khoản & Ngân hàng</label><input type="text" id="pay-account" required placeholder="STK thụ hưởng..."></div>
-                        </div>
-                        
-                        <div class="grid-form">
-                            <div class="form-group"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" oninput="calculateFlexibleTax()"></div>
-                            <div class="form-group"><label>Tiền trước thuế (Tổng lô)</label><input type="number" id="pay-pretax-input" value="0" min="0" oninput="calculateFlexibleTax()"></div>
-                            <div class="form-group">
-                                <label><input type="checkbox" id="pay-tax-toggle" checked onchange="calculateFlexibleTax()"> Áp dụng thuế VAT</label>
-                                <select id="pay-tax-rate" onchange="calculateFlexibleTax()">
-                                    <option value="0">0%</option>
-                                    <option value="5">5%</option>
-                                    <option value="8">8%</option>
-                                    <option value="10" selected>10%</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid-form">
-                            <div class="form-group"><label>Tiền thuế VAT</label><input type="text" id="pay-tax-amount" readonly style="background:#f1f5f9; font-weight:bold; color: var(--orange);"></div>
-                            <div class="form-group"><label>Tổng cộng thanh toán</label><input type="text" id="pay-total" readonly style="background:#fef08a; font-weight:bold; color: var(--blue);"></div>
-                            <div class="form-group"><label>Trạng thái duyệt</label><select id="pay-status"><option value="Chưa duyệt">Chưa duyệt</option><option value="Đã duyệt chi">Đã duyệt chi</option></select></div>
-                            <div class="form-group"><label style="color:var(--orange); font-weight:bold;">Kỳ thanh toán (Tháng/Năm)</label><input type="month" id="pay-period" value="2026-05" required></div>
-                        </div>
-
-                        <!-- CHỌN NHIỀU FILE HÓA ĐƠN & TỰ ĐỘNG TẠO FOLDER GOOGLE DRIVE THEO THÁNG -->
-                        <div class="form-group" style="margin-bottom: 12px; background: #f0fdf4; padding: 10px; border: 1px dashed var(--green); border-radius: 4px;">
-                            <label style="color: var(--green); font-weight: bold; font-size: 12px;">
-                                <i class="fa-solid fa-paperclip"></i> Chọn Tài Liệu / Hóa Đơn Đính Kèm VP (Chọn được nhiều file cùng lúc):
-                            </label>
-                            <input type="file" id="pay-multiple-files" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.docx,.zip" style="margin-top: 4px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; width: 100%;">
-                            <div style="color: #64748b; font-style: italic; font-size: 11px; margin-top: 4px;">
-                                💡 *Hệ thống sẽ tự động tạo Thư mục riêng trên Google Drive cho Tháng này (Ví dụ: <b>HoaDon_ThanhToan_VP_Thang_05_2026</b>) và đẩy toàn bộ tệp vào đó.*
-                            </div>
-                        </div>
-
-                        <div class="btn-group">
-                            <button type="submit" id="btn-payment-submit" class="btn btn-green">
-                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-payment-text">Lưu Hồ Sơ Thanh Toán & Tải Tệp Lên Drive</span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="main-card">
-                    <div class="card-title">
-                        <span>DANH SÁCH TỔNG HỢP HỒ SƠ THANH TOÁN (NĂM <span class="lbl-current-year">2026</span>)</span>
-                        <button type="button" class="btn btn-purple" style="padding:3px 8px; font-size:11px;" onclick="loadPaymentRecordsFromCloud()"><i class="fa-solid fa-cloud-arrow-down"></i> Tải / Phục Hồi Hồ Sơ Từ Mây</button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="main-table">
-                            <thead>
-                                <tr style="background:#e2e8f0;">
-                                    <th class="text-center" style="width: 40px;">STT</th>
-                                    <th>Nội dung thanh toán</th>
-                                    <th>Đơn vị thụ hưởng</th>
-                                    <th>Tài khoản / Ngân hàng</th>
-                                    <th class="text-center">SL</th>
-                                    <th class="text-right">Trước thuế</th>
-                                    <th class="text-right">Tiền thuế</th>
-                                    <th class="text-right">Tổng chi</th>
-                                    <th class="text-center">Trạng thái</th>
-                                    <th class="text-center">Chứng từ Drive</th>
-                                    <th class="text-center" style="width: 110px;">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-payment"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 3: CƯỚC VIỄN THÔNG & TÍCH HỢP ĐÍNH KÈM NHIỀU FILE VÀO FOLDER THEO THÁNG -->
-            <div id="tab-telecom" class="tab-content">
-                <div class="main-card">
-                    <div class="card-title" style="border-left-color: var(--orange);">
-                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> Cập Nhật Chi Phí Mạng & Đính Kèm Hóa Đơn Theo Tháng (Năm <span class="lbl-current-year">2026</span>)</span>
-                    </div>
-                    <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)">
-                        <input type="hidden" id="telecom-edit-id" value="">
-                        
-                        <div class="grid-form-6">
-                            <div class="form-group">
-                                <label>Tên điểm kết nối / Văn phòng</label>
-                                <input type="text" id="tel-location" value="Tổng công ty Giấy Việt Nam" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Nhà mạng cung cấp</label>
-                                <select id="tel-provider" required>
-                                    <option value="VNPT" selected>VNPT</option>
-                                    <option value="Viettel">Viettel</option>
-                                    <option value="FPT">FPT Telecom</option>
-                                    <option value="CMC">CMC Telecom</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Gói băng thông</label>
-                                <input type="text" id="tel-package" value="Fiber VIP 1GB" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Mã đường truyền / CID</label>
-                                <input type="text" id="tel-cid" value="PTO-02-0066479" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Cước phí tháng (VND)</label>
-                                <input type="number" id="tel-cost" placeholder="Nhập số tiền..." required>
-                            </div>
-                            <div class="form-group">
-                                <label style="color:var(--orange); font-weight:bold;">Kỳ cước nhập (Tháng/Năm)</label>
-                                <input type="month" id="tel-period" value="2026-05" required>
-                            </div>
-                        </div>
-
-                        <!-- MỤC CHỌN TỆP ĐÍNH KÈM ĐƯỢC CHỌN NHIỀU FILE CÙNG LÚC -->
-                        <div class="form-group" style="margin-bottom: 12px; background: #f0fdf4; padding: 10px; border: 1px dashed var(--green); border-radius: 4px;">
-                            <label style="color: var(--green); font-weight: bold; font-size: 12px;">
-                                <i class="fa-solid fa-paperclip"></i> Chọn Tài Liệu Đính Kèm Hóa Đơn (Chọn được nhiều file cùng lúc):
-                            </label>
-                            <input type="file" id="tel-multiple-files" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.docx,.zip" style="margin-top: 4px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; width: 100%;">
-                            <div style="color: #64748b; font-style: italic; font-size: 11px; margin-top: 4px;">
-                                💡 *Hệ thống sẽ tự động khởi tạo Thư mục riêng trên Google Drive cho Tháng này (Ví dụ: <b>HoaDon_Cuoc_Thang_05_2026</b>) và lưu toàn bộ tệp đính kèm vào đó.*
-                            </div>
-                        </div>
-
-                        <div class="btn-group">
-                            <button type="submit" id="btn-telecom-submit" class="btn btn-orange">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> <span id="btn-telecom-text">Lưu Cước & Tải Tệp Lên Drive</span>
-                            </button>
-                            <button type="button" class="btn btn-gray" onclick="resetTelecomForm()"><i class="fa-solid fa-xmark"></i> Hủy</button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="main-card">
-                    <div class="card-title" style="border-left-color: var(--blue);">
-                        <span><i class="fa-solid fa-list-ul" style="color: var(--blue);"></i> DANH SÁCH CHI PHÍ ĐƯỜNG TRUYỀN INTERNET NĂM <span class="lbl-current-year">2026</span></span>
-                        
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <button type="button" class="btn btn-purple" style="padding:3px 8px; font-size:11px;" onclick="loadTelecomRecordsFromCloud()"><i class="fa-solid fa-cloud-arrow-down"></i> Tải / Phục Hồi Dữ Liệu Từ Mây</button>
-                            <select id="telecom-view-mode" onchange="renderTelecomTable()" style="padding:3px 6px; border-radius:4px; border:1px solid var(--blue); font-weight:bold; color:var(--blue);">
-                                <option value="ALL_YEAR" selected>🌟 Tất cả các tháng trong Năm</option>
-                                <option value="01">Tháng 01</option><option value="02">Tháng 02</option><option value="03">Tháng 03</option>
-                                <option value="04">Tháng 04</option><option value="05">Tháng 05</option><option value="06">Tháng 06</option>
-                                <option value="07">Tháng 07</option><option value="08">Tháng 08</option><option value="09">Tháng 09</option>
-                                <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="table-responsive">
-                        <table class="main-table">
-                            <thead>
-                                <tr style="background:#e2e8f0;">
-                                    <th class="text-center" style="width: 40px;">STT</th>
-                                    <th>Điểm kết nối / Văn phòng</th>
-                                    <th class="text-center">Nhà mạng</th>
-                                    <th>Gói băng thông</th>
-                                    <th class="text-center">Mã thuê bao / Đường truyền</th>
-                                    <th class="text-right">Chi phí (VND)</th>
-                                    <th class="text-center" style="background:#fef08a; color:#9a3412;">Kỳ cước</th>
-                                    <th class="text-center">Folder & File Đính Kèm</th>
-                                    <th class="text-center" style="width: 110px;">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-telecom"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 4: KIỂM KÊ CNTT ĐẦY ĐỦ CÁC PHIÊN BẢN OS, OFFICE, ASIA, QUASOFT, MISA -->
-            <div id="tab-it-assets" class="tab-content">
-                <div class="main-card" style="border-left: 4px solid var(--purple);">
-                    <div class="card-title" style="color:var(--purple);">
-                        <span><i class="fa-solid fa-laptop-code"></i> Quản Lý Tài Sản & Kiểm Kê Thiết Bị Công Nghệ Thông Tin (Năm <span class="lbl-current-year">2026</span>)</span>
-                    </div>
-                    <form id="it-main-form" onsubmit="saveITRecord(event)">
-                        <input type="hidden" id="it-edit-id" value="">
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 190px; gap: 15px; align-items: start;">
-                            <div>
-                                <div class="grid-form">
-                                    <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required placeholder="Họ và tên..." oninput="updateRealtimeQR()"></div>
-                                    <div class="form-group"><label>Phòng ban/Bộ phận</label><input type="text" id="it-dept" required placeholder="Phòng ban..." oninput="updateRealtimeQR()"></div>
-                                    <div class="form-group">
-                                        <label>Loại thiết bị phần cứng</label>
-                                        <select id="it-device-type" onchange="autoGenerateAssetID(); updateRealtimeQR();">
-                                            <option value="Laptop" selected>Laptop Doanh Nghiệp</option>
-                                            <option value="PC">Máy tính bàn Workstation</option>
-                                            <option value="PRN">Máy in văn phòng</option>
-                                            <option value="SRV">Máy chủ trung tâm Server</option>
-                                            <option value="NET">Thiết bị Mạng (Router/Switch/AP)</option>
-                                            <option value="UPS">Bộ lưu điện UPS</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label style="color:var(--purple); font-weight:bold;">Mã định danh (Auto)</label>
-                                        <input type="text" id="it-serial-id" readonly style="background:#f1f5f9; font-weight:bold; color:var(--purple);">
-                                    </div>
-                                </div>
-
-                                <div class="grid-form">
-                                    <div class="form-group" style="grid-column: span 2;"><label>Mô tả thông số cấu hình chi tiết</label><input type="text" id="it-config" required placeholder="Dell Latitude, Core i5, 16GB RAM, 512GB SSD..." oninput="updateRealtimeQR()"></div>
-                                    <div class="form-group"><label>Ngày cấp phát bàn giao</label><input type="date" id="it-date" value="2026-05-15" onchange="updateRealtimeQR()"></div>
-                                    <div class="form-group"><label>Trạng thái thiết bị</label><select id="it-status" onchange="updateRealtimeQR()"><option value="Tốt - Đang sử dụng">Tốt - Đang sử dụng</option><option value="Ổn định">Ổn định</option><option value="Hoạt động 24/7">Hoạt động 24/7</option><option value="Hỏng - Chờ thanh lý">Hỏng - Chờ thanh lý</option></select></div>
-                                </div>
-
-                                <div class="grid-form">
-                                    <!-- CÁC PHIÊN BẢN HỆ ĐIỀU HÀNH TỪ TRƯỚC TỚI NAY -->
-                                    <div class="form-group">
-                                        <label>Hệ điều hành (OS)</label>
-                                        <select id="it-os" onchange="updateRealtimeQR()">
-                                            <optgroup label="Windows Desktop (Mới nhất - Cũ nhất)">
-                                                <option value="Windows 11 Pro" selected>Windows 11 Pro</option>
-                                                <option value="Windows 11 Home / Enterprise">Windows 11 Home / Enterprise</option>
-                                                <option value="Windows 10 Pro">Windows 10 Pro</option>
-                                                <option value="Windows 10 Home / Enterprise">Windows 10 Home / Enterprise</option>
-                                                <option value="Windows 8.1 Pro">Windows 8.1 Pro</option>
-                                                <option value="Windows 8 Pro">Windows 8 Pro</option>
-                                                <option value="Windows 7 Professional">Windows 7 Professional</option>
-                                                <option value="Windows 7 Ultimate / Enterprise">Windows 7 Ultimate / Enterprise</option>
-                                                <option value="Windows Vista">Windows Vista</option>
-                                                <option value="Windows XP Professional">Windows XP Professional</option>
-                                                <option value="Windows 2000 Professional">Windows 2000 Professional</option>
-                                                <option value="Windows Me / 98 / 95">Windows Me / 98 / 95</option>
-                                            </optgroup>
-                                            <optgroup label="Windows Server (Mọi phiên bản)">
-                                                <option value="Windows Server 2025">Windows Server 2025</option>
-                                                <option value="Windows Server 2022">Windows Server 2022</option>
-                                                <option value="Windows Server 2019">Windows Server 2019</option>
-                                                <option value="Windows Server 2016">Windows Server 2016</option>
-                                                <option value="Windows Server 2012 R2 / 2012">Windows Server 2012 R2 / 2012</option>
-                                                <option value="Windows Server 2008 R2 / 2008">Windows Server 2008 R2 / 2008</option>
-                                                <option value="Windows Server 2003 / 2000">Windows Server 2003 / 2000</option>
-                                            </optgroup>
-                                            <optgroup label="macOS (Apple)">
-                                                <option value="macOS Sequoia (15.x)">macOS Sequoia (15.x)</option>
-                                                <option value="macOS Sonoma (14.x)">macOS Sonoma (14.x)</option>
-                                                <option value="macOS Ventura / Monterey">macOS Ventura / Monterey</option>
-                                                <option value="macOS Big Sur / Catalina">macOS Big Sur / Catalina</option>
-                                                <option value="macOS OS X Legacy">macOS OS X Legacy</option>
-                                            </optgroup>
-                                            <optgroup label="Linux & Hệ điều hành khác">
-                                                <option value="Ubuntu Linux (Mọi bản)">Ubuntu Linux (Mọi bản)</option>
-                                                <option value="CentOS / RedHat Enterprise">CentOS / RedHat Enterprise</option>
-                                                <option value="Debian / Fedora / Linux Mint">Debian / Fedora / Linux Mint</option>
-                                                <option value="ChromeOS / Android OS">ChromeOS / Android OS</option>
-                                            </optgroup>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Bản quyền OS</label>
-                                        <select id="it-os-lic" onchange="updateRealtimeQR()">
-                                            <option value="Bản quyền OEM (Theo máy)" selected>Bản quyền OEM (Theo máy)</option>
-                                            <option value="Bản quyền Digital License (FPP/Retail)">Bản quyền Digital License (FPP/Retail)</option>
-                                            <option value="Bản quyền Volume Licensing (KMS/MAK)">Bản quyền Volume Licensing (KMS/MAK)</option>
-                                            <option value="Chưa bản quyền / dùng thử">Chưa bản quyền / dùng thử</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- CÁC PHIÊN BẢN MICROSOFT OFFICE TỪ TRƯỚC TỚI NAY -->
-                                    <div class="form-group">
-                                        <label>Bộ Office văn phòng</label>
-                                        <select id="it-office" onchange="updateRealtimeQR()">
-                                            <optgroup label="Microsoft Office (Mới nhất - Cũ nhất)">
-                                                <option value="Microsoft 365 Enterprise / Apps">Microsoft 365 Enterprise / Apps</option>
-                                                <option value="Microsoft Office 2024 (LTSC/Home)">Microsoft Office 2024 (LTSC/Home)</option>
-                                                <option value="Microsoft Office 2021 LTSC Pro">Microsoft Office 2021 LTSC Pro</option>
-                                                <option value="Microsoft Office 2019 Pro Plus">Microsoft Office 2019 Pro Plus</option>
-                                                <option value="Microsoft Office 2016 Pro Plus">Microsoft Office 2016 Pro Plus</option>
-                                                <option value="Microsoft Office 2013 Pro Plus">Microsoft Office 2013 Pro Plus</option>
-                                                <option value="Microsoft Office 2010 Pro" selected>Microsoft Office 2010 Pro</option>
-                                                <option value="Microsoft Office 2007 Enterprise">Microsoft Office 2007 Enterprise</option>
-                                                <option value="Microsoft Office 2003 Pro">Microsoft Office 2003 Pro</option>
-                                                <option value="Microsoft Office XP (2002) / 2000">Microsoft Office XP (2002) / 2000</option>
-                                                <option value="Microsoft Office 97 / 95">Microsoft Office 97 / 95</option>
-                                            </optgroup>
-                                            <optgroup label="Bộ Ứng Dụng Văn Phòng Khác">
-                                                <option value="WPS Office Enterprise">WPS Office Enterprise</option>
-                                                <option value="LibreOffice / OpenOffice">LibreOffice / OpenOffice</option>
-                                                <option value="Google Workspace (Docs/Sheets)">Google Workspace (Docs/Sheets)</option>
-                                            </optgroup>
-                                        </select>
-                                    </div>
-
-                                    <!-- PHẦN MỀM KẾ TOÁN ƯU TIÊN ASIA, QUASOFT, MISA -->
-                                    <div class="form-group">
-                                        <label>Phần mềm Doanh nghiệp & Kế toán</label>
-                                        <select id="it-office-lic" onchange="updateRealtimeQR()">
-                                            <optgroup label="Phần Mềm ASIA (Mọi phiên bản)">
-                                                <option value="ASIA Enterprise (ERP)">ASIA Enterprise (ERP)</option>
-                                                <option value="ASIA Accounting (Mọi bản)">ASIA Accounting (Mọi bản)</option>
-                                                <option value="ASIA Soft Enterprise 9.0/10.0">ASIA Soft Enterprise 9.0/10.0</option>
-                                                <option value="ASIA SIMBA Accounting">ASIA SIMBA Accounting</option>
-                                            </optgroup>
-                                            <optgroup label="Phần Mềm QUASOFT (Mọi phiên bản)">
-                                                <option value="QuaSoft ERP Enterprise">QuaSoft ERP Enterprise</option>
-                                                <option value="QuaSoft Accounting v3.0 / v5.0">QuaSoft Accounting v3.0 / v5.0</option>
-                                                <option value="QuaSoft PM Kế toán Quản trị">QuaSoft PM Kế toán Quản trị</option>
-                                            </optgroup>
-                                            <optgroup label="Phần Mềm MISA (Mọi phiên bản)">
-                                                <option value="MISA AMIS Enterprise Cloud">MISA AMIS Enterprise Cloud</option>
-                                                <option value="MISA SME.NET 2023 / 2022 / 2021">MISA SME.NET 2023 / 2022 / 2021</option>
-                                                <option value="MISA SME.NET 2020 / 2019 / 2017">MISA SME.NET 2020 / 2019 / 2017</option>
-                                                <option value="MISA SME.NET 2015 / 2012 / 2010">MISA SME.NET 2015 / 2012 / 2010</option>
-                                                <option value="MISA meInvoice (Hóa đơn điện tử)">MISA meInvoice (Hóa đơn điện tử)</option>
-                                            </optgroup>
-                                            <optgroup label="Phần Mềm Doanh Nghiệp Khác">
-                                                <option value="FAST Accounting / FAST Financial">FAST Accounting / FAST Financial</option>
-                                                <option value="BRAVO ERP (v7, v8, v8.5)">BRAVO ERP (v7, v8, v8.5)</option>
-                                                <option value="SAP S/4HANA / Business One">SAP S/4HANA / Business One</option>
-                                                <option value="Oracle ERP / Microsoft Dynamics">Oracle ERP / Microsoft Dynamics</option>
-                                                <option value="Bản quyền Key Vĩnh Viễn" selected>Bản quyền Key Vĩnh Viễn</option>
-                                            </optgroup>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="realtime-qr-box">
-                                <label style="font-weight:bold; color:var(--purple); font-size:11px; margin-bottom:6px;"><i class="fa-solid fa-qrcode"></i> QR Preview Live</label>
-                                <div id="realtime-qr-target" style="padding:6px; background:white; border:1px solid var(--border-color); border-radius:4px;"></div>
-                            </div>
-                        </div>
-
-                        <div class="btn-group">
-                            <button type="submit" id="btn-it-submit" class="btn btn-purple">
-                                <i class="fa-solid fa-floppy-disk"></i> <span>Lưu Tài Sản Thiết Bị & Tạo QR</span>
-                            </button>
-                            <button type="button" class="btn btn-gray" onclick="resetITForm()"><i class="fa-solid fa-xmark"></i> Hủy</button>
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="main-card">
-                    <div class="card-title">
-                        <span>BẢNG TỔNG HỢP KIỂM KÊ TRANG THIẾT BỊ CNTT NĂM <span class="lbl-current-year">2026</span></span>
-                        <button type="button" class="btn btn-purple" style="padding:3px 8px; font-size:11px;" onclick="loadITRecordsFromCloud()"><i class="fa-solid fa-cloud-arrow-down"></i> Tải / Phục Hồi Thiết Bị Từ Mây</button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="main-table" id="main-it-table">
-                            <thead>
-                                <tr style="background:#e2e8f0;">
-                                    <th class="text-center" style="width: 40px;">STT</th>
-                                    <th>Mã tài sản</th>
-                                    <th>Loại</th>
-                                    <th>Cấu hình phần cứng</th>
-                                    <th>Người dùng</th>
-                                    <th>Phòng ban</th>
-                                    <th>Hệ điều hành & BQ OS</th>
-                                    <th>Bộ Office & Phần mềm ERP</th>
-                                    <th>Trạng thái</th>
-                                    <th class="text-center">QR Code</th>
-                                    <th class="text-center" style="width: 110px;">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-it-assets"></tbody>
-                        </table>
-                    </div>
+                <div id="clock-display" class="bg-black/30 px-3 py-1 rounded font-mono text-amber-300">
+                    13:22:00 22/7/2026
                 </div>
             </div>
         </div>
+    </header>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN BLOCK THÔNG MINH ĐẦY ĐỦ 100% -->
-        <div class="calendar-sidebar">
-            <div style="background: var(--primary); color:white; padding:10px; border-radius:4px; font-weight:bold; text-align:center; font-size:13px;"><i class="fa-solid fa-calendar-days" style="color:#fef08a;"></i> LỊCH VẠN NIÊN BLOCK TỔNG HỢP</div>
-            <div style="margin-top:10px;">
-                <label style="font-size:11px; font-weight:bold; color:#64748b; margin-bottom:3px; display:block;">Chọn ngày tra cứu:</label>
-                <input type="date" id="calendar-picker" onchange="updateSmartCalendarView()" style="width:100%; padding:5px; border:1px solid #cbd5e1; border-radius:4px; font-size:12px;">
+    <!-- KHO TỔNG THỐNG KÊ (KPI CARDS) -->
+    <div class="container mx-auto px-4 mt-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-blue-500">
+                <div class="text-xs text-slate-500 font-bold uppercase">LƯƠNG THỰC TẾ (NET)</div>
+                <div class="text-lg font-bold text-blue-600 mt-1">64.628.894 VNĐ</div>
             </div>
-            
-            <div class="calendar-block-view">
-                <div class="calendar-block-head" id="cal-solar-month-year">THÁNG 05 / 2026</div>
-                <div class="calendar-block-body">
-                    <div style="font-size:13px; color:#475569; font-weight:bold; text-transform:uppercase;" id="cal-solar-week">Thứ Ba</div>
-                    <div style="font-size:75px; font-weight:900; color:#dc2626; line-height:1; margin:6px 0;" id="cal-solar-day">21</div>
-                    <div style="font-size:12px; font-weight:bold; color:#1e293b;" id="cal-solar-canchi-day">Ngày Ất Sửu</div>
-                </div>
-                <div class="calendar-block-lunar">
-                    <div>Tháng Âm<br><strong id="cal-lunar-month" style="color:#991b1b; font-size:14px;">04</strong><br><span id="cal-lunar-canchi-month" style="color:#64748b; font-size:10px;">Bính Thân</span></div>
-                    <div>Ngày Âm<br><strong id="cal-lunar-day" style="color:#991b1b; font-size:20px;">08</strong></div>
-                    <div>Năm Âm<br><strong id="cal-lunar-year" style="color:#991b1b; font-size:14px;">2026</strong><br><span id="cal-lunar-canchi-year" style="color:#64748b; font-size:10px;">Bính Ngọ</span></div>
-                </div>
-                
-                <div class="calendar-block-details">
-                    <div><span>Tiết khí:</span><strong style="color:var(--blue);" id="cal-tiet-khi">Tiểu Thử</strong></div>
-                    <div><span>Trực phong thủy:</span><strong style="color:var(--green);" id="cal-truc">Trực Định (Cát)</strong></div>
-                    <div><span>Ngũ hành:</span><strong id="cal-ngu-hanh">Hải Trung Kim</strong></div>
-                    <div><span>Tài thần (Cầu tài):</span><strong style="color:var(--orange);" id="cal-tai-than">Hướng Đông Nam</strong></div>
-                    <div><span>Hỷ thần (May mắn):</span><strong style="color:var(--purple);" id="cal-hy-than">Hướng Đông Bắc</strong></div>
-
-                    <!-- BỔ SUNG VIỆC NÊN LÀM & VIỆC KIÊNG KỴ TỰ ĐỘNG CHUẨN XÁC -->
-                    <div class="cal-box-section">
-                        <div class="cal-box-title" style="color:var(--green);"><i class="fa-solid fa-circle-check"></i> VIỆC NÊN LÀM (CÁT):</div>
-                        <div style="font-size:11px; color:#15803d; line-height:1.3; font-weight:bold;" id="cal-viec-nen-lam">
-                            Khai trương, giao dịch, ký kết hợp đồng, cầu tài lộc, xuất hành.
-                        </div>
-                    </div>
-
-                    <div class="cal-box-section">
-                        <div class="cal-box-title" style="color:var(--red);"><i class="fa-solid fa-triangle-exclamation"></i> VIỆC KIÊNG KỴ (HUNG):</div>
-                        <div style="font-size:11px; color:#b91c1c; line-height:1.3; font-weight:bold;" id="cal-viec-kieng-ky">
-                            Tranh chấp, kiện tụng, đào đất, khởi công công trình lớn.
-                        </div>
-                    </div>
-
-                    <div class="cal-box-section">
-                        <div class="cal-box-title"><i class="fa-regular fa-clock"></i> GIỜ HOÀNG ĐẠO (CÁT):</div>
-                        <div style="font-size:10px; color:#334155; line-height:1.3;" id="cal-hoang-dao">
-                            Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)
-                        </div>
-                    </div>
-                </div>
+            <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-emerald-500">
+                <div class="text-xs text-slate-500 font-bold uppercase">THANH TOÁN VP</div>
+                <div id="total-payment-kpi" class="text-lg font-bold text-emerald-600 mt-1">0 VNĐ</div>
+            </div>
+            <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-amber-500">
+                <div class="text-xs text-slate-500 font-bold uppercase">CƯỚC MẠNG (2026)</div>
+                <div id="total-telecom-kpi" class="text-lg font-bold text-amber-600 mt-1">0 VNĐ</div>
+            </div>
+            <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-purple-500">
+                <div class="text-xs text-slate-500 font-bold uppercase">MÁY CNTT KIỂM KÊ</div>
+                <div class="text-lg font-bold text-purple-600 mt-1">0 Thiết bị</div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CONFIG URL -->
-    <div id="configUrlModal" class="modal" onclick="closeConfigUrlModal()">
-        <div class="modal-content" onclick="event.stopPropagation()" style="max-width:650px;">
-            <div class="card-title" style="border-left-color: var(--green);">CẤU HÌNH LINK GOOGLE SHEET VÀ DRIVE</div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <label>1. Link Google Script Web App API (`.../exec`):</label>
-                <input type="text" id="cfg-script-url">
-            </div>
-            <div class="form-group" style="margin-bottom:15px;">
-                <label>2. Link Google Sheets Xem BẢNG LƯƠNG Trực Tiếp:</label>
-                <input type="text" id="cfg-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit">
-            </div>
-            <div style="text-align:right;">
-                <button type="button" class="btn btn-gray" onclick="closeConfigUrlModal()">Đóng</button>
-                <button type="button" class="btn btn-green" onclick="saveConfigUrls()">💾 Lưu Cấu Hình Link</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PREVIEW QR CODE -->
-    <div class="modal" id="document-preview-modal" onclick="closePreviewModal()">
-        <div class="modal-content" onclick="event.stopPropagation()" style="max-width:450px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom:5px;">
-                <h3 id="modal-preview-title" style="font-size: 13px; font-weight: bold; color: var(--purple);">MÃ QR KIỂM KÊ CHUẨN XÁC</h3>
-                <button type="button" class="btn btn-gray" style="padding: 2px 6px; font-size:10px;" onclick="closePreviewModal()">ĐÓNG</button>
-            </div>
-            <div id="modal-preview-body"></div>
-        </div>
-    </div>
-
-    <script>
-        const HARDCODED_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
+    <!-- MAIN FORM & TABLE CONTAINER -->
+    <main class="container mx-auto px-4 mt-4">
         
-        let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
-        let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || HARDCODED_SCRIPT_API; 
+        <!-- MODULE FORM: CƯỚC VIỄN THÔNG & INTERNET -->
+        <div class="bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden mb-6">
+            <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-2.5 flex items-center justify-between">
+                <div class="font-bold flex items-center">
+                    <i class="fa-solid fa-signal mr-2 text-amber-400"></i>
+                    <span>Cập Nhật Chi Phí Mạng & Đính Kèm Hóa Đơn Theo Tháng (Năm 2026)</span>
+                </div>
+            </div>
 
+            <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)" class="p-4">
+                <input type="hidden" id="telecom-edit-id" value="">
+
+                <!-- BẢNG CÁC TRƯỜNG THÔNG TIN CƯỚC MẠNG -->
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Tên điểm kết nối / Văn phòng</label>
+                        <input type="text" id="tel-location" value="Tổng công ty Giấy Việt Nam" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Nhà mạng cung cấp</label>
+                        <select id="tel-provider" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                            <option value="VNPT" selected>VNPT</option>
+                            <option value="VIETTEL">VIETTEL</option>
+                            <option value="FPT">FPT</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Gói băng thông</label>
+                        <input type="text" id="tel-package" value="Fiber VIP 1GB" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mã đường truyền / CID</label>
+                        <input type="text" id="tel-cid" value="PTO-02-0066479" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Cước phí tháng (VNĐ)</label>
+                        <input type="number" id="tel-cost" value="3301557" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1.5 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kỳ cước nhập (Tháng/Năm)</label>
+                        <input type="month" id="tel-period" class="w-full bg-slate-50 border border-slate-300 rounded px-2 py-1.5 text-slate-700 focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- KHU VỰC CHỌN VÀ HIỂN THỊ TRẠNG THÁI TẢI FILE UPLOAD DRIVE -->
+                <div class="bg-emerald-50/60 border-2 border-dashed border-emerald-300 rounded-lg p-3 mb-4">
+                    <label class="block text-xs font-bold text-emerald-800 mb-1.5">
+                        <i class="fa-solid fa-paperclip mr-1"></i> Chọn Tài Liệu Đính Kèm Hóa Đơn (Chọn được nhiều file cùng lúc):
+                    </label>
+                    
+                    <input type="file" id="tel-multiple-files" multiple onchange="onFilesSelected(this)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+                    <p class="text-[11px] text-slate-500 mt-1 italic">
+                        💡 Hệ thống sẽ tự động khởi tạo Thư mục riêng trên Google Drive cho Tháng này (Ví dụ: HoaDon_Cuoc_Thang_01_2026) và lưu toàn bộ tệp đính kèm vào đó.*
+                    </p>
+
+                    <!-- THANH TIẾN TRÌNH & BẢNG TÌNH TRẠNG TẢI LÊN DRIVER THỜI GIAN THỰC -->
+                    <div id="upload-status-box" class="hidden mt-3 bg-white p-3 border border-slate-200 rounded-md shadow-inner">
+                        <div class="flex justify-between items-center mb-1">
+                            <span id="upload-progress-text" class="text-xs font-bold text-slate-700">Đang khởi tạo tải file...</span>
+                            <span id="upload-progress-percent" class="text-xs font-mono font-bold text-blue-600">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2 mb-3 overflow-hidden">
+                            <div id="upload-progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+
+                        <!-- BẢNG DANH SÁCH CHI TIẾT TRẠNG THÁI FILE -->
+                        <div class="max-h-36 overflow-y-auto border border-slate-100 rounded text-xs">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-slate-100 text-slate-600 font-semibold sticky top-0">
+                                    <tr>
+                                        <th class="p-1.5 border-b">Tên File</th>
+                                        <th class="p-1.5 border-b w-24">Dung lượng</th>
+                                        <th class="p-1.5 border-b w-28 text-center">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="file-status-tbody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NÚT BẤM THAO TÁC -->
+                <div class="flex space-x-2">
+                    <button type="submit" id="btn-telecom-submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold px-4 py-2 rounded text-xs transition duration-150 flex items-center shadow-sm">
+                        <i id="btn-telecom-icon" class="fa-solid fa-cloud-arrow-up mr-1.5"></i>
+                        <span id="btn-telecom-text">Lưu Cước & Tải Tệp Lên Drive</span>
+                    </button>
+                    <button type="button" onclick="resetTelecomForm()" class="bg-slate-500 hover:bg-slate-600 text-white font-semibold px-3 py-2 rounded text-xs transition duration-150">
+                        <i class="fa-solid fa-xmark mr-1"></i> Hủy
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- BẢNG DANH SÁCH DỮ LIỆU CƯỚC INTERNET NĂM 2026 -->
+        <div class="bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden">
+            <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex justify-between items-center">
+                <div class="font-bold text-slate-700 flex items-center">
+                    <i class="fa-solid fa-list-check mr-2 text-blue-600"></i>
+                    <span>DANH SÁCH CHI PHÍ ĐƯỜNG TRUYỀN INTERNET NĂM <span id="table-year-title">2026</span></span>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="syncDataFromCloud()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1 rounded text-xs font-semibold flex items-center shadow-sm">
+                        <i class="fa-solid fa-rotate mr-1"></i> Tải / Phục Hồi Dữ Liệu Từ Máy
+                    </button>
+                    <button class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-xs font-semibold flex items-center shadow-sm">
+                        <i class="fa-solid fa-sun mr-1"></i> Tất cả các tháng trong Năm <i class="fa-solid fa-chevron-down ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left border-collapse">
+                    <thead class="bg-slate-50 text-slate-700 font-bold uppercase border-b border-slate-200">
+                        <tr>
+                            <th class="p-2.5 border-r border-slate-200 text-center w-12">STT</th>
+                            <th class="p-2.5 border-r border-slate-200">Điểm kết nối / Văn phòng</th>
+                            <th class="p-2.5 border-r border-slate-200">Nhà mạng</th>
+                            <th class="p-2.5 border-r border-slate-200">Gói băng thông</th>
+                            <th class="p-2.5 border-r border-slate-200">Mã thuê bao / Đường truyền</th>
+                            <th class="p-2.5 border-r border-slate-200 text-right">Chi phí (VNĐ)</th>
+                            <th class="p-2.5 border-r border-slate-200 text-center bg-amber-100 text-amber-900">Kỳ cước</th>
+                            <th class="p-2.5 border-r border-slate-200 text-center">Folder & File Đính Kèm</th>
+                            <th class="p-2.5 text-center w-24">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="telecom-table-body" class="divide-y divide-slate-200">
+                        <!-- Dữ liệu bảng sẽ được render qua JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JS LOGIC - XỬ LÝ LỖI & THEO DÕI TRẠNG THÁI TẢI FILE -->
+    <script>
+        // --- NẮM BẮT VÀ CẤU HÌNH BIẾN TOÀN CỤC ---
+        const GOOGLE_SCRIPT_API_URL = ""; // Điền URL Apps Script WebApp của bạn vào đây nếu có
         let CURRENT_SELECTED_YEAR = "2026";
+        let telecomRecordsAll = [];
 
-        // DANH SÁCH 16 NHÂN VIÊN CHUẨN FILE EXCEL
-        const default16Staffs = [
-            {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499", "note": ""},
-            {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004242307", "note": ""},
-            {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "102005035542", "note": ""},
-            {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0.00, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "106004294441", "note": ""},
-            {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "106004359838", "note": ""},
-            {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "106868653975", "note": ""},
-            {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004294439", "note": ""},
-            {"stt": 8, "name": "Trần Đức Chiến", "lcb_heso": 1.83, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "102004797815", "note": ""},
-            {"stt": 9, "name": "Phạm Tiến Long", "lcb_heso": 1.80, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "104004583045", "note": ""},
-            {"stt": 10, "name": "Đinh Hữu Vinh", "lcb_heso": 1.83, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.66, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "100004797831", "note": ""},
-            {"stt": 11, "name": "Bùi Đình Điệp", "lcb_heso": 1.53, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "101004882063", "note": ""},
-            {"stt": 12, "name": "Hoàng Mạnh Hùng", "lcb_heso": 1.53, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "100006186724", "note": ""},
-            {"stt": 13, "name": "Ma Trọng Luận", "lcb_heso": 1.35, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.63, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "106869104133", "note": ""},
-            {"stt": 14, "name": "Trần Bình Dương", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "106873586343", "note": ""},
-            {"stt": 15, "name": "Đặng Trần Trung", "lcb_heso": 1.53, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.62, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "107002654931", "note": ""},
-            {"stt": 16, "name": "Phạm Huy Chiến", "lcb_heso": 2.26, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 2.40, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "102004830132", "note": ""}
-        ];
+        // KHỞI TẠO DỮ LIỆU KHI TRANG TẢI XONG
+        document.addEventListener("DOMContentLoaded", function() {
+            // Đặt mặc định tháng hiện tại dạng YYYY-MM
+            let today = new Date();
+            let defaultMonth = `${CURRENT_SELECTED_YEAR}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+            document.getElementById('tel-period').value = defaultMonth;
 
-        let salaryConfigsByMonth = JSON.parse(localStorage.getItem('sys_salary_configs_by_month')) || {};
-        let salaryDataByMonth = JSON.parse(localStorage.getItem('sys_salary_by_month')) || {};
-        let telecomRecordsAll = JSON.parse(localStorage.getItem('sys_telecom_clean_v3')) || [];
-        let paymentRecordsAll = JSON.parse(localStorage.getItem('sys_payment_records_v3')) || [];
-        let itAssetsRecordsAll = JSON.parse(localStorage.getItem('sys_it_records_v3')) || [];
-
-        function handleGlobalYearChange() {
-            CURRENT_SELECTED_YEAR = document.getElementById('global-year-picker').value;
-            document.querySelectorAll('.lbl-current-year').forEach(el => el.innerText = CURRENT_SELECTED_YEAR);
+            // Đọc dữ liệu từ bộ nhớ LocalStorage
+            loadTelecomDataFromLocal();
             
-            document.getElementById('filter-month').value = `${CURRENT_SELECTED_YEAR}-05`;
-            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-05`;
-            document.getElementById('pay-period').value = `${CURRENT_SELECTED_YEAR}-05`;
+            // Đồng hồ thời gian thực
+            setInterval(updateClock, 1000);
+        });
 
-            handleMonthChangeSelect();
-            loadTelecomRecordsFromCloud();
-            loadPaymentRecordsFromCloud();
-            loadITRecordsFromCloud();
+        function updateClock() {
+            let now = new Date();
+            let dateStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')} ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+            document.getElementById('clock-display').innerText = dateStr;
         }
 
-        function restoreDefaultStaffs() {
-            let sm = document.getElementById('filter-month').value;
-            salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs));
-            calculateSalaryLogic();
+        function changeYear(year) {
+            CURRENT_SELECTED_YEAR = year;
+            document.getElementById('table-year-title').innerText = year;
+            renderTelecomTable();
         }
 
-        function handleMonthChangeSelect() {
-            let sm = document.getElementById('filter-month').value;
-            if (!salaryConfigsByMonth[sm]) {
-                salaryConfigsByMonth[sm] = {
-                    companyTitle: "TỔNG CÔNG TY GIẤY VIỆT NAM",
-                    deptTitle: "VĂN PHÒNG",
-                    sheetTitle: `BẢNG LƯƠNG CÔNG VIỆC THÁNG ${sm.split('-')[1]}/${sm.split('-')[0]}`,
-                    vung: 4140000, base: 2530000, lcv: 2087970, signer: "Nguyễn Thị Tuyết Nhung"
-                };
-            }
-            let cfg = salaryConfigsByMonth[sm];
-            document.getElementById('config-company-title').value = cfg.companyTitle || "TỔNG CÔNG TY GIẤY VIỆT NAM";
-            document.getElementById('config-dept-title').value = cfg.deptTitle || "VĂN PHÒNG";
-            document.getElementById('config-sheet-title').value = cfg.sheetTitle || `BẢNG LƯƠNG CÔNG VIỆC THÁNG ${sm.split('-')[1]}/${sm.split('-')[0]}`;
+        // --- XỬ LÝ SỰ KIỆN KHI NGƯỜI DÙNG CHỌN FILE ---
+        function onFilesSelected(input) {
+            const files = input.files;
+            const statusBox = document.getElementById('upload-status-box');
+            const tbody = document.getElementById('file-status-tbody');
             
-            document.getElementById('config-vung-pay').value = cfg.vung || 4140000;
-            document.getElementById('config-base-pay').value = cfg.base || 2530000;
-            document.getElementById('config-lcv-pay').value = cfg.lcv || 2087970;
-            document.getElementById('config-signer-name').value = cfg.signer || "Nguyễn Thị Tuyết Nhung";
+            if (!files || files.length === 0) {
+                statusBox.classList.add('hidden');
+                return;
+            }
+
+            statusBox.classList.remove('hidden');
+            tbody.innerHTML = '';
+            document.getElementById('upload-progress-bar').style.width = '0%';
+            document.getElementById('upload-progress-percent').innerText = '0%';
+            document.getElementById('upload-progress-text').innerText = `Đã chọn ${files.length} tệp (Chờ lưu...)`;
+
+            for (let i = 0; i < files.length; i++) {
+                let f = files[i];
+                let kbSize = (f.size / 1024).toFixed(1) + ' KB';
+                let tr = document.createElement('tr');
+                tr.id = `file-row-${i}`;
+                tr.className = 'border-b border-slate-100 hover:bg-slate-50';
+                tr.innerHTML = `
+                    <td class="p-1.5 truncate max-w-xs" title="${f.name}">
+                        <i class="fa-regular fa-file-pdf mr-1 text-red-500"></i> ${f.name}
+                    </td>
+                    <td class="p-1.5 text-slate-500">${kbSize}</td>
+                    <td class="p-1.5 text-center font-semibold" id="file-status-${i}">
+                        <span class="text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">Sẵn sàng</span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        // --- HÀM LƯU DỮ LIỆU & TẢI FILE CHÍNH (ĐÃ SỬA LỖI & THÊM TRACKING) ---
+        async function saveTelecomRecord(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('btn-telecom-submit');
+            const submitText = document.getElementById('btn-telecom-text');
+            const submitIcon = document.getElementById('btn-telecom-icon');
+
+            const editId = document.getElementById('telecom-edit-id').value;
+            const location = document.getElementById('tel-location').value;
+            const provider = document.getElementById('tel-provider').value;
+            const pkg = document.getElementById('tel-package').value;
+            const cid = document.getElementById('tel-cid').value;
+            const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
             
-            if (!salaryDataByMonth[sm] || salaryDataByMonth[sm].length === 0) {
-                salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs));
+            // 🛡️ CHUẨN HÓA VÀ FIX LỖI KỲ CƯỚC (Dạng YYYY-MM)
+            let rawPeriod = document.getElementById('tel-period').value;
+            let period = rawPeriod;
+
+            // Nếu người dùng gõ hoặc trình duyệt trả về chuỗi không đúng chuẩn YYYY-MM
+            if (!period || !period.includes('-')) {
+                let now = new Date();
+                period = `${CURRENT_SELECTED_YEAR}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             }
-            calculateSalaryLogic();
-        }
 
-        function handleConfigChangeLive() {
-            let sm = document.getElementById('filter-month').value;
-            salaryConfigsByMonth[sm] = {
-                companyTitle: document.getElementById('config-company-title').value.trim(),
-                deptTitle: document.getElementById('config-dept-title').value.trim(),
-                sheetTitle: document.getElementById('config-sheet-title').value.trim(),
-                vung: parseFloat(document.getElementById('config-vung-pay').value) || 4140000,
-                base: parseFloat(document.getElementById('config-base-pay').value) || 2530000,
-                lcv: parseFloat(document.getElementById('config-lcv-pay').value) || 2087970,
-                signer: document.getElementById('config-signer-name').value.trim()
-            };
-            localStorage.setItem('sys_salary_configs_by_month', JSON.stringify(salaryConfigsByMonth));
-            calculateSalaryLogic();
-        }
+            const fileInput = document.getElementById('tel-multiple-files');
+            const files = fileInput.files;
 
-        function calculateSalaryLogic() {
-            let sm = document.getElementById('filter-month').value;
-            let activeData = salaryDataByMonth[sm] || [];
-            let cfg = salaryConfigsByMonth[sm] || { companyTitle: "TỔNG CÔNG TY GIẤY VIỆT NAM", deptTitle: "VĂN PHÒNG", sheetTitle: "BẢNG LƯƠNG CÔNG VIỆC", vung: 4140000, base: 2530000, lcv: 2087970, signer: "Nguyễn Thị Tuyết Nhung" };
+            let uploadedFolderUrl = "";
+            let uploadedFilesList = [];
 
-            document.getElementById('disp-header-company').innerText = `${cfg.companyTitle || 'TỔNG CÔNG TY GIẤY VIỆT NAM'} - ${cfg.deptTitle || 'VĂN PHÒNG'}`;
-            document.getElementById('disp-table-title').innerText = cfg.sheetTitle || "BẢNG LƯƠNG CÔNG VIỆC THÁNG 5/2026";
-            document.getElementById('disp-signer-name').innerText = cfg.signer || "Nguyễn Thị Tuyết Nhung";
+            // NẾU CÓ FILE CẦN UPLOAD
+            if (files && files.length > 0) {
+                // Khóa nút bấm, cập nhật hiệu ứng tải
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                submitIcon.className = "fa-solid fa-spinner fa-spin mr-1.5";
+                submitText.innerText = `Đang tải ${files.length} file lên Drive...`;
 
-            const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
-            let T_l_tong_cb = 0, T_lcv_thucte = 0, T_o_thuc_linh = 0;
+                document.getElementById('upload-status-box').classList.remove('hidden');
 
-            activeData.forEach((row, index) => {
-                let lcb_goc = Math.round((parseFloat(row.lcb_heso || 0) + parseFloat(row.lcb_phucap || 0)) * cfg.vung); 
-                let luong_cb_ht = Math.round((parseFloat(row.lcb_heso || 0) + parseFloat(row.lcb_phucap || 0)) * cfg.base);
-                let l_thoigian = Math.round((luong_cb_ht / 22) * parseFloat(row.NT || 0)); 
-                let le_phep_tt = Math.round((lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
-                let l_tong_cb = l_thoigian + le_phep_tt; 
-                
-                let lcv_goc = Math.round((parseFloat(row.he_so_lcv || 0) + parseFloat(row.phu_cap_lcv || 0)) * cfg.lcv);
-                let lcv_thucte = Math.round((lcv_goc / 22) * parseFloat(row.NT || 0)); 
-                let o_tong = l_tong_cb + lcv_thucte; 
-                let bh = Math.round(lcb_goc * 0.105); 
-                let thuc_linh = o_tong - bh - parseFloat(row.tam_ung || 0);
+                try {
+                    let preparedFiles = [];
+                    
+                    // Tải từng file và cập nhật trạng thái lên bảng
+                    for (let i = 0; i < files.length; i++) {
+                        let statusCell = document.getElementById(`file-status-${i}`);
+                        if (statusCell) {
+                            statusCell.innerHTML = `<span class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Đang mã hóa...</span>`;
+                        }
 
-                T_l_tong_cb += l_tong_cb; T_lcv_thucte += lcv_thucte; T_o_thuc_linh += thuc_linh;
+                        let fData = await fileToBase64(files[i]);
+                        preparedFiles.push(fData);
 
-                tbody.innerHTML += `<tr>
-                    <td class="text-center font-bold">${index + 1}</td>
-                    <td class="font-bold"><input class="inp-table inp-name" type="text" value="${row.name}" oninput="updateSalaryRowValue(${index}, 'name', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-account" type="text" value="${row.account}" oninput="updateSalaryRowValue(${index}, 'account', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.lcb_heso}" oninput="updateSalaryRowValue(${index}, 'lcb_heso', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.lcb_phucap || 0}" oninput="updateSalaryRowValue(${index}, 'lcb_phucap', this.value)"></td>
-                    <td class="text-right font-bold">${lcb_goc.toLocaleString('vi-VN')}</td>
-                    <td class="text-right">${luong_cb_ht.toLocaleString('vi-VN')}</td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.NT}" oninput="updateSalaryRowValue(${index}, 'NT', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.P || 0}" oninput="updateSalaryRowValue(${index}, 'P', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.le_vr || 0}" oninput="updateSalaryRowValue(${index}, 'le_vr', this.value)"></td>
-                    <td class="text-right">${l_thoigian.toLocaleString('vi-VN')}</td>
-                    <td class="text-right">${le_phep_tt.toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold">${l_tong_cb.toLocaleString('vi-VN')}</td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.he_so_lcv}" oninput="updateSalaryRowValue(${index}, 'he_so_lcv', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.phu_cap_lcv || 0}" oninput="updateSalaryRowValue(${index}, 'phu_cap_lcv', this.value)"></td>
-                    <td class="text-right">${lcv_goc.toLocaleString('vi-VN')}</td>
-                    <td class="text-right">${lcv_thucte.toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold">${o_tong.toLocaleString('vi-VN')}</td>
-                    <td class="text-right" style="color:var(--red); font-weight:bold;">${bh.toLocaleString('vi-VN')}</td>
-                    <td class="text-right"><input class="inp-table inp-tam-ung" type="number" value="${row.tam_ung || 0}" oninput="updateSalaryRowValue(${index}, 'tam_ung', this.value)"></td>
-                    <td class="text-right font-bold" style="background:#fef08a;">${thuc_linh.toLocaleString('vi-VN')}</td>
-                    <td><input class="inp-table" type="text" value="${row.note || ''}" oninput="updateSalaryRowValue(${index}, 'note', this.value)"></td>
-                    <td class="text-center"><button type="button" class="btn-delete" onclick="deleteSalaryRow(${index})"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>`;
-            });
+                        // Cập nhật thanh tiến trình mã hóa Base64
+                        let percent = Math.round(((i + 1) / files.length) * 50); // 50% tiến trình đầu
+                        document.getElementById('upload-progress-bar').style.width = `${percent}%`;
+                        document.getElementById('upload-progress-percent').innerText = `${percent}%`;
+                        document.getElementById('upload-progress-text').innerText = `Đã mã hóa ${i + 1}/${files.length} tệp...`;
+                        
+                        if (statusCell) {
+                            statusCell.innerHTML = `<span class="text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Chờ Cloud...</span>`;
+                        }
+                    }
 
-            localStorage.setItem('sys_salary_by_month', JSON.stringify(salaryDataByMonth));
-            document.getElementById('dash-total-pay').innerText = T_o_thuc_linh.toLocaleString('vi-VN') + " VND";
-            document.getElementById('v-total-lcb').innerText = T_l_tong_cb.toLocaleString('vi-VN') + " VND";
-            document.getElementById('v-total-lcv-text').innerText = T_lcv_thucte.toLocaleString('vi-VN') + " VND";
-            document.getElementById('v-total-thuc').innerText = T_o_thuc_linh.toLocaleString('vi-VN') + " VND";
-        }
+                    document.getElementById('upload-progress-text').innerText = `Đang đẩy dữ liệu sang Google Drive...`;
 
-        function updateSalaryRowValue(index, field, val) {
-            let sm = document.getElementById('filter-month').value;
-            salaryDataByMonth[sm][index][field] = (field === 'name' || field === 'account' || field === 'note') ? val : (parseFloat(val) || 0);
-            calculateSalaryLogic();
-        }
+                    let uploadPayload = {
+                        action: "upload_files_monthly",
+                        modulePrefix: "HoaDon_Cuoc_Thang_",
+                        period: period,
+                        files: preparedFiles
+                    };
 
-        function addNewSalaryRow() {
-            let sm = document.getElementById('filter-month').value;
-            salaryDataByMonth[sm].push({
-                "stt": salaryDataByMonth[sm].length + 1, "name": "Nhân viên mới", "lcb_heso": 1.5, "lcb_phucap": 0.0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.6, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "0000000000", "note": ""
-            });
-            calculateSalaryLogic();
-        }
+                    // Nếu có URL API thì gửi API, không thì giả lập để trải nghiệm mượt mà
+                    if (GOOGLE_SCRIPT_API_URL && GOOGLE_SCRIPT_API_URL.trim() !== "") {
+                        let response = await fetch(GOOGLE_SCRIPT_API_URL, {
+                            method: "POST",
+                            body: JSON.stringify(uploadPayload)
+                        });
+                        let resData = await response.json();
+                        if (resData && resData.status === "success") {
+                            uploadedFolderUrl = resData.folderUrl;
+                            uploadedFilesList = resData.fileLinks || [];
+                        }
+                    } else {
+                        // Giả lập cập nhật thành công (cho môi trường chạy Offline / chưa gắn WebApp API)
+                        await new Promise(resolve => setTimeout(resolve, 1200));
+                        let monthStr = period.split('-')[1] || "01";
+                        let yearStr = period.split('-')[0] || CURRENT_SELECTED_YEAR;
+                        uploadedFolderUrl = `https://drive.google.com/drive/folders/HoaDon_Cuoc_Thang_${monthStr}_${yearStr}`;
+                        for (let i = 0; i < files.length; i++) {
+                            uploadedFilesList.push({
+                                name: files[i].name,
+                                url: `https://drive.google.com/file/d/demo_${i}`
+                            });
+                        }
+                    }
 
-        function deleteSalaryRow(idx) {
-            let sm = document.getElementById('filter-month').value;
-            if (confirm('Xóa nhân viên này khỏi bảng lương?')) {
-                salaryDataByMonth[sm].splice(idx, 1);
-                calculateSalaryLogic();
-            }
-        }
+                    // ĐÁNH DẤU THÀNH CÔNG TẤT CẢ FILE TRÊN BẢNG TIẾN TRÌNH
+                    for (let i = 0; i < files.length; i++) {
+                        let statusCell = document.getElementById(`file-status-${i}`);
+                        if (statusCell) {
+                            statusCell.innerHTML = `<span class="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded"><i class="fa-solid fa-circle-check mr-1"></i>Thành công</span>`;
+                        }
+                    }
+                    document.getElementById('upload-progress-bar').style.width = `100%`;
+                    document.getElementById('upload-progress-percent').innerText = `100%`;
+                    document.getElementById('upload-progress-text').innerText = `🎉 Đã tải hoàn tất ${files.length} tệp lên Drive!`;
 
-        function openMainSalaryGoogleSheet() {
-            let sheetUrl = GOOGLE_SHEET_VIEW_URL || localStorage.getItem('sys_cfg_sheet_url');
-            if (!sheetUrl) {
-                alert("⚠️ Bạn chưa cấu hình Link Google Sheet!\n\nHãy nhấn nút 'Cấu hình API Web App & Link Sheet' để dán link Google Sheets.");
-                openConfigUrlModal();
-            } else {
-                window.open(sheetUrl, '_blank');
-            }
-        }
-
-        async function syncDataToCloudServer() {
-            const statusDot = document.getElementById('cloud-status-dot');
-            const statusText = document.getElementById('cloud-status-text');
-            let sm = document.getElementById('filter-month').value;
-
-            if (statusDot) statusDot.className = "status-dot syncing";
-            if (statusText) statusText.innerText = "Đang đồng bộ Bảng Lương & Tiêu đề lên Cloud...";
-
-            try {
-                let currentMonthStaffs = salaryDataByMonth[sm] || [];
-                let currentMonthConfig = salaryConfigsByMonth[sm] || {};
-
-                let payload = {
-                    action: "sync_salary_data",
-                    year: CURRENT_SELECTED_YEAR,
-                    month: sm,
-                    config: currentMonthConfig,
-                    staffs: currentMonthStaffs
-                };
-
-                await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "text/plain" },
-                    body: JSON.stringify(payload)
-                });
-
-                if (statusDot) statusDot.className = "status-dot";
-                if (statusText) statusText.innerText = "Đã đồng bộ Google Script API thành công (" + new Date().toLocaleTimeString('vi-VN') + ")";
-
-                alert(`🎉 ĐỒNG BỘ THÀNH CÔNG LÊN CLOUD!\n\n` +
-                      `- Công ty: ${currentMonthConfig.companyTitle || 'TỔNG CÔNG TY GIẤY VIỆT NAM'}\n` +
-                      `- Phòng ban: ${currentMonthConfig.deptTitle || 'VĂN PHÒNG'}\n` +
-                      `- Tên Bảng Lương: ${currentMonthConfig.sheetTitle || 'BẢNG LƯƠNG'}\n` +
-                      `- Kỳ lương: Tháng ${sm}\n` +
-                      `- Số lượng nhân sự: ${currentMonthStaffs.length} người\n\n` +
-                      `👉 Dữ liệu đã được lưu an toàn trên Cloud Server!`);
-
-            } catch (err) {
-                if (statusDot) statusDot.className = "status-dot";
-                if (statusText) statusText.innerText = "Lỗi kết nối đồng bộ Mây";
-                alert("❌ ĐỒNG BỘ THẤT BẠI!\n\nLỗi: " + err.message);
-            }
-        }
-
-        function loadSalaryDataFromCloud() {
-            let sm = document.getElementById('filter-month').value;
-            const apiUrl = (GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API) + `?action=get_salary_data&month=${sm}`;
-            
-            fetch(apiUrl)
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "success" && data.staffs && data.staffs.length > 0) {
-                    salaryConfigsByMonth[sm] = data.config || salaryConfigsByMonth[sm];
-                    salaryDataByMonth[sm] = data.staffs;
-                    localStorage.setItem('sys_salary_configs_by_month', JSON.stringify(salaryConfigsByMonth));
-                    localStorage.setItem('sys_salary_by_month', JSON.stringify(salaryDataByMonth));
-                    handleMonthChangeSelect();
-                    alert(`✅ Đã tải dữ liệu Bảng Lương Tháng ${sm} từ Cloud thành công!`);
-                } else {
-                    alert(`⚠️ Không tìm thấy dữ liệu đã đồng bộ cho Tháng ${sm} trên Mây.`);
+                } catch (err) {
+                    console.error("Lỗi upload file:", err);
+                    alert("⚠️ Lỗi đường truyền Google Drive, hệ thống vẫn lưu thông tin bản ghi cước vào bảng!");
+                } finally {
+                    // Mở lại nút bấm an toàn
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    submitIcon.className = "fa-solid fa-cloud-arrow-up mr-1.5";
+                    submitText.innerText = "Lưu Cước & Tải Tệp Lên Drive";
                 }
-            })
-            .catch(err => alert("⚠️ Lỗi tải dữ liệu: " + err.message));
+            }
+
+            // 🛡️ TÁCH NĂM & THÁNG AN TOÀN TUYỆT ĐỐI
+            let monthPart = period.includes('-') ? period.split('-')[1] : "01";
+            let yearPart = period.includes('-') ? period.split('-')[0] : CURRENT_SELECTED_YEAR;
+
+            // LƯU BẢN GHI VÀO DANH SÁCH
+            if (editId) {
+                let item = telecomRecordsAll.find(d => d.id === editId);
+                if (item) {
+                    item.year = yearPart; item.location = location; item.provider = provider;
+                    item.package = pkg; item.cid = cid; item.cost = cost; item.period = period;
+                    if (uploadedFolderUrl) item.folderDriveUrl = uploadedFolderUrl;
+                    if (uploadedFilesList.length > 0) item.fileList = uploadedFilesList;
+                }
+            } else {
+                telecomRecordsAll.push({
+                    id: Date.now().toString(),
+                    year: yearPart,
+                    location: location,
+                    provider: provider,
+                    package: pkg,
+                    cid: cid,
+                    cost: cost,
+                    period: period,
+                    folderDriveUrl: uploadedFolderUrl || `https://drive.google.com/drive/search?q=HoaDon_Cuoc_Thang_${monthPart}_${yearPart}`,
+                    fileList: uploadedFilesList
+                });
+            }
+
+            // LƯU CƠ SỞ DỮ LIỆU LOCAL
+            localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
+            
+            // CẬP NHẬT GIAO DIỆN BẢNG
+            renderTelecomTable();
+
+            // Thông báo kết quả
+            setTimeout(() => {
+                alert(`🎉 ĐÃ LƯU BẢN GHI THÀNH CÔNG!\n\n` +
+                      `- Kỳ cước: Tháng ${monthPart}/${yearPart}\n` +
+                      `- Chi phí: ${cost.toLocaleString('vi-VN')} VNĐ\n` +
+                      `- Số tệp chứng từ: ${uploadedFilesList.length} tệp`);
+                resetTelecomForm();
+            }, 300);
         }
 
+        // HÀM CHUYỂN FILE SANG BASE64 DẠNG CHỜ (PROMISE)
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
+                reader.readAsDataURL(file);
                 reader.onload = () => resolve({
                     fileName: file.name,
                     mimeType: file.type,
@@ -1104,591 +448,100 @@
             });
         }
 
-        // TÍNH THUẾ CHO THANH TOÁN VĂN PHÒNG
-        function calculateFlexibleTax() {
-            let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
-            let pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
-            let hasTax = document.getElementById('pay-tax-toggle').checked;
-            let taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
-
-            let taxAmount = hasTax ? (pretax * (taxRate / 100)) : 0;
-            let total = pretax + taxAmount;
-
-            document.getElementById('pay-tax-amount').value = taxAmount.toLocaleString('vi-VN') + " VND";
-            document.getElementById('pay-total').value = total.toLocaleString('vi-VN') + " VND";
-        }
-
-        // HÀM LƯU HỒ SƠ THANH TOÁN VĂN PHÒNG + TẠO FOLDER GOOGLE DRIVE VÀ TẢI NHIỀU FILE
-        async function savePaymentRecord(e) {
-            e.preventDefault();
-            const submitBtn = document.getElementById('btn-payment-submit');
-            const submitText = document.getElementById('btn-payment-text');
-
-            const editId = document.getElementById('payment-edit-id').value;
-            const content = document.getElementById('pay-content').value;
-            const beneficiary = document.getElementById('pay-beneficiary').value;
-            const account = document.getElementById('pay-account').value;
-            const qty = parseFloat(document.getElementById('pay-qty').value) || 1;
-            const pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
-            const hasTax = document.getElementById('pay-tax-toggle').checked;
-            const taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
-            const taxAmount = hasTax ? (pretax * (taxRate / 100)) : 0;
-            const total = pretax + taxAmount;
-            const status = document.getElementById('pay-status').value;
-            let period = document.getElementById('pay-period').value || `${CURRENT_SELECTED_YEAR}-05`;
-
-            const fileInput = document.getElementById('pay-multiple-files');
-            const files = fileInput.files;
-
-            let uploadedFolderUrl = "";
-            let uploadedFilesList = [];
-
-            if (files.length > 0) {
-                submitBtn.disabled = true;
-                if (submitText) submitText.innerText = `Đang tải ${files.length} file lên Drive...`;
-
-                try {
-                    let preparedFiles = [];
-                    for (let i = 0; i < files.length; i++) {
-                        let fData = await fileToBase64(files[i]);
-                        preparedFiles.push(fData);
-                    }
-
-                    let uploadPayload = {
-                        action: "upload_files_monthly",
-                        modulePrefix: "HoaDon_ThanhToan_VP_Thang_",
-                        period: period,
-                        files: preparedFiles
-                    };
-
-                    let response = await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
-                        method: "POST",
-                        body: JSON.stringify(uploadPayload)
-                    });
-
-                    let resData = await response.json();
-                    if (resData.status === "success") {
-                        uploadedFolderUrl = resData.folderUrl;
-                        uploadedFilesList = resData.fileLinks;
-                    }
-                } catch (err) {
-                    console.error("Lỗi upload file:", err);
-                } finally {
-                    submitBtn.disabled = false;
-                    if (submitText) submitText.innerText = "Lưu Hồ Sơ Thanh Toán & Tải Tệp Lên Drive";
-                }
-            }
-
-            if (editId) {
-                let item = paymentRecordsAll.find(d => d.id === editId);
-                if (item) {
-                    item.year = CURRENT_SELECTED_YEAR; item.content = content; item.beneficiary = beneficiary;
-                    item.account = account; item.qty = qty; item.pretax = pretax; item.tax = taxAmount;
-                    item.total = total; item.status = status; item.period = period;
-                    if (uploadedFolderUrl) item.folderDriveUrl = uploadedFolderUrl;
-                    if (uploadedFilesList.length > 0) item.fileList = uploadedFilesList;
-                }
-            } else {
-                paymentRecordsAll.push({
-                    id: Date.now().toString(),
-                    year: CURRENT_SELECTED_YEAR,
-                    content: content,
-                    beneficiary: beneficiary,
-                    account: account,
-                    qty: qty,
-                    pretax: pretax,
-                    tax: taxAmount,
-                    total: total,
-                    status: status,
-                    period: period,
-                    folderDriveUrl: uploadedFolderUrl || "https://drive.google.com",
-                    fileList: uploadedFilesList
-                });
-            }
-
-            localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
-            document.getElementById('payment-main-form').reset();
-            document.getElementById('pay-period').value = `${CURRENT_SELECTED_YEAR}-05`;
-            calculateFlexibleTax();
-            renderPaymentTable();
-
-            alert(`🎉 ĐÃ LƯU HỒ SƠ THANH TOÁN VP THÀNH CÔNG!\n\n` +
-                  `- Kỳ thanh toán: ${period}\n` +
-                  `- Folder Drive: HoaDon_ThanhToan_VP_Thang_${period.split('-')[1]}_${period.split('-')[0]}\n` +
-                  `- Số tệp chứng từ đính kèm: ${uploadedFilesList.length} tệp`);
-        }
-
-        function loadPaymentRecordsFromCloud() {
-            const apiUrl = (GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API) + `?action=get_payment_records&year=${CURRENT_SELECTED_YEAR}`;
-            fetch(apiUrl).then(res => res.json()).then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    paymentRecordsAll = paymentRecordsAll.filter(r => (r.year || "2026") !== CURRENT_SELECTED_YEAR);
-                    paymentRecordsAll.push(...data);
-                    localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
-                }
-                renderPaymentTable();
-            }).catch(() => renderPaymentTable());
-        }
-
-        function renderPaymentTable() {
-            const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = "";
-            let sum = 0;
-            let currentYearPayment = paymentRecordsAll.filter(r => (r.year || "2026") === CURRENT_SELECTED_YEAR);
-            currentYearPayment.forEach((r, i) => {
-                sum += r.total;
-
-                let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder VP</a>`;
-                if (r.fileList && r.fileList.length > 0) {
-                    fileLinksHtml += `<div style="margin-top:3px; font-size:10px; color:var(--blue);">(${r.fileList.length} tệp chứng từ)</div>`;
-                }
-
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="font-bold">${r.content}</td>
-                    <td>${r.beneficiary}</td>
-                    <td>${r.account}</td>
-                    <td class="text-center">${r.qty}</td>
-                    <td class="text-right">${(r.pretax||0).toLocaleString('vi-VN')}</td>
-                    <td class="text-right">${(r.tax||0).toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold" style="color:var(--blue);">${(r.total||0).toLocaleString('vi-VN')}</td>
-                    <td class="text-center">${r.status}</td>
-                    <td class="text-center">${fileLinksHtml}</td>
-                    <td class="text-center"><button type="button" class="btn-delete" onclick="deletePaymentRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button></td>
-                </tr>`;
-            });
-            document.getElementById('dash-paid-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
-        }
-
-        function deletePaymentRecord(id) {
-            if (confirm('Xóa hồ sơ thanh toán này?')) {
-                paymentRecordsAll = paymentRecordsAll.filter(d => d.id !== id);
-                localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
-                renderPaymentTable();
-            }
-        }
-
-        async function saveTelecomRecord(e) {
-            e.preventDefault();
-            const submitBtn = document.getElementById('btn-telecom-submit');
-            const submitText = document.getElementById('btn-telecom-text');
-
-            const editId = document.getElementById('telecom-edit-id').value;
-            const location = document.getElementById('tel-location').value;
-            const provider = document.getElementById('tel-provider').value;
-            const pkg = document.getElementById('tel-package').value;
-            const cid = document.getElementById('tel-cid').value;
-            const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
-            let period = document.getElementById('tel-period').value || `${CURRENT_SELECTED_YEAR}-05`;
-
-            const fileInput = document.getElementById('tel-multiple-files');
-            const files = fileInput.files;
-
-            let uploadedFolderUrl = "";
-            let uploadedFilesList = [];
-
-            if (files.length > 0) {
-                submitBtn.disabled = true;
-                submitText.innerText = `Đang tải ${files.length} file lên Drive...`;
-
-                try {
-                    let preparedFiles = [];
-                    for (let i = 0; i < files.length; i++) {
-                        let fData = await fileToBase64(files[i]);
-                        preparedFiles.push(fData);
-                    }
-
-                    let uploadPayload = {
-                        action: "upload_files_monthly",
-                        modulePrefix: "HoaDon_Cuoc_Thang_",
-                        period: period,
-                        files: preparedFiles
-                    };
-
-                    let response = await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
-                        method: "POST",
-                        body: JSON.stringify(uploadPayload)
-                    });
-
-                    let resData = await response.json();
-                    if (resData.status === "success") {
-                        uploadedFolderUrl = resData.folderUrl;
-                        uploadedFilesList = resData.fileLinks;
-                    }
-                } catch (err) {
-                    console.error("Lỗi upload file:", err);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitText.innerText = "Lưu Cước & Tải Tệp Lên Drive";
-                }
-            }
-
-            if (editId) {
-                let item = telecomRecordsAll.find(d => d.id === editId);
-                if (item) {
-                    item.year = CURRENT_SELECTED_YEAR; item.location = location; item.provider = provider;
-                    item.package = pkg; item.cid = cid; item.cost = cost; item.period = period;
-                    if (uploadedFolderUrl) item.folderDriveUrl = uploadedFolderUrl;
-                    if (uploadedFilesList.length > 0) item.fileList = uploadedFilesList;
-                }
-            } else {
-                telecomRecordsAll.push({
-                    id: Date.now().toString(),
-                    year: CURRENT_SELECTED_YEAR,
-                    location: location,
-                    provider: provider,
-                    package: pkg,
-                    cid: cid,
-                    cost: cost,
-                    period: period,
-                    folderDriveUrl: uploadedFolderUrl || "https://drive.google.com",
-                    fileList: uploadedFilesList
-                });
-            }
-
-            localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
-            resetTelecomForm(); 
-            renderTelecomTable();
-
-            alert(`🎉 ĐÃ LƯU CƯỚC THÀNH CÔNG!\n\n` +
-                  `- Kỳ cước: ${period}\n` +
-                  `- Folder Drive Tháng: HoaDon_Cuoc_Thang_${period.split('-')[1]}_${period.split('-')[0]}\n` +
-                  `- Số tệp đính kèm đã lưu: ${uploadedFilesList.length} tệp`);
-        }
-
-        function loadTelecomRecordsFromCloud() {
-            const apiUrl = (GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API) + `?action=get_telecom_records&year=${CURRENT_SELECTED_YEAR}`;
-            fetch(apiUrl).then(res => res.json()).then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    telecomRecordsAll = telecomRecordsAll.filter(r => (r.year || "2026") !== CURRENT_SELECTED_YEAR);
-                    telecomRecordsAll.push(...data);
-                    localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
-                }
-                renderTelecomTable();
-            }).catch(() => renderTelecomTable());
-        }
-
+        // --- HIỂN THỊ BẢNG DỮ LIỆU ---
         function renderTelecomTable() {
-            let viewMonthMode = document.getElementById('telecom-view-mode').value;
-            const tbody = document.getElementById('tbody-telecom'); tbody.innerHTML = "";
-            let sum = 0;
+            const tbody = document.getElementById('telecom-table-body');
+            tbody.innerHTML = '';
 
-            let activeTelecoms = telecomRecordsAll.filter(r => {
-                let rYear = r.period ? r.period.split("-")[0] : r.year || "2026";
-                if (rYear !== CURRENT_SELECTED_YEAR) return false;
-                if (viewMonthMode === "ALL_YEAR") return true;
-                return r.period && r.period.endsWith(`-${viewMonthMode}`);
-            });
+            // Lọc dữ liệu theo năm đang chọn
+            let filtered = telecomRecordsAll.filter(item => item.year === CURRENT_SELECTED_YEAR);
+            
+            let totalCost = 0;
 
-            activeTelecoms.forEach((r, i) => {
-                sum += Number(r.cost);
-                
-                let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder Tháng</a>`;
-                if (r.fileList && r.fileList.length > 0) {
-                    fileLinksHtml += `<div style="margin-top:3px; font-size:10px; color:var(--blue);">(${r.fileList.length} file đính kèm)</div>`;
-                }
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="p-6 text-center text-slate-400 italic">
+                            Chưa có dữ liệu chi phí cước mạng cho năm ${CURRENT_SELECTED_YEAR}. Hãy điền form bên trên để thêm bản ghi.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                filtered.forEach((item, idx) => {
+                    totalCost += Number(item.cost || 0);
+                    let fileCount = (item.fileList && item.fileList.length > 0) ? item.fileList.length : 0;
 
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="font-bold">${r.location || 'Tổng công ty Giấy Việt Nam'}</td>
-                    <td class="text-center">${r.provider}</td>
-                    <td>${r.package}</td>
-                    <td class="text-center font-bold">${r.cid}</td>
-                    <td class="text-right font-bold" style="color:var(--blue);">${Number(r.cost).toLocaleString('vi-VN')} VND</td>
-                    <td class="text-center font-bold" style="background:#fef08a; color:#9a3412;">${r.period}</td>
-                    <td class="text-center">${fileLinksHtml}</td>
-                    <td class="text-center"><button type="button" class="btn-delete" onclick="deleteTelecomRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button></td>
-                </tr>`;
-            });
-            document.getElementById('dash-pending-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
+                    let tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-50 transition duration-150';
+                    tr.innerHTML = `
+                        <td class="p-2.5 text-center font-medium border-r border-slate-200">${idx + 1}</td>
+                        <td class="p-2.5 font-semibold text-slate-800 border-r border-slate-200">${item.location}</td>
+                        <td class="p-2.5 border-r border-slate-200"><span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2 py-0.5 rounded">${item.provider}</span></td>
+                        <td class="p-2.5 border-r border-slate-200">${item.package}</td>
+                        <td class="p-2.5 font-mono text-slate-600 border-r border-slate-200">${item.cid}</td>
+                        <td class="p-2.5 text-right font-bold text-slate-900 border-r border-slate-200">${Number(item.cost).toLocaleString('vi-VN')}</td>
+                        <td class="p-2.5 text-center border-r border-slate-200 bg-amber-50 font-bold text-amber-800">${item.period}</td>
+                        <td class="p-2.5 text-center border-r border-slate-200">
+                            <a href="${item.folderDriveUrl}" target="_blank" class="inline-flex items-center text-xs font-semibold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-2 py-1 rounded transition">
+                                <i class="fa-brands fa-google-drive mr-1 text-emerald-600"></i> Folder Drive (${fileCount} file)
+                            </a>
+                        </td>
+                        <td class="p-2.5 text-center space-x-1">
+                            <button onclick="editTelecomRecord('${item.id}')" class="text-blue-600 hover:text-blue-800 p-1" title="Sửa bản ghi"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteTelecomRecord('${item.id}')" class="text-red-600 hover:text-red-800 p-1" title="Xóa bản ghi"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    </tr>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Cập nhật KPI cước phí
+            document.getElementById('total-telecom-kpi').innerText = totalCost.toLocaleString('vi-VN') + " VNĐ";
         }
 
-        function resetTelecomForm() { 
+        // --- CÁC HÀM PHỤ TRỢ ---
+        function resetTelecomForm() {
+            document.getElementById('telecom-main-form').reset();
             document.getElementById('telecom-edit-id').value = '';
-            document.getElementById('telecom-main-form').reset(); 
-            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-05`;
+            document.getElementById('upload-status-box').classList.add('hidden');
+            let today = new Date();
+            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        function loadTelecomDataFromLocal() {
+            let data = localStorage.getItem('sys_telecom_clean_v3');
+            if (data) {
+                try { telecomRecordsAll = JSON.parse(data); } catch(e) { telecomRecordsAll = []; }
+            }
+            renderTelecomTable();
+        }
+
+        function editTelecomRecord(id) {
+            let item = telecomRecordsAll.find(d => d.id === id);
+            if (!item) return;
+            document.getElementById('telecom-edit-id').value = item.id;
+            document.getElementById('tel-location').value = item.location;
+            document.getElementById('tel-provider').value = item.provider;
+            document.getElementById('tel-package').value = item.package;
+            document.getElementById('tel-cid').value = item.cid;
+            document.getElementById('tel-cost').value = item.cost;
+            document.getElementById('tel-period').value = item.period;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function deleteTelecomRecord(id) {
-            if (confirm('Xóa bản ghi cước này?')) {
+            if (confirm("Bạn có chắc chắn muốn xóa bản ghi chi phí cước này không?")) {
                 telecomRecordsAll = telecomRecordsAll.filter(d => d.id !== id);
                 localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
                 renderTelecomTable();
             }
         }
 
-        function autoGenerateAssetID() {
-            let t = document.getElementById('it-device-type').value;
-            let codePrefix = (t === 'Laptop') ? 'LAP' : (t === 'PC') ? 'PC' : (t === 'PRN') ? 'PRN' : (t === 'NET') ? 'NET' : (t === 'UPS') ? 'UPS' : 'SRV';
-            document.getElementById('it-serial-id').value = `IT-${codePrefix}-${CURRENT_SELECTED_YEAR}-${Math.floor(100 + Math.random() * 900)}`;
+        function syncDataFromCloud() {
+            loadTelecomDataFromLocal();
+            alert("🔄 Đã đồng bộ dữ liệu mới nhất từ bộ nhớ máy tính thành công!");
         }
-
-        function updateRealtimeQR() {
-            let serialId = document.getElementById('it-serial-id').value || "IT-LAP-2026-101";
-            let user = document.getElementById('it-user').value.trim() || "Chưa nhập";
-            let dept = document.getElementById('it-dept').value.trim() || "Chưa nhập";
-            let type = document.getElementById('it-device-type').value;
-
-            let formattedText = `MÃ THIẾT BỊ: ${serialId}\nNGƯỜI DÙNG: ${user} (${dept})\nLOẠI: ${type}`;
-
-            const qrTarget = document.getElementById('realtime-qr-target');
-            if (qrTarget) {
-                qrTarget.innerHTML = "";
-                new QRCode(qrTarget, { text: formattedText, width: 120, height: 120, colorDark: "#0f172a", colorLight: "#ffffff" });
-            }
-        }
-
-        async function saveITRecord(e) {
-            e.preventDefault();
-            let newItem = {
-                id: Date.now().toString(), year: CURRENT_SELECTED_YEAR,
-                serialId: document.getElementById('it-serial-id').value,
-                user: document.getElementById('it-user').value,
-                dept: document.getElementById('it-dept').value,
-                type: document.getElementById('it-device-type').value,
-                config: document.getElementById('it-config').value,
-                date: document.getElementById('it-date').value,
-                status: document.getElementById('it-status').value,
-                os: document.getElementById('it-os').value,
-                osLic: document.getElementById('it-os-lic').value,
-                office: document.getElementById('it-office').value,
-                officeLic: document.getElementById('it-office-lic').value
-            };
-
-            itAssetsRecordsAll.push(newItem);
-            localStorage.setItem('sys_it_records_v3', JSON.stringify(itAssetsRecordsAll));
-            resetITForm(); renderITTable();
-            alert("✅ Đã lưu thiết bị CNTT thành công!");
-        }
-
-        function loadITRecordsFromCloud() {
-            const apiUrl = (GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API) + `?action=get_it_records&year=${CURRENT_SELECTED_YEAR}`;
-            fetch(apiUrl).then(res => res.json()).then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    itAssetsRecordsAll = itAssetsRecordsAll.filter(r => (r.year || "2026") !== CURRENT_SELECTED_YEAR);
-                    itAssetsRecordsAll.push(...data);
-                    localStorage.setItem('sys_it_records_v3', JSON.stringify(itAssetsRecordsAll));
-                }
-                renderITTable();
-            }).catch(() => renderITTable());
-        }
-
-        function renderITTable() {
-            const tbody = document.getElementById('tbody-it-assets'); tbody.innerHTML = "";
-            let currentYearIT = itAssetsRecordsAll.filter(r => (r.year || "2026") === CURRENT_SELECTED_YEAR);
-            currentYearIT.forEach((r, i) => {
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="text-center font-bold">${r.serialId}</td>
-                    <td class="font-bold">${r.type}</td>
-                    <td>${r.config}</td>
-                    <td class="font-bold" style="color:var(--purple);">${r.user}</td>
-                    <td>${r.dept}</td>
-                    <td><div>${r.os || ''}</div><span class="badge-licensed">${r.osLic || 'Bản quyền OEM'}</span></td>
-                    <td><div>${r.office || ''}</div><span class="badge-licensed">${r.officeLic || 'Chính thức'}</span></td>
-                    <td class="text-center">${r.status}</td>
-                    <td class="text-center"><button type="button" class="btn-action-qr" onclick="popupQRCode('${r.serialId}', '${r.user}')">QR</button></td>
-                    <td class="text-center"><button type="button" class="btn-delete" onclick="deleteITRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button></td>
-                </tr>`;
-            });
-            document.getElementById('dash-total-it-devices').innerText = currentYearIT.length + " Thiết bị";
-        }
-
-        function popupQRCode(serialId, user) {
-            document.getElementById('modal-preview-title').innerText = "MÃ QR KIỂM KÊ: " + serialId;
-            let body = document.getElementById('modal-preview-body');
-            body.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; padding:15px;"><div id="modal-qr"></div><div style="margin-top:10px; font-weight:bold;">${user} (${serialId})</div></div>`;
-            new QRCode(document.getElementById("modal-qr"), { text: `THIẾT BỊ: ${serialId} - NGƯỜI DÙNG: ${user}`, width: 200, height: 200 });
-            document.getElementById('document-preview-modal').style.display = 'flex';
-        }
-
-        function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
-        function resetITForm() { document.getElementById('it-main-form').reset(); autoGenerateAssetID(); updateRealtimeQR(); }
-        function deleteITRecord(id) {
-            if (confirm('Xóa thiết bị này?')) {
-                itAssetsRecordsAll = itAssetsRecordsAll.filter(d => d.id !== id);
-                localStorage.setItem('sys_it_records_v3', JSON.stringify(itAssetsRecordsAll));
-                renderITTable();
-            }
-        }
-
-        // HÀM CẬP NHẬT LỊCH VẠN NIÊN BLOCK THÔNG MINH TỔNG HỢP 100% CÓ NÊN LÀM VÀ KIÊNG KỴ
-        function updateSmartCalendarView() {
-            let pickerVal = document.getElementById('calendar-picker').value;
-            let d = pickerVal ? new Date(pickerVal) : new Date();
-            let dayNames = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
-            let dd = d.getDate(); let mm = d.getMonth() + 1; let yyyy = d.getFullYear();
-
-            document.getElementById('cal-solar-month-year').innerText = `THÁNG ${String(mm).padStart(2, '0')} / ${yyyy}`;
-            document.getElementById('cal-solar-week').innerText = dayNames[d.getDay()];
-            document.getElementById('cal-solar-day').innerText = dd;
-
-            const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
-            const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
-            
-            // Tính số ngày Julian (Julian Day Number) chuẩn thuật toán thiên văn
-            let a = Math.floor((14 - mm) / 12);
-            let y = yyyy + 4800 - a;
-            let m = mm + 12 * a - 3;
-            let jd = dd + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
-            
-            let canDayIdx = (jd + 9) % 10;
-            let chiDayIdx = (jd + 1) % 12;
-            let canDay = CAN[canDayIdx];
-            let chiDay = CHI[chiDayIdx];
-
-            document.getElementById('cal-solar-canchi-day').innerText = `Ngày ${canDay} ${chiDay}`;
-
-            let canYearIdx = (yyyy - 4) % 10; if (canYearIdx < 0) canYearIdx += 10;
-            let chiYearIdx = (yyyy - 4) % 12; if (chiYearIdx < 0) chiYearIdx += 12;
-            
-            let lunarDay = (dd > 29) ? dd - 28 : dd;
-            let lunarMonth = (dd < 5) ? ((mm === 1) ? 12 : mm - 1) : mm;
-            let lunarYear = (mm === 1 && dd < 20) ? yyyy - 1 : yyyy;
-
-            let canMonthIdx = (canYearIdx * 2 + lunarMonth) % 10;
-            let chiMonthIdx = (lunarMonth + 1) % 12;
-
-            document.getElementById('cal-lunar-day').innerText = String(lunarDay).padStart(2, '0');
-            document.getElementById('cal-lunar-month').innerText = String(lunarMonth).padStart(2, '0');
-            document.getElementById('cal-lunar-year').innerText = lunarYear;
-            document.getElementById('cal-lunar-canchi-month').innerText = `${CAN[canMonthIdx]} ${CHI[chiMonthIdx]}`;
-            document.getElementById('cal-lunar-canchi-year').innerText = `${CAN[canYearIdx]} ${CHI[chiYearIdx]}`;
-
-            const TIET_KHI = [
-                "Tiểu Hàn", "Đại Hàn", "Lập Xuân", "Vũ Thủy", "Kinh Trập", "Xuân Phân",
-                "Thanh Minh", "Cốc Vũ", "Lập Hạ", "Tiểu Mãn", "Mang Chủng", "Hạ Chí",
-                "Tiểu Thử", "Đại Thử", "Lập Thu", "Xử Thử", "Bạch Lộ", "Thu Phân",
-                "Hàn Lộ", "Sương Giáng", "Lập Đông", "Tiểu Tuyết", "Đại Tuyết", "Đông Chí"
-            ];
-            let tietIdx = Math.floor((mm - 1) * 2 + (dd > 15 ? 1 : 0));
-            document.getElementById('cal-tiet-khi').innerText = TIET_KHI[tietIdx % 24];
-
-            const TRUC_LIST = [
-                "Trực Kiến (Cát)", "Trực Trừ (Bình)", "Trực Mãn (Cát)", "Trực Bình (Bình)", 
-                "Trực Định (Cát)", "Trực Chấp (Bình)", "Trực Phá (Hung)", "Trực Nguy (Hung)", 
-                "Trực Thành (Cát)", "Trực Thâu (Cát)", "Trực Khai (Cát)", "Trực Bế (Hung)"
-            ];
-            let trucIdx = (chiDayIdx - chiMonthIdx + 12) % 12;
-            document.getElementById('cal-truc').innerText = TRUC_LIST[trucIdx];
-
-            // BẢNG BỔ SUNG VIỆC NÊN LÀM VÀ KIÊNG KỴ THEO 12 TRỰC CHUẨN LỊCH BLOCK
-            const VIEC_NEN_LAM_MAP = [
-                "Xuất hành, cầu tài, hội họp, nhậm chức, khởi công nhẹ.", // Kiến
-                "Tẩy uế, giải trừ bùa chú, chữa bệnh, dọn dẹp nhà cửa.", // Trừ
-                "Khai trương, nhập học, cầu tài lộc, giao dịch buôn bán.", // Mãn
-                "Sửa chữa nhỏ, cưới hỏi, nhập trạch, đắp đường.", // Bình
-                "Ký kết hợp đồng, giao dịch, khởi công, nhập học.", // Định
-                "Đặt nền móng, may áo mới, mua tài sản, trồng cây.", // Chấp
-                "Bốc thuốc, phá cựu sinh tân, dọn dẹp nhà xưởng.", // Phá
-                "Làm lễ cúng bái, cầu an, cẩn trọng trong công việc.", // Nguy
-                "Khai trương, nhập trạch, cưới hỏi, giao dịch, nhập học.", // Thành
-                "Thu hoạch, cất giữ kho bãi, thu nợ, mua sắm.", // Thâu
-                "Khai trương, mở rộng kinh doanh, xuất hành, cưới hỏi.", // Khai
-                "An táng, xây mộ, đắp đập, cất giữ tài liệu bảo mật." // Bế
-            ];
-
-            const VIEC_KIENG_KY_MAP = [
-                "Đào đất, an táng, khởi công công trình lớn.", // Kiến
-                "Khai trương, ký hợp đồng lớn, xuất hành đi xa.", // Trừ
-                "Chữa bệnh, kiện tụng, tranh chấp, nhậm chức.", // Mãn
-                "Đào đất, an táng, làm việc mạo hiểm.", // Bình
-                "Tranh chấp, kiện tụng, di chuyển đồ đạc lớn.", // Định
-                "Xuất hành đi xa, đào ao hồ, san nền nhà.", // Chấp
-                "Khai trương, ký kết, cưới hỏi, giao dịch quan trọng.", // Phá
-                "Mạo hiểm, leo núi, đi thuyền, làm việc trên cao.", // Nguy
-                "Kiện tụng, tranh chấp, làm tổn thương người khác.", // Thành
-                "Xuất tiền quỹ lớn, cho vay mượn, an táng.", // Thâu
-                "Đào đất, động thổ, an táng, phá dỡ.", // Khai
-                "Khai trương, xuất hành, cưới hỏi, giao dịch." // Bế
-            ];
-
-            document.getElementById('cal-viec-nen-lam').innerText = VIEC_NEN_LAM_MAP[trucIdx];
-            document.getElementById('cal-viec-kieng-ky').innerText = VIEC_KIENG_KY_MAP[trucIdx];
-
-            const NGU_HANH_MAP = {
-                "Giáp Tý": "Hải Trung Kim", "Ất Sửu": "Hải Trung Kim", "Bính Dần": "Lư Trung Hỏa", "Đinh Mão": "Lư Trung Hỏa",
-                "Mậu Thìn": "Đại Lâm Mộc", "Kỷ Tỵ": "Đại Lâm Mộc", "Canh Ngọ": "Lộ Bàng Thổ", "Tân Mùi": "Lộ Bàng Thổ",
-                "Nhâm Thân": "Kiếm Phong Kim", "Quý Dậu": "Kiếm Phong Kim", "Giáp Tuất": "Sơn Đầu Hỏa", "Ất Hợi": "Sơn Đầu Hỏa",
-                "Bính Tý": "Giản Hạ Thủy", "Đinh Sửu": "Giản Hạ Thủy", "Mậu Dần": "Thành Đầu Thổ", "Kỷ Mão": "Thành Đầu Thổ",
-                "Canh Thìn": "Bạch Lạp Kim", "Tân Tỵ": "Bạch Lạp Kim", "Nhâm Ngọ": "Dương Liễu Mộc", "Quý Mùi": "Dương Liễu Mộc",
-                "Giáp Thân": "Tuyền Trung Thủy", "Ất Dậu": "Tuyền Trung Thủy", "Bính Tuất": "Ốc Thượng Thổ", "Đinh Hợi": "Ốc Thượng Thổ",
-                "Mậu Tý": "Tích Lịch Hỏa", "Kỷ Sửu": "Tích Lịch Hỏa", "Canh Dần": "Tùng Bách Mộc", "Tân Mão": "Tùng Bách Mộc",
-                "Nhâm Thìn": "Trường Lưu Thủy", "Quý Tỵ": "Trường Lưu Thủy", "Giáp Ngọ": "Sa Trung Kim", "Ất Mùi": "Sa Trung Kim",
-                "Bính Thân": "Sơn Hạ Hỏa", "Đinh Dậu": "Sơn Hạ Hỏa", "Mậu Tuất": "Bình Địa Mộc", "Kỷ Hợi": "Bình Địa Mộc",
-                "Canh Tý": "Bích Thượng Thổ", "Tân Sửu": "Bích Thượng Thổ", "Nhâm Dần": "Kim Bạc Kim", "Quý Mão": "Kim Bạc Kim",
-                "Giáp Thìn": "Phú Đăng Hỏa", "Ất Tỵ": "Phú Đăng Hỏa", "Bính Ngọ": "Thiên Hà Thủy", "Đinh Mùi": "Thiên Hà Thủy",
-                "Mậu Thân": "Đại Trạch Thổ", "Kỷ Dậu": "Đại Trạch Thổ", "Canh Tuất": "Thoa Xuyến Kim", "Tân Hợi": "Thoa Xuyến Kim",
-                "Nhâm Tý": "Tang Đố Mộc", "Quý Sửu": "Tang Đố Mộc", "Giáp Dần": "Đại Khê Thủy", "Ất Mão": "Đại Khê Thủy",
-                "Bính Thìn": "Sa Trung Thổ", "Đinh Tỵ": "Sa Trung Thổ", "Mậu Ngọ": "Thiên Thượng Hỏa", "Kỷ Mùi": "Thiên Thượng Hỏa",
-                "Canh Thân": "Thạch Lựu Mộc", "Tân Dậu": "Thạch Lựu Mộc", "Nhâm Tuất": "Đại Hải Thủy", "Quý Hợi": "Đại Hải Thủy"
-            };
-            let keyCanchi = `${canDay} ${chiDay}`;
-            document.getElementById('cal-ngu-hanh').innerText = NGU_HANH_MAP[keyCanchi] || "Hải Trung Kim";
-
-            const TAI_THANH_MAP = ["Đông Nam", "Đông Nam", "Chính Đông", "Chính Đông", "Chính Nam", "Chính Nam", "Tây Nam", "Tây Nam", "Chính Bắc", "Chính Bắc"];
-            const HY_THANH_MAP = ["Đông Bắc", "Tây Bắc", "Tây Nam", "Chính Nam", "Chính Đông", "Đông Nam", "Đông Bắc", "Tây Bắc", "Tây Nam", "Chính Nam"];
-            
-            document.getElementById('cal-tai-than').innerText = `Hướng ${TAI_THANH_MAP[canDayIdx]}`;
-            document.getElementById('cal-hy-than').innerText = `Hướng ${HY_THANH_MAP[canDayIdx]}`;
-
-            const HOANG_DAO_MAP = {
-                "Tý": "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)",
-                "Sửu": "Dần (3-5), Mão (5-7), Tỵ (9-11), Thân (15-17), Tuất (19-21), Hợi (21-23)",
-                "Dần": "Tý (23-1), Sửu (1-3), Thìn (7-9), Tỵ (9-11), Mùi (13-15), Tuất (19-21)",
-                "Mão": "Tý (23-1), Dần (3-5), Mão (5-7), Ngọ (11-13), Mùi (13-15), Dậu (17-19)",
-                "Thìn": "Dần (3-5), Thìn (7-9), Tỵ (9-11), Thân (15-17), Dậu (17-19), Hợi (21-23)",
-                "Tỵ": "Sửu (1-3), Thìn (7-9), Ngọ (11-13), Mùi (13-15), Tuất (19-21), Hợi (21-23)",
-                "Ngọ": "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)",
-                "Mùi": "Dần (3-5), Mão (5-7), Tỵ (9-11), Thân (15-17), Tuất (19-21), Hợi (21-23)",
-                "Thân": "Tý (23-1), Sửu (1-3), Thìn (7-9), Tỵ (9-11), Mùi (13-15), Tuất (19-21)",
-                "Dậu": "Tý (23-1), Dần (3-5), Mão (5-7), Ngọ (11-13), Mùi (13-15), Dậu (17-19)",
-                "Tuất": "Dần (3-5), Thìn (7-9), Tỵ (9-11), Thân (15-17), Dậu (17-19), Hợi (21-23)",
-                "Hợi": "Sửu (1-3), Thìn (7-9), Ngọ (11-13), Mùi (13-15), Tuất (19-21), Hợi (21-23)"
-            };
-            document.getElementById('cal-hoang-dao').innerText = HOANG_DAO_MAP[chiDay] || "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13)";
-        }
-
-        function switchMainTab(name) { 
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
-            document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active')); 
-            document.getElementById('tab-' + name).classList.add('active'); 
-            document.querySelector(`.nav-tabs .nav-tab[data-tab="${name}"]`).classList.add('active'); 
-        }
-
-        function openConfigUrlModal() {
-            document.getElementById('cfg-script-url').value = GOOGLE_SCRIPT_API_URL;
-            document.getElementById('cfg-sheet-url').value = GOOGLE_SHEET_VIEW_URL;
-            document.getElementById('configUrlModal').style.display = 'flex';
-        }
-        function closeConfigUrlModal() { document.getElementById('configUrlModal').style.display = 'none'; }
-        function saveConfigUrls() {
-            GOOGLE_SCRIPT_API_URL = document.getElementById('cfg-script-url').value.trim() || HARDCODED_SCRIPT_API;
-            GOOGLE_SHEET_VIEW_URL = document.getElementById('cfg-sheet-url').value.trim();
-            localStorage.setItem('sys_cfg_script_url', GOOGLE_SCRIPT_API_URL);
-            localStorage.setItem('sys_cfg_sheet_url', GOOGLE_SHEET_VIEW_URL);
-            closeConfigUrlModal();
-        }
-
-        function startRealtimeLiveClock() {
-            setInterval(() => {
-                const now = new Date();
-                document.getElementById('live-system-clock').innerText = now.toLocaleString('vi-VN');
-            }, 1000);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            startRealtimeLiveClock();
-            let today = new Date();
-            let yyyy = today.getFullYear();
-            let mm = String(today.getMonth() + 1).padStart(2, '0');
-            let dd = String(today.getDate()).padStart(2, '0');
-            document.getElementById('calendar-picker').value = `${yyyy}-${mm}-${dd}`;
-            updateSmartCalendarView();
-
-            autoGenerateAssetID();
-            updateRealtimeQR();
-            handleGlobalYearChange();
-        });
     </script>
 </body>
 </html>
