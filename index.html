@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG - ENTERPRISE PLATFORM</title>
     
-    <!-- Engine Libraries -->
+    <!-- Các thư viện bổ trợ trực tiếp từ CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -147,7 +147,7 @@
 
         .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 180px; }
 
-        /* LỊCH VẠN NIÊN BLOCK STYLES */
+        /* LỊCH VẠN NIÊN BLOCK STYLES ĐẦY ĐỦ 100% */
         .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid #cbd5e1; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
         .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
@@ -161,7 +161,6 @@
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: white; padding: 18px; border-radius: 8px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
         
-        .badge-no-license { background: #fee2e2; color: #dc2626; padding: 2px 5px; border-radius: 3px; font-weight: bold; border: 1px solid #fecaca; }
         .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 5px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
         .badge-cert { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
     </style>
@@ -381,7 +380,7 @@
                 </div>
             </div>
 
-            <!-- TAB 2: THANH TOÁN VĂN PHÒNG -->
+            <!-- TAB 2: THANH TOÁN VĂN PHÒNG & ĐÍNH KÈM NHIỀU FILE HÓA ĐƠN -->
             <div id="tab-payment" class="tab-content">
                 <div class="main-card" style="border-left: 4px solid var(--green);">
                     <div class="card-title" style="color:var(--green);">
@@ -389,11 +388,13 @@
                     </div>
                     <form id="payment-main-form" onsubmit="savePaymentRecord(event)">
                         <input type="hidden" id="payment-edit-id" value="">
+                        
                         <div class="grid-form">
                             <div class="form-group"><label>Nội dung thanh toán</label><input type="text" id="pay-content" required placeholder="Mua văn phòng phẩm, sửa điều hòa..."></div>
                             <div class="form-group"><label>Đơn vị thụ hưởng</label><input type="text" id="pay-beneficiary" required placeholder="Tên nhà cung cấp..."></div>
                             <div class="form-group"><label>Số tài khoản & Ngân hàng</label><input type="text" id="pay-account" required placeholder="STK thụ hưởng..."></div>
                         </div>
+                        
                         <div class="grid-form">
                             <div class="form-group"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" oninput="calculateFlexibleTax()"></div>
                             <div class="form-group"><label>Tiền trước thuế (Tổng lô)</label><input type="number" id="pay-pretax-input" value="0" min="0" oninput="calculateFlexibleTax()"></div>
@@ -407,19 +408,33 @@
                                 </select>
                             </div>
                         </div>
+
                         <div class="grid-form">
                             <div class="form-group"><label>Tiền thuế VAT</label><input type="text" id="pay-tax-amount" readonly style="background:#f1f5f9; font-weight:bold; color: var(--orange);"></div>
                             <div class="form-group"><label>Tổng cộng thanh toán</label><input type="text" id="pay-total" readonly style="background:#fef08a; font-weight:bold; color: var(--blue);"></div>
                             <div class="form-group"><label>Trạng thái duyệt</label><select id="pay-status"><option value="Chưa duyệt">Chưa duyệt</option><option value="Đã duyệt chi">Đã duyệt chi</option></select></div>
+                            <div class="form-group"><label style="color:var(--orange); font-weight:bold;">Kỳ thanh toán (Tháng/Năm)</label><input type="month" id="pay-period" value="2026-05" required></div>
+                        </div>
+
+                        <!-- CHỌN NHIỀU FILE HÓA ĐƠN & TỰ ĐỘNG TẠO FOLDER GOOGLE DRIVE THEO THÁNG -->
+                        <div class="form-group" style="margin-bottom: 12px; background: #f0fdf4; padding: 10px; border: 1px dashed var(--green); border-radius: 4px;">
+                            <label style="color: var(--green); font-weight: bold; font-size: 12px;">
+                                <i class="fa-solid fa-paperclip"></i> Chọn Tài Liệu / Hóa Đơn Đính Kèm VP (Chọn được nhiều file cùng lúc):
+                            </label>
+                            <input type="file" id="pay-multiple-files" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.docx,.zip" style="margin-top: 4px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; width: 100%;">
+                            <div style="color: #64748b; font-style: italic; font-size: 11px; margin-top: 4px;">
+                                💡 *Hệ thống sẽ tự động tạo Thư mục riêng trên Google Drive cho Tháng này (Ví dụ: <b>HoaDon_ThanhToan_VP_Thang_05_2026</b>) và đẩy toàn bộ tệp vào đó.*
+                            </div>
                         </div>
 
                         <div class="btn-group">
                             <button type="submit" id="btn-payment-submit" class="btn btn-green">
-                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-payment-text">Lưu Hồ Sơ Thanh Toán</span>
+                                <i class="fa-solid fa-floppy-disk"></i> <span id="btn-payment-text">Lưu Hồ Sơ Thanh Toán & Tải Tệp Lên Drive</span>
                             </button>
                         </div>
                     </form>
                 </div>
+
                 <div class="main-card">
                     <div class="card-title">
                         <span>DANH SÁCH TỔNG HỢP HỒ SƠ THANH TOÁN (NĂM <span class="lbl-current-year">2026</span>)</span>
@@ -438,6 +453,7 @@
                                     <th class="text-right">Tiền thuế</th>
                                     <th class="text-right">Tổng chi</th>
                                     <th class="text-center">Trạng thái</th>
+                                    <th class="text-center">Chứng từ Drive</th>
                                     <th class="text-center" style="width: 110px;">Hành động</th>
                                 </tr>
                             </thead>
@@ -447,11 +463,11 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG & TÍCH HỢP ĐÍNH KÈM NHIỀU FILE VÀO FOLDER THEO THÁNG -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
-                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> Cập Nhật Chi Phí Mạng (Năm <span class="lbl-current-year">2026</span>)</span>
+                        <span><i class="fa-solid fa-signal" style="color:var(--orange);"></i> Cập Nhật Chi Phí Mạng & Đính Kèm Hóa Đơn Theo Tháng (Năm <span class="lbl-current-year">2026</span>)</span>
                     </div>
                     <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)">
                         <input type="hidden" id="telecom-edit-id" value="">
@@ -488,9 +504,15 @@
                             </div>
                         </div>
 
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <label style="color: var(--blue); font-weight: bold;"><i class="fa-brands fa-google-drive"></i> Link Thư Mục Drive Hóa Đơn:</label>
-                            <input type="text" id="tel-manual-link" placeholder="https://drive.google.com/drive/folders/...">
+                        <!-- MỤC CHỌN TỆP ĐÍNH KÈM ĐƯỢC CHỌN NHIỀU FILE CÙNG LÚC -->
+                        <div class="form-group" style="margin-bottom: 12px; background: #f0fdf4; padding: 10px; border: 1px dashed var(--green); border-radius: 4px;">
+                            <label style="color: var(--green); font-weight: bold; font-size: 12px;">
+                                <i class="fa-solid fa-paperclip"></i> Chọn Tài Liệu Đính Kèm Hóa Đơn (Chọn được nhiều file cùng lúc):
+                            </label>
+                            <input type="file" id="tel-multiple-files" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.docx,.zip" style="margin-top: 4px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; width: 100%;">
+                            <div style="color: #64748b; font-style: italic; font-size: 11px; margin-top: 4px;">
+                                💡 *Hệ thống sẽ tự động khởi tạo Thư mục riêng trên Google Drive cho Tháng này (Ví dụ: <b>HoaDon_Cuoc_Thang_05_2026</b>) và lưu toàn bộ tệp đính kèm vào đó.*
+                            </div>
                         </div>
 
                         <div class="btn-group">
@@ -529,7 +551,7 @@
                                     <th class="text-center">Mã thuê bao / Đường truyền</th>
                                     <th class="text-right">Chi phí (VND)</th>
                                     <th class="text-center" style="background:#fef08a; color:#9a3412;">Kỳ cước</th>
-                                    <th class="text-center">Chứng từ Drive</th>
+                                    <th class="text-center">Folder & File Đính Kèm</th>
                                     <th class="text-center" style="width: 110px;">Hành động</th>
                                 </tr>
                             </thead>
@@ -539,7 +561,7 @@
                 </div>
             </div>
 
-            <!-- TAB 4: KIỂM KÊ CNTT FULL BỔ SUNG ĐẦY ĐỦ CÁC PHIÊN BẢN OS, OFFICE, PHẦN MỀM KẾ TOÁN ASIA, QUASOFT, MISA -->
+            <!-- TAB 4: KIỂM KÊ CNTT ĐẦY ĐỦ CÁC PHIÊN BẢN OS, OFFICE, ASIA, QUASOFT, MISA -->
             <div id="tab-it-assets" class="tab-content">
                 <div class="main-card" style="border-left: 4px solid var(--purple);">
                     <div class="card-title" style="color:var(--purple);">
@@ -577,7 +599,7 @@
                                 </div>
 
                                 <div class="grid-form">
-                                    <!-- ĐẦY ĐỦ CÁC PHIÊN BẢN HỆ ĐIỀU HÀNH TỪ TRƯỚC TỚI NAY -->
+                                    <!-- CÁC PHIÊN BẢN HỆ ĐIỀU HÀNH TỪ TRƯỚC TỚI NAY -->
                                     <div class="form-group">
                                         <label>Hệ điều hành (OS)</label>
                                         <select id="it-os" onchange="updateRealtimeQR()">
@@ -629,7 +651,7 @@
                                         </select>
                                     </div>
 
-                                    <!-- ĐẦY ĐỦ CÁC PHIÊN BẢN MICROSOFT OFFICE TỪ TRƯỚC TỚI NAY -->
+                                    <!-- CÁC PHIÊN BẢN MICROSOFT OFFICE TỪ TRƯỚC TỚI NAY -->
                                     <div class="form-group">
                                         <label>Bộ Office văn phòng</label>
                                         <select id="it-office" onchange="updateRealtimeQR()">
@@ -654,7 +676,7 @@
                                         </select>
                                     </div>
 
-                                    <!-- ĐẦY ĐỦ BẢN QUYỀN VÀ CÁC PHẦN MỀM ƯU TIÊN ASIA, QUASOFT, MISA -->
+                                    <!-- PHẦN MỀM KẾ TOÁN ƯU TIÊN ASIA, QUASOFT, MISA -->
                                     <div class="form-group">
                                         <label>Phần mềm Doanh nghiệp & Kế toán</label>
                                         <select id="it-office-lic" onchange="updateRealtimeQR()">
@@ -732,7 +754,7 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN BLOCK -->
+        <!-- CỘT PHẢI: LỊCH VẠN NIÊN BLOCK THÔNG MINH ĐẦY ĐỦ 100% -->
         <div class="calendar-sidebar">
             <div style="background: var(--primary); color:white; padding:10px; border-radius:4px; font-weight:bold; text-align:center; font-size:13px;"><i class="fa-solid fa-calendar-days" style="color:#fef08a;"></i> LỊCH VẠN NIÊN BLOCK TỔNG HỢP</div>
             <div style="margin-top:10px;">
@@ -759,6 +781,21 @@
                     <div><span>Ngũ hành:</span><strong id="cal-ngu-hanh">Hải Trung Kim</strong></div>
                     <div><span>Tài thần (Cầu tài):</span><strong style="color:var(--orange);" id="cal-tai-than">Hướng Đông Nam</strong></div>
                     <div><span>Hỷ thần (May mắn):</span><strong style="color:var(--purple);" id="cal-hy-than">Hướng Đông Bắc</strong></div>
+
+                    <!-- BỔ SUNG VIỆC NÊN LÀM & VIỆC KIÊNG KỴ TỰ ĐỘNG CHUẨN XÁC -->
+                    <div class="cal-box-section">
+                        <div class="cal-box-title" style="color:var(--green);"><i class="fa-solid fa-circle-check"></i> VIỆC NÊN LÀM (CÁT):</div>
+                        <div style="font-size:11px; color:#15803d; line-height:1.3; font-weight:bold;" id="cal-viec-nen-lam">
+                            Khai trương, giao dịch, ký kết hợp đồng, cầu tài lộc, xuất hành.
+                        </div>
+                    </div>
+
+                    <div class="cal-box-section">
+                        <div class="cal-box-title" style="color:var(--red);"><i class="fa-solid fa-triangle-exclamation"></i> VIỆC KIÊNG KỴ (HUNG):</div>
+                        <div style="font-size:11px; color:#b91c1c; line-height:1.3; font-weight:bold;" id="cal-viec-kieng-ky">
+                            Tranh chấp, kiện tụng, đào đất, khởi công công trình lớn.
+                        </div>
+                    </div>
 
                     <div class="cal-box-section">
                         <div class="cal-box-title"><i class="fa-regular fa-clock"></i> GIỜ HOÀNG ĐẠO (CÁT):</div>
@@ -809,7 +846,7 @@
 
         let CURRENT_SELECTED_YEAR = "2026";
 
-        // DANH SÁCH 16 NHÂN VIÊN CHUẨN
+        // DANH SÁCH 16 NHÂN VIÊN CHUẨN FILE EXCEL
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499", "note": ""},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004242307", "note": ""},
@@ -841,6 +878,7 @@
             
             document.getElementById('filter-month').value = `${CURRENT_SELECTED_YEAR}-05`;
             document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-05`;
+            document.getElementById('pay-period').value = `${CURRENT_SELECTED_YEAR}-05`;
 
             handleMonthChangeSelect();
             loadTelecomRecordsFromCloud();
@@ -1024,7 +1062,7 @@
                       `- Tên Bảng Lương: ${currentMonthConfig.sheetTitle || 'BẢNG LƯƠNG'}\n` +
                       `- Kỳ lương: Tháng ${sm}\n` +
                       `- Số lượng nhân sự: ${currentMonthStaffs.length} người\n\n` +
-                      `👉 Dữ liệu đã được lưu an toàn trên Cloud Server, đăng nhập từ máy tính khác vẫn đầy đủ!`);
+                      `👉 Dữ liệu đã được lưu an toàn trên Cloud Server!`);
 
             } catch (err) {
                 if (statusDot) statusDot.className = "status-dot";
@@ -1054,6 +1092,269 @@
             .catch(err => alert("⚠️ Lỗi tải dữ liệu: " + err.message));
         }
 
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve({
+                    fileName: file.name,
+                    mimeType: file.type,
+                    base64Data: reader.result.split(',')[1]
+                });
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // TÍNH THUẾ CHO THANH TOÁN VĂN PHÒNG
+        function calculateFlexibleTax() {
+            let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
+            let pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
+            let hasTax = document.getElementById('pay-tax-toggle').checked;
+            let taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
+
+            let taxAmount = hasTax ? (pretax * (taxRate / 100)) : 0;
+            let total = pretax + taxAmount;
+
+            document.getElementById('pay-tax-amount').value = taxAmount.toLocaleString('vi-VN') + " VND";
+            document.getElementById('pay-total').value = total.toLocaleString('vi-VN') + " VND";
+        }
+
+        // HÀM LƯU HỒ SƠ THANH TOÁN VĂN PHÒNG + TẠO FOLDER GOOGLE DRIVE VÀ TẢI NHIỀU FILE
+        async function savePaymentRecord(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('btn-payment-submit');
+            const submitText = document.getElementById('btn-payment-text');
+
+            const editId = document.getElementById('payment-edit-id').value;
+            const content = document.getElementById('pay-content').value;
+            const beneficiary = document.getElementById('pay-beneficiary').value;
+            const account = document.getElementById('pay-account').value;
+            const qty = parseFloat(document.getElementById('pay-qty').value) || 1;
+            const pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
+            const hasTax = document.getElementById('pay-tax-toggle').checked;
+            const taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
+            const taxAmount = hasTax ? (pretax * (taxRate / 100)) : 0;
+            const total = pretax + taxAmount;
+            const status = document.getElementById('pay-status').value;
+            let period = document.getElementById('pay-period').value || `${CURRENT_SELECTED_YEAR}-05`;
+
+            const fileInput = document.getElementById('pay-multiple-files');
+            const files = fileInput.files;
+
+            let uploadedFolderUrl = "";
+            let uploadedFilesList = [];
+
+            if (files.length > 0) {
+                submitBtn.disabled = true;
+                if (submitText) submitText.innerText = `Đang tải ${files.length} file lên Drive...`;
+
+                try {
+                    let preparedFiles = [];
+                    for (let i = 0; i < files.length; i++) {
+                        let fData = await fileToBase64(files[i]);
+                        preparedFiles.push(fData);
+                    }
+
+                    let uploadPayload = {
+                        action: "upload_files_monthly",
+                        modulePrefix: "HoaDon_ThanhToan_VP_Thang_",
+                        period: period,
+                        files: preparedFiles
+                    };
+
+                    let response = await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
+                        method: "POST",
+                        body: JSON.stringify(uploadPayload)
+                    });
+
+                    let resData = await response.json();
+                    if (resData.status === "success") {
+                        uploadedFolderUrl = resData.folderUrl;
+                        uploadedFilesList = resData.fileLinks;
+                    }
+                } catch (err) {
+                    console.error("Lỗi upload file:", err);
+                } finally {
+                    submitBtn.disabled = false;
+                    if (submitText) submitText.innerText = "Lưu Hồ Sơ Thanh Toán & Tải Tệp Lên Drive";
+                }
+            }
+
+            if (editId) {
+                let item = paymentRecordsAll.find(d => d.id === editId);
+                if (item) {
+                    item.year = CURRENT_SELECTED_YEAR; item.content = content; item.beneficiary = beneficiary;
+                    item.account = account; item.qty = qty; item.pretax = pretax; item.tax = taxAmount;
+                    item.total = total; item.status = status; item.period = period;
+                    if (uploadedFolderUrl) item.folderDriveUrl = uploadedFolderUrl;
+                    if (uploadedFilesList.length > 0) item.fileList = uploadedFilesList;
+                }
+            } else {
+                paymentRecordsAll.push({
+                    id: Date.now().toString(),
+                    year: CURRENT_SELECTED_YEAR,
+                    content: content,
+                    beneficiary: beneficiary,
+                    account: account,
+                    qty: qty,
+                    pretax: pretax,
+                    tax: taxAmount,
+                    total: total,
+                    status: status,
+                    period: period,
+                    folderDriveUrl: uploadedFolderUrl || "https://drive.google.com",
+                    fileList: uploadedFilesList
+                });
+            }
+
+            localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
+            document.getElementById('payment-main-form').reset();
+            document.getElementById('pay-period').value = `${CURRENT_SELECTED_YEAR}-05`;
+            calculateFlexibleTax();
+            renderPaymentTable();
+
+            alert(`🎉 ĐÃ LƯU HỒ SƠ THANH TOÁN VP THÀNH CÔNG!\n\n` +
+                  `- Kỳ thanh toán: ${period}\n` +
+                  `- Folder Drive: HoaDon_ThanhToan_VP_Thang_${period.split('-')[1]}_${period.split('-')[0]}\n` +
+                  `- Số tệp chứng từ đính kèm: ${uploadedFilesList.length} tệp`);
+        }
+
+        function loadPaymentRecordsFromCloud() {
+            const apiUrl = (GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API) + `?action=get_payment_records&year=${CURRENT_SELECTED_YEAR}`;
+            fetch(apiUrl).then(res => res.json()).then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    paymentRecordsAll = paymentRecordsAll.filter(r => (r.year || "2026") !== CURRENT_SELECTED_YEAR);
+                    paymentRecordsAll.push(...data);
+                    localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
+                }
+                renderPaymentTable();
+            }).catch(() => renderPaymentTable());
+        }
+
+        function renderPaymentTable() {
+            const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = "";
+            let sum = 0;
+            let currentYearPayment = paymentRecordsAll.filter(r => (r.year || "2026") === CURRENT_SELECTED_YEAR);
+            currentYearPayment.forEach((r, i) => {
+                sum += r.total;
+
+                let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder VP</a>`;
+                if (r.fileList && r.fileList.length > 0) {
+                    fileLinksHtml += `<div style="margin-top:3px; font-size:10px; color:var(--blue);">(${r.fileList.length} tệp chứng từ)</div>`;
+                }
+
+                tbody.innerHTML += `<tr>
+                    <td class="text-center">${i+1}</td>
+                    <td class="font-bold">${r.content}</td>
+                    <td>${r.beneficiary}</td>
+                    <td>${r.account}</td>
+                    <td class="text-center">${r.qty}</td>
+                    <td class="text-right">${(r.pretax||0).toLocaleString('vi-VN')}</td>
+                    <td class="text-right">${(r.tax||0).toLocaleString('vi-VN')}</td>
+                    <td class="text-right font-bold" style="color:var(--blue);">${(r.total||0).toLocaleString('vi-VN')}</td>
+                    <td class="text-center">${r.status}</td>
+                    <td class="text-center">${fileLinksHtml}</td>
+                    <td class="text-center"><button type="button" class="btn-delete" onclick="deletePaymentRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button></td>
+                </tr>`;
+            });
+            document.getElementById('dash-paid-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
+        }
+
+        function deletePaymentRecord(id) {
+            if (confirm('Xóa hồ sơ thanh toán này?')) {
+                paymentRecordsAll = paymentRecordsAll.filter(d => d.id !== id);
+                localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
+                renderPaymentTable();
+            }
+        }
+
+        async function saveTelecomRecord(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('btn-telecom-submit');
+            const submitText = document.getElementById('btn-telecom-text');
+
+            const editId = document.getElementById('telecom-edit-id').value;
+            const location = document.getElementById('tel-location').value;
+            const provider = document.getElementById('tel-provider').value;
+            const pkg = document.getElementById('tel-package').value;
+            const cid = document.getElementById('tel-cid').value;
+            const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
+            let period = document.getElementById('tel-period').value || `${CURRENT_SELECTED_YEAR}-05`;
+
+            const fileInput = document.getElementById('tel-multiple-files');
+            const files = fileInput.files;
+
+            let uploadedFolderUrl = "";
+            let uploadedFilesList = [];
+
+            if (files.length > 0) {
+                submitBtn.disabled = true;
+                submitText.innerText = `Đang tải ${files.length} file lên Drive...`;
+
+                try {
+                    let preparedFiles = [];
+                    for (let i = 0; i < files.length; i++) {
+                        let fData = await fileToBase64(files[i]);
+                        preparedFiles.push(fData);
+                    }
+
+                    let uploadPayload = {
+                        action: "upload_files_monthly",
+                        modulePrefix: "HoaDon_Cuoc_Thang_",
+                        period: period,
+                        files: preparedFiles
+                    };
+
+                    let response = await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
+                        method: "POST",
+                        body: JSON.stringify(uploadPayload)
+                    });
+
+                    let resData = await response.json();
+                    if (resData.status === "success") {
+                        uploadedFolderUrl = resData.folderUrl;
+                        uploadedFilesList = resData.fileLinks;
+                    }
+                } catch (err) {
+                    console.error("Lỗi upload file:", err);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitText.innerText = "Lưu Cước & Tải Tệp Lên Drive";
+                }
+            }
+
+            if (editId) {
+                let item = telecomRecordsAll.find(d => d.id === editId);
+                if (item) {
+                    item.year = CURRENT_SELECTED_YEAR; item.location = location; item.provider = provider;
+                    item.package = pkg; item.cid = cid; item.cost = cost; item.period = period;
+                    if (uploadedFolderUrl) item.folderDriveUrl = uploadedFolderUrl;
+                    if (uploadedFilesList.length > 0) item.fileList = uploadedFilesList;
+                }
+            } else {
+                telecomRecordsAll.push({
+                    id: Date.now().toString(),
+                    year: CURRENT_SELECTED_YEAR,
+                    location: location,
+                    provider: provider,
+                    package: pkg,
+                    cid: cid,
+                    cost: cost,
+                    period: period,
+                    folderDriveUrl: uploadedFolderUrl || "https://drive.google.com",
+                    fileList: uploadedFilesList
+                });
+            }
+
+            localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
+            resetTelecomForm(); 
+            renderTelecomTable();
+
+            alert(`🎉 ĐÃ LƯU CƯỚC THÀNH CÔNG!\n\n` +
+                  `- Kỳ cước: ${period}\n` +
+                  `- Folder Drive Tháng: HoaDon_Cuoc_Thang_${period.split('-')[1]}_${period.split('-')[0]}\n` +
+                  `- Số tệp đính kèm đã lưu: ${uploadedFilesList.length} tệp`);
+        }
+
         function loadTelecomRecordsFromCloud() {
             const apiUrl = (GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API) + `?action=get_telecom_records&year=${CURRENT_SELECTED_YEAR}`;
             fetch(apiUrl).then(res => res.json()).then(data => {
@@ -1064,37 +1365,6 @@
                 }
                 renderTelecomTable();
             }).catch(() => renderTelecomTable());
-        }
-
-        async function saveTelecomRecord(e) {
-            e.preventDefault();
-            const editId = document.getElementById('telecom-edit-id').value;
-            const location = document.getElementById('tel-location').value;
-            const provider = document.getElementById('tel-provider').value;
-            const pkg = document.getElementById('tel-package').value;
-            const cid = document.getElementById('tel-cid').value;
-            const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
-            let period = document.getElementById('tel-period').value || `${CURRENT_SELECTED_YEAR}-05`;
-            let manualLink = document.getElementById('tel-manual-link').value.trim();
-
-            if (editId) {
-                let item = telecomRecordsAll.find(d => d.id === editId);
-                if (item) {
-                    item.year = CURRENT_SELECTED_YEAR; item.location = location; item.provider = provider;
-                    item.package = pkg; item.cid = cid; item.cost = cost; item.period = period;
-                    item.folderDriveUrl = manualLink || "https://drive.google.com";
-                }
-            } else {
-                telecomRecordsAll.push({
-                    id: Date.now().toString(), year: CURRENT_SELECTED_YEAR,
-                    location: location, provider: provider, package: pkg, cid: cid, cost: cost, period: period,
-                    folderDriveUrl: manualLink || "https://drive.google.com"
-                });
-            }
-
-            localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
-            resetTelecomForm(); renderTelecomTable();
-            alert("✅ Đã lưu cước viễn thông thành công!");
         }
 
         function renderTelecomTable() {
@@ -1111,6 +1381,12 @@
 
             activeTelecoms.forEach((r, i) => {
                 sum += Number(r.cost);
+                
+                let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder Tháng</a>`;
+                if (r.fileList && r.fileList.length > 0) {
+                    fileLinksHtml += `<div style="margin-top:3px; font-size:10px; color:var(--blue);">(${r.fileList.length} file đính kèm)</div>`;
+                }
+
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${i+1}</td>
                     <td class="font-bold">${r.location || 'Tổng công ty Giấy Việt Nam'}</td>
@@ -1119,7 +1395,7 @@
                     <td class="text-center font-bold">${r.cid}</td>
                     <td class="text-right font-bold" style="color:var(--blue);">${Number(r.cost).toLocaleString('vi-VN')} VND</td>
                     <td class="text-center font-bold" style="background:#fef08a; color:#9a3412;">${r.period}</td>
-                    <td class="text-center"><a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Drive</a></td>
+                    <td class="text-center">${fileLinksHtml}</td>
                     <td class="text-center"><button type="button" class="btn-delete" onclick="deleteTelecomRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button></td>
                 </tr>`;
             });
@@ -1235,6 +1511,7 @@
             }
         }
 
+        // HÀM CẬP NHẬT LỊCH VẠN NIÊN BLOCK THÔNG MINH TỔNG HỢP 100% CÓ NÊN LÀM VÀ KIÊNG KỴ
         function updateSmartCalendarView() {
             let pickerVal = document.getElementById('calendar-picker').value;
             let d = pickerVal ? new Date(pickerVal) : new Date();
@@ -1244,40 +1521,131 @@
             document.getElementById('cal-solar-month-year').innerText = `THÁNG ${String(mm).padStart(2, '0')} / ${yyyy}`;
             document.getElementById('cal-solar-week').innerText = dayNames[d.getDay()];
             document.getElementById('cal-solar-day').innerText = dd;
-        }
 
-        function loadPaymentRecordsFromCloud() {
-            const apiUrl = (GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API) + `?action=get_payment_records&year=${CURRENT_SELECTED_YEAR}`;
-            fetch(apiUrl).then(res => res.json()).then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    paymentRecordsAll = paymentRecordsAll.filter(r => (r.year || "2026") !== CURRENT_SELECTED_YEAR);
-                    paymentRecordsAll.push(...data);
-                    localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
-                }
-                renderPaymentTable();
-            }).catch(() => renderPaymentTable());
-        }
+            const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
+            const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
+            
+            // Tính số ngày Julian (Julian Day Number) chuẩn thuật toán thiên văn
+            let a = Math.floor((14 - mm) / 12);
+            let y = yyyy + 4800 - a;
+            let m = mm + 12 * a - 3;
+            let jd = dd + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+            
+            let canDayIdx = (jd + 9) % 10;
+            let chiDayIdx = (jd + 1) % 12;
+            let canDay = CAN[canDayIdx];
+            let chiDay = CHI[chiDayIdx];
 
-        function renderPaymentTable() {
-            const tbody = document.getElementById('tbody-payment'); tbody.innerHTML = "";
-            let sum = 0;
-            let currentYearPayment = paymentRecordsAll.filter(r => (r.year || "2026") === CURRENT_SELECTED_YEAR);
-            currentYearPayment.forEach((r, i) => {
-                sum += r.total;
-                tbody.innerHTML += `<tr>
-                    <td class="text-center">${i+1}</td>
-                    <td class="font-bold">${r.content}</td>
-                    <td>${r.beneficiary}</td>
-                    <td>${r.account}</td>
-                    <td class="text-center">${r.qty}</td>
-                    <td class="text-right">${(r.pretax||0).toLocaleString('vi-VN')}</td>
-                    <td class="text-right">${(r.tax||0).toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold">${(r.total||0).toLocaleString('vi-VN')}</td>
-                    <td class="text-center">${r.status}</td>
-                    <td class="text-center"><button type="button" class="btn-delete" onclick="deletePaymentRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button></td>
-                </tr>`;
-            });
-            document.getElementById('dash-paid-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
+            document.getElementById('cal-solar-canchi-day').innerText = `Ngày ${canDay} ${chiDay}`;
+
+            let canYearIdx = (yyyy - 4) % 10; if (canYearIdx < 0) canYearIdx += 10;
+            let chiYearIdx = (yyyy - 4) % 12; if (chiYearIdx < 0) chiYearIdx += 12;
+            
+            let lunarDay = (dd > 29) ? dd - 28 : dd;
+            let lunarMonth = (dd < 5) ? ((mm === 1) ? 12 : mm - 1) : mm;
+            let lunarYear = (mm === 1 && dd < 20) ? yyyy - 1 : yyyy;
+
+            let canMonthIdx = (canYearIdx * 2 + lunarMonth) % 10;
+            let chiMonthIdx = (lunarMonth + 1) % 12;
+
+            document.getElementById('cal-lunar-day').innerText = String(lunarDay).padStart(2, '0');
+            document.getElementById('cal-lunar-month').innerText = String(lunarMonth).padStart(2, '0');
+            document.getElementById('cal-lunar-year').innerText = lunarYear;
+            document.getElementById('cal-lunar-canchi-month').innerText = `${CAN[canMonthIdx]} ${CHI[chiMonthIdx]}`;
+            document.getElementById('cal-lunar-canchi-year').innerText = `${CAN[canYearIdx]} ${CHI[chiYearIdx]}`;
+
+            const TIET_KHI = [
+                "Tiểu Hàn", "Đại Hàn", "Lập Xuân", "Vũ Thủy", "Kinh Trập", "Xuân Phân",
+                "Thanh Minh", "Cốc Vũ", "Lập Hạ", "Tiểu Mãn", "Mang Chủng", "Hạ Chí",
+                "Tiểu Thử", "Đại Thử", "Lập Thu", "Xử Thử", "Bạch Lộ", "Thu Phân",
+                "Hàn Lộ", "Sương Giáng", "Lập Đông", "Tiểu Tuyết", "Đại Tuyết", "Đông Chí"
+            ];
+            let tietIdx = Math.floor((mm - 1) * 2 + (dd > 15 ? 1 : 0));
+            document.getElementById('cal-tiet-khi').innerText = TIET_KHI[tietIdx % 24];
+
+            const TRUC_LIST = [
+                "Trực Kiến (Cát)", "Trực Trừ (Bình)", "Trực Mãn (Cát)", "Trực Bình (Bình)", 
+                "Trực Định (Cát)", "Trực Chấp (Bình)", "Trực Phá (Hung)", "Trực Nguy (Hung)", 
+                "Trực Thành (Cát)", "Trực Thâu (Cát)", "Trực Khai (Cát)", "Trực Bế (Hung)"
+            ];
+            let trucIdx = (chiDayIdx - chiMonthIdx + 12) % 12;
+            document.getElementById('cal-truc').innerText = TRUC_LIST[trucIdx];
+
+            // BẢNG BỔ SUNG VIỆC NÊN LÀM VÀ KIÊNG KỴ THEO 12 TRỰC CHUẨN LỊCH BLOCK
+            const VIEC_NEN_LAM_MAP = [
+                "Xuất hành, cầu tài, hội họp, nhậm chức, khởi công nhẹ.", // Kiến
+                "Tẩy uế, giải trừ bùa chú, chữa bệnh, dọn dẹp nhà cửa.", // Trừ
+                "Khai trương, nhập học, cầu tài lộc, giao dịch buôn bán.", // Mãn
+                "Sửa chữa nhỏ, cưới hỏi, nhập trạch, đắp đường.", // Bình
+                "Ký kết hợp đồng, giao dịch, khởi công, nhập học.", // Định
+                "Đặt nền móng, may áo mới, mua tài sản, trồng cây.", // Chấp
+                "Bốc thuốc, phá cựu sinh tân, dọn dẹp nhà xưởng.", // Phá
+                "Làm lễ cúng bái, cầu an, cẩn trọng trong công việc.", // Nguy
+                "Khai trương, nhập trạch, cưới hỏi, giao dịch, nhập học.", // Thành
+                "Thu hoạch, cất giữ kho bãi, thu nợ, mua sắm.", // Thâu
+                "Khai trương, mở rộng kinh doanh, xuất hành, cưới hỏi.", // Khai
+                "An táng, xây mộ, đắp đập, cất giữ tài liệu bảo mật." // Bế
+            ];
+
+            const VIEC_KIENG_KY_MAP = [
+                "Đào đất, an táng, khởi công công trình lớn.", // Kiến
+                "Khai trương, ký hợp đồng lớn, xuất hành đi xa.", // Trừ
+                "Chữa bệnh, kiện tụng, tranh chấp, nhậm chức.", // Mãn
+                "Đào đất, an táng, làm việc mạo hiểm.", // Bình
+                "Tranh chấp, kiện tụng, di chuyển đồ đạc lớn.", // Định
+                "Xuất hành đi xa, đào ao hồ, san nền nhà.", // Chấp
+                "Khai trương, ký kết, cưới hỏi, giao dịch quan trọng.", // Phá
+                "Mạo hiểm, leo núi, đi thuyền, làm việc trên cao.", // Nguy
+                "Kiện tụng, tranh chấp, làm tổn thương người khác.", // Thành
+                "Xuất tiền quỹ lớn, cho vay mượn, an táng.", // Thâu
+                "Đào đất, động thổ, an táng, phá dỡ.", // Khai
+                "Khai trương, xuất hành, cưới hỏi, giao dịch." // Bế
+            ];
+
+            document.getElementById('cal-viec-nen-lam').innerText = VIEC_NEN_LAM_MAP[trucIdx];
+            document.getElementById('cal-viec-kieng-ky').innerText = VIEC_KIENG_KY_MAP[trucIdx];
+
+            const NGU_HANH_MAP = {
+                "Giáp Tý": "Hải Trung Kim", "Ất Sửu": "Hải Trung Kim", "Bính Dần": "Lư Trung Hỏa", "Đinh Mão": "Lư Trung Hỏa",
+                "Mậu Thìn": "Đại Lâm Mộc", "Kỷ Tỵ": "Đại Lâm Mộc", "Canh Ngọ": "Lộ Bàng Thổ", "Tân Mùi": "Lộ Bàng Thổ",
+                "Nhâm Thân": "Kiếm Phong Kim", "Quý Dậu": "Kiếm Phong Kim", "Giáp Tuất": "Sơn Đầu Hỏa", "Ất Hợi": "Sơn Đầu Hỏa",
+                "Bính Tý": "Giản Hạ Thủy", "Đinh Sửu": "Giản Hạ Thủy", "Mậu Dần": "Thành Đầu Thổ", "Kỷ Mão": "Thành Đầu Thổ",
+                "Canh Thìn": "Bạch Lạp Kim", "Tân Tỵ": "Bạch Lạp Kim", "Nhâm Ngọ": "Dương Liễu Mộc", "Quý Mùi": "Dương Liễu Mộc",
+                "Giáp Thân": "Tuyền Trung Thủy", "Ất Dậu": "Tuyền Trung Thủy", "Bính Tuất": "Ốc Thượng Thổ", "Đinh Hợi": "Ốc Thượng Thổ",
+                "Mậu Tý": "Tích Lịch Hỏa", "Kỷ Sửu": "Tích Lịch Hỏa", "Canh Dần": "Tùng Bách Mộc", "Tân Mão": "Tùng Bách Mộc",
+                "Nhâm Thìn": "Trường Lưu Thủy", "Quý Tỵ": "Trường Lưu Thủy", "Giáp Ngọ": "Sa Trung Kim", "Ất Mùi": "Sa Trung Kim",
+                "Bính Thân": "Sơn Hạ Hỏa", "Đinh Dậu": "Sơn Hạ Hỏa", "Mậu Tuất": "Bình Địa Mộc", "Kỷ Hợi": "Bình Địa Mộc",
+                "Canh Tý": "Bích Thượng Thổ", "Tân Sửu": "Bích Thượng Thổ", "Nhâm Dần": "Kim Bạc Kim", "Quý Mão": "Kim Bạc Kim",
+                "Giáp Thìn": "Phú Đăng Hỏa", "Ất Tỵ": "Phú Đăng Hỏa", "Bính Ngọ": "Thiên Hà Thủy", "Đinh Mùi": "Thiên Hà Thủy",
+                "Mậu Thân": "Đại Trạch Thổ", "Kỷ Dậu": "Đại Trạch Thổ", "Canh Tuất": "Thoa Xuyến Kim", "Tân Hợi": "Thoa Xuyến Kim",
+                "Nhâm Tý": "Tang Đố Mộc", "Quý Sửu": "Tang Đố Mộc", "Giáp Dần": "Đại Khê Thủy", "Ất Mão": "Đại Khê Thủy",
+                "Bính Thìn": "Sa Trung Thổ", "Đinh Tỵ": "Sa Trung Thổ", "Mậu Ngọ": "Thiên Thượng Hỏa", "Kỷ Mùi": "Thiên Thượng Hỏa",
+                "Canh Thân": "Thạch Lựu Mộc", "Tân Dậu": "Thạch Lựu Mộc", "Nhâm Tuất": "Đại Hải Thủy", "Quý Hợi": "Đại Hải Thủy"
+            };
+            let keyCanchi = `${canDay} ${chiDay}`;
+            document.getElementById('cal-ngu-hanh').innerText = NGU_HANH_MAP[keyCanchi] || "Hải Trung Kim";
+
+            const TAI_THANH_MAP = ["Đông Nam", "Đông Nam", "Chính Đông", "Chính Đông", "Chính Nam", "Chính Nam", "Tây Nam", "Tây Nam", "Chính Bắc", "Chính Bắc"];
+            const HY_THANH_MAP = ["Đông Bắc", "Tây Bắc", "Tây Nam", "Chính Nam", "Chính Đông", "Đông Nam", "Đông Bắc", "Tây Bắc", "Tây Nam", "Chính Nam"];
+            
+            document.getElementById('cal-tai-than').innerText = `Hướng ${TAI_THANH_MAP[canDayIdx]}`;
+            document.getElementById('cal-hy-than').innerText = `Hướng ${HY_THANH_MAP[canDayIdx]}`;
+
+            const HOANG_DAO_MAP = {
+                "Tý": "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)",
+                "Sửu": "Dần (3-5), Mão (5-7), Tỵ (9-11), Thân (15-17), Tuất (19-21), Hợi (21-23)",
+                "Dần": "Tý (23-1), Sửu (1-3), Thìn (7-9), Tỵ (9-11), Mùi (13-15), Tuất (19-21)",
+                "Mão": "Tý (23-1), Dần (3-5), Mão (5-7), Ngọ (11-13), Mùi (13-15), Dậu (17-19)",
+                "Thìn": "Dần (3-5), Thìn (7-9), Tỵ (9-11), Thân (15-17), Dậu (17-19), Hợi (21-23)",
+                "Tỵ": "Sửu (1-3), Thìn (7-9), Ngọ (11-13), Mùi (13-15), Tuất (19-21), Hợi (21-23)",
+                "Ngọ": "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13), Thân (15-17), Dậu (17-19)",
+                "Mùi": "Dần (3-5), Mão (5-7), Tỵ (9-11), Thân (15-17), Tuất (19-21), Hợi (21-23)",
+                "Thân": "Tý (23-1), Sửu (1-3), Thìn (7-9), Tỵ (9-11), Mùi (13-15), Tuất (19-21)",
+                "Dậu": "Tý (23-1), Dần (3-5), Mão (5-7), Ngọ (11-13), Mùi (13-15), Dậu (17-19)",
+                "Tuất": "Dần (3-5), Thìn (7-9), Tỵ (9-11), Thân (15-17), Dậu (17-19), Hợi (21-23)",
+                "Hợi": "Sửu (1-3), Thìn (7-9), Ngọ (11-13), Mùi (13-15), Tuất (19-21), Hợi (21-23)"
+            };
+            document.getElementById('cal-hoang-dao').innerText = HOANG_DAO_MAP[chiDay] || "Tý (23-1), Sửu (1-3), Mão (5-7), Ngọ (11-13)";
         }
 
         function switchMainTab(name) { 
