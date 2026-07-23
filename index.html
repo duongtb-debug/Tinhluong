@@ -160,7 +160,7 @@
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
         .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; }
         .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 12px; text-align: center; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-style: space-around; font-size: 12px; text-align: center; }
         .calendar-block-details { padding: 8px; font-size: 12px; line-height: 1.4; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 4px 0; display: flex; justify-content: space-between; }
         .cal-box-section { margin-top: 6px; padding-top: 5px; border-top: 1px dashed #cbd5e1; }
@@ -243,7 +243,7 @@
                 <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')"><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</button>
             </div>
 
-            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ -->
+            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ CHI TIẾT 21 CỘT EXCEL -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
@@ -807,7 +807,7 @@
 
         let CURRENT_SELECTED_YEAR = "2026";
 
-        // DANH SÁCH 16 NHÂN VIÊN CHUẨN FILE EXCEL BẢN GỐC TÍNH LƯƠNG
+        // DANH SÁCH FULL 16 NHÂN VIÊN GỐC CHI TIẾT
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004242307"},
@@ -833,7 +833,6 @@
         let paymentRecordsAll = JSON.parse(localStorage.getItem('sys_payment_records_v3')) || [];
         let itAssetsRecordsAll = JSON.parse(localStorage.getItem('sys_it_records_v3')) || [];
 
-        // HÀM CHUẨN HÓA KỲ CƯỚC VIỆT NAM (NHẬN DIỆN MỌI ĐỊNH DẠNG)
         function formatPeriodVN(periodStr) {
             if (!periodStr) return "--";
             if (periodStr.includes("-")) {
@@ -883,6 +882,7 @@
             document.getElementById('config-lcv-pay').value = cfg.lcv || 2087970;
             document.getElementById('config-signer-name').value = cfg.signer || "Nguyễn Thị Tuyết Nhung";
             
+            // ÉP LUÔN LOAD 16 NHÂN VIÊN GỐC NẾU TRỐNG
             if (!salaryDataByMonth[sm] || salaryDataByMonth[sm].length === 0) {
                 salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs));
             }
@@ -904,16 +904,25 @@
             calculateSalaryLogic();
         }
 
+        // TÍNH VÀ VẼ BẢNG LƯƠNG TỰ ĐỘNG
         function calculateSalaryLogic() {
             let sm = document.getElementById('filter-month').value;
-            let activeData = salaryDataByMonth[sm] || [];
+            let activeData = salaryDataByMonth[sm];
+            
+            // NẾU LẦN ĐẦU CHƯA CÓ DỮ LIỆU THÁNG TỰ ĐỘNG NẠP 16 NHÂN VIÊN
+            if (!activeData || activeData.length === 0) {
+                activeData = JSON.parse(JSON.stringify(default16Staffs));
+                salaryDataByMonth[sm] = activeData;
+            }
+
             let cfg = salaryConfigsByMonth[sm] || { companyTitle: "TỔNG CÔNG TY GIẤY VIỆT NAM", deptTitle: "VĂN PHÒNG", sheetTitle: "BẢNG LƯƠNG CÔNG VIỆC THÁNG 5/2026", vung: 4140000, base: 2530000, lcv: 2087970, signer: "Nguyễn Thị Tuyết Nhung" };
 
             document.getElementById('disp-header-company').innerText = `${cfg.companyTitle || 'TỔNG CÔNG TY GIẤY VIỆT NAM'} - ${cfg.deptTitle || 'VĂN PHÒNG'}`;
             document.getElementById('disp-table-title').innerText = cfg.sheetTitle || "BẢNG LƯƠNG CÔNG VIỆC THÁNG 5/2026";
             document.getElementById('disp-signer-name').innerText = cfg.signer || "Nguyễn Thị Tuyết Nhung";
 
-            const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
+            const tbody = document.getElementById('tbody-salary'); 
+            tbody.innerHTML = ""; 
             let T_l_tong_cb = 0, T_lcv_thucte = 0, T_o_thuc_linh = 0;
 
             activeData.forEach((row, index) => {
@@ -972,6 +981,7 @@
 
         function addNewSalaryRow() {
             let sm = document.getElementById('filter-month').value;
+            if (!salaryDataByMonth[sm]) salaryDataByMonth[sm] = [];
             salaryDataByMonth[sm].push({
                 "stt": salaryDataByMonth[sm].length + 1, "name": "Nhân viên mới", "lcb_heso": 1.5, "lcb_phucap": 0.0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.6, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "0000000000"
             });
@@ -1457,7 +1467,6 @@
             tbody.innerHTML = "";
             let sum = 0;
 
-            // BẮT DỮ LIỆU THÔNG MINH CHO TẤT CẢ DẠNG ĐỊNH DẠNG CHUỖI
             let activeTelecoms = telecomRecordsAll.filter(r => {
                 let periodVal = String(r.period || r.year || "");
                 let matchYear = periodVal.includes(String(CURRENT_SELECTED_YEAR));
