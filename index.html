@@ -1,636 +1,88 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG ENTERPRISE PLATFORM</title>
-  <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
-    body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 15px; font-size: 13px; }
-
-    .status-connection { font-size: 11px; color: #4ade80; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-    .status-dot { width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; display: inline-block; }
-
-    .top-header { background: #0b192c; color: white; padding: 12px 20px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; border: 1px solid #1e293b; }
-    .top-title { font-size: 16px; letter-spacing: 0.5px; }
-    .top-right { display: flex; gap: 10px; align-items: center; }
-    .btn-cfg { background: #0284c7; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; }
-    .top-clock { font-size: 12px; color: #94a3b8; background: #1e293b; padding: 4px 10px; border-radius: 4px; border: 1px solid #334155; }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 15px 0; }
-    .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 12px 15px; position: relative; }
-    .stat-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 6px 0 0 6px; }
-    .stat-card.blue::before { background: #3b82f6; }
-    .stat-card.green::before { background: #22c55e; }
-    .stat-card.orange::before { background: #f97316; }
-    .stat-card.purple::before { background: #a855f7; }
-    .stat-label { font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; }
-    .stat-value { font-size: 18px; font-weight: bold; color: #38bdf8; margin-top: 4px; }
-
-    .nav-tabs { display: flex; gap: 5px; margin-bottom: 15px; border-bottom: 2px solid #334155; }
-    .tab-btn { background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-bottom: none; padding: 10px 18px; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; font-size: 13px; }
-    .tab-btn.active { background: #ea580c; color: white; border-color: #ea580c; }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    .panel { background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 18px; margin-bottom: 15px; }
-    .panel-title { color: #f97316; font-weight: bold; border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 15px; font-size: 14px; display: flex; align-items: center; justify-content: space-between; }
-
-    .form-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 12px; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-group.span-5 { grid-column: span 5; }
-    label { font-size: 11px; color: #cbd5e1; font-weight: bold; }
-    input, select { background: #0f172a; border: 1px solid #475569; color: white; padding: 8px 10px; border-radius: 4px; outline: none; font-size: 12px; }
-    input:focus, select:focus { border-color: #f97316; }
-    input[readonly] { background: #182234; color: #38bdf8; font-weight: bold; }
-
-    .file-box { background: #0f172a; border: 1px dashed #475569; border-radius: 6px; padding: 12px; margin: 12px 0; }
-    .btn-select-file { background: #ffffff; color: #0f172a; border: none; padding: 6px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
-    .file-badge-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .file-badge { background: #dc2626; color: white; padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-
-    .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-    .btn-submit { background: #ea580c; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px; }
-    .btn-submit:hover { background: #c2410c; }
-    .btn-submit:disabled { background: #64748b; cursor: not-allowed; }
-    .btn-cancel { background: #475569; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-box { background: #1e293b; border: 1px solid #475569; border-radius: 8px; width: 680px; max-width: 95%; padding: 20px; }
-    .modal-header { font-size: 15px; font-weight: bold; color: #10b981; border-left: 4px solid #10b981; padding-left: 10px; margin-bottom: 18px; }
-    .cfg-input-group { margin-bottom: 15px; }
-    .cfg-input-group label { display: block; margin-bottom: 5px; color: #e2e8f0; font-size: 12px; }
-    .cfg-input-group input { width: 100%; }
-
-    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
-    th { background: #0f172a; color: #94a3b8; text-align: left; padding: 10px; border: 1px solid #334155; font-weight: bold; }
-    td { padding: 10px; border: 1px solid #334155; color: #f8fafc; }
-    tr:nth-child(even) { background: #182234; }
-    .bg-yellow-cell { background: #854d0e !important; text-align: center; font-weight: bold; color: #fef08a; }
-    .btn-drive-link { background: #15803d; color: white; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 11px; display: inline-block; }
-  </style>
-</head>
-<body>
-
-  <div class="status-connection">
-    <span class="status-dot"></span> Kết nối Google Script API sẵn sàng
+<!-- KHU VỰC IMPORT FILE CHẤM CÔNG TỪ MÁY CHẤM CÔNG -->
+<div class="panel">
+  <div class="panel-title">
+    <span>⏱️ Nhập Dữ Liệu Từ Máy Chấm Công & Tính Lương Tự Động</span>
+    <a id="btnSheetLuong" href="https://docs.google.com/spreadsheets/d/1NxXZtsEFI5-hN1CWiTah64NaT_O5jyBD_EguxxgAHPE/edit" target="_blank" style="background:#0284c7; color:white; padding:5px 12px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:12px;">
+      📊 Xem Công Thức Trên Google Sheets
+    </a>
   </div>
 
-  <div class="top-header">
-    <div class="top-title">HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG ENTERPRISE PLATFORM</div>
-    <div class="top-right">
-      <button class="btn-cfg" onclick="moPopupConfig()">⚙️ Cấu Hình Link</button>
-      <div class="top-clock" id="clockBox">...</div>
-    </div>
+  <div style="background: #0f172a; border: 1px dashed #38bdf8; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+    <label style="color: #38bdf8; font-weight: bold; display: block; margin-bottom: 8px;">
+      📂 Chọn File Dữ Liệu Máy Chấm Công (.csv / .xlsx / .txt):
+    </label>
+    <input type="file" id="fileChamCong" accept=".csv, .xlsx, .txt" onchange="docFileChamCong(this)">
+    <p style="color: #94a3b8; font-size: 11px; margin-top: 5px; margin-bottom: 0;">
+      * Hệ thống sẽ tự động bóc tách Ngày Công, áp dụng công thức <b>[Lương NET = (LCB/26 * Công) + Phụ Cấp - BHXH - Thuế]</b> trên Google Sheets.
+    </p>
   </div>
 
-  <!-- Cards Thống Kê -->
-  <div class="stats-grid">
-    <div class="stat-card blue">
-      <div class="stat-label">LƯƠNG THỰC TẾ (NET)</div>
-      <div class="stat-value" id="cardValLuong">0 VNĐ</div>
-    </div>
-    <div class="stat-card green">
-      <div class="stat-label">THANH TOÁN VP</div>
-      <div class="stat-value" id="cardValVP">0 VNĐ</div>
-    </div>
-    <div class="stat-card orange">
-      <div class="stat-label">CƯỚC MẠNG</div>
-      <div class="stat-value" id="cardValCuoc">0 VNĐ</div>
-    </div>
-    <div class="stat-card purple">
-      <div class="stat-label">THIẾT BỊ CNTT KIỂM KÊ</div>
-      <div class="stat-value">1 Thiết bị</div>
-    </div>
+  <div class="btn-group">
+    <button type="button" class="btn-submit" style="background: #10b981;" onclick="dayDuLieuChamCongUpSheet()">
+      ⚡ Tự Động Tính Lương & Cập Nhật Bảng
+    </button>
   </div>
+</div>
 
-  <div class="nav-tabs">
-    <button class="tab-btn active" onclick="chuyenTab('luong')">👥 Tính Lương Nhân Viên</button>
-    <button class="tab-btn" onclick="chuyenTab('vanphong')">📄 Hồ Sơ Thanh Toán Văn Phòng</button>
-    <button class="tab-btn" onclick="chuyenTab('cuoc')">🌐 Cước Viễn Thông & Internet</button>
-    <button class="tab-btn" onclick="chuyenTab('cntt')">💻 Thiết Bị Công Nghệ Thông Tin</button>
-  </div>
+<script>
+  var duLieuChamCongParsed = [];
 
-  <!-- ==================== TAB 1: TÍNH LƯƠNG NHÂN VIÊN ==================== -->
-  <div id="tab-luong" class="tab-content active">
-    <div class="panel">
-      <div class="panel-title">
-        <span>👥 Quản Lý & Tính Lương Nhân Viên Chi Tiết</span>
-        <a id="btnSheetLuong" href="https://docs.google.com/spreadsheets/d/1NxXZtsEFI5-hN1CWiTah64NaT_O5jyBD_EguxxgAHPE/edit" target="_blank" style="background:#0284c7; color:white; padding:5px 12px; border-radius:4px; text-decoration:none; font-weight:bold; font-size:12px;">
-          📊 Mở Bảng Lương Google Sheets Trực Tiếp
-        </a>
-      </div>
+  // Đọc dữ liệu từ File Chấm Công (CSV/Text)
+  function docFileChamCong(input) {
+    var file = input.files[0];
+    if (!file) return;
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Mã Nhân Viên</label>
-          <input type="text" id="nvMa" placeholder="NV-001">
-        </div>
-        <div class="form-group">
-          <label>Họ và Tên</label>
-          <input type="text" id="nvHoTen" placeholder="Nguyễn Văn A">
-        </div>
-        <div class="form-group">
-          <label>Chức vụ / Phòng ban</label>
-          <input type="text" id="nvChucVu" placeholder="Trưởng Phòng Kỹ Thuật">
-        </div>
-        <div class="form-group">
-          <label>Lương cơ bản (VNĐ)</label>
-          <input type="text" id="nvLuongCB" value="0" oninput="tinhToanLuongLive()">
-        </div>
-        <div class="form-group">
-          <label>Phụ cấp (VNĐ)</label>
-          <input type="text" id="nvPhuCap" value="0" oninput="tinhToanLuongLive()">
-        </div>
-        <div class="form-group">
-          <label>Ngày công thực tế</label>
-          <input type="number" id="nvNgayCong" value="26" oninput="tinhToanLuongLive()">
-        </div>
-        <div class="form-group">
-          <label>Trừ BHXH/BHYT (10.5%)</label>
-          <input type="text" id="nvBHXH" readonly value="0">
-        </div>
-        <div class="form-group">
-          <label>Thuế TNCN tạm tính</label>
-          <input type="text" id="nvThueTNCN" value="0" oninput="tinhToanLuongLive()">
-        </div>
-        <div class="form-group">
-          <label>Kỳ lương (Tháng/Năm)</label>
-          <input type="month" id="nvKyLuong" value="2026-01">
-        </div>
-        <div class="form-group">
-          <label style="color:#38bdf8;">LƯƠNG THỰC NHẬN (NET)</label>
-          <input type="text" id="nvLươngNET" readonly value="0" style="background:#0284c7; color:white;">
-        </div>
-      </div>
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var text = e.target.result;
+      var lines = text.split("\n");
+      duLieuChamCongParsed = [];
 
-      <div class="btn-group">
-        <button type="button" class="btn-submit" style="background:#0284c7;" onclick="themNhanVienMoi()">
-          ➕ Thêm / Cập Nhật Dữ Liệu Lương Thật
-        </button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">📑 BẢNG TÍNH LƯƠNG NHÂN VIÊN THỰC TẾ</div>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 40px; text-align: center;">STT</th>
-            <th>Mã NV</th>
-            <th>Họ và Tên</th>
-            <th>Chức vụ / Phòng ban</th>
-            <th>Lương cơ bản</th>
-            <th>Phụ cấp</th>
-            <th style="text-align: center;">Công</th>
-            <th>BHXH (10.5%)</th>
-            <th>Lương Thực Nhận (NET)</th>
-            <th style="text-align: center;">Kỳ lương</th>
-            <th style="text-align: center;">Xóa</th>
-          </tr>
-        </thead>
-        <tbody id="nvTableBody">
-          <!-- Dữ liệu thật load tại đây -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ==================== TAB 2: HỒ SƠ THANH TOÁN VĂN PHÒNG ==================== -->
-  <div id="tab-vanphong" class="tab-content">
-    <div class="panel">
-      <div class="panel-title">📄 Chỉnh Sửa Hồ Sơ Thanh Toán Văn Phòng & Link Drive</div>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Tên mục thanh toán / Nội dung</label>
-          <input type="text" id="vpTenMuc" placeholder="Tiền điện văn phòng...">
-        </div>
-        <div class="form-group">
-          <label>Đơn vị cung cấp / Bến B</label>
-          <input type="text" id="vpDonVi" placeholder="Công ty Điện lực...">
-        </div>
-        <div class="form-group">
-          <label>Loại chi phí</label>
-          <select id="vpLoaiChiPhi">
-            <option value="Điện / Nước">Điện / Nước</option>
-            <option value="Văn Phòng Phẩm">Văn Phòng Phẩm</option>
-            <option value="Thuê Mặt Bằng">Thuê Mặt Bằng</option>
-            <option value="Khác">Khác</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Số tiền thanh toán (VNĐ)</label>
-          <input type="text" id="vpSoTien" value="0">
-        </div>
-        <div class="form-group">
-          <label>Kỳ thanh toán (Tháng/Năm)</label>
-          <input type="month" id="vpKyThanhToan" value="2026-01">
-        </div>
-        <div class="form-group span-5" style="grid-column: span 4;">
-          <label style="color: #38bdf8;">🔗 Link Thư Mục Drive Hồ Sơ Văn Phòng:</label>
-          <input type="text" id="vpLinkDriveOutput" readonly placeholder="Link sẽ tự động sinh sau khi tải file lên Drive...">
-        </div>
-      </div>
-
-      <div class="file-box">
-        <button type="button" class="btn-select-file" onclick="document.getElementById('vpFileChungTu').click()">
-          ☁️ Chọn tệp chứng từ VP
-        </button>
-        <span id="vpTxtFileCount" style="margin-left: 10px; font-weight: bold; color: #4ade80;">Chưa chọn tệp</span>
-        <input type="file" id="vpFileChungTu" multiple accept="application/pdf, image/*" style="display: none;" onchange="capNhatPreviewFilesVP()">
-        <div id="vpFileBadges" class="file-badge-container"></div>
-      </div>
-
-      <div class="btn-group">
-        <button type="button" id="vpBtnSubmit" class="btn-submit" style="background: #16a34a;" onclick="batDauLuuVaDayFileVP()">
-          ☁️ Lưu Hồ Sơ Thật & Tải Tệp VP Lên Drive
-        </button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">📑 DANH SÁCH HỒ SƠ THANH TOÁN VĂN PHÒNG THỰC TẾ</div>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 40px; text-align: center;">STT</th>
-            <th>Nội dung thanh toán</th>
-            <th>Đơn vị cung cấp</th>
-            <th>Loại chi phí</th>
-            <th>Số tiền (VNĐ)</th>
-            <th style="text-align: center;">Kỳ thanh toán</th>
-            <th style="text-align: center;">Chứng từ Drive</th>
-            <th style="text-align: center;">Xóa</th>
-          </tr>
-        </thead>
-        <tbody id="vpTableBody">
-          <!-- Dữ liệu thật load tại đây -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ==================== TAB 3: CƯỚC VIỄN THÔNG & INTERNET ==================== -->
-  <div id="tab-cuoc" class="tab-content">
-    <div class="panel">
-      <div class="panel-title">📊 Chỉnh Sửa Chi Phí Cước Mạng & Link Drive</div>
-
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Tên điểm kết nối / Văn phòng</label>
-          <input type="text" id="tenDiem" placeholder="Tổng công ty...">
-        </div>
-        <div class="form-group">
-          <label>Nhà mạng cung cấp</label>
-          <select id="nhaMang">
-            <option value="VNPT">VNPT</option>
-            <option value="VIETTEL">VIETTEL</option>
-            <option value="FPT">FPT</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Gói băng thông</label>
-          <input type="text" id="goiBangThong" placeholder="Fiber VIP...">
-        </div>
-        <div class="form-group">
-          <label>Mã đường truyền / CID</label>
-          <input type="text" id="maDuongTruyen" placeholder="PTO-02...">
-        </div>
-        <div class="form-group">
-          <label>Cước phí tháng (VNĐ)</label>
-          <input type="text" id="cuocPhi" value="0">
-        </div>
-        <div class="form-group">
-          <label>Kỳ cước nhập (Tháng/Năm)</label>
-          <input type="month" id="kyCuoc" value="2026-01">
-        </div>
-        <div class="form-group span-5" style="grid-column: span 4;">
-          <label style="color: #38bdf8;">🔗 Link Thư Mục / File Drive Hóa Đơn:</label>
-          <input type="text" id="linkDriveOutput" readonly placeholder="Link sẽ tự động sinh sau khi tải file lên Drive...">
-        </div>
-      </div>
-
-      <div class="file-box">
-        <button type="button" class="btn-select-file" onclick="document.getElementById('fileChungTu').click()">
-          ☁️ Chọn tệp chứng từ Cước
-        </button>
-        <span id="txtFileCount" style="margin-left: 10px; font-weight: bold; color: #4ade80;">Chưa chọn tệp</span>
-        <input type="file" id="fileChungTu" multiple accept="application/pdf, image/*" style="display: none;" onchange="capNhatPreviewFiles()">
-        <div id="fileBadges" class="file-badge-container"></div>
-      </div>
-
-      <div class="btn-group">
-        <button type="button" id="btnSubmit" class="btn-submit" onclick="batDauLuuVaDayFile()">
-          ☁️ Lưu Cước Thật & Tải Tệp Lên Drive
-        </button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-title">📑 DANH SÁCH CHI PHÍ ĐƯỜNG TRUYỀN INTERNET THỰC TẾ</div>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 40px; text-align: center;">STT</th>
-            <th>Điểm kết nối / Văn phòng</th>
-            <th>Nhà mạng</th>
-            <th>Gói băng thông</th>
-            <th>Mã đường truyền</th>
-            <th>Chi phí (VNĐ)</th>
-            <th style="text-align: center;">Kỳ cước</th>
-            <th style="text-align: center;">Chứng từ Drive</th>
-            <th style="text-align: center;">Xóa</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          <!-- Dữ liệu thật load tại đây -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- POPUP CONFIG -->
-  <div class="modal-overlay" id="popupConfig">
-    <div class="modal-box">
-      <div class="modal-header">CẤU HÌNH LINK GOOGLE SHEET VÀ DRIVE</div>
-      <div class="cfg-input-group">
-        <label>1. Link Google Script Web App API (.../exec):</label>
-        <input type="text" id="cfgApiExecUrl" value="https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec">
-      </div>
-      <div class="cfg-input-group">
-        <label>2. Link Google Sheets Xem BẢNG LƯƠNG Trực Tiếp:</label>
-        <input type="text" id="cfgSheetLuongUrl" value="https://docs.google.com/spreadsheets/d/1NxXZtsEFI5-hN1CWiTah64NaT_O5jyBD_EguxxgAHPE/edit">
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-        <button onclick="dongPopupConfig()" style="background:#475569; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">Đóng</button>
-        <button onclick="luuPopupConfig()" style="background:#059669; color:white; border:none; padding:8px 16px; border-radius:4px; font-weight:bold; cursor:pointer;">💾 Lưu Cấu Hình Link</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    window.onload = function() {
-      loadDuLieuThat();
-    };
-
-    setInterval(function() {
-      var d = new Date();
-      document.getElementById('clockBox').innerHTML = d.toLocaleTimeString() + ' - ' + d.toLocaleDateString('vi-VN');
-    }, 1000);
-
-    function chuyenTab(tabName) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-      event.target.classList.add('active');
-      document.getElementById('tab-' + tabName).classList.add('active');
-    }
-
-    function moPopupConfig() { document.getElementById('popupConfig').style.display = 'flex'; }
-    function dongPopupConfig() { document.getElementById('popupConfig').style.display = 'none'; }
-    function luuPopupConfig() {
-      var apiUrl = document.getElementById('cfgApiExecUrl').value.trim();
-      var sheetUrl = document.getElementById('cfgSheetLuongUrl').value.trim();
-      localStorage.setItem('cfg_exec_api', apiUrl);
-      localStorage.setItem('cfg_sheet_luong', sheetUrl);
-      alert("🎉 Đã lưu cấu hình!");
-      dongPopupConfig();
-    }
-
-    // --- XỬ LÝ LƯU & LOAD DỮ LIỆU THẬT LOCAL ---
-    function loadDuLieuThat() {
-      // 1. Load Bảng Lương Thật
-      var listNV = JSON.parse(localStorage.getItem('real_db_luong') || '[]');
-      var htmlNV = "";
-      var tongNet = 0;
-      listNV.forEach((item, idx) => {
-        tongNet += parseFloat(item.net.replace(/\./g, '')) || 0;
-        htmlNV += `<tr>
-          <td style="text-align:center;">${idx + 1}</td>
-          <td><b>${item.ma}</b></td>
-          <td>${item.ten}</td>
-          <td>${item.chucVu}</td>
-          <td>${item.luongCB} VNĐ</td>
-          <td>${item.phuCap} VNĐ</td>
-          <td style="text-align:center;">${item.cong}</td>
-          <td>${item.bhxh} VNĐ</td>
-          <td style="color:#38bdf8; font-weight:bold;">${item.net} VNĐ</td>
-          <td class="bg-yellow-cell">${item.ky}</td>
-          <td style="text-align:center;"><button onclick="xoaDong('real_db_luong', ${idx})" style="background:red; color:white; border:none; padding:2px 6px; cursor:pointer;">🗑️</button></td>
-        </tr>`;
-      });
-      document.getElementById('nvTableBody').innerHTML = htmlNV || '<tr><td colspan="11" style="text-align:center; color:#94a3b8;">Chưa có dữ liệu lương thật. Hãy nhập thông tin phía trên.</td></tr>';
-      document.getElementById('cardValLuong').innerHTML = tongNet.toLocaleString('vi-VN') + " VNĐ";
-
-      // 2. Load Bảng Cước Thật
-      var listCuoc = JSON.parse(localStorage.getItem('real_db_cuoc') || '[]');
-      var htmlCuoc = "";
-      var tongCuoc = 0;
-      listCuoc.forEach((item, idx) => {
-        tongCuoc += parseFloat(item.cuocPhi.replace(/\./g, '')) || 0;
-        var btnLink = item.fileUrl ? `<a href="${item.fileUrl}" target="_blank" class="btn-drive-link">📂 Mở Drive</a>` : `<span style="color:#94a3b8;">Chưa có file</span>`;
-        htmlCuoc += `<tr>
-          <td style="text-align:center;">${idx + 1}</td>
-          <td><b>${item.tenDiem}</b></td>
-          <td>${item.nhaMang}</td>
-          <td>${item.goiBangThong}</td>
-          <td>${item.maDuongTruyen}</td>
-          <td style="color:#38bdf8; font-weight:bold;">${item.cuocPhi} VNĐ</td>
-          <td class="bg-yellow-cell">${item.kyCuoc}</td>
-          <td style="text-align:center;">${btnLink}</td>
-          <td style="text-align:center;"><button onclick="xoaDong('real_db_cuoc', ${idx})" style="background:red; color:white; border:none; padding:2px 6px; cursor:pointer;">🗑️</button></td>
-        </tr>`;
-      });
-      document.getElementById('tableBody').innerHTML = htmlCuoc || '<tr><td colspan="9" style="text-align:center; color:#94a3b8;">Chưa có dữ liệu cước thật.</td></tr>';
-      document.getElementById('cardValCuoc').innerHTML = tongCuoc.toLocaleString('vi-VN') + " VNĐ";
-
-      // 3. Load Bảng Văn Phòng Thật
-      var listVP = JSON.parse(localStorage.getItem('real_db_vp') || '[]');
-      var htmlVP = "";
-      var tongVP = 0;
-      listVP.forEach((item, idx) => {
-        tongVP += parseFloat(item.soTien.replace(/\./g, '')) || 0;
-        var btnLink = item.fileUrl ? `<a href="${item.fileUrl}" target="_blank" class="btn-drive-link" style="background:#0284c7;">📂 Mở Drive VP</a>` : `<span style="color:#94a3b8;">Chưa có file</span>`;
-        htmlVP += `<tr>
-          <td style="text-align:center;">${idx + 1}</td>
-          <td><b>${item.tenMuc}</b></td>
-          <td>${item.donVi}</td>
-          <td>${item.loai}</td>
-          <td style="color:#38bdf8; font-weight:bold;">${item.soTien} VNĐ</td>
-          <td class="bg-yellow-cell">${item.ky}</td>
-          <td style="text-align:center;">${btnLink}</td>
-          <td style="text-align:center;"><button onclick="xoaDong('real_db_vp', ${idx})" style="background:red; color:white; border:none; padding:2px 6px; cursor:pointer;">🗑️</button></td>
-        </tr>`;
-      });
-      document.getElementById('vpTableBody').innerHTML = htmlVP || '<tr><td colspan="8" style="text-align:center; color:#94a3b8;">Chưa có dữ liệu văn phòng thật.</td></tr>';
-      document.getElementById('cardValVP').innerHTML = tongVP.toLocaleString('vi-VN') + " VNĐ";
-    }
-
-    function xoaDong(key, index) {
-      if (confirm("Xóa dòng dữ liệu thật này?")) {
-        var list = JSON.parse(localStorage.getItem(key) || '[]');
-        list.splice(index, 1);
-        localStorage.setItem(key, JSON.stringify(list));
-        loadDuLieuThat();
+      // Đọc từng dòng từ file máy chấm công
+      for (var i = 1; i < lines.length; i++) {
+        var cols = lines[i].split(",");
+        if (cols.length >= 3) {
+          duLieuChamCongParsed.push({
+            maNV: cols[0].trim(),
+            hoTen: cols[1].trim(),
+            ngayCong: parseFloat(cols[2]) || 0, // Số công thực tế từ máy
+            luongCB: parseFloat(cols[3]) || 10000000,
+            phuCap: parseFloat(cols[4]) || 1000000,
+            thueTNCN: parseFloat(cols[5]) || 0
+          });
+        }
       }
+      alert("🎉 Đã đọc thành công " + duLieuChamCongParsed.length + " dòng dữ liệu chấm công!");
+    };
+    reader.readAsText(file);
+  }
+
+  // Gửi sang Apps Script để đẩy vào Sheet có sẵn công thức
+  function dayDuLieuChamCongUpSheet() {
+    var execUrl = localStorage.getItem('cfg_exec_api') || document.getElementById('cfgApiExecUrl').value.trim();
+
+    if (duLieuChamCongParsed.length === 0) {
+      alert("⚠️ Vui lòng chọn file chấm công trước!");
+      return;
     }
 
-    // --- THÊM LƯƠNG NHÂN VIÊN THẬT ---
-    function tinhToanLuongLive() {
-      var luongCB = parseFloat(document.getElementById('nvLuongCB').value.replace(/\./g, '')) || 0;
-      var phuCap = parseFloat(document.getElementById('nvPhuCap').value.replace(/\./g, '')) || 0;
-      var thue = parseFloat(document.getElementById('nvThueTNCN').value.replace(/\./g, '')) || 0;
-
-      var bhxh = luongCB * 0.105;
-      var luongNET = (luongCB + phuCap) - bhxh - thue;
-
-      document.getElementById('nvBHXH').value = bhxh.toLocaleString('vi-VN');
-      document.getElementById('nvLươngNET').value = luongNET.toLocaleString('vi-VN');
-    }
-
-    function themNhanVienMoi() {
-      var item = {
-        ma: document.getElementById('nvMa').value || "NV-Mới",
-        ten: document.getElementById('nvHoTen').value || "Chưa nhập tên",
-        chucVu: document.getElementById('nvChucVu').value || "Nhân viên",
-        luongCB: document.getElementById('nvLuongCB').value,
-        phuCap: document.getElementById('nvPhuCap').value,
-        cong: document.getElementById('nvNgayCong').value,
-        bhxh: document.getElementById('nvBHXH').value,
-        net: document.getElementById('nvLươngNET').value,
-        ky: document.getElementById('nvKyLuong').value
-      };
-
-      var list = JSON.parse(localStorage.getItem('real_db_luong') || '[]');
-      list.push(item);
-      localStorage.setItem('real_db_luong', JSON.stringify(list));
-
-      alert("🎉 Đã lưu thành công dữ liệu lương thật!");
-      loadDuLieuThat();
-    }
-
-    // --- UPLOAD CƯỚC MẠNG THẬT ---
-    function capNhatPreviewFiles() {
-      var input = document.getElementById('fileChungTu');
-      document.getElementById('txtFileCount').innerHTML = input.files.length > 0 ? "Đã chọn (" + input.files.length + " tệp)" : "Chưa chọn tệp";
-    }
-
-    async function batDauLuuVaDayFile() {
-      var execUrl = localStorage.getItem('cfg_exec_api') || document.getElementById('cfgApiExecUrl').value.trim();
-      var fileInput = document.getElementById('fileChungTu');
-      var btnSubmit = document.getElementById('btnSubmit');
-      var files = fileInput.files;
-
-      if (!files || files.length === 0) { alert("⚠️ Vui lòng chọn tệp chứng từ!"); return; }
-
-      btnSubmit.disabled = true;
-      btnSubmit.innerHTML = "⏳ Đang đẩy file lên Drive...";
-
-      try {
-        var filePayloads = [];
-        for (var i = 0; i < files.length; i++) {
-          var base64 = await convertFileToBase64(files[i]);
-          filePayloads.push({ fileName: files[i].name, mimeType: files[i].type, fileBase64: base64 });
-        }
-
-        var response = await fetch(execUrl, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ loaiChiPhi: "CƯỚC VIỄN THÔNG INTERNET", monthLabel: document.getElementById('kyCuoc').value, files: filePayloads })
-        });
-
-        var res = await response.json();
-
-        if (res.status === "success") {
-          document.getElementById('linkDriveOutput').value = res.folderUrl;
-
-          // Lưu dữ liệu thật
-          var item = {
-            tenDiem: document.getElementById('tenDiem').value || "Điểm kết nối",
-            nhaMang: document.getElementById('nhaMang').value,
-            goiBangThong: document.getElementById('goiBangThong').value,
-            maDuongTruyen: document.getElementById('maDuongTruyen').value,
-            cuocPhi: document.getElementById('cuocPhi').value,
-            kyCuoc: document.getElementById('kyCuoc').value,
-            fileUrl: res.folderUrl
-          };
-
-          var list = JSON.parse(localStorage.getItem('real_db_cuoc') || '[]');
-          list.push(item);
-          localStorage.setItem('real_db_cuoc', JSON.stringify(list));
-
-          alert("🎉 Đã tải file thật lên Drive và lưu dữ liệu thành công!");
-          loadDuLieuThat();
-        }
-      } catch (err) { alert("Lỗi: " + err.toString()); }
-      finally { btnSubmit.disabled = false; btnSubmit.innerHTML = "☁️ Lưu Cước Thật & Tải Tệp Lên Drive"; }
-    }
-
-    // --- UPLOAD VĂN PHÒNG THẬT ---
-    function capNhatPreviewFilesVP() {
-      var input = document.getElementById('vpFileChungTu');
-      document.getElementById('vpTxtFileCount').innerHTML = input.files.length > 0 ? "Đã chọn (" + input.files.length + " tệp VP)" : "Chưa chọn tệp";
-    }
-
-    async function batDauLuuVaDayFileVP() {
-      var execUrl = localStorage.getItem('cfg_exec_api') || document.getElementById('cfgApiExecUrl').value.trim();
-      var fileInput = document.getElementById('vpFileChungTu');
-      var btnSubmit = document.getElementById('vpBtnSubmit');
-      var files = fileInput.files;
-
-      if (!files || files.length === 0) { alert("⚠️ Vui lòng chọn tệp chứng từ VP!"); return; }
-
-      btnSubmit.disabled = true;
-      btnSubmit.innerHTML = "⏳ Đang đẩy file VP lên Drive...";
-
-      try {
-        var filePayloads = [];
-        for (var i = 0; i < files.length; i++) {
-          var base64 = await convertFileToBase64(files[i]);
-          filePayloads.push({ fileName: files[i].name, mimeType: files[i].type, fileBase64: base64 });
-        }
-
-        var response = await fetch(execUrl, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ loaiChiPhi: "HỒ SƠ THANH TOÁN VĂN PHÒNG", monthLabel: document.getElementById('vpKyThanhToan').value, files: filePayloads })
-        });
-
-        var res = await response.json();
-
-        if (res.status === "success") {
-          document.getElementById('vpLinkDriveOutput').value = res.folderUrl;
-
-          // Lưu dữ liệu thật
-          var item = {
-            tenMuc: document.getElementById('vpTenMuc').value || "Thanh toán VP",
-            donVi: document.getElementById('vpDonVi').value,
-            loai: document.getElementById('vpLoaiChiPhi').value,
-            soTien: document.getElementById('vpSoTien').value,
-            ky: document.getElementById('vpKyThanhToan').value,
-            fileUrl: res.folderUrl
-          };
-
-          var list = JSON.parse(localStorage.getItem('real_db_vp') || '[]');
-          list.push(item);
-          localStorage.setItem('real_db_vp', JSON.stringify(list));
-
-          alert("🎉 Đã lưu dữ liệu thanh toán VP thật!");
-          loadDuLieuThat();
-        }
-      } catch (err) { alert("Lỗi VP: " + err.toString()); }
-      finally { btnSubmit.disabled = false; btnSubmit.innerHTML = "☁️ Lưu Hồ Sơ Thật & Tải Tệp VP Lên Drive"; }
-    }
-
-    function convertFileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        var reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-  </script>
-</body>
-</html>
+    fetch(execUrl, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "importChamCong",
+        rows: duLieuChamCongParsed
+      })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.status === "success") {
+        alert("🎉 " + res.message);
+        location.reload(); // Tải lại để cập nhật bảng lương mới nhất từ Google Sheets
+      } else {
+        alert("❌ Lỗi: " + res.message);
+      }
+    })
+    .catch(err => alert("Lỗi kết nối: " + err.toString()));
+  }
+</script>
