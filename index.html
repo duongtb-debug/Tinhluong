@@ -8,7 +8,7 @@
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
     body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 15px; font-size: 13px; }
 
-    /* Status Connection */
+    /* Trạng thái kết nối */
     .status-connection { font-size: 11px; color: #4ade80; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
     .status-dot { width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; display: inline-block; }
 
@@ -39,7 +39,7 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Panel Panel Form UI */
+    /* Panel Form UI */
     .panel { background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 18px; margin-bottom: 15px; }
     .panel-title { color: #f97316; font-weight: bold; border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 15px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
 
@@ -56,7 +56,6 @@
     .btn-select-file { background: #ffffff; color: #0f172a; border: none; padding: 6px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
     .file-badge-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .file-badge { background: #dc2626; color: white; padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 6px; }
-    .file-badge span.close-btn { cursor: pointer; background: rgba(0,0,0,0.3); padding: 0 4px; border-radius: 2px; }
 
     /* Action Buttons */
     .btn-group { display: flex; gap: 10px; margin-top: 15px; }
@@ -89,7 +88,7 @@
     <span class="status-dot"></span> Kết nối Google Script API sẵn sàng
   </div>
 
-  <!-- Header -->
+  <!-- Header Top Bar -->
   <div class="top-header">
     <div class="top-title">HỆ THỐNG QUẢN TRỊ TỔNG HỢP VÀ TÍNH LƯƠNG ENTERPRISE PLATFORM</div>
     <div class="top-right">
@@ -106,7 +105,7 @@
     </div>
     <div class="stat-card green">
       <div class="stat-label">THANH TOÁN VP</div>
-      <div class="stat-value">0 VNĐ</div>
+      <div class="stat-value" id="cardValVP">0 VNĐ</div>
     </div>
     <div class="stat-card orange">
       <div class="stat-label">CƯỚC MẠNG</div>
@@ -137,15 +136,100 @@
     </div>
   </div>
 
-  <!-- ==================== TAB 2: HỒ SƠ THANH TOÁN VĂN PHÒNG ==================== -->
+  <!-- ==================== TAB 2: HỒ SƠ THANH TOÁN VĂN PHÒNG (NÂNG CẤP ĐẨY FILE DRIVE) ==================== -->
   <div id="tab-vanphong" class="tab-content">
     <div class="panel">
-      <div class="panel-title">📄 Quản Lý Hồ Sơ Thanh Toán Văn Phòng</div>
-      <p style="color: #94a3b8;">Cập nhật hóa đơn chi phí điện, nước, văn phòng phẩm và hồ sơ chứng từ thanh toán.</p>
+      <div class="panel-title">📄 Chỉnh Sửa Hồ Sơ Thanh Toán Văn Phòng & Link Drive</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Tên mục thanh toán / Nội dung</label>
+          <input type="text" id="vpTenMuc" value="Thanh toán Tiền Điện Văn Phòng T9">
+        </div>
+        <div class="form-group">
+          <label>Đơn vị cung cấp / Bến B</label>
+          <input type="text" id="vpDonVi" value="Công ty Điện Lực Hà Nội">
+        </div>
+        <div class="form-group">
+          <label>Loại chi phí</label>
+          <select id="vpLoaiChiPhi">
+            <option value="Điện / Nước">Điện / Nước</option>
+            <option value="Văn Phòng Phẩm">Văn Phòng Phẩm</option>
+            <option value="Thuê Mặt Bằng">Thuê Mặt Bằng</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Số tiền thanh toán (VNĐ)</label>
+          <input type="text" id="vpSoTien" value="15.250.000">
+        </div>
+        <div class="form-group">
+          <label>Kỳ thanh toán (Tháng/Năm)</label>
+          <input type="month" id="vpKyThanhToan" value="2026-01">
+        </div>
+        <div class="form-group span-5" style="grid-column: span 4;">
+          <label style="color: #38bdf8;">🔗 Link Thư Mục Drive Hồ Sơ Văn Phòng (Tự cập nhật sau khi đẩy):</label>
+          <input type="text" id="vpLinkDriveOutput" readonly placeholder="Link sẽ tự động cập nhật sau khi đính kèm tệp và bấm lưu...">
+        </div>
+      </div>
+
+      <!-- Khung đính kèm tệp cho Văn Phòng -->
+      <label style="color: #c084fc; font-weight: bold; display: block; margin-top: 10px;">
+        📎 Đính kèm hồ sơ chứng từ thanh toán VP (Tự tạo folder HỒ SƠ THANH TOÁN VĂN PHÒNG trên Drive)
+      </label>
+      <div class="file-box">
+        <button type="button" class="btn-select-file" onclick="document.getElementById('vpFileChungTu').click()">
+          ☁️ Chọn tệp chứng từ VP
+        </button>
+        <span id="vpTxtFileCount" style="margin-left: 10px; font-weight: bold; color: #4ade80;">Chưa chọn tệp</span>
+        <input type="file" id="vpFileChungTu" multiple accept="application/pdf, image/*" style="display: none;" onchange="capNhatPreviewFilesVP()">
+        
+        <div id="vpFileBadges" class="file-badge-container"></div>
+      </div>
+
+      <div class="btn-group">
+        <button type="button" id="vpBtnSubmit" class="btn-submit" style="background: #16a34a;" onclick="batDauLuuVaDayFileVP()">
+          ☁️ Lưu Hồ Sơ & Tải Tệp VP Lên Drive
+        </button>
+        <button type="button" class="btn-cancel" onclick="xoaFormVP()">✖ Hủy</button>
+      </div>
+    </div>
+
+    <!-- Bảng danh sách Thanh Toán Văn Phòng -->
+    <div class="panel">
+      <div class="panel-title">📑 DANH SÁCH HỒ SƠ THANH TOÁN VĂN PHÒNG</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 40px; text-align: center;">STT</th>
+            <th>Nội dung thanh toán</th>
+            <th>Đơn vị cung cấp</th>
+            <th>Loại chi phí</th>
+            <th>Số tiền (VNĐ)</th>
+            <th style="text-align: center;">Kỳ thanh toán</th>
+            <th style="text-align: center;">Chứng từ Drive</th>
+            <th style="text-align: center;">Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="vpTableBody">
+          <tr>
+            <td style="text-align: center;">1</td>
+            <td><b>Thanh toán Tiền Điện Văn Phòng T9</b></td>
+            <td>Công ty Điện Lực Hà Nội</td>
+            <td>Điện / Nước</td>
+            <td style="color: #38bdf8; font-weight: bold;">15.250.000 VNĐ</td>
+            <td class="bg-yellow-cell">Tháng 01/2026</td>
+            <td id="vpTdCellDriveLink" style="text-align: center; color: #94a3b8;">Chưa có file</td>
+            <td style="text-align: center;">
+              <button style="border: 1px solid #475569; background: #0f172a; color: white; cursor: pointer; padding: 2px 6px; border-radius: 3px;">✏️ Sửa</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- ==================== TAB 3: CƯỚC VIỄN THÔNG & INTERNET (CHÍNH) ==================== -->
+  <!-- ==================== TAB 3: CƯỚC VIỄN THÔNG & INTERNET ==================== -->
   <div id="tab-cuoc" class="tab-content active">
     <div class="panel">
       <div class="panel-title">📊 Chỉnh Sửa Chi Phí Cước Mạng & Link Drive</div>
@@ -185,7 +269,7 @@
         </div>
       </div>
 
-      <!-- Khung chọn file -->
+      <!-- Khung chọn file Cước -->
       <label style="color: #c084fc; font-weight: bold; display: block; margin-top: 10px;">
         📎 Đính kèm hóa đơn chứng từ (File sẽ tải thẳng vào Folder Drive)
       </label>
@@ -207,7 +291,7 @@
       </div>
     </div>
 
-    <!-- Bảng danh sách chi phí -->
+    <!-- Bảng danh sách Cước -->
     <div class="panel">
       <div class="panel-title">📑 DANH SÁCH CHI PHÍ ĐƯỜNG TRUYỀN INTERNET</div>
       <table>
@@ -278,15 +362,15 @@
     </div>
   </div>
 
-  <!-- JS LOGIC XỬ LÝ -->
+  <!-- JAVASCRIPT SYSTEM LOGIC -->
   <script>
-    // Đồng hồ
+    // Đồng hồ hệ thống
     setInterval(function() {
       var d = new Date();
       document.getElementById('clockBox').innerHTML = d.toLocaleTimeString() + ' - ' + d.toLocaleDateString('vi-VN');
     }, 1000);
 
-    // Chuyển Tab
+    // Điều hướng Chuyển Tab
     function chuyenTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -295,7 +379,7 @@
       document.getElementById('tab-' + tabName).classList.add('active');
     }
 
-    // Modal Popup
+    // Modal Popup Cấu Hình
     function moPopupConfig() { document.getElementById('popupConfig').style.display = 'flex'; }
     function dongPopupConfig() { document.getElementById('popupConfig').style.display = 'none'; }
     function luuPopupConfig() {
@@ -310,7 +394,7 @@
       dongPopupConfig();
     }
 
-    // Hiển thị Preview File PDF
+    // --- LOGIC PHÂN HỆ 1: CƯỚC VIỄN THÔNG INTERNET ---
     function capNhatPreviewFiles() {
       var input = document.getElementById('fileChungTu');
       var txtCount = document.getElementById('txtFileCount');
@@ -327,7 +411,6 @@
       }
     }
 
-    // HÀM ĐẨY FILE THẬT 100% SANG APPS SCRIPT
     async function batDauLuuVaDayFile() {
       var execUrl = localStorage.getItem('cfg_exec_api') || document.getElementById('cfgApiExecUrl').value.trim();
       var fileInput = document.getElementById('fileChungTu');
@@ -368,9 +451,8 @@
         var res = await response.json();
 
         if (res.status === "success") {
-          alert("🎉 ĐÃ TẢI " + res.filesSaved.length + " TỆP LÊN DRIVE THÀNH CÔNG!\nThư mục: " + res.folderName);
+          alert("🎉 ĐÃ TẢI " + res.filesSaved.length + " TỆP CƯỚC MẠNG LÊN DRIVE THÀNH CÔNG!\nThư mục: " + res.folderName);
 
-          // Cập nhật link folder thật vào ô Input và Bảng
           document.getElementById('linkDriveOutput').value = res.folderUrl;
           document.getElementById('tdCellDriveLink').innerHTML = `<a href="${res.folderUrl}" target="_blank" class="btn-drive-link">📂 Mở Folder Drive (${res.filesSaved.length})</a>`;
 
@@ -386,6 +468,98 @@
       }
     }
 
+    function xoaForm() {
+      document.getElementById('fileChungTu').value = '';
+      document.getElementById('fileBadges').innerHTML = '';
+      document.getElementById('txtFileCount').innerHTML = 'Chưa chọn tệp';
+    }
+
+
+    // --- LOGIC PHÂN HỆ 2: HỒ SƠ THANH TOÁN VĂN PHÒNG ---
+    function capNhatPreviewFilesVP() {
+      var input = document.getElementById('vpFileChungTu');
+      var txtCount = document.getElementById('vpTxtFileCount');
+      var container = document.getElementById('vpFileBadges');
+      container.innerHTML = '';
+
+      if (input.files.length > 0) {
+        txtCount.innerHTML = "Đã chọn (" + input.files.length + " tệp VP)";
+        for (var i = 0; i < input.files.length; i++) {
+          container.innerHTML += `<div class="file-badge" style="background:#15803d;">PDF ${input.files[i].name}</div>`;
+        }
+      } else {
+        txtCount.innerHTML = "Chưa chọn tệp";
+      }
+    }
+
+    async function batDauLuuVaDayFileVP() {
+      var execUrl = localStorage.getItem('cfg_exec_api') || document.getElementById('cfgApiExecUrl').value.trim();
+      var fileInput = document.getElementById('vpFileChungTu');
+      var btnSubmit = document.getElementById('vpBtnSubmit');
+      var files = fileInput.files;
+
+      if (!files || files.length === 0) {
+        alert("⚠️ Bạn chưa chọn tệp chứng từ VP nào để tải lên!");
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = "⏳ Đang tải " + files.length + " tệp VP lên Drive...";
+
+      try {
+        var filePayloads = [];
+        for (var i = 0; i < files.length; i++) {
+          var base64 = await convertFileToBase64(files[i]);
+          filePayloads.push({
+            fileName: files[i].name,
+            mimeType: files[i].type,
+            fileBase64: base64
+          });
+        }
+
+        // Đánh dấu loaiChiPhi: HỒ SƠ THANH TOÁN VĂN PHÒNG
+        var payload = {
+          loaiChiPhi: "HỒ SƠ THANH TOÁN VĂN PHÒNG",
+          monthLabel: document.getElementById('vpKyThanhToan').value,
+          files: filePayloads
+        };
+
+        var response = await fetch(execUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        var res = await response.json();
+
+        if (res.status === "success") {
+          alert("🎉 ĐÃ TẢI " + res.filesSaved.length + " TỆP HỒ SƠ VĂN PHÒNG LÊN DRIVE THÀNH CÔNG!\nThư mục: " + res.folderName);
+
+          document.getElementById('vpLinkDriveOutput').value = res.folderUrl;
+          document.getElementById('vpTdCellDriveLink').innerHTML = `<a href="${res.folderUrl}" target="_blank" class="btn-drive-link" style="background:#0284c7;">📂 Mở Folder Drive VP (${res.filesSaved.length})</a>`;
+          
+          // Cập nhật card Thống kê VP
+          document.getElementById('cardValVP').innerHTML = document.getElementById('vpSoTien').value + " VNĐ";
+
+        } else {
+          alert("❌ Lỗi Google Drive VP: " + res.message);
+        }
+
+      } catch (err) {
+        alert("❌ Lỗi gửi tệp VP: " + err.toString());
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = "☁️ Lưu Hồ Sơ & Tải Tệp VP Lên Drive";
+      }
+    }
+
+    function xoaFormVP() {
+      document.getElementById('vpFileChungTu').value = '';
+      document.getElementById('vpFileBadges').innerHTML = '';
+      document.getElementById('vpTxtFileCount').innerHTML = 'Chưa chọn tệp';
+    }
+
+    // Helper mã hóa
     function convertFileToBase64(file) {
       return new Promise((resolve, reject) => {
         var reader = new FileReader();
@@ -393,12 +567,6 @@
         reader.onerror = error => reject(error);
         reader.readAsDataURL(file);
       });
-    }
-
-    function xoaForm() {
-      document.getElementById('fileChungTu').value = '';
-      document.getElementById('fileBadges').innerHTML = '';
-      document.getElementById('txtFileCount').innerHTML = 'Chưa chọn tệp';
     }
   </script>
 </body>
