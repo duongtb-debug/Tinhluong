@@ -25,11 +25,11 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        body, input, select, textarea, button, table, td, th { 
-            font-family: 'Times New Roman', Times, serif !important; 
+        body, input, select, textarea, button, table { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; 
         }
         body { 
-            font-size: 15px; margin: 0; padding: 15px; background: var(--bg-light); color: var(--text-main); line-height: 1.5;
+            font-size: 13px; margin: 0; padding: 15px; background: var(--bg-light); color: var(--text-main);
         }
         
         .workspace { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
@@ -37,8 +37,8 @@
 
         .db-status-bar {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 18px; background: #cbd5e1; border-bottom: 1px solid var(--border-color);
-            font-size: 14px; font-weight: bold; border-radius: 6px; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
+            padding: 8px 15px; background: #cbd5e1; border-bottom: 1px solid var(--border-color);
+            font-size: 13px; font-weight: bold; border-radius: 4px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;
         }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; background-color: var(--green); }
         .status-dot.syncing { background-color: var(--orange); animation: blink 1s infinite; }
@@ -48,18 +48,18 @@
             display: flex; align-items: center; gap: 8px; background: #ffffff; padding: 4px 12px; border-radius: 4px; border: 2px solid var(--blue); color: var(--blue);
         }
         .year-selector-box select {
-            border: none; font-weight: bold; color: var(--blue); outline: none; background: transparent; font-size: 14px; cursor: pointer;
+            border: none; font-weight: bold; color: var(--blue); outline: none; background: transparent; font-size: 13px; cursor: pointer;
         }
 
-        .header { display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; padding: 14px 22px; border-radius: 6px; margin-bottom: 15px; }
-        .header h1 { font-size: 20px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
-        .live-clock-box { background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 4px; font-size: 14px; text-align: right; border: 1px solid rgba(255,255,255,0.3); font-weight: bold; color: #fef08a; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; padding: 12px 20px; border-radius: 4px; margin-bottom: 12px; }
+        .header h1 { font-size: 16px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
+        .live-clock-box { background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 4px; font-family: monospace !important; font-size: 13px; text-align: right; border: 1px solid rgba(255,255,255,0.3); font-weight: bold; color: #fef08a; }
 
-        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 15px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
         @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
 
         .stat-card { 
-            background: white; padding: 12px 16px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
+            background: white; padding: 10px 14px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); 
             border: 1px solid var(--border-color); border-left: 5px solid var(--blue);
             display: flex; align-items: center; justify-content: space-between;
         }
@@ -67,39 +67,27 @@
         .stat-card.green { border-left-color: var(--green); }
         .stat-card.purple { border-left-color: var(--purple); }
         .stat-info { display: flex; flex-direction: column; }
-        .stat-title { font-size: 12px; text-transform: uppercase; color: #475569; font-weight: bold; letter-spacing: 0.3px; }
-        .stat-value { font-size: 17px; font-weight: bold; color: var(--primary); margin-top: 2px; }
-        .stat-icon { font-size: 22px; opacity: 0.3; }
+        .stat-title { font-size: 11px; text-transform: uppercase; color: #475569; font-weight: bold; letter-spacing: 0.3px; }
+        .stat-value { font-size: 15px; font-weight: bold; color: var(--primary); margin-top: 2px; }
+        .stat-icon { font-size: 20px; opacity: 0.3; }
 
         .salary-visual-summary {
-            display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 auto 15px auto; width: 100%; background: #ffffff; padding: 12px 18px; border-radius: 8px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 auto 15px auto; max-width: 900px; background: #ffffff; padding: 10px 16px; border-radius: 8px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.04);
         }
         @media (max-width: 768px) { .salary-visual-summary { flex-direction: column; width: 100%; } .visual-mini-card { width: 100%; } }
-        .visual-mini-card { flex: 1; background: #f8fafc; padding: 10px 16px; border-radius: 6px; border: 1px solid #cbd5e1; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .visual-lbl { font-size: 14px; font-weight: bold; color: #334155; white-space: nowrap; display: flex; align-items: center; }
-        .visual-val { font-size: 17px; font-weight: bold; color: var(--primary); white-space: nowrap; }
+        .visual-mini-card { flex: 1; background: #f8fafc; padding: 8px 14px; border-radius: 6px; border: 1px solid #cbd5e1; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .visual-lbl { font-size: 12px; font-weight: bold; color: #334155; white-space: nowrap; display: flex; align-items: center; }
+        .visual-val { font-size: 15px; font-weight: bold; color: var(--primary); white-space: nowrap; }
 
-        /* KHU VỰC CẤU HÌNH RỘNG RÃI RÕ RÀNG THEO YÊU CẦU */
-        .config-toolbar-container { display: flex; justify-content: space-between; align-items: flex-end; gap: 15px; flex-wrap: wrap; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #cbd5e1; }
-        .config-inputs-group { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; flex: 1; width: 100%; }
-        .config-inputs-group .form-group { flex: 1; min-width: 140px; }
-        .config-inputs-group .form-group input { height: 38px; font-weight: bold; font-size: 15px; width: 100%; }
-        .config-actions-group { display: flex; align-items: center; gap: 10px; white-space: nowrap; margin-top: 10px; }
-        .config-actions-group .btn { height: 38px; padding: 0 16px; font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-
-        /* BỐ CỤC KHU VỰC NHẬP TIÊU ĐỀ RỘNG RÃI HƠN */
-        .grid-config-header {
-            display: grid;
-            grid-template-columns: 2fr 1.5fr 2.5fr;
-            gap: 15px;
-            margin-bottom: 12px;
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 12px;
-        }
-        @media (max-width: 900px) { .grid-config-header { grid-template-columns: 1fr; } }
+        .config-toolbar-container { display: flex; justify-content: space-between; align-items: flex-end; gap: 15px; flex-wrap: wrap; background: #f8fafc; padding: 10px 12px; border-radius: 6px; border: 1px solid #cbd5e1; }
+        .config-inputs-group { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; flex: 1; }
+        .config-inputs-group .form-group { flex: 1; min-width: 110px; }
+        .config-inputs-group .form-group input { height: 32px; font-weight: bold; font-size: 13px; }
+        .config-actions-group { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .config-actions-group .btn { height: 32px; padding: 0 14px; font-size: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
         .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 2px solid #94a3b8; overflow-x: auto; }
-        .nav-tabs .nav-tab { padding: 9px 18px; border: 1px solid #cbd5e1; border-bottom: none; background: #e2e8f0; font-weight: bold; color: #334155; cursor: pointer; font-size: 14px; border-radius: 5px 5px 0 0; white-space: nowrap; }
+        .nav-tabs .nav-tab { padding: 8px 16px; border: 1px solid #cbd5e1; border-bottom: none; background: #e2e8f0; font-weight: bold; color: #334155; cursor: pointer; font-size: 13px; border-radius: 5px 5px 0 0; white-space: nowrap; }
         .nav-tabs .nav-tab[data-tab="salary"].active { color: var(--blue) !important; background: white !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--blue) !important; }
         .nav-tabs .nav-tab[data-tab="payment"].active { color: var(--green) !important; background: white !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--green) !important; }
         .nav-tabs .nav-tab[data-tab="telecom"].active { color: var(--orange) !important; background: white !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--orange) !important; }
@@ -108,76 +96,83 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        .main-card { background: white; border-radius: 6px; padding: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #cbd5e1; }
-        .card-title { font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 14px; border-left: 5px solid var(--blue); padding-left: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .main-card { background: white; border-radius: 6px; padding: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 12px; border: 1px solid #cbd5e1; }
+        .card-title { font-size: 14px; font-weight: bold; color: var(--primary); margin-bottom: 12px; border-left: 5px solid var(--blue); padding-left: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         
-        .grid-form-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
-        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 12px; }
+        .grid-form-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 10px; }
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 10px; }
         
-        .form-group { display: flex; flex-direction: column; gap: 4px; }
-        .form-group label { font-weight: bold; color: #0f172a; font-size: 13.5px; }
-        .form-group input, .form-group select, .form-group textarea { padding: 8px 12px; border: 1.5px solid #94a3b8; border-radius: 4px; font-size: 14.5px; outline: none; background: #fff; color: #0f172a; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--blue); box-shadow: 0 0 5px rgba(37,99,235,0.3); }
+        .form-group { display: flex; flex-direction: column; gap: 3px; }
+        .form-group label { font-weight: bold; color: #0f172a; font-size: 12px; }
+        .form-group input, .form-group select, .form-group textarea { padding: 6px 10px; border: 1.5px solid #94a3b8; border-radius: 4px; font-size: 13px; outline: none; background: #fff; color: #0f172a; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--blue); box-shadow: 0 0 4px rgba(37,99,235,0.3); }
 
-        .btn { padding: 8px 18px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
+        .btn { padding: 6px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
         .btn-primary { background: var(--blue); color: white; }
         .btn-purple { background: var(--purple); color: white; }
         .btn-green { background: var(--green); color: white; }
         .btn-orange { background: var(--orange); color: white; }
         .btn-gray { background: #475569; color: white; }
         
-        .btn-delete { background: #fef2f2; color: #b91c1c; border: 1.5px solid #fca5a5; padding: 4px 10px; font-size: 13px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-delete { background: #fef2f2; color: #b91c1c; border: 1.5px solid #fca5a5; padding: 3px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-delete:hover { background: #dc2626; color: white; }
+        .btn-action-qr { background: #f3e8ff; color: #6d28d9; border: 1px solid #c084fc; padding: 3px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-        /* MỞ RỘNG BẢNG & TĂNG KÍCH THƯỚC CÁC CỘT RÕ RÀNG */
-        .table-responsive { overflow-x: auto; margin-top: 10px; width: 100%; border: 1.5px solid #64748b; border-radius: 4px; }
-        .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; font-size: 14.5px; color: #0f172a; }
+        /* TỐI ƯU CỘT HỌ VÀ TÊN RỘNG THOÁNG & RÕ DẤU TIẾNG VIỆT */
+        .table-responsive { overflow-x: auto; margin-top: 10px; width: 100%; border: 1px solid #64748b; border-radius: 4px; }
+        .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; font-size: 13px; color: #0f172a; }
         .main-table th { background: #e2e8f0; color: #0f172a; padding: 10px 8px; border: 1px solid #64748b; font-weight: bold; text-align: center; }
         .main-table td { padding: 6px 8px; border: 1px solid #94a3b8; vertical-align: middle; }
         .main-table tbody tr:nth-child(even) { background-color: #f8fafc; }
         .main-table tbody tr:hover { background-color: #e0f2fe; }
-        .main-table tfoot tr { background-color: #fef9c3; font-weight: bold; }
-        .main-table tfoot td { border-top: 2px solid #0f172a; font-size: 15px; }
         
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         .font-bold { font-weight: bold; }
         
         .inp-table { 
-            width: 100%; padding: 6px 10px; border: 1px solid #64748b; border-radius: 4px; 
-            font-size: 14.5px; font-weight: 600; outline: none; background: #ffffff; color: #0f172a;
-            transition: all 0.2s ease-in-out;
+            width: 100%; padding: 6px 8px; border: 1px solid #64748b; border-radius: 4px; 
+            font-size: 13px; font-weight: 600; outline: none; background: #ffffff; color: #0f172a;
+            transition: all 0.2s ease-in-out; line-height: 1.5;
         }
         .inp-table:focus { border: 2px solid var(--blue); background: #ffffff; box-shadow: 0 0 5px rgba(37,99,235,0.4); }
         
-        /* ĐIỀU CHỈNH ĐỘ RỘNG MỞ RỘNG RÕ RÀNG THEO HÌNH ẢNH */
-        .inp-name { min-width: 280px !important; text-align: left; font-size: 15px; font-weight: bold; color: #0284c7; }
-        .inp-account { min-width: 150px !important; text-align: center; font-size: 14.5px; letter-spacing: 0.5px; }
-        .inp-num-sm { min-width: 55px !important; width: 60px; text-align: center; font-size: 14.5px; }
-        .inp-table.inp-tam-ung { 
-            background-color: #fff7ed !important; border: 1.5px solid #ea580c !important; 
-            color: #c2410c !important; font-weight: bold !important; min-width: 130px !important; 
-            text-align: right; font-size: 14.5px; 
+        /* Đã mở rộng min-width lên 240px giúp tên dài không bị che khuất, hiển thị rõ ràng dấu ngã/hỏi */
+        .inp-name { 
+            min-width: 240px; text-align: left; font-size: 13px; font-weight: 700;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif !important; 
+            letter-spacing: 0.3px; color: #0284c7;
         }
+        
+        .inp-account { min-width: 130px; text-align: center; font-family: monospace !important; font-size: 13px; letter-spacing: 0.5px; }
+        .inp-num-sm { min-width: 50px; width: 55px; text-align: center; font-size: 13px; }
+        .inp-table.inp-tam-ung { background-color: #fff7ed !important; border: 1.5px solid #ea580c !important; color: #c2410c !important; font-weight: bold !important; min-width: 100px; text-align: right; font-size: 13px; }
 
+        /* Signature Section Styles */
         .signature-container { margin-top: 35px; display: flex; justify-content: space-between; text-align: center; padding: 10px 40px; }
-        .signature-box { flex: 1; font-size: 15px; }
-        .signature-title { font-weight: bold; font-size: 16px; text-transform: uppercase; margin-bottom: 4px; color: #0f172a; }
-        .signature-note { font-style: italic; font-size: 13.5px; color: #64748b; margin-bottom: 70px; }
-        .signature-name { font-weight: bold; font-size: 16px; color: #0f172a; }
+        .signature-box { flex: 1; font-size: 13px; }
+        .signature-title { font-weight: bold; font-size: 14px; text-transform: uppercase; margin-bottom: 4px; color: #0f172a; }
+        .signature-note { font-style: italic; font-size: 12px; color: #64748b; margin-bottom: 65px; }
+        .signature-name { font-weight: bold; font-size: 14px; color: #0f172a; }
 
-        .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid #cbd5e1; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 180px; }
+
+        /* LỊCH VẠN NIÊN BLOCK STYLES */
+        .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid #cbd5e1; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
-        .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; }
         .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 13px; text-align: center; }
-        .calendar-block-details { padding: 8px; font-size: 13px; line-height: 1.4; color: #334155; background: #fafafa; }
+        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 12px; text-align: center; }
+        .calendar-block-details { padding: 8px; font-size: 12px; line-height: 1.4; color: #334155; background: #fafafa; }
         .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 4px 0; display: flex; justify-content: space-between; }
         .cal-box-section { margin-top: 6px; padding-top: 5px; border-top: 1px dashed #cbd5e1; }
-        .cal-box-title { font-weight: bold; color: var(--purple); font-size: 13px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
+        .cal-box-title { font-weight: bold; color: var(--purple); font-size: 12px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
 
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 100%; max-width: 700px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
+        .modal-content { background: white; padding: 18px; border-radius: 8px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
+        
+        .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
+        .badge-cert { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -201,7 +196,7 @@
             </div>
         </div>
         <div>
-            <button type="button" class="btn btn-purple" style="padding: 4px 12px; font-size:13.5px;" onclick="openConfigUrlModal()"><i class="fa-solid fa-link"></i> Cấu hình API Web App & Link Sheet</button>
+            <button type="button" class="btn btn-purple" style="padding: 3px 10px; font-size:12px;" onclick="openConfigUrlModal()"><i class="fa-solid fa-link"></i> Cấu hình API Web App & Link Sheet</button>
         </div>
     </div>
 
@@ -251,15 +246,14 @@
                 <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')"><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</button>
             </div>
 
-            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ MỞ RỘNG THOÁNG ĐẸP -->
+            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ CHUẨN ĐẦY ĐỦ CẢI TIẾN HIỂN THỊ CỘT TÊN -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
                         <span><i class="fa-solid fa-pen-to-square" style="color:var(--blue);"></i> CẤU HÌNH TIÊU ĐỀ & THAM SỐ THÁNG - NĂM <span class="lbl-current-year">2026</span></span>
                     </div>
                     
-                    <!-- BỐ CỤC KHU VỰC ĐƯỢC MỞ RỘNG RÕ RÀNG VÀ RỘNG THOÁNG -->
-                    <div class="grid-config-header">
+                    <div class="grid-form" style="margin-bottom: 12px; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px;">
                         <div class="form-group">
                             <label style="color:var(--blue);"><i class="fa-solid fa-building"></i> Tên Công Ty / Đơn Vị Cấp Trên:</label>
                             <input type="text" id="config-company-title" value="TỔNG CÔNG TY GIẤY VIỆT NAM" oninput="handleConfigChangeLive()">
@@ -268,9 +262,9 @@
                             <label style="color:var(--purple);"><i class="fa-solid fa-sitemap"></i> Tên Phòng Ban / Bộ Phận:</label>
                             <input type="text" id="config-dept-title" value="VĂN PHÒNG" oninput="handleConfigChangeLive()">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="grid-column: span 2;">
                             <label style="color:var(--orange);"><i class="fa-solid fa-file-signature"></i> Tên BẢNG LƯƠNG Báo Cáo:</label>
-                            <input type="text" id="config-sheet-title" value="BANG LUONG CONG VIEC THANG 5/2026" oninput="handleConfigChangeLive()">
+                            <input type="text" id="config-sheet-title" value="BẢNG LƯƠNG CÔNG VIỆC THÁNG 5/2026" oninput="handleConfigChangeLive()">
                         </div>
                     </div>
 
@@ -292,7 +286,7 @@
                                 <label style="color:var(--purple);"><i class="fa-solid fa-briefcase"></i> Công việc</label>
                                 <input type="number" id="config-lcv-pay" value="2087970" oninput="handleConfigChangeLive()">
                             </div>
-                            <div class="form-group" style="min-width: 220px;">
+                            <div class="form-group" style="min-width: 180px;">
                                 <label style="color:var(--primary);"><i class="fa-solid fa-signature"></i> Người Lập Biểu</label>
                                 <input type="text" id="config-signer-name" value="Nguyễn Thị Tuyết Nhung" oninput="handleConfigChangeLive()">
                             </div>
@@ -300,13 +294,13 @@
 
                         <div class="config-actions-group">
                             <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()">
-                                <i class="fa-brands fa-google-drive"></i> Mở Google Sheet
+                                <i class="fa-brands fa-google-drive"></i> Mở Sheet
                             </button>
                             <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Đồng Bộ & Ghi Vào Sheet
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Đồng Bộ Mây
                             </button>
                             <button type="button" class="btn btn-green" onclick="loadSalaryDataFromCloud()">
-                                <i class="fa-solid fa-cloud-arrow-down"></i> Tải Dữ Liệu
+                                <i class="fa-solid fa-cloud-arrow-down"></i> Tải Từ Mây
                             </button>
                         </div>
                     </div>
@@ -322,21 +316,17 @@
                             <span class="visual-lbl"><i class="fa-solid fa-briefcase" style="color:var(--purple); margin-right:6px;"></i> TỔNG LƯƠNG CV:</span>
                             <span class="visual-val" id="v-total-lcv-text" style="color:var(--purple);">0 VND</span>
                         </div>
-                        <div class="visual-mini-card" style="background: #fff7ed; border-color: #fdba74;">
-                            <span class="visual-lbl" style="color: #c2410c;"><i class="fa-solid fa-hand-holding-dollar" style="color:var(--orange); margin-right:6px;"></i> TỔNG TẠM ỨNG:</span>
-                            <span class="visual-val" id="v-total-tamung" style="color:var(--orange); font-size:17px;">0 VND</span>
-                        </div>
                         <div class="visual-mini-card" style="background: #f0fdf4; border-color: #86efac;">
                             <span class="visual-lbl" style="color: #166534;"><i class="fa-solid fa-circle-dollar-to-slot" style="color:var(--green); margin-right:6px;"></i> THỰC LĨNH NET:</span>
-                            <span class="visual-val" id="v-total-thuc" style="color:var(--green); font-size:17px;">0 VND</span>
+                            <span class="visual-val" id="v-total-thuc" style="color:var(--green); font-size:16px;">0 VND</span>
                         </div>
                     </div>
 
                     <div class="card-title">
                         <span id="disp-table-title">DANH SÁCH BẢNG LƯƠNG CHI TIẾT NHÂN VIÊN</span>
                         <div>
-                            <button type="button" class="btn btn-orange" style="padding:4px 10px; font-size:13px;" onclick="restoreDefaultStaffs()"><i class="fa-solid fa-rotate-left"></i> Nạp Dữ Liệu Mẫu (16 Nhân Sự)</button>
-                            <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:13px;" onclick="addNewSalaryRow()"><i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên Mới</button>
+                            <button type="button" class="btn btn-orange" style="padding:4px 10px; font-size:12px;" onclick="restoreDefaultStaffs()"><i class="fa-solid fa-rotate-left"></i> Nạp Dữ Liệu Mẫu (16 Nhân Sự)</button>
+                            <button type="button" class="btn btn-primary" style="padding:4px 10px; font-size:12px;" onclick="addNewSalaryRow()"><i class="fa-solid fa-user-plus"></i> Thêm Nhân Viên Mới</button>
                         </div>
                     </div>
                     
@@ -344,42 +334,41 @@
                         <table class="main-table" id="main-salary-table">
                             <thead>
                                 <tr style="background-color: #cbd5e1;">
-                                    <th rowspan="2" style="width: 40px;">STT</th>
-                                    <th rowspan="2" style="min-width:280px;">HỌ VÀ TÊN</th>
-                                    <th rowspan="2" style="min-width:150px;">Số Tài Khoản</th>
+                                    <th rowspan="2" style="width: 35px;">STT</th>
+                                    <th rowspan="2" style="min-width:240px;">HỌ VÀ TÊN</th>
+                                    <th rowspan="2" style="min-width:130px;">Số Tài Khoản</th>
                                     <th colspan="4" class="text-center" style="background-color: #dbeafe; color:#1e40af;">Lương Cơ Bản HĐLĐ</th>
                                     <th colspan="3" class="text-center" style="background-color: #e0f2fe; color:#0369a1;">Số Ngày Công Thực Tế</th>
                                     <th colspan="3" class="text-center" style="background-color: #f1f5f9;">Chi Tiết Lương Thực Nhận</th>
                                     <th colspan="4" class="text-center" style="background-color: #f3e8ff; color:#6b21a8;">Cơ cấu Lương Công Việc (CV)</th>
                                     <th rowspan="2" class="text-right" style="background-color: #f8fafc;">Tổng LCB + LCV</th>
                                     <th rowspan="2" class="text-right" style="background-color: #fef2f2; color: var(--red);">BH Bắt Buộc (10.5%)</th>
-                                    <th rowspan="2" class="text-center" style="background-color: #ffedd5; color: #c2410c; min-width:130px;">Tạm Ứng (VND)</th>
-                                    <th rowspan="2" class="text-right" style="background-color: #fef08a; color:#854d0e; font-size:15px;">Thực Lĩnh CB+CV</th>
-                                    <th rowspan="2" style="width: 45px;">Xóa</th>
+                                    <th rowspan="2" class="text-center" style="background-color: #ffedd5; color: #c2410c;">Tạm Ứng (VND)</th>
+                                    <th rowspan="2" class="text-right" style="background-color: #fef08a; color:#854d0e; font-size:14px;">Thực Lĩnh</th>
+                                    <th rowspan="2" class="text-center" style="width: 50px;">Xóa</th>
                                 </tr>
                                 <tr style="background-color: #f1f5f9;">
-                                    <th style="background:#fffde7; width:55px;">Hệ số LCB</th>
-                                    <th style="background:#fffde7; width:55px;">Phụ cấp LCB</th>
+                                    <th style="background:#fffde7; width:60px;">Hệ số LCB</th>
+                                    <th style="background:#fffde7; width:60px;">Phụ cấp LCB</th>
                                     <th style="background:#eff6ff;">Lương Ký HĐLĐ</th>
                                     <th style="background:#eff6ff;">Lương cơ bản</th>
-                                    <th style="background:#fffde7; width:50px;">Thời gian (N)</th>
-                                    <th style="background:#fffde7; width:50px;">Phép (P)</th>
-                                    <th style="background:#fffde7; width:50px;">Lễ, VR</th>
+                                    <th style="background:#fffde7; width:52px;">Thời gian (N)</th>
+                                    <th style="background:#fffde7; width:52px;">Phép (P)</th>
+                                    <th style="background:#fffde7; width:52px;">Lễ, VR</th>
                                     <th>Lương Thời Gian</th>
                                     <th>Lương Lễ, Phép</th>
                                     <th style="font-weight:bold;">Tổng Lương CB</th>
-                                    <th style="background:#fffde7; width:55px;">Hệ số LCV</th>
-                                    <th style="background:#fffde7; width:55px;">Phụ cấp LCV</th>
+                                    <th style="background:#fffde7; width:60px;">Hệ số LCV</th>
+                                    <th style="background:#fffde7; width:60px;">Phụ cấp LCV</th>
                                     <th>LCV Gốc</th>
                                     <th style="background-color: #f3e8ff; font-weight:bold;">Lương CV Thực Tế</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-salary"></tbody>
-                            <tfoot id="tfoot-salary"></tfoot>
                         </table>
                     </div>
 
-                    <!-- PHẦN TRÌNH KÝ CHUẨN MẪU TỔNG CÔNG TY -->
+                    <!-- PHẦN TRÌNH KÝ CHUẨN MẪU -->
                     <div class="signature-container">
                         <div class="signature-box">
                             <div class="signature-title">PHÒNG NHÂN SỰ</div>
@@ -400,398 +389,43 @@
                 </div>
             </div>
 
-            <!-- CÁC TAB KHÁC GIỮ NGUYÊN HOÀN CHỈNH -->
+            <!-- TAB 2: THANH TOÁN VĂN PHÒNG -->
             <div id="tab-payment" class="tab-content">
-                <div class="main-card">
-                    <div class="card-title" style="color:var(--green);"><span>HỒ SƠ THANH TOÁN VĂN PHÒNG</span></div>
-                    <p style="color:#64748b;">Nội dung quản lý hồ sơ đề nghị thanh toán văn phòng năm 2026.</p>
-                </div>
-            </div>
-            <div id="tab-telecom" class="tab-content">
-                <div class="main-card">
-                    <div class="card-title" style="color:var(--orange);"><span>CƯỚC VIỄN THÔNG & INTERNET</span></div>
-                    <p style="color:#64748b;">Nội dung chi phí viễn thông và đính kèm hóa đơn.</p>
-                </div>
-            </div>
-            <div id="tab-it-assets" class="tab-content">
-                <div class="main-card">
-                    <div class="card-title" style="color:var(--purple);"><span>THIẾT BỊ CÔNG NGHỆ THÔNG TIN</span></div>
-                    <p style="color:#64748b;">Quản lý và kiểm kê tài sản thiết bị CNTT.</p>
-                </div>
-            </div>
-        </div>
+                <div class="main-card" style="border-left: 4px solid var(--green);">
+                    <div class="card-title" style="color:var(--green);">
+                        <span><i class="fa-solid fa-file-invoice-dollar"></i> Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng (Năm <span class="lbl-current-year">2026</span>)</span>
+                    </div>
+                    <form id="payment-main-form" onsubmit="savePaymentRecord(event)">
+                        <input type="hidden" id="payment-edit-id" value="">
+                        
+                        <div class="grid-form">
+                            <div class="form-group"><label>Nội dung thanh toán</label><input type="text" id="pay-content" required placeholder="Mua văn phòng phẩm, sửa điều hòa..."></div>
+                            <div class="form-group"><label>Đơn vị thụ hưởng</label><input type="text" id="pay-beneficiary" required placeholder="Tên nhà cung cấp..."></div>
+                            <div class="form-group"><label>Số tài khoản & Ngân hàng</label><input type="text" id="pay-account" required placeholder="STK thụ hưởng..."></div>
+                        </div>
+                        
+                        <div class="grid-form">
+                            <div class="form-group"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" oninput="calculateFlexibleTax()"></div>
+                            <div class="form-group"><label>Tiền trước thuế (Tổng lô)</label><input type="number" id="pay-pretax-input" value="0" min="0" oninput="calculateFlexibleTax()"></div>
+                            <div class="form-group">
+                                <label><input type="checkbox" id="pay-tax-toggle" checked onchange="calculateFlexibleTax()"> Áp dụng thuế VAT</label>
+                                <select id="pay-tax-rate" onchange="calculateFlexibleTax()">
+                                    <option value="0">0%</option>
+                                    <option value="5">5%</option>
+                                    <option value="8">8%</option>
+                                    <option value="10" selected>10%</option>
+                                </select>
+                            </div>
+                        </div>
 
-        <!-- CỘT PHẢI: LỊCH VẠN NIÊN -->
-        <div class="calendar-sidebar">
-            <div style="background: var(--primary); color:white; padding:10px; border-radius:4px; font-weight:bold; text-align:center; font-size:14px;"><i class="fa-solid fa-calendar-days" style="color:#fef08a;"></i> LỊCH VẠN NIÊN BLOCK</div>
-            <div style="margin-top:10px;">
-                <input type="date" id="calendar-picker" onchange="updateSmartCalendarView()" style="width:100%; padding:6px; border:1px solid #94a3b8; border-radius:4px; font-size:14px; font-weight:bold;">
-            </div>
-            
-            <div class="calendar-block-view">
-                <div class="calendar-block-head" id="cal-solar-month-year">THÁNG 05 / 2026</div>
-                <div class="calendar-block-body">
-                    <div style="font-size:15px; color:#334155; font-weight:bold; text-transform:uppercase;" id="cal-solar-week">Thứ Ba</div>
-                    <div style="font-size:75px; font-weight:900; color:#dc2626; line-height:1; margin:6px 0;" id="cal-solar-day">21</div>
-                    <div style="font-size:14px; font-weight:bold; color:#0f172a;" id="cal-solar-canchi-day">Ngày Ất Sửu</div>
+                        <div class="grid-form">
+                            <div class="form-group"><label>Tiền thuế VAT</label><input type="text" id="pay-tax-amount" readonly style="background:#f1f5f9;"></div>
+                        </div>
+                    </form>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL CONFIG URL -->
-    <div id="configUrlModal" class="modal" onclick="closeConfigUrlModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="card-title" style="border-left-color: var(--green);">CẤU HÌNH LINK GOOGLE SCRIPT & GOOGLE SHEET</div>
-            <div class="form-group" style="margin-bottom:12px;">
-                <label>1. Link Google Script Web App API (`.../exec`):</label>
-                <input type="text" id="cfg-script-url" style="width:100%;">
-            </div>
-            <div class="form-group" style="margin-bottom:15px;">
-                <label>2. Link Google Sheets Xem BẢNG LƯƠNG Trực Tiếp:</label>
-                <input type="text" id="cfg-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit" style="width:100%;">
-            </div>
-            <div style="text-align:right;">
-                <button type="button" class="btn btn-gray" onclick="closeConfigUrlModal()">Đóng</button>
-                <button type="button" class="btn btn-green" onclick="saveConfigUrls()">💾 Lưu Cấu Hình</button>
             </div>
         </div>
     </div>
 
-    <script>
-        const HARDCODED_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
-        
-        let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
-        let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || HARDCODED_SCRIPT_API; 
-
-        let CURRENT_SELECTED_YEAR = "2026";
-
-        const default16Staffs = [
-            {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
-            {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004242307"},
-            {"stt": 3, "name": "Nguyễn Thị Tuyết Nhung", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "102005035542"},
-            {"stt": 4, "name": "Vũ Thị Thu", "lcb_heso": 1.94, "lcb_phucap": 0.00, "NT": 21, "P": 0, "le_vr": 1, "he_so_lcv": 1.86, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "106004294441"},
-            {"stt": 5, "name": "Đào Thị Liên", "lcb_heso": 1.79, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "106004359838"},
-            {"stt": 6, "name": "Võ Thị Thanh Tuyền", "lcb_heso": 1.71, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.74, "phu_cap_lcv": 0.0, "tam_ung": 3000000, "account": "106868653975"},
-            {"stt": 7, "name": "Trần Thị Thanh", "lcb_heso": 1.67, "lcb_phucap": 0.00, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.48, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004294439"}
-        ];
-
-        let salaryConfigsByMonth = JSON.parse(localStorage.getItem('sys_salary_configs_by_month')) || {};
-        let salaryDataByMonth = JSON.parse(localStorage.getItem('sys_salary_by_month')) || {};
-
-        function formatNumberVN(val) {
-            let num = parseFloat(val);
-            if (isNaN(num)) return "0";
-            return Math.round(num).toLocaleString('vi-VN');
-        }
-
-        function parseNumberVN(str) {
-            if (typeof str === 'number') return str;
-            if (!str) return 0;
-            let clean = str.toString().replace(/[^0-9.-]/g, '');
-            return parseFloat(clean) || 0;
-        }
-
-        function handleGlobalYearChange() {
-            CURRENT_SELECTED_YEAR = document.getElementById('global-year-picker').value;
-            document.querySelectorAll('.lbl-current-year').forEach(el => el.innerText = CURRENT_SELECTED_YEAR);
-            document.getElementById('filter-month').value = `${CURRENT_SELECTED_YEAR}-05`;
-            handleMonthChangeSelect();
-        }
-
-        function restoreDefaultStaffs() {
-            let sm = document.getElementById('filter-month').value;
-            salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs));
-            calculateSalaryLogic();
-        }
-
-        function handleMonthChangeSelect() {
-            let sm = document.getElementById('filter-month').value;
-            if (!salaryConfigsByMonth[sm]) {
-                salaryConfigsByMonth[sm] = {
-                    companyTitle: "TỔNG CÔNG TY GIẤY VIỆT NAM",
-                    deptTitle: "VĂN PHÒNG",
-                    sheetTitle: `BANG LUONG CONG VIEC THANG ${sm.split('-')[1]}/${sm.split('-')[0]}`,
-                    vung: 4140000, base: 2530000, lcv: 2087970, signer: "Nguyễn Thị Tuyết Nhung"
-                };
-            }
-            let cfg = salaryConfigsByMonth[sm];
-            document.getElementById('config-company-title').value = cfg.companyTitle || "TỔNG CÔNG TY GIẤY VIỆT NAM";
-            document.getElementById('config-dept-title').value = cfg.deptTitle || "VĂN PHÒNG";
-            document.getElementById('config-sheet-title').value = cfg.sheetTitle || `BANG LUONG CONG VIEC THANG ${sm.split('-')[1]}/${sm.split('-')[0]}`;
-            
-            document.getElementById('config-vung-pay').value = cfg.vung || 4140000;
-            document.getElementById('config-base-pay').value = cfg.base || 2530000;
-            document.getElementById('config-lcv-pay').value = cfg.lcv || 2087970;
-            document.getElementById('config-signer-name').value = cfg.signer || "Nguyễn Thị Tuyết Nhung";
-            
-            if (!salaryDataByMonth[sm] || salaryDataByMonth[sm].length === 0) {
-                salaryDataByMonth[sm] = JSON.parse(JSON.stringify(default16Staffs));
-            }
-            calculateSalaryLogic();
-        }
-
-        function handleConfigChangeLive() {
-            let sm = document.getElementById('filter-month').value;
-            salaryConfigsByMonth[sm] = {
-                companyTitle: document.getElementById('config-company-title').value.trim(),
-                deptTitle: document.getElementById('config-dept-title').value.trim(),
-                sheetTitle: document.getElementById('config-sheet-title').value.trim(),
-                vung: parseFloat(document.getElementById('config-vung-pay').value) || 4140000,
-                base: parseFloat(document.getElementById('config-base-pay').value) || 2530000,
-                lcv: parseFloat(document.getElementById('config-lcv-pay').value) || 2087970,
-                signer: document.getElementById('config-signer-name').value.trim()
-            };
-            localStorage.setItem('sys_salary_configs_by_month', JSON.stringify(salaryConfigsByMonth));
-            calculateSalaryLogic();
-        }
-
-        function calculateSalaryLogic() {
-            let sm = document.getElementById('filter-month').value;
-            let activeData = salaryDataByMonth[sm] || [];
-            let cfg = salaryConfigsByMonth[sm] || { companyTitle: "TỔNG CÔNG TY GIẤY VIỆT NAM", deptTitle: "VĂN PHÒNG", sheetTitle: "BANG LUONG CONG VIEC THANG 5/2026", vung: 4140000, base: 2530000, lcv: 2087970, signer: "Nguyễn Thị Tuyết Nhung" };
-
-            document.getElementById('disp-header-company').innerText = `${cfg.companyTitle || 'TỔNG CÔNG TY GIẤY VIỆT NAM'} - ${cfg.deptTitle || 'VĂN PHÒNG'}`;
-            document.getElementById('disp-table-title').innerText = cfg.sheetTitle || "BANG LUONG CONG VIEC THANG 5/2026";
-            document.getElementById('disp-signer-name').innerText = cfg.signer || "Nguyễn Thị Tuyết Nhung";
-
-            const tbody = document.getElementById('tbody-salary'); tbody.innerHTML = ""; 
-            const tfoot = document.getElementById('tfoot-salary'); tfoot.innerHTML = "";
-
-            let T_lcb_goc = 0, T_l_tong_cb = 0, T_lcv_goc = 0, T_lcv_thucte = 0, T_o_tong = 0, T_bh = 0, T_tam_ung = 0, T_thuc_linh = 0;
-
-            activeData.forEach((row, index) => {
-                let lcb_goc = Math.round((parseFloat(row.lcb_heso || 0) + parseFloat(row.lcb_phucap || 0)) * cfg.vung); 
-                let luong_cb_ht = Math.round((parseFloat(row.lcb_heso || 0) + parseFloat(row.lcb_phucap || 0)) * cfg.base);
-                let l_thoigian = Math.round((luong_cb_ht / 22) * parseFloat(row.NT || 0)); 
-                let le_phep_tt = Math.round((lcb_goc / 22) * (parseFloat(row.P || 0) + parseFloat(row.le_vr || 0)));
-                let l_tong_cb = l_thoigian + le_phep_tt; 
-                
-                let lcv_goc = Math.round((parseFloat(row.he_so_lcv || 0) + parseFloat(row.phu_cap_lcv || 0)) * cfg.lcv);
-                let lcv_thucte = Math.round((lcv_goc / 22) * parseFloat(row.NT || 0)); 
-                let o_tong = l_tong_cb + lcv_thucte; 
-                let bh = Math.round(lcb_goc * 0.105); 
-                let tam_ung_val = parseFloat(row.tam_ung || 0);
-                let thuc_linh = o_tong - bh - tam_ung_val;
-
-                T_lcb_goc += lcb_goc;
-                T_l_tong_cb += l_tong_cb; 
-                T_lcv_goc += lcv_goc;
-                T_lcv_thucte += lcv_thucte; 
-                T_o_tong += o_tong;
-                T_bh += bh;
-                T_tam_ung += tam_ung_val;
-                T_thuc_linh += thuc_linh;
-
-                let tamUngFormatted = formatNumberVN(tam_ung_val);
-
-                tbody.innerHTML += `<tr>
-                    <td class="text-center font-bold">${index + 1}</td>
-                    <td class="font-bold"><input class="inp-table inp-name" type="text" value="${row.name}" oninput="updateSalaryRowValue(${index}, 'name', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-account" type="text" value="${row.account}" oninput="updateSalaryRowValue(${index}, 'account', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.lcb_heso}" oninput="updateSalaryRowValue(${index}, 'lcb_heso', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.lcb_phucap || 0}" oninput="updateSalaryRowValue(${index}, 'lcb_phucap', this.value)"></td>
-                    <td class="text-right font-bold" style="color:#1e40af;">${formatNumberVN(lcb_goc)}</td>
-                    <td class="text-right">${formatNumberVN(luong_cb_ht)}</td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.NT}" oninput="updateSalaryRowValue(${index}, 'NT', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.P || 0}" oninput="updateSalaryRowValue(${index}, 'P', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.le_vr || 0}" oninput="updateSalaryRowValue(${index}, 'le_vr', this.value)"></td>
-                    <td class="text-right">${formatNumberVN(l_thoigian)}</td>
-                    <td class="text-right">${formatNumberVN(le_phep_tt)}</td>
-                    <td class="text-right font-bold">${formatNumberVN(l_tong_cb)}</td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.he_so_lcv}" oninput="updateSalaryRowValue(${index}, 'he_so_lcv', this.value)"></td>
-                    <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.phu_cap_lcv || 0}" oninput="updateSalaryRowValue(${index}, 'phu_cap_lcv', this.value)"></td>
-                    <td class="text-right">${formatNumberVN(lcv_goc)}</td>
-                    <td class="text-right font-bold" style="color:#6b21a8;">${formatNumberVN(lcv_thucte)}</td>
-                    <td class="text-right font-bold" style="background:#f8fafc;">${formatNumberVN(o_tong)}</td>
-                    <td class="text-right" style="color:var(--red); font-weight:bold;">${formatNumberVN(bh)}</td>
-                    <td class="text-right">
-                        <input class="inp-table inp-tam-ung" type="text" value="${tamUngFormatted}" 
-                               onfocus="this.value='${tam_ung_val}'" 
-                               onblur="handleTamUngBlur(${index}, this.value)" 
-                               oninput="updateSalaryRowValue(${index}, 'tam_ung', this.value)">
-                    </td>
-                    <td class="text-right font-bold" style="background:#fef08a; color:#854d0e; font-size:15px;">${formatNumberVN(thuc_linh)}</td>
-                    <td class="text-center"><button type="button" class="btn-delete" onclick="deleteSalaryRow(${index})"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>`;
-            });
-
-            tfoot.innerHTML = `<tr>
-                <td colspan="3" class="text-center font-bold" style="font-size:15px; color:var(--primary);">TỔNG CỘNG HỆ THỐNG (${activeData.length} Nhân Sự)</td>
-                <td colspan="2"></td>
-                <td class="text-right font-bold" style="color:#1e40af;">${formatNumberVN(T_lcb_goc)}</td>
-                <td colspan="6"></td>
-                <td class="text-right font-bold">${formatNumberVN(T_l_tong_cb)}</td>
-                <td colspan="2"></td>
-                <td class="text-right font-bold">${formatNumberVN(T_lcv_goc)}</td>
-                <td class="text-right font-bold" style="color:#6b21a8;">${formatNumberVN(T_lcv_thucte)}</td>
-                <td class="text-right font-bold">${formatNumberVN(T_o_tong)}</td>
-                <td class="text-right font-bold" style="color:var(--red);">${formatNumberVN(T_bh)}</td>
-                <td class="text-right font-bold" style="color:#c2410c; background:#ffedd5;">${formatNumberVN(T_tam_ung)}</td>
-                <td class="text-right font-bold" style="background:#fef08a; color:#854d0e; font-size:16px;">${formatNumberVN(T_thuc_linh)}</td>
-                <td></td>
-            </tr>`;
-
-            localStorage.setItem('sys_salary_by_month', JSON.stringify(salaryDataByMonth));
-            document.getElementById('dash-total-pay').innerText = formatNumberVN(T_thuc_linh) + " VND";
-            document.getElementById('v-total-lcb').innerText = formatNumberVN(T_l_tong_cb) + " VND";
-            document.getElementById('v-total-lcv-text').innerText = formatNumberVN(T_lcv_thucte) + " VND";
-            document.getElementById('v-total-tamung').innerText = formatNumberVN(T_tam_ung) + " VND";
-            document.getElementById('v-total-thuc').innerText = formatNumberVN(T_thuc_linh) + " VND";
-        }
-
-        function handleTamUngBlur(index, val) {
-            let num = parseNumberVN(val);
-            let sm = document.getElementById('filter-month').value;
-            salaryDataByMonth[sm][index]['tam_ung'] = num;
-            calculateSalaryLogic();
-        }
-
-        function updateSalaryRowValue(index, field, val) {
-            let sm = document.getElementById('filter-month').value;
-            if (field === 'tam_ung') {
-                salaryDataByMonth[sm][index][field] = parseNumberVN(val);
-            } else if (field === 'name' || field === 'account') {
-                salaryDataByMonth[sm][index][field] = val;
-            } else {
-                salaryDataByMonth[sm][index][field] = parseFloat(val) || 0;
-            }
-            calculateSalaryLogic();
-        }
-
-        function addNewSalaryRow() {
-            let sm = document.getElementById('filter-month').value;
-            salaryDataByMonth[sm].push({
-                "stt": salaryDataByMonth[sm].length + 1, "name": "Nhân viên mới", "lcb_heso": 1.5, "lcb_phucap": 0.0, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 1.6, "phu_cap_lcv": 0.0, "tam_ung": 0, "account": "0000000000"
-            });
-            calculateSalaryLogic();
-        }
-
-        function deleteSalaryRow(idx) {
-            let sm = document.getElementById('filter-month').value;
-            if (confirm('Xóa nhân viên này khỏi bảng lương?')) {
-                salaryDataByMonth[sm].splice(idx, 1);
-                calculateSalaryLogic();
-            }
-        }
-
-        function openMainSalaryGoogleSheet() {
-            let sheetUrl = GOOGLE_SHEET_VIEW_URL || localStorage.getItem('sys_cfg_sheet_url');
-            if (!sheetUrl) {
-                alert("⚠️ Bạn chưa cấu hình Link Google Sheet!\n\nHãy nhấn nút 'Cấu hình API Web App & Link Sheet' để dán link Google Sheets.");
-                openConfigUrlModal();
-            } else {
-                window.open(sheetUrl, '_blank');
-            }
-        }
-
-        /* HÀM ĐỒNG BỘ CHUẨN GỬI DỮ LIỆU ĐẾN GOOGLE APPS SCRIPT ĐỂ TỰ ĐỘNG GHI SANG GOOGLE SHEET */
-        async function syncDataToCloudServer() {
-            const statusDot = document.getElementById('cloud-status-dot');
-            const statusText = document.getElementById('cloud-status-text');
-            let sm = document.getElementById('filter-month').value;
-
-            if (statusDot) statusDot.className = "status-dot syncing";
-            if (statusText) statusText.innerText = "Đang truyền dữ liệu ghi vào Google Sheet...";
-
-            calculateSalaryLogic();
-
-            try {
-                let currentMonthStaffs = salaryDataByMonth[sm] || [];
-                let currentMonthConfig = salaryConfigsByMonth[sm] || {};
-
-                let payloadData = {
-                    action: "sync_salary_data",
-                    year: CURRENT_SELECTED_YEAR,
-                    month: sm,
-                    config: currentMonthConfig,
-                    staffs: currentMonthStaffs
-                };
-
-                // Đổi phương thức gửi dữ liệu form urlencoded để Google Apps Script tiếp nhận dễ dàng
-                let formData = new URLSearchParams();
-                formData.append("payload", JSON.stringify(payloadData));
-
-                await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: formData.toString()
-                });
-
-                if (statusDot) statusDot.className = "status-dot";
-                if (statusText) statusText.innerText = "Đã đồng bộ thành công sang Google Sheet (" + new Date().toLocaleTimeString('vi-VN') + ")";
-
-                alert(`🎉 ĐỒNG BỘ THÀNH CÔNG THÔNG TIN SANG GOOGLE SHEET!\n\n` +
-                      `- Tên Bảng Lương: ${currentMonthConfig.sheetTitle}\n` +
-                      `- Kỳ Báo Cáo: Tháng ${sm}\n` +
-                      `- Đã chuyển thành công ${currentMonthStaffs.length} dòng dữ liệu sang Sheet.\n\n` +
-                      `👉 Bạn có thể bấm nút "Mở Google Sheet" để kiểm tra dữ liệu!`);
-
-            } catch (err) {
-                if (statusDot) statusDot.className = "status-dot";
-                if (statusText) statusText.innerText = "Lỗi kết nối đồng bộ";
-                alert("❌ ĐỒNG BỘ THẤT BẠI!\n\nLỗi kết nối: " + err.message);
-            }
-        }
-
-        function loadSalaryDataFromCloud() {
-            let sm = document.getElementById('filter-month').value;
-            const apiUrl = (GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API) + `?action=get_salary_data&month=${sm}`;
-            
-            fetch(apiUrl)
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "success" && data.staffs && data.staffs.length > 0) {
-                    salaryConfigsByMonth[sm] = data.config || salaryConfigsByMonth[sm];
-                    salaryDataByMonth[sm] = data.staffs;
-                    localStorage.setItem('sys_salary_configs_by_month', JSON.stringify(salaryConfigsByMonth));
-                    localStorage.setItem('sys_salary_by_month', JSON.stringify(salaryDataByMonth));
-                    handleMonthChangeSelect();
-                    alert(`✅ Đã tải dữ liệu Bảng Lương Tháng ${sm} thành công!`);
-                } else {
-                    alert(`⚠️ Chưa có dữ liệu lưu trên Server cho Tháng ${sm}.`);
-                }
-            })
-            .catch(err => alert("⚠️ Lỗi kết nối server: " + err.message));
-        }
-
-        function switchMainTab(name) { 
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
-            document.querySelectorAll('.nav-tabs .nav-tab').forEach(b => b.classList.remove('active')); 
-            document.getElementById('tab-' + name).classList.add('active'); 
-            document.querySelector(`.nav-tabs .nav-tab[data-tab="${name}"]`).classList.add('active'); 
-        }
-
-        function openConfigUrlModal() {
-            document.getElementById('cfg-script-url').value = GOOGLE_SCRIPT_API_URL;
-            document.getElementById('cfg-sheet-url').value = GOOGLE_SHEET_VIEW_URL;
-            document.getElementById('configUrlModal').style.display = 'flex';
-        }
-        function closeConfigUrlModal() { document.getElementById('configUrlModal').style.display = 'none'; }
-        function saveConfigUrls() {
-            GOOGLE_SCRIPT_API_URL = document.getElementById('cfg-script-url').value.trim() || HARDCODED_SCRIPT_API;
-            GOOGLE_SHEET_VIEW_URL = document.getElementById('cfg-sheet-url').value.trim();
-            localStorage.setItem('sys_cfg_script_url', GOOGLE_SCRIPT_API_URL);
-            localStorage.setItem('sys_cfg_sheet_url', GOOGLE_SHEET_VIEW_URL);
-            closeConfigUrlModal();
-        }
-
-        function startRealtimeLiveClock() {
-            setInterval(() => {
-                const now = new Date();
-                document.getElementById('live-system-clock').innerText = now.toLocaleString('vi-VN');
-            }, 1000);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            startRealtimeLiveClock();
-            let today = new Date();
-            let yyyy = today.getFullYear();
-            let mm = String(today.getMonth() + 1).padStart(2, '0');
-            let dd = String(today.getDate()).padStart(2, '0');
-            document.getElementById('calendar-picker').value = `${yyyy}-${mm}-${dd}`;
-            handleGlobalYearChange();
-        });
-    </script>
 </body>
 </html>
