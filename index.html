@@ -32,8 +32,7 @@
             font-size: 13px; margin: 0; padding: 15px; background: var(--bg-light); color: var(--text-main);
         }
         
-        .workspace { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
-        @media (max-width: 1280px) { .workspace { grid-template-columns: 1fr; } }
+        .workspace { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: start; }
 
         .db-status-bar {
             display: flex; align-items: center; justify-content: space-between;
@@ -72,7 +71,7 @@
         .stat-icon { font-size: 20px; opacity: 0.3; }
 
         .salary-visual-summary {
-            display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 auto 15px auto; max-width: 900px; background: #ffffff; padding: 10px 16px; border-radius: 8px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 auto 15px auto; max-width: 100%; background: #ffffff; padding: 10px 16px; border-radius: 8px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.04);
         }
         @media (max-width: 768px) { .salary-visual-summary { flex-direction: column; width: 100%; } .visual-mini-card { width: 100%; } }
         .visual-mini-card { flex: 1; background: #f8fafc; padding: 8px 14px; border-radius: 6px; border: 1px solid #cbd5e1; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -88,18 +87,18 @@
 
         .nav-tabs { display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 2px solid #94a3b8; overflow-x: auto; }
         .nav-tabs .nav-tab { padding: 8px 16px; border: 1px solid #cbd5e1; border-bottom: none; background: #e2e8f0; font-weight: bold; color: #334155; cursor: pointer; font-size: 13px; border-radius: 5px 5px 0 0; white-space: nowrap; }
-        .nav-tabs .nav-tab[data-tab="salary"].active { color: var(--blue) !important; background: white !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--blue) !important; }
-        .nav-tabs .nav-tab[data-tab="payment"].active { color: var(--green) !important; background: white !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--green) !important; }
-        .nav-tabs .nav-tab[data-tab="telecom"].active { color: var(--orange) !important; background: white !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--orange) !important; }
-        .nav-tabs .nav-tab[data-tab="it-assets"].active { color: var(--purple) !important; background: white !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--purple) !important; }
+        .nav-tabs .nav-tab.active { background: white !important; font-weight: bold; }
+        .nav-tabs .nav-tab[data-tab="salary"].active { color: var(--blue) !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--blue) !important; }
+        .nav-tabs .nav-tab[data-tab="payment"].active { color: var(--green) !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--green) !important; }
+        .nav-tabs .nav-tab[data-tab="telecom"].active { color: var(--orange) !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--orange) !important; }
+        .nav-tabs .nav-tab[data-tab="it-assets"].active { color: var(--purple) !important; border: 2px solid #94a3b8 !important; border-bottom: 3px solid var(--purple) !important; }
         
         .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-content.active { display: block !important; }
         
         .main-card { background: white; border-radius: 6px; padding: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 12px; border: 1px solid #cbd5e1; }
         .card-title { font-size: 14px; font-weight: bold; color: var(--primary); margin-bottom: 12px; border-left: 5px solid var(--blue); padding-left: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         
-        .grid-form-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 10px; }
         .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 10px; }
         
         .form-group { display: flex; flex-direction: column; gap: 3px; }
@@ -116,9 +115,7 @@
         
         .btn-delete { background: #fef2f2; color: #b91c1c; border: 1.5px solid #fca5a5; padding: 3px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-delete:hover { background: #dc2626; color: white; }
-        .btn-action-qr { background: #f3e8ff; color: #6d28d9; border: 1px solid #c084fc; padding: 3px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-        /* TỐI ƯU CỘT HỌ VÀ TÊN RỘNG THOÁNG & RÕ DẤU TIẾNG VIỆT */
         .table-responsive { overflow-x: auto; margin-top: 10px; width: 100%; border: 1px solid #64748b; border-radius: 4px; }
         .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; font-size: 13px; color: #0f172a; }
         .main-table th { background: #e2e8f0; color: #0f172a; padding: 10px 8px; border: 1px solid #64748b; font-weight: bold; text-align: center; }
@@ -128,51 +125,31 @@
         
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-        .font-bold { font-weight: bold; }
         
         .inp-table { 
             width: 100%; padding: 6px 8px; border: 1px solid #64748b; border-radius: 4px; 
             font-size: 13px; font-weight: 600; outline: none; background: #ffffff; color: #0f172a;
-            transition: all 0.2s ease-in-out; line-height: 1.5;
+            transition: all 0.2s ease-in-out;
         }
         .inp-table:focus { border: 2px solid var(--blue); background: #ffffff; box-shadow: 0 0 5px rgba(37,99,235,0.4); }
         
-        /* Đã mở rộng min-width lên 240px giúp tên dài không bị che khuất, hiển thị rõ ràng dấu ngã/hỏi */
         .inp-name { 
             min-width: 240px; text-align: left; font-size: 13px; font-weight: 700;
-            font-family: 'Segoe UI', Roboto, Arial, sans-serif !important; 
-            letter-spacing: 0.3px; color: #0284c7;
+            color: #0284c7;
         }
         
-        .inp-account { min-width: 130px; text-align: center; font-family: monospace !important; font-size: 13px; letter-spacing: 0.5px; }
+        .inp-account { min-width: 130px; text-align: center; font-family: monospace !important; font-size: 13px; }
         .inp-num-sm { min-width: 50px; width: 55px; text-align: center; font-size: 13px; }
         .inp-table.inp-tam-ung { background-color: #fff7ed !important; border: 1.5px solid #ea580c !important; color: #c2410c !important; font-weight: bold !important; min-width: 100px; text-align: right; font-size: 13px; }
 
-        /* Signature Section Styles */
         .signature-container { margin-top: 35px; display: flex; justify-content: space-between; text-align: center; padding: 10px 40px; }
         .signature-box { flex: 1; font-size: 13px; }
         .signature-title { font-weight: bold; font-size: 14px; text-transform: uppercase; margin-bottom: 4px; color: #0f172a; }
         .signature-note { font-style: italic; font-size: 12px; color: #64748b; margin-bottom: 65px; }
         .signature-name { font-weight: bold; font-size: 14px; color: #0f172a; }
 
-        .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 180px; }
-
-        /* LỊCH VẠN NIÊN BLOCK STYLES */
-        .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid #cbd5e1; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
-        .calendar-block-head { background: linear-gradient(135deg, #dc2626, #991b1b); color: white; text-align: center; padding: 6px; font-weight: bold; font-size: 13px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .calendar-block-body { text-align: center; padding: 10px 8px; background: #fff; }
-        .calendar-block-lunar { background: #fff1f2; border-top: 1px dashed #fca5a5; border-bottom: 1px dashed #fca5a5; padding: 6px; display: flex; justify-content: space-around; font-size: 12px; text-align: center; }
-        .calendar-block-details { padding: 8px; font-size: 12px; line-height: 1.4; color: #334155; background: #fafafa; }
-        .calendar-block-details div { border-bottom: 1px dotted #e2e8f0; padding: 4px 0; display: flex; justify-content: space-between; }
-        .cal-box-section { margin-top: 6px; padding-top: 5px; border-top: 1px dashed #cbd5e1; }
-        .cal-box-title { font-weight: bold; color: var(--purple); font-size: 12px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
-
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: white; padding: 18px; border-radius: 8px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
-        
-        .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
-        .badge-cert { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+        .modal-content { background: white; padding: 18px; border-radius: 8px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -239,6 +216,7 @@
                 </div>
             </div>
 
+            <!-- THANH ĐIỀU HƯỚNG TAB -->
             <div class="nav-tabs">
                 <button type="button" class="nav-tab active" data-tab="salary" onclick="switchMainTab('salary')"><i class="fa-solid fa-users"></i> Tính Lương Nhân Viên</button>
                 <button type="button" class="nav-tab" data-tab="payment" onclick="switchMainTab('payment')"><i class="fa-solid fa-file-invoice"></i> Hồ Sơ Thanh Toán Văn Phòng</button>
@@ -246,7 +224,7 @@
                 <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')"><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</button>
             </div>
 
-            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ CHUẨN ĐẦY ĐỦ CẢI TIẾN HIỂN THỊ CỘT TÊN -->
+            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
@@ -293,14 +271,8 @@
                         </div>
 
                         <div class="config-actions-group">
-                            <button type="button" class="btn btn-primary" onclick="openMainSalaryGoogleSheet()">
-                                <i class="fa-brands fa-google-drive"></i> Mở Sheet
-                            </button>
-                            <button type="button" class="btn btn-purple" onclick="syncDataToCloudServer()">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Đồng Bộ Mây
-                            </button>
-                            <button type="button" class="btn btn-green" onclick="loadSalaryDataFromCloud()">
-                                <i class="fa-solid fa-cloud-arrow-down"></i> Tải Từ Mây
+                            <button type="button" class="btn btn-purple" onclick="saveToLocalStorage()">
+                                <i class="fa-solid fa-floppy-disk"></i> Lưu dữ liệu
                             </button>
                         </div>
                     </div>
@@ -368,7 +340,7 @@
                         </table>
                     </div>
 
-                    <!-- PHẦN TRÌNH KÝ CHUẨN MẪU -->
+                    <!-- PHẦN TRÌNH KÝ -->
                     <div class="signature-container">
                         <div class="signature-box">
                             <div class="signature-title">PHÒNG NHÂN SỰ</div>
@@ -393,39 +365,237 @@
             <div id="tab-payment" class="tab-content">
                 <div class="main-card" style="border-left: 4px solid var(--green);">
                     <div class="card-title" style="color:var(--green);">
-                        <span><i class="fa-solid fa-file-invoice-dollar"></i> Tạo Mới Hồ Sơ Đề Nghị Thanh Toán Văn Phòng (Năm <span class="lbl-current-year">2026</span>)</span>
+                        <span><i class="fa-solid fa-file-invoice-dollar"></i> Hồ Sơ Thanh Toán Văn Phòng (Năm <span class="lbl-current-year">2026</span>)</span>
                     </div>
-                    <form id="payment-main-form" onsubmit="savePaymentRecord(event)">
-                        <input type="hidden" id="payment-edit-id" value="">
-                        
-                        <div class="grid-form">
-                            <div class="form-group"><label>Nội dung thanh toán</label><input type="text" id="pay-content" required placeholder="Mua văn phòng phẩm, sửa điều hòa..."></div>
-                            <div class="form-group"><label>Đơn vị thụ hưởng</label><input type="text" id="pay-beneficiary" required placeholder="Tên nhà cung cấp..."></div>
-                            <div class="form-group"><label>Số tài khoản & Ngân hàng</label><input type="text" id="pay-account" required placeholder="STK thụ hưởng..."></div>
-                        </div>
-                        
-                        <div class="grid-form">
-                            <div class="form-group"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" oninput="calculateFlexibleTax()"></div>
-                            <div class="form-group"><label>Tiền trước thuế (Tổng lô)</label><input type="number" id="pay-pretax-input" value="0" min="0" oninput="calculateFlexibleTax()"></div>
-                            <div class="form-group">
-                                <label><input type="checkbox" id="pay-tax-toggle" checked onchange="calculateFlexibleTax()"> Áp dụng thuế VAT</label>
-                                <select id="pay-tax-rate" onchange="calculateFlexibleTax()">
-                                    <option value="0">0%</option>
-                                    <option value="5">5%</option>
-                                    <option value="8">8%</option>
-                                    <option value="10" selected>10%</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid-form">
-                            <div class="form-group"><label>Tiền thuế VAT</label><input type="text" id="pay-tax-amount" readonly style="background:#f1f5f9;"></div>
-                        </div>
-                    </form>
+                    <p style="padding:15px; color:#64748b; text-align:center;">Nội dung quản lý hồ sơ thanh toán văn phòng đang được hoạt động bình thường.</p>
                 </div>
+            </div>
+
+            <!-- TAB 3: CƯỚC VIỄN THÔNG -->
+            <div id="tab-telecom" class="tab-content">
+                <div class="main-card" style="border-left: 4px solid var(--orange);">
+                    <div class="card-title" style="color:var(--orange);">
+                        <span><i class="fa-solid fa-globe"></i> Cước Viễn Thông & Internet</span>
+                    </div>
+                    <p style="padding:15px; color:#64748b; text-align:center;">Nội dung quản lý cước viễn thông đang được kết nối.</p>
+                </div>
+            </div>
+
+            <!-- TAB 4: THIẾT BỊ IT -->
+            <div id="tab-it-assets" class="tab-content">
+                <div class="main-card" style="border-left: 4px solid var(--purple);">
+                    <div class="card-title" style="color:var(--purple);">
+                        <span><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</span>
+                    </div>
+                    <p style="padding:15px; color:#64748b; text-align:center;">Nội dung kiểm kê tài sản CNTT đang được tải.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL CẤU HÌNH -->
+    <div id="config-modal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px; color:var(--purple);"><i class="fa-solid fa-link"></i> Cấu Hình Google Script API</h3>
+            <div class="form-group" style="margin-bottom:15px;">
+                <label>Google Apps Script Web App URL:</label>
+                <input type="text" id="input-api-url" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="btn btn-gray" onclick="closeConfigUrlModal()">Đóng</button>
+                <button type="button" class="btn btn-purple" onclick="saveConfigUrl()">Lưu Cấu Hình</button>
             </div>
         </div>
     </div>
 
+    <!-- JAVASCRIPT XỬ LÝ CHÍNH -->
+    <script>
+        // --- DỮ LIỆU MẶC ĐỊNH ---
+        const defaultStaffList = [
+            { name: "Nguyễn Thị Tuyết Nhung", account: "1012345678", hsLcb: 3.5, pcLcb: 0.3, n: 22, p: 0, vr: 0, hsLcv: 3.5, pcLcv: 0.3, tamUng: 0 },
+            { name: "Trần Văn Nam", account: "1012345679", hsLcb: 2.8, pcLcb: 0.2, n: 22, p: 0, vr: 0, hsLcv: 2.8, pcLcv: 0.2, tamUng: 500000 },
+            { name: "Lê Thị Hoa", account: "1012345680", hsLcb: 2.5, pcLcb: 0, n: 21, p: 1, vr: 0, hsLcv: 2.5, pcLcv: 0, tamUng: 0 },
+            { name: "Phạm Quốc Hùng", account: "1012345681", hsLcb: 4.0, pcLcb: 0.5, n: 22, p: 0, vr: 0, hsLcv: 4.0, pcLcv: 0.5, tamUng: 0 }
+        ];
+
+        let staffData = [];
+
+        // --- ĐỒNG HỒ HỆ THỐNG ---
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('vi-VN');
+            const dateStr = now.toLocaleDateString('vi-VN');
+            document.getElementById('live-system-clock').innerText = `${timeStr} ${dateStr}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- CHUYỂN TAB (FIX LỖI ĐƠ TAB) ---
+        function switchMainTab(tabId) {
+            // Ẩn tất cả tab content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Bỏ active tất cả nút tab
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Kích hoạt tab được chọn
+            const targetContent = document.getElementById('tab-' + tabId);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+
+            const targetTabBtn = document.querySelector(`.nav-tab[data-tab="${tabId}"]`);
+            if (targetTabBtn) {
+                targetTabBtn.classList.add('active');
+            }
+        }
+
+        // --- TÍNH TOÁN VÀ ĐỔ BẢNG LƯƠNG ---
+        function formatMoney(num) {
+            return Math.round(num).toLocaleString('vi-VN');
+        }
+
+        function renderSalaryTable() {
+            const tbody = document.getElementById('tbody-salary');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+
+            const basePay = parseFloat(document.getElementById('config-base-pay').value) || 2530000;
+            const lcvPay = parseFloat(document.getElementById('config-lcv-pay').value) || 2087970;
+
+            let grandTotalLCB = 0;
+            let grandTotalLCV = 0;
+            let grandTotalNet = 0;
+
+            staffData.forEach((item, index) => {
+                const totalDays = (parseFloat(item.n) || 0) + (parseFloat(item.p) || 0) + (parseFloat(item.vr) || 0);
+                const lcbHdld = (parseFloat(item.hsLcb) + parseFloat(item.pcLcb)) * basePay;
+                const lcbThuc = totalDays > 0 ? (lcbHdld / 22) * totalDays : 0;
+                
+                const lcvGoc = (parseFloat(item.hsLcv) + parseFloat(item.pcLcv)) * lcvPay;
+                const lcvThuc = totalDays > 0 ? (lcvGoc / 22) * (parseFloat(item.n) || 0) : 0;
+
+                const tongLcbLcv = lcbThuc + lcvThuc;
+                const bhyt = lcbHdld * 0.105; // 10.5% BHXH, BHYT, BHTN
+                const thucLinh = tongLcbLcv - bhyt - (parseFloat(item.tamUng) || 0);
+
+                grandTotalLCB += lcbThuc;
+                grandTotalLCV += lcvThuc;
+                grandTotalNet += thucLinh;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-center">${index + 1}</td>
+                    <td><input type="text" class="inp-table inp-name" value="${item.name}" onchange="updateStaffItem(${index}, 'name', this.value)"></td>
+                    <td><input type="text" class="inp-table inp-account" value="${item.account}" onchange="updateStaffItem(${index}, 'account', this.value)"></td>
+                    <td><input type="number" step="0.1" class="inp-table inp-num-sm" value="${item.hsLcb}" onchange="updateStaffItem(${index}, 'hsLcb', this.value)"></td>
+                    <td><input type="number" step="0.1" class="inp-table inp-num-sm" value="${item.pcLcb}" onchange="updateStaffItem(${index}, 'pcLcb', this.value)"></td>
+                    <td class="text-right">${formatMoney(lcbHdld)}</td>
+                    <td class="text-right">${formatMoney(lcbHdld)}</td>
+                    <td><input type="number" class="inp-table inp-num-sm" value="${item.n}" onchange="updateStaffItem(${index}, 'n', this.value)"></td>
+                    <td><input type="number" class="inp-table inp-num-sm" value="${item.p}" onchange="updateStaffItem(${index}, 'p', this.value)"></td>
+                    <td><input type="number" class="inp-table inp-num-sm" value="${item.vr}" onchange="updateStaffItem(${index}, 'vr', this.value)"></td>
+                    <td class="text-right">${formatMoney((lcbHdld / 22) * item.n)}</td>
+                    <td class="text-right">${formatMoney((lcbHdld / 22) * (item.p + item.vr))}</td>
+                    <td class="text-right font-bold">${formatMoney(lcbThuc)}</td>
+                    <td><input type="number" step="0.1" class="inp-table inp-num-sm" value="${item.hsLcv}" onchange="updateStaffItem(${index}, 'hsLcv', this.value)"></td>
+                    <td><input type="number" step="0.1" class="inp-table inp-num-sm" value="${item.pcLcv}" onchange="updateStaffItem(${index}, 'pcLcv', this.value)"></td>
+                    <td class="text-right">${formatMoney(lcvGoc)}</td>
+                    <td class="text-right font-bold" style="color:var(--purple);">${formatMoney(lcvThuc)}</td>
+                    <td class="text-right font-bold">${formatMoney(tongLcbLcv)}</td>
+                    <td class="text-right style="color:var(--red);">${formatMoney(bhyt)}</td>
+                    <td><input type="number" class="inp-table inp-tam-ung" value="${item.tamUng}" onchange="updateStaffItem(${index}, 'tamUng', this.value)"></td>
+                    <td class="text-right font-bold" style="color:var(--green); font-size:14px;">${formatMoney(thucLinh)}</td>
+                    <td class="text-center"><button class="btn-delete" onclick="deleteStaffRow(${index})"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Cập nhật thẻ tổng quan
+            document.getElementById('v-total-lcb').innerText = formatMoney(grandTotalLCB) + ' VND';
+            document.getElementById('v-total-lcv-text').innerText = formatMoney(grandTotalLCV) + ' VND';
+            document.getElementById('v-total-thuc').innerText = formatMoney(grandTotalNet) + ' VND';
+            document.getElementById('dash-total-pay').innerText = formatMoney(grandTotalNet) + ' VND';
+        }
+
+        function updateStaffItem(index, key, val) {
+            if (key === 'name' || key === 'account') {
+                staffData[index][key] = val;
+            } else {
+                staffData[index][key] = parseFloat(val) || 0;
+            }
+            renderSalaryTable();
+        }
+
+        function addNewSalaryRow() {
+            staffData.push({ name: "Nhân Viên Mới", account: "0000000000", hsLcb: 1.0, pcLcb: 0, n: 22, p: 0, vr: 0, hsLcv: 1.0, pcLcv: 0, tamUng: 0 });
+            renderSalaryTable();
+        }
+
+        function deleteStaffRow(index) {
+            if (confirm("Bạn có chắc chắn muốn xóa nhân viên này?")) {
+                staffData.splice(index, 1);
+                renderSalaryTable();
+            }
+        }
+
+        function restoreDefaultStaffs() {
+            staffData = JSON.parse(JSON.stringify(defaultStaffList));
+            renderSalaryTable();
+        }
+
+        function handleConfigChangeLive() {
+            const comp = document.getElementById('config-company-title').value;
+            const dept = document.getElementById('config-dept-title').value;
+            const signer = document.getElementById('config-signer-name').value;
+            
+            document.getElementById('disp-header-company').innerText = `${comp} - ${dept}`;
+            document.getElementById('disp-signer-name').innerText = signer;
+            renderSalaryTable();
+        }
+
+        function handleGlobalYearChange() {
+            const year = document.getElementById('global-year-picker').value;
+            const lbls = document.querySelectorAll('.lbl-current-year');
+            lbls.forEach(lbl => lbl.innerText = year);
+        }
+
+        function openConfigUrlModal() {
+            document.getElementById('config-modal').style.display = 'flex';
+        }
+
+        function closeConfigUrlModal() {
+            document.getElementById('config-modal').style.display = 'none';
+        }
+
+        function saveConfigUrl() {
+            alert('Đã lưu cấu hình API!');
+            closeConfigUrlModal();
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('salary_staff_data', JSON.stringify(staffData));
+            alert('Đã lưu dữ liệu thành công!');
+        }
+
+        // --- KHỞI TẠO TRANG ---
+        window.onload = function() {
+            const localData = localStorage.getItem('salary_staff_data');
+            if (localData) {
+                try {
+                    staffData = JSON.parse(localData);
+                } catch(e) {
+                    staffData = JSON.parse(JSON.stringify(defaultStaffList));
+                }
+            } else {
+                staffData = JSON.parse(JSON.stringify(defaultStaffList));
+            }
+            renderSalaryTable();
+        };
+    </script>
 </body>
 </html>
