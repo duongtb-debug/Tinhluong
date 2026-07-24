@@ -102,7 +102,6 @@
         
         .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 10px; }
         
-        /* Cố định chuẩn tuyệt đối 6 cột thẳng hàng cho form cước viễn thông */
         .grid-form-6-fixed { 
             display: grid; 
             grid-template-columns: 2fr 1.2fr 1.5fr 1.5fr 1.5fr 1.3fr; 
@@ -284,7 +283,7 @@
                         </div>
                         <div class="form-group" style="grid-column: span 2;">
                             <label style="color:var(--orange);"><i class="fa-solid fa-file-signature"></i> Tên BẢNG LƯƠNG Báo Cáo:</label>
-                            <input type="text" id="config-sheet-title" value="BẢNG LƯƠNG CÔNG VIỆC THÁNG 5/2026" oninput="handleConfigChangeLive()">
+                            <input type="text" id="config-sheet-title" value="BẢNG LƯƠNG CÔNG VIỆC THÁNG 6/2026" oninput="handleConfigChangeLive()">
                         </div>
                     </div>
 
@@ -292,7 +291,7 @@
                         <div class="config-inputs-group">
                             <div class="form-group">
                                 <label><i class="fa-regular fa-calendar-days"></i> Kỳ báo cáo</label>
-                                <input type="month" id="filter-month" value="2026-05" onchange="handleMonthChangeSelect()">
+                                <input type="month" id="filter-month" value="2026-06" onchange="handleMonthChangeSelect()">
                             </div>
                             <div class="form-group">
                                 <label style="color:var(--orange);"><i class="fa-solid fa-chart-line"></i> Tối thiểu vùng</label>
@@ -436,7 +435,7 @@
                             <div class="form-group"><label>Tiền thuế VAT</label><input type="text" id="pay-tax-amount" readonly style="background:#f1f5f9; font-weight:bold; color: var(--orange);"></div>
                             <div class="form-group"><label>Tổng cộng thanh toán</label><input type="text" id="pay-total" readonly style="background:#fef08a; font-weight:bold; color: var(--blue);"></div>
                             <div class="form-group"><label>Trạng thái duyệt</label><select id="pay-status"><option value="Chưa duyệt">Chưa duyệt</option><option value="Đã duyệt chi">Đã duyệt chi</option></select></div>
-                            <div class="form-group"><label style="color:var(--orange); font-weight:bold;">Kỳ thanh toán</label><input type="month" id="pay-period" value="2026-05" required></div>
+                            <div class="form-group"><label style="color:var(--orange); font-weight:bold;">Kỳ thanh toán</label><input type="month" id="pay-period" value="2026-06" required></div>
                         </div>
 
                         <div class="form-group" style="margin-bottom: 12px; background: #f0fdf4; padding: 10px; border: 1px dashed var(--green); border-radius: 4px;">
@@ -483,7 +482,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG (ĐÃ FIX THẲNG HÀNG 100%) -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
@@ -492,7 +491,6 @@
                     <form id="telecom-main-form" onsubmit="saveTelecomRecord(event)">
                         <input type="hidden" id="telecom-edit-id" value="">
                         
-                        <!-- Lưới 6 cột cố định thẳng hàng tuyệt đối -->
                         <div class="grid-form-6-fixed">
                             <div class="form-group">
                                 <label>Điểm kết nối / Văn phòng</label>
@@ -521,7 +519,7 @@
                             </div>
                             <div class="form-group">
                                 <label style="color:var(--orange); font-weight:bold;">Kỳ cước</label>
-                                <input type="month" id="tel-period" value="2026-01" required>
+                                <input type="month" id="tel-period" value="2026-06" required>
                             </div>
                         </div>
 
@@ -633,7 +631,7 @@
 
                                 <div class="grid-form">
                                     <div class="form-group" style="grid-column: span 2;"><label>Thông số cấu hình</label><input type="text" id="it-config" required placeholder="Dell Latitude, Core i5, 16GB..." oninput="updateRealtimeQR()"></div>
-                                    <div class="form-group"><label>Ngày bàn giao</label><input type="date" id="it-date" value="2026-05-15" onchange="updateRealtimeQR()"></div>
+                                    <div class="form-group"><label>Ngày bàn giao</label><input type="date" id="it-date" value="2026-06-15" onchange="updateRealtimeQR()"></div>
                                     <div class="form-group"><label>Trạng thái</label><select id="it-status" onchange="updateRealtimeQR()"><option value="Tốt - Đang sử dụng">Tốt - Đang sử dụng</option><option value="Ổn định">Ổn định</option><option value="Hoạt động 24/7">Hoạt động 24/7</option><option value="Hỏng - Chờ thanh lý">Hỏng - Chờ thanh lý</option></select></div>
                                 </div>
 
@@ -872,7 +870,7 @@
         }
 
         async function autoLoadAllCloudDataIfAvailable() {
-            let sm = document.getElementById('filter-month').value || `${CURRENT_SELECTED_YEAR}-05`;
+            let sm = document.getElementById('filter-month').value || `${CURRENT_SELECTED_YEAR}-06`;
             const baseApi = GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API;
 
             try {
@@ -918,9 +916,9 @@
             CURRENT_SELECTED_YEAR = document.getElementById('global-year-picker').value;
             document.querySelectorAll('.lbl-current-year').forEach(el => el.innerText = CURRENT_SELECTED_YEAR);
             
-            document.getElementById('filter-month').value = `${CURRENT_SELECTED_YEAR}-05`;
-            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-01`;
-            document.getElementById('pay-period').value = `${CURRENT_SELECTED_YEAR}-05`;
+            document.getElementById('filter-month').value = `${CURRENT_SELECTED_YEAR}-06`;
+            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-06`;
+            document.getElementById('pay-period').value = `${CURRENT_SELECTED_YEAR}-06`;
 
             handleMonthChangeSelect();
             renderTelecomTable();
@@ -936,18 +934,22 @@
 
         function handleMonthChangeSelect() {
             let sm = document.getElementById('filter-month').value;
+            let parts = sm.split('-');
+            let mNum = parts[1] || "06";
+            let yNum = parts[0] || CURRENT_SELECTED_YEAR;
+
             if (!salaryConfigsByMonth[sm]) {
                 salaryConfigsByMonth[sm] = {
                     companyTitle: "TỔNG CÔNG TY GIẤY VIỆT NAM",
                     deptTitle: "VĂN PHÒNG",
-                    sheetTitle: `BẢNG LƯƠNG CÔNG VIỆC THÁNG ${sm.split('-')[1]}/${sm.split('-')[0]}`,
+                    sheetTitle: `BẢNG LƯƠNG CÔNG VIỆC THÁNG ${mNum}/${yNum}`,
                     vung: 4140000, base: 2530000, lcv: 2087970, signer: "Nguyễn Thị Tuyết Nhung"
                 };
             }
             let cfg = salaryConfigsByMonth[sm];
             document.getElementById('config-company-title').value = cfg.companyTitle || "TỔNG CÔNG TY GIẤY VIỆT NAM";
             document.getElementById('config-dept-title').value = cfg.deptTitle || "VĂN PHÒNG";
-            document.getElementById('config-sheet-title').value = cfg.sheetTitle || `BẢNG LƯƠNG CÔNG VIỆC THÁNG ${sm.split('-')[1]}/${sm.split('-')[0]}`;
+            document.getElementById('config-sheet-title').value = cfg.sheetTitle || `BẢNG LƯƠNG CÔNG VIỆC THÁNG ${mNum}/${yNum}`;
             
             document.getElementById('config-vung-pay').value = cfg.vung || 4140000;
             document.getElementById('config-base-pay').value = cfg.base || 2530000;
@@ -985,16 +987,20 @@
 
         function calculateSalaryLogic() {
             let sm = document.getElementById('filter-month').value;
+            let parts = sm.split('-');
+            let mNum = parts[1] || "06";
+            let yNum = parts[0] || CURRENT_SELECTED_YEAR;
+
             let activeData = salaryDataByMonth[sm];
             if (!activeData || activeData.length === 0) {
                 activeData = JSON.parse(JSON.stringify(default16Staffs));
                 salaryDataByMonth[sm] = activeData;
             }
 
-            let cfg = salaryConfigsByMonth[sm] || { companyTitle: "TỔNG CÔNG TY GIẤY VIỆT NAM", deptTitle: "VĂN PHÒNG", sheetTitle: "BẢNG LƯƠNG CÔNG VIỆC THÁNG 5/2026", vung: 4140000, base: 2530000, lcv: 2087970, signer: "Nguyễn Thị Tuyết Nhung" };
+            let cfg = salaryConfigsByMonth[sm] || { companyTitle: "TỔNG CÔNG TY GIẤY VIỆT NAM", deptTitle: "VĂN PHÒNG", sheetTitle: `BẢNG LƯƠNG CÔNG VIỆC THÁNG ${mNum}/${yNum}`, vung: 4140000, base: 2530000, lcv: 2087970, signer: "Nguyễn Thị Tuyết Nhung" };
 
             document.getElementById('disp-header-company').innerText = `${cfg.companyTitle || 'TỔNG CÔNG TY GIẤY VIỆT NAM'} - ${cfg.deptTitle || 'VĂN PHÒNG'}`;
-            document.getElementById('disp-table-title').innerText = cfg.sheetTitle || "BẢNG LƯƠNG CÔNG VIỆC THÁNG 5/2026";
+            document.getElementById('disp-table-title').innerText = cfg.sheetTitle || `BẢNG LƯƠNG CÔNG VIỆC THÁNG ${mNum}/${yNum}`;
             document.getElementById('disp-signer-name').innerText = cfg.signer || "Nguyễn Thị Tuyết Nhung";
 
             const tbody = document.getElementById('tbody-salary'); 
@@ -1104,7 +1110,7 @@
                 await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
                     method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
                 });
-                alert("🎉 Đã gửi yêu cầu đồng bộ thành công lên Cloud!");
+                alert("🎉 Đã gửi dữ liệu bảng lương tháng " + sm + " lên Sheet/Cloud thành công!");
             } catch (err) {
                 alert("❌ Đồng bộ thất bại: " + err.message);
             }
@@ -1168,11 +1174,11 @@
             let taxAmount = hasTax ? (pretax * (taxRate / 100)) : 0;
             let total = pretax + taxAmount;
             let status = document.getElementById('pay-status').value;
-            let period = document.getElementById('pay-period').value || `${CURRENT_SELECTED_YEAR}-05`;
+            let period = document.getElementById('pay-period').value || `${CURRENT_SELECTED_YEAR}-06`;
 
             let fileInput = document.getElementById('pay-multiple-files');
             let files = fileInput ? fileInput.files : null;
-            let uploadedFolderUrl = "https://drive.google.com";
+            let uploadedFolderUrl = "https://drive.google.com/drive/u/0/home";
             let uploadedFilesList = [];
 
             if (files && files.length > 0) {
@@ -1181,8 +1187,12 @@
                     let uploadPayload = { action: "upload_files_direct", moduleType: "PAYMENT", year: CURRENT_SELECTED_YEAR, period: period, files: preparedFiles };
                     await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(uploadPayload) });
                     uploadedFilesList = preparedFiles.map(f => f.fileName);
-                    let monthNum = period.split('-')[1] || "05";
-                    uploadedFolderUrl = `https://drive.google.com/drive/search?q=${encodeURIComponent(CURRENT_SELECTED_YEAR + ' ThanhToanVP Thang ' + monthNum)}`;
+                    
+                    let monthParts = period.split('-');
+                    let monthNum = monthParts[1] || "06";
+                    let yearNum = monthParts[0] || CURRENT_SELECTED_YEAR;
+                    let folderSearchName = `${yearNum} ThanhToanVP Thang ${monthNum}`;
+                    uploadedFolderUrl = `https://drive.google.com/drive/search?q=${encodeURIComponent(folderSearchName)}`;
                 } catch (err) { console.error(err); }
             }
 
@@ -1199,13 +1209,13 @@
             localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
             resetPaymentForm();
             renderPaymentTable();
-            alert("🎉 Đã lưu hồ sơ thanh toán thành công!");
+            alert("🎉 Đã lưu hồ sơ thanh toán và tạo folder tháng tương ứng trên Google Drive thành công!");
         }
 
         function resetPaymentForm() {
             document.getElementById('payment-edit-id').value = '';
             document.getElementById('payment-main-form').reset();
-            document.getElementById('pay-period').value = `${CURRENT_SELECTED_YEAR}-05`;
+            document.getElementById('pay-period').value = `${CURRENT_SELECTED_YEAR}-06`;
             document.getElementById('pay-pretax-input').value = '0';
             document.getElementById('btn-payment-text').innerText = "Lưu Hồ Sơ Thanh Toán & Tải Tệp Lên Drive";
             calculateFlexibleTax();
@@ -1221,7 +1231,7 @@
             document.getElementById('pay-qty').value = item.qty || 1;
             document.getElementById('pay-pretax-input').value = formatCurrencyVN(item.pretax || 0);
             document.getElementById('pay-status').value = item.status || 'Chưa duyệt';
-            document.getElementById('pay-period').value = item.period || `${CURRENT_SELECTED_YEAR}-05`;
+            document.getElementById('pay-period').value = item.period || `${CURRENT_SELECTED_YEAR}-06`;
             calculateFlexibleTax();
             document.getElementById('btn-payment-text').innerText = "Cập Nhật Hồ Sơ";
             window.scrollTo({ top: document.getElementById('payment-main-form').offsetTop - 20, behavior: 'smooth' });
@@ -1254,7 +1264,7 @@
 
             currentYearPayment.forEach((r, i) => {
                 sum += (Number(r.total) || 0);
-                let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder</a>`;
+                let fileLinksHtml = `<a href="${r.folderDriveUrl || 'https://drive.google.com/drive/u/0/home'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder</a>`;
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${i+1}</td>
                     <td class="font-bold">${r.content}</td>
@@ -1310,11 +1320,11 @@
             let pkg = document.getElementById('tel-package').value;
             let cid = document.getElementById('tel-cid').value;
             let cost = parseCurrencyVN(document.getElementById('tel-cost').value);
-            let period = document.getElementById('tel-period').value || `${CURRENT_SELECTED_YEAR}-01`;
+            let period = document.getElementById('tel-period').value || `${CURRENT_SELECTED_YEAR}-06`;
 
             let fileInput = document.getElementById('tel-multiple-files');
             let files = fileInput ? fileInput.files : null;
-            let uploadedFolderUrl = "https://drive.google.com";
+            let uploadedFolderUrl = "https://drive.google.com/drive/u/0/home";
             let uploadedFilesList = [];
 
             const statusBox = document.getElementById('upload-status-box');
@@ -1327,7 +1337,7 @@
             let currentPercent = 10;
             if (progressBar) progressBar.style.width = currentPercent + '%';
             if (progressPercent) progressPercent.innerText = currentPercent + '%';
-            if (progressText) progressText.innerText = "Đang mã hóa và chuẩn bị tệp...";
+            if (progressText) progressText.innerText = "Đang kết nối kho Drive gốc và mã hóa tệp...";
 
             let progressInterval = setInterval(() => {
                 if (currentPercent < 90) {
@@ -1336,7 +1346,7 @@
                     if (progressBar) progressBar.style.width = currentPercent + '%';
                     if (progressPercent) progressPercent.innerText = currentPercent + '%';
                     if (currentPercent > 50) {
-                        if (progressText) progressText.innerText = "Đang tải tệp lên Google Drive theo tháng...";
+                        if (progressText) progressText.innerText = "Đang tạo thư mục con theo tháng trong Drive gốc...";
                     }
                 }
             }, 250);
@@ -1350,7 +1360,7 @@
                     
                     uploadedFilesList = preparedFiles.map(f => f.fileName);
                     let monthParts = period.split('-');
-                    let monthNum = monthParts[1] || "01";
+                    let monthNum = monthParts[1] || "06";
                     let yearNum = monthParts[0] || CURRENT_SELECTED_YEAR;
                     let folderSearchName = `${yearNum} CuocInternet Thang ${monthNum}`;
                     uploadedFolderUrl = `https://drive.google.com/drive/search?q=${encodeURIComponent(folderSearchName)}`;
@@ -1360,7 +1370,7 @@
             clearInterval(progressInterval);
             if (progressBar) progressBar.style.width = '100%';
             if (progressPercent) progressPercent.innerText = '100%';
-            if (progressText) progressText.innerText = "Đã lưu thành công vào tháng chỉ định!";
+            if (progressText) progressText.innerText = "Đã định vị thư mục tháng trên Drive và lưu thành công!";
 
             setTimeout(() => {
                 if (editId) {
@@ -1376,7 +1386,7 @@
                 localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
                 resetTelecomForm();
                 renderTelecomTable();
-                alert("🎉 Đã lưu cước viễn thông và đính kèm file lên Google Drive thành công vào đúng tháng đã chọn!");
+                alert("🎉 Đã lưu cước viễn thông, đính kèm file và đồng bộ đúng thư mục con tháng trên Google Drive thành công!");
             }, 400);
         }
 
@@ -1391,7 +1401,7 @@
             document.getElementById('tel-package').value = item.package || '';
             document.getElementById('tel-cid').value = item.cid || '';
             document.getElementById('tel-cost').value = formatCurrencyVN(item.cost || 0);
-            document.getElementById('tel-period').value = item.period || `${CURRENT_SELECTED_YEAR}-01`;
+            document.getElementById('tel-period').value = item.period || `${CURRENT_SELECTED_YEAR}-06`;
             document.getElementById('btn-telecom-text').innerText = "Cập Nhật Cước";
             window.scrollTo({ top: document.getElementById('telecom-main-form').offsetTop - 20, behavior: 'smooth' });
         }
@@ -1431,7 +1441,7 @@
             activeTelecoms.forEach((r, i) => {
                 let costVal = parseCurrencyVN(r.cost);
                 sum += costVal;
-                let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder</a>`;
+                let fileLinksHtml = `<a href="${r.folderDriveUrl || 'https://drive.google.com/drive/u/0/home'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder</a>`;
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${i+1}</td>
                     <td class="font-bold">${r.location}</td>
@@ -1454,7 +1464,7 @@
             document.getElementById('telecom-edit-id').value = '';
             document.getElementById('telecom-main-form').reset(); 
             document.getElementById('upload-status-box').style.display = 'none';
-            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-01`;
+            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-06`;
             document.getElementById('tel-cost').value = '0';
             document.getElementById('btn-telecom-text').innerText = "Lưu Cước & Tải Tệp Lên Drive";
         }
@@ -1574,7 +1584,6 @@
             }
         }
 
-        // Thuật toán đổi lịch Âm - Dương chuẩn xác
         function solarToLunar(solarYear, solarMonth, solarDay) {
             let a = Math.floor((14 - solarMonth) / 12);
             let y = solarYear + 4800 - a;
