@@ -482,7 +482,7 @@
                 </div>
             </div>
 
-            <!-- TAB 3: CƯỚC VIỄN THÔNG -->
+            <!-- TAB 3: CƯỚC VIỄN THÔNG (TRỎ ĐÚNG THƯ MỤC GỐC & TẠO THƯ MỤC CON THÁNG) -->
             <div id="tab-telecom" class="tab-content">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--orange);">
@@ -519,7 +519,7 @@
                             </div>
                             <div class="form-group">
                                 <label style="color:var(--orange); font-weight:bold;">Kỳ cước</label>
-                                <input type="month" id="tel-period" value="2026-06" required>
+                                <input type="month" id="tel-period" value="2026-03" required>
                             </div>
                         </div>
 
@@ -569,7 +569,7 @@
                             <button type="button" class="btn btn-purple" style="padding:3px 8px; font-size:12px;" onclick="loadTelecomRecordsFromCloud()"><i class="fa-solid fa-cloud-arrow-down"></i> Tải Từ Mây</button>
                             <select id="telecom-view-mode" onchange="renderTelecomTable()" style="padding:3px 6px; border-radius:4px; border:1.5px solid var(--blue); font-weight:bold; color:var(--blue);">
                                 <option value="ALL_YEAR" selected>🌟 Tất cả các tháng</option>
-                                <option value="01">Tháng 01</option><option value="02">Tháng 02</option><option value="03">Tháng 03</option>
+                                <option value="01">Tháng 01</option><option value="02">Tháng 02</option><option value="03" selected>Tháng 03</option>
                                 <option value="04">Tháng 04</option><option value="05">Tháng 05</option><option value="06">Tháng 06</option>
                                 <option value="07">Tháng 07</option><option value="08">Tháng 08</option><option value="09">Tháng 09</option>
                                 <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
@@ -823,7 +823,14 @@
 
         let salaryConfigsByMonth = JSON.parse(localStorage.getItem('sys_salary_configs_by_month')) || {};
         let salaryDataByMonth = JSON.parse(localStorage.getItem('sys_salary_by_month')) || {};
-        let telecomRecordsAll = JSON.parse(localStorage.getItem('sys_telecom_clean_v3')) || [];
+        let telecomRecordsAll = JSON.parse(localStorage.getItem('sys_telecom_clean_v3')) || [
+            { id: "1", year: "2026", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33015571, period: "2026-01", folderDriveUrl: "https://drive.google.com/drive/folders/1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON", fileList: [] },
+            { id: "2", year: "2026", location: "Tổng công ty Giấy Việt Nam", provider: "Viettel", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 8402864, period: "2026-01", folderDriveUrl: "https://drive.google.com/drive/folders/1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON", fileList: [] },
+            { id: "3", year: "2026", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33121145, period: "2026-02", folderDriveUrl: "https://drive.google.com/drive/folders/1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON", fileList: [] },
+            { id: "4", year: "2026", location: "Tổng công ty Giấy Việt Nam", provider: "Viettel", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 8328378, period: "2026-02", folderDriveUrl: "https://drive.google.com/drive/folders/1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON", fileList: [] },
+            { id: "5", year: "2026", location: "Tổng công ty Giấy Việt Nam", provider: "VNPT", package: "Fiber VIP 1GB", cid: "PTO-02-0066479", cost: 33126990, period: "2026-03", folderDriveUrl: "https://drive.google.com/drive/folders/1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON", fileList: [] },
+            { id: "6", year: "2026", location: "Tổng công ty Giấy Việt Nam", provider: "Viettel", package: "Cước điện thoại", cid: "PTO-02-0066479", cost: 9291152, period: "2026-03", folderDriveUrl: "https://drive.google.com/drive/folders/1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON", fileList: [] }
+        ];
         let paymentRecordsAll = JSON.parse(localStorage.getItem('sys_payment_records_v3')) || [];
         let itAssetsRecordsAll = JSON.parse(localStorage.getItem('sys_it_records_v3')) || [];
 
@@ -917,7 +924,7 @@
             document.querySelectorAll('.lbl-current-year').forEach(el => el.innerText = CURRENT_SELECTED_YEAR);
             
             document.getElementById('filter-month').value = `${CURRENT_SELECTED_YEAR}-06`;
-            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-06`;
+            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-03`;
             document.getElementById('pay-period').value = `${CURRENT_SELECTED_YEAR}-06`;
 
             handleMonthChangeSelect();
@@ -1178,13 +1185,13 @@
 
             let fileInput = document.getElementById('pay-multiple-files');
             let files = fileInput ? fileInput.files : null;
-            let uploadedFolderUrl = "https://drive.google.com/drive/u/0/home";
+            let uploadedFolderUrl = "https://drive.google.com/drive/folders/1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON";
             let uploadedFilesList = [];
 
             if (files && files.length > 0) {
                 try {
                     let preparedFiles = await Promise.all(Array.from(files).map(f => fileToBase64Async(f)));
-                    let uploadPayload = { action: "upload_files_direct", moduleType: "PAYMENT", year: CURRENT_SELECTED_YEAR, period: period, files: preparedFiles };
+                    let uploadPayload = { action: "upload_files_direct", rootFolderId: "1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON", moduleType: "PAYMENT", year: CURRENT_SELECTED_YEAR, period: period, files: preparedFiles };
                     await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(uploadPayload) });
                     uploadedFilesList = preparedFiles.map(f => f.fileName);
                     
@@ -1264,7 +1271,7 @@
 
             currentYearPayment.forEach((r, i) => {
                 sum += (Number(r.total) || 0);
-                let fileLinksHtml = `<a href="${r.folderDriveUrl || 'https://drive.google.com/drive/u/0/home'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder</a>`;
+                let fileLinksHtml = `<a href="${r.folderDriveUrl || 'https://drive.google.com/drive/folders/1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder</a>`;
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${i+1}</td>
                     <td class="font-bold">${r.content}</td>
@@ -1320,11 +1327,11 @@
             let pkg = document.getElementById('tel-package').value;
             let cid = document.getElementById('tel-cid').value;
             let cost = parseCurrencyVN(document.getElementById('tel-cost').value);
-            let period = document.getElementById('tel-period').value || `${CURRENT_SELECTED_YEAR}-06`;
+            let period = document.getElementById('tel-period').value || `${CURRENT_SELECTED_YEAR}-03`;
 
             let fileInput = document.getElementById('tel-multiple-files');
             let files = fileInput ? fileInput.files : null;
-            let uploadedFolderUrl = "https://drive.google.com/drive/u/0/home";
+            let uploadedFolderUrl = "https://drive.google.com/drive/folders/1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON";
             let uploadedFilesList = [];
 
             const statusBox = document.getElementById('upload-status-box');
@@ -1337,7 +1344,7 @@
             let currentPercent = 10;
             if (progressBar) progressBar.style.width = currentPercent + '%';
             if (progressPercent) progressPercent.innerText = currentPercent + '%';
-            if (progressText) progressText.innerText = "Đang kết nối kho Drive gốc và mã hóa tệp...";
+            if (progressText) progressText.innerText = "Đang kết nối đúng thư mục gốc CƯỚC VIỄN THÔNG...";
 
             let progressInterval = setInterval(() => {
                 if (currentPercent < 90) {
@@ -1346,7 +1353,10 @@
                     if (progressBar) progressBar.style.width = currentPercent + '%';
                     if (progressPercent) progressPercent.innerText = currentPercent + '%';
                     if (currentPercent > 50) {
-                        if (progressText) progressText.innerText = "Đang tạo thư mục con theo tháng trong Drive gốc...";
+                        let monthParts = period.split('-');
+                        let mNum = monthParts[1] || "03";
+                        let yNum = monthParts[0] || CURRENT_SELECTED_YEAR;
+                        if (progressText) progressText.innerText = `Đang định vị thư mục con Năm ${yNum} -> Tháng ${mNum}...`;
                     }
                 }
             }, 250);
@@ -1354,13 +1364,13 @@
             if (files && files.length > 0) {
                 try {
                     let preparedFiles = await Promise.all(Array.from(files).map(f => fileToBase64Async(f)));
-                    let uploadPayload = { action: "upload_files_direct", moduleType: "TELECOM", year: CURRENT_SELECTED_YEAR, period: period, files: preparedFiles };
+                    let uploadPayload = { action: "upload_files_direct", rootFolderId: "1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON", moduleType: "TELECOM", year: CURRENT_SELECTED_YEAR, period: period, files: preparedFiles };
                     
                     await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(uploadPayload) });
                     
                     uploadedFilesList = preparedFiles.map(f => f.fileName);
                     let monthParts = period.split('-');
-                    let monthNum = monthParts[1] || "06";
+                    let monthNum = monthParts[1] || "03";
                     let yearNum = monthParts[0] || CURRENT_SELECTED_YEAR;
                     let folderSearchName = `${yearNum} CuocInternet Thang ${monthNum}`;
                     uploadedFolderUrl = `https://drive.google.com/drive/search?q=${encodeURIComponent(folderSearchName)}`;
@@ -1401,7 +1411,7 @@
             document.getElementById('tel-package').value = item.package || '';
             document.getElementById('tel-cid').value = item.cid || '';
             document.getElementById('tel-cost').value = formatCurrencyVN(item.cost || 0);
-            document.getElementById('tel-period').value = item.period || `${CURRENT_SELECTED_YEAR}-06`;
+            document.getElementById('tel-period').value = item.period || `${CURRENT_SELECTED_YEAR}-03`;
             document.getElementById('btn-telecom-text').innerText = "Cập Nhật Cước";
             window.scrollTo({ top: document.getElementById('telecom-main-form').offsetTop - 20, behavior: 'smooth' });
         }
@@ -1441,7 +1451,7 @@
             activeTelecoms.forEach((r, i) => {
                 let costVal = parseCurrencyVN(r.cost);
                 sum += costVal;
-                let fileLinksHtml = `<a href="${r.folderDriveUrl || 'https://drive.google.com/drive/u/0/home'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder</a>`;
+                let fileLinksHtml = `<a href="${r.folderDriveUrl || 'https://drive.google.com/drive/folders/1wDGcOV-FPvM8NrreR-qZNQFFMGjRnWON'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder</a>`;
                 tbody.innerHTML += `<tr>
                     <td class="text-center">${i+1}</td>
                     <td class="font-bold">${r.location}</td>
@@ -1464,7 +1474,7 @@
             document.getElementById('telecom-edit-id').value = '';
             document.getElementById('telecom-main-form').reset(); 
             document.getElementById('upload-status-box').style.display = 'none';
-            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-06`;
+            document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-03`;
             document.getElementById('tel-cost').value = '0';
             document.getElementById('btn-telecom-text').innerText = "Lưu Cước & Tải Tệp Lên Drive";
         }
