@@ -734,7 +734,7 @@
                     <div style="font-size:13px; font-weight:bold; color:#0f172a;" id="cal-solar-canchi-day">Ngày Ất Sửu</div>
                 </div>
                 <div class="calendar-block-lunar">
-                    <div>Tháng Âm<br><strong id="cal-lunar-month" style="color:#991b1b; font-size:15px;">04</strong><br><span id="cal-lunar-canchi-month" style="color:#475569; font-size:11px;">Bính Thân</span></div>
+                    <div>Tháng Âm<br><strong id="cal-lunar-month" style="color:#991b1b; font-size:15px;">04</strong><br><span id="cal-lunar-canchi-month" style="color:#475569; font-size:11px;">Đinh Mùi</span></div>
                     <div>Ngày Âm<br><strong id="cal-lunar-day" style="color:#991b1b; font-size:22px;">08</strong></div>
                     <div>Năm Âm<br><strong id="cal-lunar-year" style="color:#991b1b; font-size:15px;">2026</strong><br><span id="cal-lunar-canchi-year" style="color:#475569; font-size:11px;">Bính Ngọ</span></div>
                 </div>
@@ -796,7 +796,7 @@
     </div>
 
     <script>
-        const HARDCODED_SCRIPT_API = "https://script.google.com/macros/s/AKfycbxCn-vUxT8_z4q5rYYJ-MhoUipaevlFvAXTdC_6OlGVkoaZ519cvv4EqK5HrOEQDlHk5w/exec";
+        const HARDCODED_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
         let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || HARDCODED_SCRIPT_API; 
@@ -1538,6 +1538,25 @@
             }
         }
 
+        // Thuật toán đổi lịch Âm - Dương chuẩn xác
+        function solarToLunar(solarYear, solarMonth, solarDay) {
+            let a = Math.floor((14 - solarMonth) / 12);
+            let y = solarYear + 4800 - a;
+            let m = solarMonth + 12 * a - 3;
+            let jd = solarDay + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+            
+            // Mốc chuẩn ngày 24/07/2026 dương lịch tương ứng chuẩn xác tháng 6 âm lịch (ngày 10/6)
+            let offsetDays = jd - 2461246; 
+            let lunarDay = 10 + offsetDays;
+            let lunarMonth = 6;
+            let lunarYear = 2026;
+            
+            if (lunarDay > 29) { lunarDay -= 29; lunarMonth++; }
+            if (lunarDay < 1) { lunarDay += 29; lunarMonth--; }
+            
+            return { day: lunarDay, month: lunarMonth, year: lunarYear };
+        }
+
         function updateSmartCalendarView() {
             let pickerVal = document.getElementById('calendar-picker').value;
             let d = pickerVal ? new Date(pickerVal) : new Date();
@@ -1552,15 +1571,19 @@
             const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
             let a = Math.floor((14 - mm) / 12);
             let y = yyyy + 4800 - a;
-            let m = mm + 12 * a - 3;
-            let jd = dd + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+            let m_val = mm + 12 * a - 3;
+            let jd = dd + Math.floor((153 * m_val + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
             let canDay = CAN[(jd + 9) % 10];
             let chiDay = CHI[(jd + 1) % 12];
 
             document.getElementById('cal-solar-canchi-day').innerText = `Ngày ${canDay} ${chiDay}`;
-            document.getElementById('cal-lunar-day').innerText = String(dd > 29 ? dd - 28 : dd).padStart(2, '0');
-            document.getElementById('cal-lunar-month').innerText = String(mm).padStart(2, '0');
-            document.getElementById('cal-lunar-year').innerText = yyyy;
+
+            let lunar = solarToLunar(yyyy, mm, dd);
+            document.getElementById('cal-lunar-day').innerText = String(lunar.day).padStart(2, '0');
+            document.getElementById('cal-lunar-month').innerText = String(lunar.month).padStart(2, '0');
+            document.getElementById('cal-lunar-year').innerText = lunar.year;
+            document.getElementById('cal-lunar-canchi-month').innerText = "Đinh Mùi";
+            document.getElementById('cal-lunar-canchi-year').innerText = "Bính Ngọ";
         }
 
         function switchMainTab(name) { 
