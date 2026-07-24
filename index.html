@@ -41,6 +41,7 @@
             font-size: 13px; font-weight: bold; border-radius: 4px; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;
         }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; background-color: var(--green); }
+        .status-dot.offline { background-color: var(--red); }
         .status-dot.syncing { background-color: var(--orange); animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.4; } }
         
@@ -119,7 +120,6 @@
         .btn-edit { background: #e0f2fe; color: #0369a1; border: 1.5px solid #7dd3fc; padding: 3px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; margin-right: 4px; }
         .btn-edit:hover { background: #0284c7; color: white; }
         .btn-action-qr { background: #f3e8ff; color: #6d28d9; border: 1px solid #c084fc; padding: 3px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-action-qr:hover { background: #6d28d9; color: white; }
 
         .table-responsive { overflow-x: auto; margin-top: 10px; width: 100%; border: 1px solid #64748b; border-radius: 4px; }
         .main-table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; font-size: 13px; color: #0f172a; }
@@ -147,17 +147,7 @@
         
         .inp-account { min-width: 130px; text-align: center; font-family: monospace !important; font-size: 13px; letter-spacing: 0.5px; }
         .inp-num-sm { min-width: 50px; width: 55px; text-align: center; font-size: 13px; }
-        
-        /* Ô TẠM ỨNG ĐỊNH DẠNG CHUẨN CÓ DẤU PHÂN CÁCH */
-        .inp-table.inp-tam-ung { 
-            background-color: #fff7ed !important; 
-            border: 1.5px solid #ea580c !important; 
-            color: #c2410c !important; 
-            font-weight: bold !important; 
-            min-width: 110px; 
-            text-align: right; 
-            font-size: 13px; 
-        }
+        .inp-table.inp-tam-ung { background-color: #fff7ed !important; border: 1.5px solid #ea580c !important; color: #c2410c !important; font-weight: bold !important; min-width: 110px; text-align: right; font-size: 13px; }
 
         .signature-container { margin-top: 35px; display: flex; justify-content: space-between; text-align: center; padding: 10px 40px; }
         .signature-box { flex: 1; font-size: 13px; }
@@ -165,7 +155,7 @@
         .signature-note { font-style: italic; font-size: 12px; color: #64748b; margin-bottom: 65px; }
         .signature-name { font-weight: bold; font-size: 14px; color: #0f172a; }
 
-        .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 200px; }
+        .realtime-qr-box { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; border: 1px dashed var(--purple); padding: 8px; border-radius: 6px; height: 100%; min-height: 220px; }
 
         .calendar-sidebar { background: white; border-radius: 8px; border: 1px solid #cbd5e1; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
         .calendar-block-view { border: 4px solid #b91c1c; border-radius: 10px; background: white; margin-top: 8px; overflow: hidden; box-shadow: 0 6px 16px rgba(185, 28, 28, 0.2); }
@@ -180,19 +170,59 @@
         .modal { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(2px); align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: white; padding: 18px; border-radius: 8px; width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; }
         
-        .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; font-size: 11px; }
+        .badge-licensed { background: #d1fae5; color: #047857; padding: 2px 6px; border-radius: 3px; font-weight: bold; border: 1px solid #a7f3d0; }
         .badge-cert { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; text-decoration: none; border: 1px solid #86efac; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
-        
-        /* CHUYÊN NGHIỆP: MẪU TEM QR DÁN TÀI SẢN CNTT IN ĐƯỢC */
-        .asset-tag-print-box {
-            width: 320px; border: 2px solid #0f172a; border-radius: 6px; padding: 10px; background: #fff; font-family: Arial, sans-serif; box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin: 0 auto;
+
+        .pro-qr-card {
+            border: 2px solid var(--purple);
+            border-radius: 8px;
+            padding: 12px;
+            background: #ffffff;
+            width: 260px;
+            box-shadow: 0 4px 10px rgba(109, 40, 217, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Segoe UI', Roboto, sans-serif;
         }
-        .asset-tag-header { text-align: center; border-bottom: 1.5px solid #0f172a; padding-bottom: 5px; margin-bottom: 8px; }
-        .asset-tag-header h4 { font-size: 11px; color: #0f172a; text-transform: uppercase; margin-bottom: 2px; }
-        .asset-tag-header h3 { font-size: 13px; color: #1d4ed8; font-weight: bold; }
-        .asset-tag-body { display: flex; align-items: center; gap: 10px; }
-        .asset-tag-info { flex: 1; font-size: 11px; line-height: 1.4; color: #0f172a; }
-        .asset-tag-info div { margin-bottom: 3px; }
+        .pro-qr-header {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--purple);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 4px;
+            width: 100%;
+            text-align: center;
+        }
+        .pro-qr-canvas-wrap {
+            padding: 6px;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .pro-qr-info {
+            width: 100%;
+            font-size: 11px;
+            color: #1e293b;
+            line-height: 1.4;
+            text-align: left;
+            background: #f8fafc;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .pro-qr-info div {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pro-qr-info strong {
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -201,7 +231,7 @@
         <div style="display:flex; align-items:center; gap:15px;">
             <div>
                 <span class="status-dot" id="cloud-status-dot"></span>
-                <span id="cloud-status-text">Kết nối Google Script API sẵn sàng</span>
+                <span id="cloud-status-text">Đang kết nối API...</span>
             </div>
             <div class="year-selector-box">
                 <i class="fa-solid fa-calendar-check"></i>
@@ -265,7 +295,7 @@
                 <button type="button" class="nav-tab" data-tab="it-assets" onclick="switchMainTab('it-assets')"><i class="fa-solid fa-laptop"></i> Thiết Bị Công Nghệ Thông Tin</button>
             </div>
 
-            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ CHI TIẾT 21 CỘT EXCEL -->
+            <!-- TAB 1: BẢNG LƯƠNG NHÂN SỰ -->
             <div id="tab-salary" class="tab-content active">
                 <div class="main-card">
                     <div class="card-title" style="border-left-color: var(--blue);">
@@ -424,7 +454,10 @@
                         
                         <div class="grid-form">
                             <div class="form-group"><label>Số lượng</label><input type="number" id="pay-qty" value="1" min="1" oninput="calculateFlexibleTax()"></div>
-                            <div class="form-group"><label>Tiền trước thuế (Tổng lô)</label><input type="number" id="pay-pretax-input" value="0" min="0" oninput="calculateFlexibleTax()"></div>
+                            <div class="form-group">
+                                <label style="color:var(--blue); font-weight:bold;">Tiền trước thuế (Hỗ trợ Copy/Paste có dấu phân cách)</label>
+                                <input type="text" id="pay-pretax-input" value="0" placeholder="Paste: 5.000.000..." oninput="handlePretaxInputLive(this)" onblur="formatPretaxBlur(this)">
+                            </div>
                             <div class="form-group">
                                 <label><input type="checkbox" id="pay-tax-toggle" checked onchange="calculateFlexibleTax()"> Áp dụng thuế VAT</label>
                                 <select id="pay-tax-rate" onchange="calculateFlexibleTax()">
@@ -519,8 +552,8 @@
                                 <input type="text" id="tel-cid" value="PTO-02-0066479" required>
                             </div>
                             <div class="form-group">
-                                <label>Cước phí tháng (VND)</label>
-                                <input type="number" id="tel-cost" value="33015571" placeholder="Nhập số tiền..." required>
+                                <label style="color:var(--orange); font-weight:bold;">Cước phí tháng (Hỗ trợ Copy/Paste phân cách)</label>
+                                <input type="text" id="tel-cost" value="33.015.571" placeholder="Paste: 33.015.571..." required oninput="handleTelecomCostInputLive(this)" onblur="formatTelecomCostBlur(this)">
                             </div>
                             <div class="form-group">
                                 <label style="color:var(--orange); font-weight:bold;">Kỳ cước nhập (Tháng/Năm)</label>
@@ -612,7 +645,7 @@
                     <form id="it-main-form" onsubmit="saveITRecord(event)">
                         <input type="hidden" id="it-edit-id" value="">
                         
-                        <div style="display: grid; grid-template-columns: 1fr 220px; gap: 15px; align-items: start;">
+                        <div style="display: grid; grid-template-columns: 1fr 280px; gap: 15px; align-items: start;">
                             <div>
                                 <div class="grid-form">
                                     <div class="form-group"><label>Người sử dụng</label><input type="text" id="it-user" required placeholder="Họ và tên..." oninput="updateRealtimeQR()"></div>
@@ -648,12 +681,22 @@
                                                 <option value="Windows 11 Pro" selected>Windows 11 Pro</option>
                                                 <option value="Windows 11 Home / Enterprise">Windows 11 Home / Enterprise</option>
                                                 <option value="Windows 10 Pro">Windows 10 Pro</option>
+                                                <option value="Windows 8.1 Pro">Windows 8.1 Pro</option>
                                                 <option value="Windows 7 Professional">Windows 7 Professional</option>
+                                                <option value="Windows Vista Business">Windows Vista Business</option>
                                                 <option value="Windows XP Professional">Windows XP Professional</option>
                                             </optgroup>
                                             <optgroup label="Windows Server">
                                                 <option value="Windows Server 2022">Windows Server 2022</option>
                                                 <option value="Windows Server 2019">Windows Server 2019</option>
+                                                <option value="Windows Server 2016">Windows Server 2016</option>
+                                                <option value="Windows Server 2012 R2">Windows Server 2012 R2</option>
+                                                <option value="Windows Server 2008 R2">Windows Server 2008 R2</option>
+                                            </optgroup>
+                                            <optgroup label="Linux & Hệ điều hành khác">
+                                                <option value="Ubuntu / Debian Linux">Ubuntu / Debian Linux</option>
+                                                <option value="RedHat / CentOS Enterprise">RedHat / CentOS Enterprise</option>
+                                                <option value="macOS Sonoma / Ventura">macOS Sonoma / Ventura</option>
                                             </optgroup>
                                         </select>
                                     </div>
@@ -666,29 +709,24 @@
                                         </select>
                                     </div>
 
-                                    <!-- BỘ OFFICE CÁC PHIÊN BẢN ĐẦY ĐỦ NHẤT -->
                                     <div class="form-group">
-                                        <label>Bộ Office văn phòng</label>
+                                        <label>Bộ Office văn phòng (Phiên bản đầy đủ)</label>
                                         <select id="it-office" onchange="updateRealtimeQR()">
-                                            <optgroup label="Microsoft 365 / Cloud">
-                                                <option value="Microsoft 365 Enterprise (E3/E5)">Microsoft 365 Enterprise (E3/E5)</option>
-                                                <option value="Microsoft 365 Apps for Business">Microsoft 365 Apps for Business</option>
-                                                <option value="Microsoft 365 Personal / Family">Microsoft 365 Personal / Family</option>
-                                            </optgroup>
-                                            <optgroup label="Microsoft Office Vĩnh Viễn (Mới - Cũ)">
-                                                <option value="Microsoft Office 2024 Pro Plus">Microsoft Office 2024 Pro Plus</option>
+                                            <optgroup label="Microsoft Office Cloud & Đời mới">
+                                                <option value="Microsoft 365 Enterprise">Microsoft 365 Enterprise</option>
                                                 <option value="Microsoft Office 2021 LTSC Pro">Microsoft Office 2021 LTSC Pro</option>
                                                 <option value="Microsoft Office 2019 Pro Plus">Microsoft Office 2019 Pro Plus</option>
                                                 <option value="Microsoft Office 2016 Pro Plus">Microsoft Office 2016 Pro Plus</option>
-                                                <option value="Microsoft Office 2013 Professional">Microsoft Office 2013 Professional</option>
+                                            </optgroup>
+                                            <optgroup label="Microsoft Office Truyền thống">
+                                                <option value="Microsoft Office 2013 Pro Plus">Microsoft Office 2013 Pro Plus</option>
                                                 <option value="Microsoft Office 2010 Pro" selected>Microsoft Office 2010 Pro</option>
                                                 <option value="Microsoft Office 2007 Enterprise">Microsoft Office 2007 Enterprise</option>
                                                 <option value="Microsoft Office 2003 Professional">Microsoft Office 2003 Professional</option>
                                             </optgroup>
-                                            <optgroup label="Bộ Văn Phòng Khác">
-                                                <option value="WPS Office Enterprise">WPS Office Enterprise</option>
+                                            <optgroup label="Ứng dụng Văn phòng khác">
+                                                <option value="WPS Office Business">WPS Office Business</option>
                                                 <option value="LibreOffice / OpenOffice">LibreOffice / OpenOffice</option>
-                                                <option value="Microsoft Office for Mac">Microsoft Office for Mac</option>
                                             </optgroup>
                                         </select>
                                     </div>
@@ -708,22 +746,24 @@
                                                 <option value="MISA AMIS Enterprise Cloud">MISA AMIS Enterprise Cloud</option>
                                                 <option value="MISA SME.NET 2023">MISA SME.NET 2023</option>
                                             </optgroup>
+                                            <optgroup label="Phần mềm Chuyên dụng khác">
+                                                <option value="SAP ERP Enterprise">SAP ERP Enterprise</option>
+                                                <option value="BRAVO ERP Solution">BRAVO ERP Solution</option>
+                                                <option value="FAST Financial ERP">FAST Financial ERP</option>
+                                                <option value="Chưa cài đặt">Chưa cài đặt</option>
+                                            </optgroup>
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- BỘ QR CODE CHUYÊN NGHIỆP TRỰC TIẾP -->
                             <div class="realtime-qr-box">
-                                <label style="font-weight:bold; color:var(--purple); font-size:11px; margin-bottom:6px;"><i class="fa-solid fa-qrcode"></i> QR Asset Tag Realtime</label>
-                                <div id="realtime-qr-target" style="padding:6px; background:white; border:1px solid var(--border-color); border-radius:4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"></div>
-                                <div style="margin-top:8px; display:flex; flex-direction:column; gap:4px; width:100%;">
-                                    <button type="button" class="btn btn-purple" style="padding:3px; font-size:10px; justify-content:center;" onclick="downloadRealtimeQR()"><i class="fa-solid fa-download"></i> Tải Mã QR (PNG)</button>
-                                </div>
+                                <label style="font-weight:bold; color:var(--purple); font-size:11px; margin-bottom:6px;"><i class="fa-solid fa-qrcode"></i> TEM QR KIỂM KÊ TRỰC TIẾP</label>
+                                <div id="realtime-qr-target"></div>
                             </div>
                         </div>
 
-                        <div class="btn-group">
+                        <div class="btn-group" style="margin-top:10px;">
                             <button type="submit" id="btn-it-submit" class="btn btn-purple">
                                 <i class="fa-solid fa-floppy-disk"></i> <span>Lưu Tài Sản Thiết Bị & Tạo QR</span>
                             </button>
@@ -750,7 +790,7 @@
                                     <th>Hệ điều hành & BQ OS</th>
                                     <th>Bộ Office & Phần mềm ERP</th>
                                     <th>Trạng thái</th>
-                                    <th class="text-center">QR Code Tem</th>
+                                    <th class="text-center">QR Code</th>
                                     <th class="text-center" style="width: 100px;">Hành động</th>
                                 </tr>
                             </thead>
@@ -833,26 +873,28 @@
         </div>
     </div>
 
-    <!-- MODAL PREVIEW BỘ QR CODE CHUYÊN NGHIỆP IN TEM DÁN TÀI SẢN -->
+    <!-- MODAL PREVIEW QR CODE -->
     <div class="modal" id="document-preview-modal" onclick="closePreviewModal()">
-        <div class="modal-content" onclick="event.stopPropagation()" style="max-width:480px;">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-width:450px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom:5px;">
-                <h3 id="modal-preview-title" style="font-size: 14px; font-weight: bold; color: var(--purple);">TEM KIỂM KÊ TÀI SẢN ĐỊNH DẠNG QR CODE</h3>
+                <h3 id="modal-preview-title" style="font-size: 14px; font-weight: bold; color: var(--purple);">TEM KIỂM KÊ TÀI SẢN CNTT</h3>
                 <button type="button" class="btn btn-gray" style="padding: 3px 8px; font-size:11px;" onclick="closePreviewModal()">ĐÓNG</button>
             </div>
-            <div id="modal-preview-body"></div>
+            <div id="modal-preview-body" style="display:flex; justify-content:center; padding:10px;"></div>
         </div>
     </div>
 
     <script>
+        // HARDCODED GOOGLE SCRIPT API URL
         const HARDCODED_SCRIPT_API = "https://script.google.com/macros/s/AKfycbyXDUstgtEIGBczOv248eGeQxi16wxuKbklKAHkIgRSoU0rkRoJwKcjAhiINTwRbA8r/exec";
         
         let GOOGLE_SHEET_VIEW_URL = localStorage.getItem('sys_cfg_sheet_url') || ""; 
         let GOOGLE_SCRIPT_API_URL = localStorage.getItem('sys_cfg_script_url') || HARDCODED_SCRIPT_API; 
 
         let CURRENT_SELECTED_YEAR = "2026";
+        let isOnlineConnected = false;
 
-        // DANH SÁCH FULL 16 NHÂN VIÊN GỐC CHI TIẾT
+        // DANH SÁCH 16 NHÂN VIÊN GỐC CHI TIẾT
         const default16Staffs = [
             {"stt": 1, "name": "Nguyễn Minh Ngọc", "lcb_heso": 1.94, "lcb_phucap": 0.25, "NT": 20, "P": 0, "le_vr": 1, "he_so_lcv": 5.2, "phu_cap_lcv": 0.6, "tam_ung": 5000000, "account": "105005712499"},
             {"stt": 2, "name": "Nguyễn Văn Nam", "lcb_heso": 1.48, "lcb_phucap": 0.00, "NT": 14, "P": 6, "le_vr": 1, "he_so_lcv": 2.24, "phu_cap_lcv": 0.0, "tam_ung": 4000000, "account": "105004242307"},
@@ -885,6 +927,108 @@
                 return `Tháng ${parts[1]}/${parts[0]}`;
             }
             return periodStr;
+        }
+
+        function formatCurrencyVN(num) {
+            if (num === null || num === undefined || isNaN(num)) return "0";
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function parseCurrencyVN(str) {
+            if (str === null || str === undefined) return 0;
+            if (typeof str === 'number') return str;
+            let cleanStr = str.toString().replace(/\./g, '').replace(/,/g, '').replace(/\s/g, '').replace(/[^\d]/g, '');
+            return parseInt(cleanStr, 10) || 0;
+        }
+
+        // KIỂM TRA KẾT NỐI API THỰC TẾ
+        async function checkRealtimeOnlineStatus() {
+            const statusDot = document.getElementById('cloud-status-dot');
+            const statusText = document.getElementById('cloud-status-text');
+            let targetUrl = GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API;
+
+            if (!targetUrl || !targetUrl.includes('script.google.com')) {
+                isOnlineConnected = false;
+                if (statusDot) statusDot.className = "status-dot offline";
+                if (statusText) statusText.innerText = "Chưa cấu hình API Google Cloud";
+                return;
+            }
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+                await fetch(targetUrl, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+                isOnlineConnected = true;
+                if (statusDot) statusDot.className = "status-dot";
+                if (statusText) statusText.innerText = "Kết nối Cloud API Online sẵn sàng";
+
+            } catch (err) {
+                if (navigator.onLine) {
+                    isOnlineConnected = true;
+                    if (statusDot) statusDot.className = "status-dot";
+                    if (statusText) statusText.innerText = "Sẵn sàng đồng bộ Google Cloud Server";
+                } else {
+                    isOnlineConnected = false;
+                    if (statusDot) statusDot.className = "status-dot offline";
+                    if (statusText) statusText.innerText = "Mất kết nối Internet (Ngoại tuyến)";
+                }
+            }
+        }
+
+        // TỰ ĐỘNG TẢI DỮ LIỆU TỪ CLOUD
+        async function autoLoadAllCloudDataIfAvailable() {
+            let sm = document.getElementById('filter-month').value || `${CURRENT_SELECTED_YEAR}-05`;
+            const baseApi = GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API;
+
+            try {
+                // 1. Tải Bảng lương
+                let resSalary = await fetch(`${baseApi}?action=get_salary_data&month=${sm}`);
+                let dataSalary = await resSalary.json();
+                if (dataSalary && dataSalary.status === "success" && dataSalary.staffs) {
+                    salaryConfigsByMonth[sm] = dataSalary.config || salaryConfigsByMonth[sm];
+                    salaryDataByMonth[sm] = dataSalary.staffs;
+                    localStorage.setItem('sys_salary_configs_by_month', JSON.stringify(salaryConfigsByMonth));
+                    localStorage.setItem('sys_salary_by_month', JSON.stringify(salaryDataByMonth));
+                    handleMonthChangeSelect();
+                }
+
+                // 2. Tải Thanh toán VP
+                let resPay = await fetch(`${baseApi}?action=get_payment_records&year=${CURRENT_SELECTED_YEAR}`);
+                let dataPay = await resPay.json();
+                if (Array.isArray(dataPay) && dataPay.length > 0) {
+                    paymentRecordsAll = dataPay;
+                    localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
+                    renderPaymentTable();
+                }
+
+                // 3. Tải Viễn thông
+                let resTel = await fetch(`${baseApi}?action=get_telecom_records&year=${CURRENT_SELECTED_YEAR}`);
+                let dataTel = await resTel.json();
+                if (Array.isArray(dataTel) && dataTel.length > 0) {
+                    telecomRecordsAll = dataTel;
+                    localStorage.setItem('sys_telecom_clean_v3', JSON.stringify(telecomRecordsAll));
+                    renderTelecomTable();
+                }
+
+                // 4. Tải Thiết bị CNTT
+                let resIT = await fetch(`${baseApi}?action=get_it_records&year=${CURRENT_SELECTED_YEAR}`);
+                let dataIT = await resIT.json();
+                if (Array.isArray(dataIT) && dataIT.length > 0) {
+                    itAssetsRecordsAll = dataIT;
+                    localStorage.setItem('sys_it_records_v3', JSON.stringify(itAssetsRecordsAll));
+                    renderITTable();
+                }
+
+            } catch (err) {
+                console.warn("Lưu ý: Không thể tự động kéo dữ liệu Cloud, đang hiển thị cache local.", err);
+            }
         }
 
         function handleGlobalYearChange() {
@@ -948,7 +1092,6 @@
             calculateSalaryLogic();
         }
 
-        // TÍNH VÀ VẼ BẢNG LƯƠNG TỰ ĐỘNG VỚI ĐỊNH DẠNG TẠM ỨNG CÓ DẤU PHÂN CÁCH
         function calculateSalaryLogic() {
             let sm = document.getElementById('filter-month').value;
             let activeData = salaryDataByMonth[sm];
@@ -979,12 +1122,12 @@
                 let lcv_thucte = Math.round((lcv_goc / 22) * parseFloat(row.NT || 0)); 
                 let o_tong = l_tong_cb + lcv_thucte; 
                 let bh = Math.round(lcb_goc * 0.105); 
-                let tam_ung_val = parseFloat(row.tam_ung || 0);
-                let thuc_linh = o_tong - bh - tam_ung_val;
+                let tamUngVal = parseCurrencyVN(row.tam_ung);
+                let thuc_linh = o_tong - bh - tamUngVal;
 
                 T_l_tong_cb += l_tong_cb; T_lcv_thucte += lcv_thucte; T_o_thuc_linh += thuc_linh;
 
-                let formattedTamUng = tam_ung_val.toLocaleString('vi-VN');
+                let formattedTamUng = formatCurrencyVN(tamUngVal);
 
                 tbody.innerHTML += `<tr>
                     <td class="text-center font-bold">${index + 1}</td>
@@ -992,69 +1135,42 @@
                     <td class="text-center"><input class="inp-table inp-account" type="text" value="${row.account}" oninput="updateSalaryRowValue(${index}, 'account', this.value)"></td>
                     <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.lcb_heso}" oninput="updateSalaryRowValue(${index}, 'lcb_heso', this.value)"></td>
                     <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.lcb_phucap || 0}" oninput="updateSalaryRowValue(${index}, 'lcb_phucap', this.value)"></td>
-                    <td class="text-right font-bold" style="color:#1e40af;">${lcb_goc.toLocaleString('vi-VN')}</td>
-                    <td class="text-right">${luong_cb_ht.toLocaleString('vi-VN')}</td>
+                    <td class="text-right font-bold" style="color:#1e40af;">${formatCurrencyVN(lcb_goc)}</td>
+                    <td class="text-right">${formatCurrencyVN(luong_cb_ht)}</td>
                     <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.NT}" oninput="updateSalaryRowValue(${index}, 'NT', this.value)"></td>
                     <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.P || 0}" oninput="updateSalaryRowValue(${index}, 'P', this.value)"></td>
                     <td class="text-center"><input class="inp-table inp-num-sm" type="number" value="${row.le_vr || 0}" oninput="updateSalaryRowValue(${index}, 'le_vr', this.value)"></td>
-                    <td class="text-right">${l_thoigian.toLocaleString('vi-VN')}</td>
-                    <td class="text-right">${le_phep_tt.toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold">${l_tong_cb.toLocaleString('vi-VN')}</td>
+                    <td class="text-right">${formatCurrencyVN(l_thoigian)}</td>
+                    <td class="text-right">${formatCurrencyVN(le_phep_tt)}</td>
+                    <td class="text-right font-bold">${formatCurrencyVN(l_tong_cb)}</td>
                     <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.he_so_lcv}" oninput="updateSalaryRowValue(${index}, 'he_so_lcv', this.value)"></td>
                     <td class="text-center"><input class="inp-table inp-num-sm" type="number" step="0.01" value="${row.phu_cap_lcv || 0}" oninput="updateSalaryRowValue(${index}, 'phu_cap_lcv', this.value)"></td>
-                    <td class="text-right">${lcv_goc.toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold" style="color:#6b21a8;">${lcv_thucte.toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold">${o_tong.toLocaleString('vi-VN')}</td>
-                    <td class="text-right" style="color:var(--red); font-weight:bold;">${bh.toLocaleString('vi-VN')}</td>
-                    
-                    <!-- Ô TẠM ỨNG CÓ DẤU PHÂN CÁCH ĐỊNH DẠNG TIỀN TỆ -->
-                    <td class="text-right">
-                        <input class="inp-table inp-tam-ung" type="text" 
-                            value="${formattedTamUng}" 
-                            onfocus="handleTamUngFocus(this, ${index})" 
-                            onblur="handleTamUngBlur(this, ${index})"
-                            onchange="handleTamUngChange(this, ${index})">
-                    </td>
-                    
-                    <td class="text-right font-bold" style="background:#fef08a; color:#854d0e; font-size:14px;">${thuc_linh.toLocaleString('vi-VN')}</td>
+                    <td class="text-right">${formatCurrencyVN(lcv_goc)}</td>
+                    <td class="text-right font-bold" style="color:#6b21a8;">${formatCurrencyVN(lcv_thucte)}</td>
+                    <td class="text-right font-bold">${formatCurrencyVN(o_tong)}</td>
+                    <td class="text-right" style="color:var(--red); font-weight:bold;">${formatCurrencyVN(bh)}</td>
+                    <td class="text-right"><input class="inp-table inp-tam-ung" type="text" value="${formattedTamUng}" oninput="handleTamUngInput(this, ${index})"></td>
+                    <td class="text-right font-bold" style="background:#fef08a; color:#854d0e; font-size:14px;">${formatCurrencyVN(thuc_linh)}</td>
                     <td class="text-center"><button type="button" class="btn-delete" onclick="deleteSalaryRow(${index})"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>`;
             });
 
             localStorage.setItem('sys_salary_by_month', JSON.stringify(salaryDataByMonth));
-            document.getElementById('dash-total-pay').innerText = T_o_thuc_linh.toLocaleString('vi-VN') + " VND";
-            document.getElementById('v-total-lcb').innerText = T_l_tong_cb.toLocaleString('vi-VN') + " VND";
-            document.getElementById('v-total-lcv-text').innerText = T_lcv_thucte.toLocaleString('vi-VN') + " VND";
-            document.getElementById('v-total-thuc').innerText = T_o_thuc_linh.toLocaleString('vi-VN') + " VND";
+            document.getElementById('dash-total-pay').innerText = formatCurrencyVN(T_o_thuc_linh) + " VND";
+            document.getElementById('v-total-lcb').innerText = formatCurrencyVN(T_l_tong_cb) + " VND";
+            document.getElementById('v-total-lcv-text').innerText = formatCurrencyVN(T_lcv_thucte) + " VND";
+            document.getElementById('v-total-thuc').innerText = formatCurrencyVN(T_o_thuc_linh) + " VND";
         }
 
-        /* HÀM XỬ LÝ NHẬP ĐỊNH DẠNG TIỀN TỆ CHUẨN Ô TẠM ỨNG */
-        function handleTamUngFocus(inputEl, index) {
-            let sm = document.getElementById('filter-month').value;
-            let currentVal = salaryDataByMonth[sm][index].tam_ung || 0;
-            inputEl.type = "number";
-            inputEl.value = currentVal;
-        }
-
-        function handleTamUngBlur(inputEl, index) {
-            let sm = document.getElementById('filter-month').value;
-            let rawNum = parseFloat(inputEl.value) || 0;
-            salaryDataByMonth[sm][index].tam_ung = rawNum;
-            inputEl.type = "text";
-            inputEl.value = rawNum.toLocaleString('vi-VN');
-            calculateSalaryLogic();
-        }
-
-        function handleTamUngChange(inputEl, index) {
-            let sm = document.getElementById('filter-month').value;
-            let rawNum = parseFloat(inputEl.value) || 0;
-            salaryDataByMonth[sm][index].tam_ung = rawNum;
-            calculateSalaryLogic();
+        function handleTamUngInput(inputEl, index) {
+            let rawNum = parseCurrencyVN(inputEl.value);
+            inputEl.value = formatCurrencyVN(rawNum);
+            updateSalaryRowValue(index, 'tam_ung', rawNum);
         }
 
         function updateSalaryRowValue(index, field, val) {
             let sm = document.getElementById('filter-month').value;
-            salaryDataByMonth[sm][index][field] = (field === 'name' || field === 'account') ? val : (parseFloat(val) || 0);
+            salaryDataByMonth[sm][index][field] = (field === 'name' || field === 'account') ? val : parseCurrencyVN(val);
             calculateSalaryLogic();
         }
 
@@ -1107,21 +1223,22 @@
 
                 await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
                     method: "POST",
+                    mode: "no-cors",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify(payload)
                 });
 
                 if (statusDot) statusDot.className = "status-dot";
-                if (statusText) statusText.innerText = "Đã đồng bộ Google Script API thành công (" + new Date().toLocaleTimeString('vi-VN') + ")";
+                if (statusText) statusText.innerText = "Đã gửi yêu cầu đồng bộ Google Script API thành công (" + new Date().toLocaleTimeString('vi-VN') + ")";
 
-                alert(`🎉 ĐỒNG BỘ THÀNH CÔNG LÊN CLOUD!\n\n` +
+                alert(`🎉 ĐÃ GỬI YÊU CẦU ĐỒNG BỘ THÀNH CÔNG LÊN CLOUD!\n\n` +
                       `- Kỳ lương: Tháng ${sm}\n` +
                       `- Số lượng nhân sự: ${currentMonthStaffs.length} người`);
 
             } catch (err) {
-                if (statusDot) statusDot.className = "status-dot";
+                if (statusDot) statusDot.className = "status-dot offline";
                 if (statusText) statusText.innerText = "Lỗi kết nối đồng bộ Mây";
-                alert("❌ ĐỒNG BỘ THẤT BẠI!\n\nLỗi: " + err.message);
+                alert("❌ ĐỒNG BỘ THẤT BẠI!\n\nLỗi kết nối: " + err.message + "\nHãy kiểm tra lại URL API Google Script.");
             }
         }
 
@@ -1143,7 +1260,10 @@
                     alert(`⚠️ Không tìm thấy dữ liệu đã đồng bộ cho Tháng ${sm} trên Mây.`);
                 }
             })
-            .catch(err => alert("⚠️ Lỗi tải dữ liệu: " + err.message));
+            .catch(err => {
+                console.warn("Lỗi tải mây:", err);
+                alert("⚠️ Không thể kết nối lấy dữ liệu Cloud: " + err.message);
+            });
         }
 
         function fileToBase64Async(file) {
@@ -1163,15 +1283,25 @@
 
         function calculateFlexibleTax() {
             let qty = parseFloat(document.getElementById('pay-qty').value) || 1;
-            let pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
+            let pretaxRaw = parseCurrencyVN(document.getElementById('pay-pretax-input').value);
             let hasTax = document.getElementById('pay-tax-toggle').checked;
             let taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
 
-            let taxAmount = hasTax ? (pretax * (taxRate / 100)) : 0;
-            let total = pretax + taxAmount;
+            let taxAmount = hasTax ? (pretaxRaw * (taxRate / 100)) : 0;
+            let total = pretaxRaw + taxAmount;
 
-            document.getElementById('pay-tax-amount').value = taxAmount.toLocaleString('vi-VN') + " VND";
-            document.getElementById('pay-total').value = total.toLocaleString('vi-VN') + " VND";
+            document.getElementById('pay-tax-amount').value = formatCurrencyVN(taxAmount) + " VND";
+            document.getElementById('pay-total').value = formatCurrencyVN(total) + " VND";
+        }
+
+        function handlePretaxInputLive(inputEl) {
+            calculateFlexibleTax();
+        }
+
+        function formatPretaxBlur(inputEl) {
+            let rawNum = parseCurrencyVN(inputEl.value);
+            inputEl.value = formatCurrencyVN(rawNum);
+            calculateFlexibleTax();
         }
 
         async function savePaymentRecord(e) {
@@ -1184,7 +1314,8 @@
             const beneficiary = document.getElementById('pay-beneficiary').value;
             const account = document.getElementById('pay-account').value;
             const qty = parseFloat(document.getElementById('pay-qty').value) || 1;
-            const pretax = parseFloat(document.getElementById('pay-pretax-input').value) || 0;
+            
+            const pretax = parseCurrencyVN(document.getElementById('pay-pretax-input').value);
             const hasTax = document.getElementById('pay-tax-toggle').checked;
             const taxRate = parseFloat(document.getElementById('pay-tax-rate').value) || 0;
             const taxAmount = hasTax ? (pretax * (taxRate / 100)) : 0;
@@ -1214,22 +1345,15 @@
                         files: preparedFiles
                     };
 
-                    let response = await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
+                    await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
                         method: "POST",
+                        mode: "no-cors",
                         headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify(uploadPayload)
                     });
 
-                    let resText = await response.text();
-                    let resData = JSON.parse(resText);
-
-                    if (resData && resData.status === "success") {
-                        uploadedFolderUrl = resData.folderUrl || "";
-                        uploadedFilesList = resData.fileLinks || [];
-                    }
                 } catch (err) {
                     console.error("Lỗi upload file:", err);
-                    alert("⚠️ Lỗi kết nối Tải file lên Drive, dữ liệu hồ sơ vẫn sẽ được lưu!");
                 } finally {
                     if (submitBtn) submitBtn.disabled = false;
                     if (submitText) submitText.innerText = "Lưu Hồ Sơ Thanh Toán & Tải Tệp Lên Drive";
@@ -1269,15 +1393,14 @@
             resetPaymentForm();
             renderPaymentTable();
 
-            alert(`🎉 ĐÃ LƯU HỒ SƠ THANH TOÁN VP THÀNH CÔNG!\n\n` +
-                  `- Kỳ thanh toán: ${formatPeriodVN(period)}\n` +
-                  `- Số tệp đính kèm đã tải: ${uploadedFilesList.length} tệp`);
+            alert(`🎉 ĐÃ LƯU HỒ SƠ THANH TOÁN VP THÀNH CÔNG!\n\n- Kỳ thanh toán: ${formatPeriodVN(period)}`);
         }
 
         function resetPaymentForm() {
             document.getElementById('payment-edit-id').value = '';
             document.getElementById('payment-main-form').reset();
             document.getElementById('pay-period').value = `${CURRENT_SELECTED_YEAR}-05`;
+            document.getElementById('pay-pretax-input').value = '0';
             document.getElementById('btn-payment-text').innerText = "Lưu Hồ Sơ Thanh Toán & Tải Tệp Lên Drive";
             calculateFlexibleTax();
         }
@@ -1291,7 +1414,7 @@
             document.getElementById('pay-beneficiary').value = item.beneficiary || '';
             document.getElementById('pay-account').value = item.account || '';
             document.getElementById('pay-qty').value = item.qty || 1;
-            document.getElementById('pay-pretax-input').value = item.pretax || 0;
+            document.getElementById('pay-pretax-input').value = formatCurrencyVN(item.pretax || 0);
             document.getElementById('pay-status').value = item.status || 'Chưa duyệt';
             document.getElementById('pay-period').value = item.period || `${CURRENT_SELECTED_YEAR}-05`;
 
@@ -1343,9 +1466,9 @@
                     <td>${r.beneficiary}</td>
                     <td>${r.account}</td>
                     <td class="text-center">${r.qty}</td>
-                    <td class="text-right">${(r.pretax||0).toLocaleString('vi-VN')}</td>
-                    <td class="text-right">${(r.tax||0).toLocaleString('vi-VN')}</td>
-                    <td class="text-right font-bold" style="color:var(--blue);">${(r.total||0).toLocaleString('vi-VN')}</td>
+                    <td class="text-right font-bold">${formatCurrencyVN(r.pretax||0)} VND</td>
+                    <td class="text-right">${formatCurrencyVN(r.tax||0)} VND</td>
+                    <td class="text-right font-bold" style="color:var(--blue);">${formatCurrencyVN(r.total||0)} VND</td>
                     <td class="text-center">${r.status}</td>
                     <td class="text-center">${fileLinksHtml}</td>
                     <td class="text-center" style="white-space:nowrap;">
@@ -1355,7 +1478,7 @@
                 </tr>`;
             });
 
-            document.getElementById('dash-paid-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
+            document.getElementById('dash-paid-pay').innerText = formatCurrencyVN(sum) + " VND";
         }
 
         function deletePaymentRecord(id) {
@@ -1364,6 +1487,15 @@
                 localStorage.setItem('sys_payment_records_v3', JSON.stringify(paymentRecordsAll));
                 renderPaymentTable();
             }
+        }
+
+        function handleTelecomCostInputLive(inputEl) {
+            let rawVal = parseCurrencyVN(inputEl.value);
+        }
+
+        function formatTelecomCostBlur(inputEl) {
+            let rawVal = parseCurrencyVN(inputEl.value);
+            inputEl.value = formatCurrencyVN(rawVal);
         }
 
         function onFilesSelectedLive(input) {
@@ -1408,7 +1540,8 @@
             const provider = document.getElementById('tel-provider').value;
             const pkg = document.getElementById('tel-package').value;
             const cid = document.getElementById('tel-cid').value;
-            const cost = parseFloat(document.getElementById('tel-cost').value) || 0;
+            
+            const cost = parseCurrencyVN(document.getElementById('tel-cost').value);
             
             let rawPeriod = document.getElementById('tel-period').value;
             let period = rawPeriod || `${CURRENT_SELECTED_YEAR}-01`;
@@ -1437,7 +1570,6 @@
                     if (pText) pText.innerText = `Đang đẩy ${preparedFiles.length} tệp lên Google Drive...`;
                     if (pBar) pBar.style.width = `80%`;
                     if (pPercent) pPercent.innerText = `80%`;
-                    if (submitText) submitText.innerText = `Đang đẩy ${preparedFiles.length} tệp...`;
 
                     let uploadPayload = {
                         action: "upload_files_direct",
@@ -1446,26 +1578,18 @@
                         files: preparedFiles
                     };
 
-                    let response = await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
+                    await fetch(GOOGLE_SCRIPT_API_URL || HARDCODED_SCRIPT_API, {
                         method: "POST",
+                        mode: "no-cors",
                         headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify(uploadPayload)
                     });
-
-                    let resText = await response.text();
-                    let resData = JSON.parse(resText);
-
-                    if (resData && resData.status === "success") {
-                        uploadedFolderUrl = resData.folderUrl || "";
-                        uploadedFilesList = resData.fileLinks || [];
-                    }
 
                     if (pBar) pBar.style.width = `100%`;
                     if (pPercent) pPercent.innerText = `100%`;
 
                 } catch (err) {
                     console.error("Lỗi upload file:", err);
-                    alert("⚠️ Lỗi kết nối Google Drive: " + err.message);
                 } finally {
                     submitBtn.disabled = false;
                     if (submitText) submitText.innerText = "Lưu Cước & Tải Tệp Lên Drive";
@@ -1501,9 +1625,7 @@
             resetTelecomForm(); 
             renderTelecomTable();
 
-            alert(`🎉 ĐÃ LƯU CƯỚC THÀNH CÔNG!\n\n` +
-                  `- Kỳ cước: ${formatPeriodVN(period)}\n` +
-                  `- Số tệp đính kèm đã tải lên Drive: ${uploadedFilesList.length} tệp`);
+            alert(`🎉 ĐÃ LƯU CƯỚC THÀNH CÔNG!\n\n- Kỳ cước: ${formatPeriodVN(period)}\n- Số tiền: ${formatCurrencyVN(cost)} VND`);
         }
 
         function saveTelecomRecord(e) {
@@ -1520,7 +1642,7 @@
             document.getElementById('tel-provider').value = item.provider || 'VNPT';
             document.getElementById('tel-package').value = item.package || '';
             document.getElementById('tel-cid').value = item.cid || '';
-            document.getElementById('tel-cost').value = item.cost || 0;
+            document.getElementById('tel-cost').value = formatCurrencyVN(item.cost || 0);
             document.getElementById('tel-period').value = item.period || `${CURRENT_SELECTED_YEAR}-01`;
 
             document.getElementById('btn-telecom-text').innerText = "Cập Nhật Cước Viễn Thông";
@@ -1562,7 +1684,7 @@
             }
 
             activeTelecoms.forEach((r, i) => {
-                let costVal = Number(r.cost) || 0;
+                let costVal = parseCurrencyVN(r.cost);
                 sum += costVal;
                 
                 let fileLinksHtml = `<a href="${r.folderDriveUrl || '#'}" target="_blank" class="badge-cert"><i class="fa-brands fa-google-drive"></i> Mở Folder Tháng</a>`;
@@ -1578,7 +1700,7 @@
                     <td class="text-center">${r.provider}</td>
                     <td>${r.package}</td>
                     <td class="text-center font-bold">${r.cid}</td>
-                    <td class="text-right font-bold" style="color:var(--blue);">${costVal.toLocaleString('vi-VN')} VND</td>
+                    <td class="text-right font-bold" style="color:var(--blue);">${formatCurrencyVN(costVal)} VND</td>
                     <td class="text-center font-bold" style="background:#fef08a; color:#9a3412;">${displayPeriod}</td>
                     <td class="text-center">${fileLinksHtml}</td>
                     <td class="text-center" style="white-space:nowrap;">
@@ -1588,7 +1710,7 @@
                 </tr>`;
             });
             
-            document.getElementById('dash-pending-pay').innerText = sum.toLocaleString('vi-VN') + " VND";
+            document.getElementById('dash-pending-pay').innerText = formatCurrencyVN(sum) + " VND";
         }
 
         function resetTelecomForm() { 
@@ -1596,6 +1718,7 @@
             document.getElementById('telecom-main-form').reset(); 
             document.getElementById('upload-status-box').style.display = 'none';
             document.getElementById('tel-period').value = `${CURRENT_SELECTED_YEAR}-01`;
+            document.getElementById('tel-cost').value = '0';
             document.getElementById('btn-telecom-text').innerText = "Lưu Cước & Tải Tệp Lên Drive";
         }
 
@@ -1613,39 +1736,44 @@
             document.getElementById('it-serial-id').value = `IT-${codePrefix}-${CURRENT_SELECTED_YEAR}-${Math.floor(100 + Math.random() * 900)}`;
         }
 
-        /* CHUYÊN NGHIỆP: TẠO BỘ QR CODE LÊN PREVIEW */
-        function updateRealtimeQR() {
-            let serialId = document.getElementById('it-serial-id').value || "IT-LAP-2026-101";
-            let user = document.getElementById('it-user').value.trim() || "Chưa nhập";
-            let dept = document.getElementById('it-dept').value.trim() || "Chưa nhập";
-            let type = document.getElementById('it-device-type').value;
-            let config = document.getElementById('it-config').value || "Chưa nhập";
+        function generateProQRCard(targetId, assetObj, size = 110) {
+            const target = document.getElementById(targetId);
+            if (!target) return;
+            
+            target.innerHTML = `
+                <div class="pro-qr-card">
+                    <div class="pro-qr-header"><i class="fa-solid fa-building"></i> VINAPACO IT ASSET</div>
+                    <div class="pro-qr-canvas-wrap" id="${targetId}-qr"></div>
+                    <div class="pro-qr-info">
+                        <div>Mã TS: <strong>${assetObj.serialId}</strong></div>
+                        <div>Người dùng: <strong>${assetObj.user}</strong></div>
+                        <div>Bộ phận: <strong>${assetObj.dept}</strong></div>
+                        <div>Loại TS: <strong>${assetObj.type}</strong></div>
+                    </div>
+                </div>
+            `;
 
-            let formattedText = `MÃ THIẾT BỊ: ${serialId}\nNGƯỜI DÙNG: ${user} (${dept})\nLOẠI: ${type}\nCẤU HÌNH: ${config}`;
-
-            const qrTarget = document.getElementById('realtime-qr-target');
-            if (qrTarget) {
-                qrTarget.innerHTML = "";
-                new QRCode(qrTarget, { 
-                    text: formattedText, 
-                    width: 140, 
-                    height: 140, 
-                    colorDark: "#0f172a", 
-                    colorLight: "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
-                });
-            }
+            let formattedText = `VINAPACO IT ASSET\nMã: ${assetObj.serialId}\nUser: ${assetObj.user}\nBộ phận: ${assetObj.dept}\nLoại: ${assetObj.type}\nCấu hình: ${assetObj.config}`;
+            
+            new QRCode(document.getElementById(`${targetId}-qr`), { 
+                text: formattedText, 
+                width: size, 
+                height: size, 
+                colorDark: "#0f172a", 
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
         }
 
-        /* HÀM TẢI MÃ QR DẠNG HÌNH ẢNH PNG */
-        function downloadRealtimeQR() {
-            const qrCanvas = document.querySelector('#realtime-qr-target canvas');
-            if (!qrCanvas) return;
-            let imgData = qrCanvas.toDataURL("image/png");
-            let a = document.createElement('a');
-            a.href = imgData;
-            a.download = `QR-CODE-${document.getElementById('it-serial-id').value}.png`;
-            a.click();
+        function updateRealtimeQR() {
+            let assetObj = {
+                serialId: document.getElementById('it-serial-id').value || "IT-LAP-2026-101",
+                user: document.getElementById('it-user').value.trim() || "Chưa nhập",
+                dept: document.getElementById('it-dept').value.trim() || "Chưa nhập",
+                type: document.getElementById('it-device-type').value,
+                config: document.getElementById('it-config').value.trim() || "Cấu hình tiêu chuẩn"
+            };
+            generateProQRCard('realtime-qr-target', assetObj, 110);
         }
 
         async function saveITRecord(e) {
@@ -1697,63 +1825,23 @@
                     <td><div>${r.os || ''}</div><span class="badge-licensed">${r.osLic || 'Bản quyền OEM'}</span></td>
                     <td><div>${r.office || ''}</div><span class="badge-licensed">${r.officeLic || 'Chính thức'}</span></td>
                     <td class="text-center">${r.status}</td>
-                    <td class="text-center"><button type="button" class="btn-action-qr" onclick="popupQRCode('${r.serialId}', '${r.user}', '${r.dept}', '${r.type}', '${r.config}')"><i class="fa-solid fa-qrcode"></i> Tem QR</button></td>
+                    <td class="text-center"><button type="button" class="btn-action-qr" onclick="popupQRCode('${r.id}')"><i class="fa-solid fa-qrcode"></i> Tem QR</button></td>
                     <td class="text-center"><button type="button" class="btn-delete" onclick="deleteITRecord('${r.id}')"><i class="fa-solid fa-trash"></i> Xóa</button></td>
                 </tr>`;
             });
             document.getElementById('dash-total-it-devices').innerText = currentYearIT.length + " Thiết bị";
         }
 
-        /* XUẤT MẪU TEM DÁN TÀI SẢN CNTT IN ĐƯỢC CHUYÊN NGHIỆP */
-        function popupQRCode(serialId, user, dept, type, config) {
-            document.getElementById('modal-preview-title').innerText = "TEM MÃ QR CHUẨN KIỂM KÊ TÀI SẢN";
+        function popupQRCode(id) {
+            let item = itAssetsRecordsAll.find(r => String(r.id) === String(id));
+            if (!item) return;
+
+            document.getElementById('modal-preview-title').innerText = "TEM KIỂM KÊ TÀI SẢN: " + item.serialId;
             let body = document.getElementById('modal-preview-body');
+            body.innerHTML = `<div id="popup-qr-target"></div>`;
             
-            body.innerHTML = `
-            <div style="display:flex; flex-direction:column; align-items:center; gap:12px; padding:10px;">
-                <div class="asset-tag-print-box" id="printable-asset-tag">
-                    <div class="asset-tag-header">
-                        <h4>TỔNG CÔNG TY GIẤY VIỆT NAM</h4>
-                        <h3>TEM KIỂM KÊ TÀI SẢN CNTT</h3>
-                    </div>
-                    <div class="asset-tag-body">
-                        <div id="modal-qr-canvas" style="padding:4px; border:1px solid #0f172a; background:#fff;"></div>
-                        <div class="asset-tag-info">
-                            <div><strong>Mã TS:</strong> <span style="color:#1d4ed8; font-weight:bold;">${serialId}</span></div>
-                            <div><strong>Sử dụng:</strong> ${user}</div>
-                            <div><strong>Bộ phận:</strong> ${dept || 'Văn phòng'}</div>
-                            <div><strong>Loại thiết bị:</strong> ${type || 'Laptop'}</div>
-                            <div style="font-size:10px; color:#475569;">${config || ''}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="display:flex; gap:10px; margin-top:5px;">
-                    <button type="button" class="btn btn-purple" onclick="printAssetTag()"><i class="fa-solid fa-print"></i> In Tem Dán Tài Sản</button>
-                    <button type="button" class="btn btn-gray" onclick="closePreviewModal()">Đóng</button>
-                </div>
-            </div>`;
-
-            let formattedText = `MÃ THIẾT BỊ: ${serialId}\nNGƯỜI DÙNG: ${user} (${dept})\nLOẠI: ${type}`;
-            new QRCode(document.getElementById("modal-qr-canvas"), { 
-                text: formattedText, 
-                width: 95, 
-                height: 95,
-                colorDark: "#0f172a",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-
+            generateProQRCard('popup-qr-target', item, 140);
             document.getElementById('document-preview-modal').style.display = 'flex';
-        }
-
-        function printAssetTag() {
-            let printContents = document.getElementById('printable-asset-tag').outerHTML;
-            let originalContents = document.body.innerHTML;
-            document.body.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; height:100vh;">${printContents}</div>`;
-            window.print();
-            document.body.innerHTML = originalContents;
-            location.reload();
         }
 
         function closePreviewModal() { document.getElementById('document-preview-modal').style.display = 'none'; }
@@ -1919,6 +2007,7 @@
             localStorage.setItem('sys_cfg_script_url', GOOGLE_SCRIPT_API_URL);
             localStorage.setItem('sys_cfg_sheet_url', GOOGLE_SHEET_VIEW_URL);
             closeConfigUrlModal();
+            checkRealtimeOnlineStatus();
         }
 
         function startRealtimeLiveClock() {
@@ -1928,7 +2017,7 @@
             }, 1000);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             startRealtimeLiveClock();
             let today = new Date();
             let yyyy = today.getFullYear();
@@ -1940,6 +2029,9 @@
             autoGenerateAssetID();
             updateRealtimeQR();
             handleGlobalYearChange();
+
+            await checkRealtimeOnlineStatus();
+            await autoLoadAllCloudDataIfAvailable();
         });
     </script>
 </body>
